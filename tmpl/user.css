@@ -1,0 +1,292 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: .9rem;
+  font-family: "Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
+  line-height: 1.15rem;ß
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+/* http://webdesign.tutsplus.com/articles/quick-tip-tooltips-courtesy-of-html5-data-attributes--webdesign-4826
+another implementation: http://codepen.io/cbracco/pen/qzukg;
+TODO: should show up relative to the element; */
+a.tooltip::before {
+  content: attr(data-tip) ;
+
+  font-size: 10px;
+  position:absolute;
+  z-index: 999;
+  white-space:nowrap;
+  bottom:9999px;
+  left: 50%;
+  background:#000;
+  color:#e0e0e0;
+  padding:0px 7px;
+  line-height: 24px;
+  height: 24px;
+
+  opacity: 0;
+  transition:opacity 0.4s ease-out;
+}
+
+a.tooltip:hover::before {
+  opacity: 1;
+  bottom:-35px;
+}
+
+html,body{
+  height:100%;
+}
+
+.left {
+  float: left;
+}
+.right {
+  float: right;
+  text-align: right;
+}
+.clear {
+  clear: both;
+}
+
+/* over-write ugly box-shadow from solarized theme */
+.cm-s-solarized.CodeMirror {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.one-note {
+  border-top: 1px solid #efefef;
+  margin-top: 5px;
+  position: relative;
+}
+
+.title {
+  font-weight: bold;
+}
+
+#header {
+  font-weight: bold;
+  background-color: #f6f6f6;
+  padding-bottom: 1em;
+  padding-top: 1em
+}
+
+.round-input {
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+  padding: 4px 20px 4px 8px;
+}
+.input-not-focused {
+  font-style: italic;
+  color: #aaa;
+}
+.input-focused {
+  font-style: normal;
+  color: #000;
+}
+
+#note-editor {
+  position: fixed;
+  top: 38px;
+  left: 0px;
+  right: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  /*background-color: #eee; */
+  background-color: #fff;
+  /* background-color: #fdf6e3; */
+  padding: 8px;
+  z-index: 99;
+}
+
+.snippet {
+  display:inline;
+  word-wrap:
+  break-word;
+}
+
+#note-text-area {
+}
+
+#note-close {
+  color: black;
+}
+
+#note-close:hover {
+  color: red;
+  background-color: #fff;
+}
+
+#note-title {
+  font-weight: bold;
+  min-width: 64px;
+}
+
+[contenteditable]:hover:not(:focus) {
+  outline: 1px dotted #ccc;
+}
+
+[contenteditable]:focus {
+  outline: 1px dotted #ccc;
+  outline: none;
+}
+
+.btn-small {
+  padding-left: 8px;
+  padding-right: 8px;
+  color: #fff;
+  background-color: #4d90fe;
+  background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
+  background-image: linear-gradient(top,#4d90fe,#4787ed);
+  cursor: pointer;
+}
+.btn-small:hover {
+  background-color: #357ae8;
+  background-image: -webkit-linear-gradient(top, #4d90fe, #357ae8);
+  background-image: linear-gradient(top, #4d90fe, #357ae8);
+  color: #BED4F7;
+}
+
+.btn {
+  color: #fff;
+  background-color: #4d90fe;
+  background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
+  background-image: linear-gradient(top,#4d90fe,#4787ed);
+  border: 1px solid #3079ed;
+  border-radius: 2px;
+  vertical-align: middle;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  height: 27px;
+  line-height: 27px;
+  min-width: 54px;
+  outline: 0;
+  margin-top: 8px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: #357ae8;
+  background-image: -webkit-linear-gradient(top, #4d90fe, #357ae8);
+  background-image: linear-gradient(top, #4d90fe, #357ae8);
+  border: 1px solid #2f5bb7;
+  border-bottom-color: #2f5bb7;
+}
+
+.btn-disabled {
+  background-color: gray;
+  background-image: none;
+  color: lightgrey;
+  cursor: default;
+  border: 0px;
+}
+
+.btn-disabled:hover {
+  background-color: gray;
+  background-image: none;
+  color: lightgrey;
+  cursor: default;
+  border: 0px;
+}
+
+.title-placeholder {
+  color: gray;
+  font-style: italic;
+}
+
+#note-bottom {
+  position: absolute;
+  bottom: 8px;
+}
+
+#note-format {
+  padding-right: 16px;
+  padding-left: 8px;
+  min-width: 64px;
+  /* background-color: #faa; */
+}
+#note-format:hover {
+  color: #888;
+}
+
+.CodeMirror {
+  padding: 0;
+}
+
+.note-edit {
+  position:absolute;
+  top:0px;
+  right:0px;
+}
+
+.note-more {
+  position: absolute;
+  bottom:0px;
+  right:0px;
+}
+
+#editorWrap {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 44px;
+  bottom: 32px;
+  background: lightyellow;
+  display: none;
+}
+
+#newNoteSmall {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 4em;
+  display: block;
+  resize: none;
+}
+
+.titletag {
+  color: gray;
+  font-style: bold;
+  margin-left: 8px;
+}
+
+#contentWrapper {
+  display: flex;
+  margin-top: 8px;
+}
+
+#leftSidebar {
+  min-width: 100px;
+  font-size: 80%;
+  background-color: #f7f8f5;
+  margin-right: 8px;
+}
+
+.tagCount {
+  float: right;
+  margin-right: 8px;
+  color: #bdbdbd;
+}
+
+.tag {
+  cursor: pointer;
+  clear: both;
+}
+
+.tag:hover {
+  background-color: lightgrey;
+}

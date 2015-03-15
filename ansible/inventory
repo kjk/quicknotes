@@ -1,0 +1,2 @@
+quicknotes-initial ansible_ssh_host=ssh.quicknotes.io ansible_ssh_user=root
+quicknotes ansible_ssh_host=ssh.quicknotes.io ansible_ssh_user=quicknotes

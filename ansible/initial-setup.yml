@@ -1,0 +1,17 @@
+---
+- name: initial setup for quicknotes service
+  hosts: quicknotes-initial
+  sudo: True
+  tasks:
+    - name: create directory for nginx logs
+      file: >
+        path=/var/log/nginx/quicknotes/ state=directory mode=0755
+    - name: copy nginx config file
+      copy: src=nginx.conf dest=/etc/nginx/sites-available/quicknotes
+    - name: enable website
+      file: >
+        dest=/etc/nginx/sites-enabled/quicknotes
+        src=/etc/nginx/sites-available/quicknotes
+        state=link
+    - name: restart nginx
+      service: name=nginx state=restarted

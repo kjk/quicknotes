@@ -1,2 +1,3 @@
 # quicknotes
-quicknotes.io
+
+http://quicknotes.io

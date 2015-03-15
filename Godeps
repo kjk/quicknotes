@@ -1,0 +1,59 @@
+{
+	"ImportPath": "github.com/kjk/quicknotes",
+	"GoVersion": "go1.4.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/bradfitz/slice",
+			"Rev": "a665b5dbaad5fc7474c1193c67ed138df1e1b0e7"
+		},
+		{
+			"ImportPath": "github.com/dustin/go-humanize",
+			"Rev": "3cd90eb3d932037b141d4daff9a012e1aee7e765"
+		},
+		{
+			"ImportPath": "github.com/garyburd/go-oauth/oauth",
+			"Rev": "3b723ab4b7bd12769c5a3b3de84dbf03e51e4fbb"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.2-28-gcebeb35",
+			"Rev": "cebeb3599d51814753350e87cd21f24b3ddaa66e"
+		},
+		{
+			"ImportPath": "github.com/gorilla/securecookie",
+			"Rev": "5f171f42328bdd573211bb82bdee8f259c4c61ae"
+		},
+		{
+			"ImportPath": "github.com/kjk/u",
+			"Rev": "a6fc06e80ad8a518e699bbc24068991fddc78a37"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
+			"Rev": "ff3719c6816e2cd194f05058452d660608e178ac"
+		},
+		{
+			"ImportPath": "github.com/syndtr/gosnappy/snappy",
+			"Rev": "ce8acff4829e0c2458a67ead32390ac0a381c862"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "59b0df9b1f7abda5aab0495ee54f408daf182ce7"
+		},
+		{
+			"ImportPath": "golang.org/x/oauth2",
+			"Rev": "721c86aedbb404bcb5a439cd05c1e0a6bf7d8923"
+		},
+		{
+			"ImportPath": "google.golang.org/api/googleapi",
+			"Rev": "caddaef3288600132bb9c9ea3f638e565d74cd54"
+		},
+		{
+			"ImportPath": "google.golang.org/api/storage/v1",
+			"Rev": "caddaef3288600132bb9c9ea3f638e565d74cd54"
+		},
+		{
+			"ImportPath": "google.golang.org/cloud",
+			"Rev": "ddb49c03ad0fb1933e730c73efed33571efa4ad0"
+		}
+	]
+}

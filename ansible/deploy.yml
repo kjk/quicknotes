@@ -1,0 +1,46 @@
+---
+- name: deploy quicknotes
+  hosts: quicknotes
+  tasks:
+  - name: get repo sha1
+    local_action: command ./ansible/get-sha1.sh
+    register: sha1
+  - name: build
+    local_action: command python ./ansible/build.py
+  - name: create .initd file
+    copy: src=sumatrawebsite.initd dest=/etc/init.d/sumatrawebsite owner=root group=root mode=0755
+    sudo: yes
+  - name: create directory for the app
+    file: >
+      path=/home/quicknotes/www/app/{{ sha1.stdout }}
+      state=directory mode=0755
+      owner=quicknotes group=quicknotes
+  - name: create directory for app's data
+    file: >
+      path=/home/quicknotes/www/data
+      state=directory mode=0755
+      owner=quicknotes group=quicknotes
+      dest=/home/quicknotes/www/app
+  - name: unzip files
+    unarchive: src={{ sha1.stdout }}.zip dest=/home/quicknotes/www/app/{{ sha1.stdout }}
+  - name: stop existing
+    command: /etc/init.d/quicknotes stop
+  - name: stat current
+    stat: path=/home/quicknotes/www/app/current
+    register: current_stat
+  - name: remove old prev directory
+    file: path=/home/quicknotes/www/app/prev state=absent
+  - name: rename current to prev
+    command: mv current prev
+    when: current_stat.stat.exists
+    args:
+      chdir: /home/quicknotes/www/app
+  - name: symlink sha1 to current
+    file: >
+      src=/home/quicknotes/www/app/{{ sha1.stdout }}
+      dest=/home/quicknotes/www/app/current
+      state=link
+  - name: start it
+    command: /etc/init.d/quicknotes start
+  - name: delete .zip file
+    local_action: command rm {{ sha1.stdout }}.zip
