@@ -87,6 +87,18 @@ func parseFlags() {
 	flag.Parse()
 }
 
+func startWebpackWatch() {
+	cmd := exec.Command("./scripts/webpack.sh")
+	cmdStr := strings.Join(cmd.Args, " ")
+	fmt.Printf("starting '%s'\n", cmdStr)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Start()
+	if err != nil {
+		log.Fatalf("cmd.Start('%s') failed with '%s'\n", cmdStr, err)
+	}
+}
+
 func startJsxWatch() {
 	cmd := exec.Command("jsx", "--no-cache-dir", "--watch", "-x", "jsx", "jsxsrc/", "s/js/")
 	cmdStr := strings.Join(cmd.Args, " ")
@@ -141,7 +153,7 @@ func main() {
 
 	GetDbMust()
 	if flgIsLocal {
-		startJsxWatch()
+		startWebpackWatch()
 	}
 
 	initApp()

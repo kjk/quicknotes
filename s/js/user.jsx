@@ -11,7 +11,7 @@ var NoteEdit = React.createClass({
                onClick={this.props.editCb}>
             edit
           </div>
-      )
+      );
     } else {
       return <div />
     }
@@ -30,7 +30,7 @@ var NotePartial = React.createClass({
           <a href="/n/{note.ID}" target="_blank">more</a>
           &nbsp;<span style={spanStyle}>{note.HumanSize}</span>
         </div>
-        )
+      );
     } else {
       return <div></div>
     }
@@ -43,7 +43,7 @@ var Note = React.createClass({
       var cls = "title tcol" + note.ColorID;
       return (
         <span className={cls}>{note.Title}</span>
-        )
+        );
     };
   },
 
@@ -57,7 +57,7 @@ var Note = React.createClass({
       });
       return (
         <span>{tagEls}</span>
-      )
+      );
     }
   },
 
@@ -79,7 +79,7 @@ var Note = React.createClass({
   createNoteBody: function(note) {
       return (
         <NotePartial note={note} />
-      )
+      );
     },
 
   createNoteSnippet: function(note) {
@@ -88,7 +88,7 @@ var Note = React.createClass({
         <span className="message">
           <pre className="snippet">{note.Snippet}</pre>
         </span>
-      )
+      );
     }
   },
 
@@ -144,7 +144,7 @@ var NewNote = React.createClass({
         style={s}
         onClick={this.newNote}
       >new note</div>
-    )
+    );
   }
 });
 
@@ -161,7 +161,7 @@ var LogInLink = React.createClass({
     }
     return (
       <a href={url} style={s}>{txt}</a>
-    )
+    );
   }
 });
 
@@ -198,7 +198,7 @@ var Top = React.createClass({
         <LogInLink isLoggedIn={this.props.isLoggedIn}/>
         <div className="clear"></div>
       </div>
-    )
+    );
   }
 });
 
@@ -225,7 +225,7 @@ var NewNoteSmall = React.createClass({
             id="newNoteSmall"
             placeholder="enter new note"
           />
-    )
+      );
   }
 });
 
@@ -242,7 +242,7 @@ var TagCount = React.createClass({
         <span className="tagName">{this.props.name}</span>&nbsp;
         <span className="tagCount">{this.props.count}</span>
       </div>
-    )
+    );
   }
 });
 
@@ -253,7 +253,7 @@ var LeftSidebar = React.createClass({
       return (
         <div id="leftSidebar">
         </div>
-      )
+      );
     }
     var tagsArr = new Array();
     for (var key in tags) {
@@ -282,7 +282,7 @@ var LeftSidebar = React.createClass({
       <div id="leftSidebar">
           {tagEls}
       </div>
-    )
+    );
   }
 });
 
@@ -313,7 +313,7 @@ function filterNotesByTag(notes, tag) {
   return res;
 }
 
-var App = React.createClass({
+var AppUser = React.createClass({
   getInitialState: function() {
     return {
       allNotes: [],
@@ -359,11 +359,16 @@ var App = React.createClass({
                 <NotesList notes={this.state.selectedNotes} compact={compact}/>
             </div>
         </div>
-    )
+    );
   }
 });
 
-React.render(
-  <App />,
-  document.getElementById('main')
-);
+function userStart() {
+  React.render(
+    <AppUser />,
+    document.getElementById('main')
+  );
+}
+
+// TODO: should be in user.html
+userStart();
