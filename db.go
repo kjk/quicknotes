@@ -252,7 +252,7 @@ func getSqlConnectionRoot() string {
 	if flgIsLocal {
 		return "root@tcp(localhost:3306)/"
 	} else {
-		return "root:dribble-dribble-little-star@tcp(173.194.251.111:3306)/"
+		return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
 	}
 }
 
