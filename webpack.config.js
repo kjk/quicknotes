@@ -1,8 +1,7 @@
-var webpack = require("webpack");
-var path = require("path");
+//var webpack = require("webpack");
 
 module.exports = {
-  entry: './jsx/user.jsx',
+  entry: './jsx/AppUser.jsx',
   output: {
     filename: 's/js/bundle.js',
   },
@@ -11,8 +10,11 @@ module.exports = {
       {
         test: /\.jsx$/,
         loader: 'jsx-loader'
-      }
-    ]
+      },
+      {
+        test: /\.css$/,
+        loader: "style!css"
+      }]
   },
   externals: {
     //don't bundle the 'react' npm package with our bundle.js
@@ -24,7 +26,7 @@ module.exports = {
   },
   resolveLoader: {
     // this is on mac os with npm installed with brew and
-    // npm install
+    // npm install -g for packages
     root: "/usr/local/lib/node_modules"
   }
 };

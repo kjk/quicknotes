@@ -76,5 +76,4 @@ function userStart() {
   );
 }
 
-// TODO: should be in user.html
-userStart();
+module.exports = userStart();
