@@ -8,7 +8,7 @@
   - name: build
     local_action: command python build.py
   - name: create .initd file
-    copy: src=sumatrawebsite.initd dest=/etc/init.d/sumatrawebsite owner=root group=root mode=0755
+    copy: src=quicknotes.initd dest=/etc/init.d/quicknotes owner=root group=root mode=0755
     sudo: yes
   - name: create directory for the app
     file: >
