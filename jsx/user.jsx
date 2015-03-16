@@ -1,42 +1,6 @@
 var utils = require('./utils.js');
-
-var NoteEdit = React.createClass({
-  getInitialState: function() {
-    return {visible:false};
-  },
-
-  render: function() {
-    if (this.state.visible) {
-      return (
-          <div className="btn-small note-edit"
-               onClick={this.props.editCb}>
-            edit
-          </div>
-      );
-    } else {
-      return <div />
-    }
-  }
-});
-
-var NotePartial = React.createClass({
-  render: function() {
-    var spanStyle = {
-      color: "gray"
-    };
-    var note = this.props.note;
-    if (note.IsPartial) {
-      return (
-        <div className="note-more">
-          <a href="/n/{note.ID}" target="_blank">more</a>
-          &nbsp;<span style={spanStyle}>{note.HumanSize}</span>
-        </div>
-      );
-    } else {
-      return <div></div>
-    }
-  }
-});
+var NoteEdit = require('./NoteEdit.jsx');
+var NotePartial = require('./NotePartial.jsx');
 
 var Note = React.createClass({
   createTitle: function(note) {
