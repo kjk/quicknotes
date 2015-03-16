@@ -15,12 +15,16 @@
       path=/home/quicknotes/www/app/{{ sha1.stdout }}
       state=directory mode=0755
       owner=quicknotes group=quicknotes
-  - name: create directory for app's data
+  - name: create directory for app's log
     file: >
-      path=/home/quicknotes/www/data
+      path=/home/quicknotes/www/data/log
       state=directory mode=0755
       owner=quicknotes group=quicknotes
-      dest=/home/quicknotes/www/app
+  - name: create directory for app's localstore
+    file: >
+      path=/home/quicknotes/www/data/localstore
+      state=directory mode=0755
+      owner=quicknotes group=quicknotes
   - name: unzip files
     unarchive: src={{ sha1.stdout }}.zip dest=/home/quicknotes/www/app/{{ sha1.stdout }}
   - name: stop existing

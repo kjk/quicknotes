@@ -67,8 +67,8 @@ func getDataDir() string {
 	if flgIsLocal {
 		return u.ExpandTildeInPath("~/data/quicknotes")
 	}
-	//  on the server it's in /home/quicknotes/app/data
-	return u.ExpandTildeInPath("~/app/data")
+	//  on the server it's in /home/quicknotes/www/data
+	return u.ExpandTildeInPath("~/www/data")
 }
 
 func getLogDir() string {
