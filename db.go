@@ -256,8 +256,8 @@ func getSqlConnectionRoot() string {
 	}
 }
 
-func getSqlConnectionNotenik() string {
-	return getSqlConnectionRoot() + "notenik?parseTime=true"
+func getSqlConnectionQuickNotes() string {
+	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
 }
 
 func upgradeDbMust(db *sql.DB) {
@@ -290,10 +290,10 @@ func createDatabaseMust() *sql.DB {
 	fatalIfErr(err, "sql.Open()")
 	err = db.Ping()
 	fatalIfErr(err, "db.Ping()")
-	execMust(db, `CREATE DATABASE notenik CHARACTER SET utf8 COLLATE utf8_general_ci`)
+	execMust(db, `CREATE DATABASE quicknotes CHARACTER SET utf8 COLLATE utf8_general_ci`)
 	db.Close()
 
-	db, err = sql.Open("mysql", getSqlConnectionNotenik())
+	db, err = sql.Open("mysql", getSqlConnectionQuickNotes())
 	fatalIfErr(err, "sql.Open()")
 
 	execMust(db, `
@@ -568,7 +568,7 @@ func deleteDatabaseMust() {
 	fatalIfErr(err, "sql.Open()")
 	err = db.Ping()
 	fatalIfErr(err, "db.Ping()")
-	execMust(db, `DROP DATABASE IF EXISTS notenik`)
+	execMust(db, `DROP DATABASE IF EXISTS quicknotes`)
 	db.Close()
 }
 
@@ -591,7 +591,7 @@ func GetDbMust() *sql.DB {
 	}
 	sqlDbMu.Lock()
 	defer sqlDbMu.Unlock()
-	db, err := sql.Open("mysql", getSqlConnectionNotenik())
+	db, err := sql.Open("mysql", getSqlConnectionQuickNotes())
 	if err != nil {
 		LogFatalf("sql.Open() failed with %s", err)
 	}
