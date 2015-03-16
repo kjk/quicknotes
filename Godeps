@@ -12,7 +12,7 @@
 		},
 		{
 			"ImportPath": "github.com/garyburd/go-oauth/oauth",
-			"Rev": "3b723ab4b7bd12769c5a3b3de84dbf03e51e4fbb"
+			"Rev": "fa02955a8929c2f007c533fbdfb8ddc91bb6a731"
 		},
 		{
 			"ImportPath": "github.com/go-sql-driver/mysql",
@@ -29,11 +29,11 @@
 		},
 		{
 			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
-			"Rev": "ff3719c6816e2cd194f05058452d660608e178ac"
+			"Rev": "87e4e645d80ae9c537e8f2dee52b28036a5dd75e"
 		},
 		{
 			"ImportPath": "github.com/syndtr/gosnappy/snappy",
-			"Rev": "ce8acff4829e0c2458a67ead32390ac0a381c862"
+			"Rev": "156a073208e131d7d2e212cb749feae7c339e846"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",

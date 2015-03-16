@@ -141,7 +141,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	deleteCredentials(tempCred.Token)
-	tokenCred, _, err := oauthClient.RequestToken(http.DefaultClient, tempCred, r.FormValue("oauth_verifier"))
+	tokenCred, _, err := oauthTwitterClient.RequestToken(nil, tempCred, r.FormValue("oauth_verifier"))
 	if err != nil {
 		http.Error(w, "Error getting request token, "+err.Error(), 500)
 		return
@@ -177,7 +177,7 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	}.Encode()
 	cb := "http://" + r.Host + "/logintwittercb?" + q
 
-	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(http.DefaultClient, cb, nil)
+	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cb, nil)
 	if err != nil {
 		http.Error(w, "Error getting temp cred, "+err.Error(), 500)
 		return
