@@ -14,7 +14,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/home/quicknotes/www/app/current/server_run.sh
-DAEMON_ARGS=-production
+DAEMON_ARGS=
 
 test -x $DAEMON || exit 0
 
