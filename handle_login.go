@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
+	"github.com/garyburd/go-oauth/oauth"
 	"golang.org/x/oauth2"
 )
 
@@ -18,17 +20,18 @@ var (
 		TokenURL: "https://github.com/login/oauth/access_token",
 	}
 
-	twitterEndpoint = oauth2.Endpoint{
-		AuthURL:  "https://api.twitter.com/oauth/authorize",
-		TokenURL: "https://api.twitter.com/oauth/access_token",
-	}
-
 	oauthGitHubConf = &oauth2.Config{
 		ClientID:     "",
 		ClientSecret: "",
 		// select level of access you want https://developer.github.com/v3/oauth/#scopes
 		Scopes:   []string{"user:email", "repo"},
 		Endpoint: githubEndpoint,
+	}
+
+	oauthTwitterClient = oauth.Client{
+		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
+		TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
+		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
 	}
 )
 
@@ -101,39 +104,68 @@ func decodeUserFromCookie(r *http.Request) string {
 	return cookie.UserID
 }
 
+var (
+	// secrets maps credential tokens to credential secrets. A real application will use a database to store credentials.
+	secretsMutex sync.Mutex
+	secrets      = map[string]string{}
+)
+
+func putCredentials(cred *oauth.Credentials) {
+	secretsMutex.Lock()
+	defer secretsMutex.Unlock()
+	secrets[cred.Token] = cred.Secret
+}
+
+func getCredentials(token string) *oauth.Credentials {
+	secretsMutex.Lock()
+	defer secretsMutex.Unlock()
+	if secret, ok := secrets[token]; ok {
+		return &oauth.Credentials{Token: token, Secret: secret}
+	}
+	return nil
+}
+
+func deleteCredentials(token string) {
+	secretsMutex.Lock()
+	defer secretsMutex.Unlock()
+	delete(secrets, token)
+}
+
 // url: GET /logintwittercb?redirect=$redirect
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleOauthTwitterCallback()\n")
-	state := r.FormValue("state")
-	if state != oauthSecretString {
-		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretString, state)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+
+	tempCred := getCredentials(r.FormValue("oauth_token"))
+	if tempCred == nil {
+		http.Error(w, "Unknown oauth_token.", 500)
 		return
 	}
-
-	oauthTwitterConf := &oauth2.Config{
-		ClientID:     "rYmWoMXQ3Wwx69do31TW4DRes",
-		ClientSecret: "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928",
-		// select level of access you want https://developer.github.com/v3/oauth/#scopes
-		Scopes:   []string{"user:email", "repo"},
-		Endpoint: twitterEndpoint,
-	}
-
-	code := r.FormValue("code")
-	token, err := oauthTwitterConf.Exchange(oauth2.NoContext, code)
+	deleteCredentials(tempCred.Token)
+	tokenCred, _, err := oauthClient.RequestToken(http.DefaultClient, tempCred, r.FormValue("oauth_verifier"))
 	if err != nil {
-		fmt.Printf("oauthTwitterConf.Exchange() failed with '%s'\n", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Error(w, "Error getting request token, "+err.Error(), 500)
 		return
 	}
+	putCredentials(tokenCred)
+	fmt.Printf("tempCred: %#v\n", tempCred)
+	fmt.Printf("tokenCred: %#v\n", tokenCred)
 
-	fmt.Printf("twitter token: %#v\n", token)
+	/*
+		http.SetCookie(w, &http.Cookie{
+			Name:     "auth",
+			Path:     "/",
+			HttpOnly: true,
+			Value:    tokenCred.Token,
+		})*/
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
 // url: GET /logintwitter?redirect=$redirect
 func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleLoginTwitter\n")
+	oauthTwitterClient.Credentials.Secret = "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928"
+	oauthTwitterClient.Credentials.Token = "rYmWoMXQ3Wwx69do31TW4DRes"
+
 	redirect := strings.TrimSpace(r.FormValue("redirect"))
 	if redirect == "" {
 		httpErrorf(w, "Missing redirect value for /logintwitter")
@@ -145,14 +177,13 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	}.Encode()
 	cb := "http://" + r.Host + "/logintwittercb?" + q
 
-	oauthTwitterConf := &oauth2.Config{
-		ClientID:     "rYmWoMXQ3Wwx69do31TW4DRes",
-		ClientSecret: "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928",
-		Endpoint:     twitterEndpoint,
-		RedirectURL:  cb,
+	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(http.DefaultClient, cb, nil)
+	if err != nil {
+		http.Error(w, "Error getting temp cred, "+err.Error(), 500)
+		return
 	}
-	uri := oauthTwitterConf.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
-	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
+	putCredentials(tempCred)
+	http.Redirect(w, r, oauthTwitterClient.AuthorizationURL(tempCred, nil), 302)
 }
 
 // /logingithub?redirect=$redirect
