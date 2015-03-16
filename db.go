@@ -310,7 +310,7 @@ CREATE TABLE users (
     login        VARCHAR(255),
     name         VARCHAR(255),
     email        VARCHAR(255),
-    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at   DATETIME NOT NULL,
     PRIMARY KEY USING HASH (id),
     INDEX USING HASH (login),
     INDEX USING HASH (name),
@@ -321,7 +321,7 @@ CREATE TABLE users (
 	execMust(db, `
 CREATE TABLE versions (
     id              INT NOT NULL AUTO_INCREMENT,
-    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at      DATETIME NOT NULL,
     note_id         INT NOT NULL,
     size            INT NOT NULL,
     format          INT NOT NULL,
@@ -346,7 +346,7 @@ CREATE TABLE notes (
 
 	execMust(db, fmt.Sprintf(`INSERT INTO kv VALUES ('schema_version', '%s')`, currSchemaVersionStr))
 
-	execMust(db, `INSERT INTO users (login, name, email) VALUES (?, ?, ?)`, kjkLogin, "kjk", "kkowalczyk@gmail.com")
+	execMust(db, `INSERT INTO users (login, name, email, created_at) VALUES (?, ?, ?, now())`, kjkLogin, "kjk", "kkowalczyk@gmail.com")
 
 	LogVerbosef("created database\n")
 	err = db.Ping()
@@ -418,7 +418,7 @@ func loadContent(sha1 []byte) ([]byte, error) {
 	return d, nil
 }
 
-func createNewNote(userId int, note *NewNote) (int, error) {
+func createNewNote(userID int, note *NewNote) (int, error) {
 	u.PanicIf(len(note.content) == 0)
 	contentSha1, snippetSha1, err := saveContent(note.content)
 	if err != nil {
@@ -432,45 +432,45 @@ func createNewNote(userId int, note *NewNote) (int, error) {
 		return 0, err
 	}
 	q := `INSERT INTO notes (user_id, curr_version_id) VALUES (?, ?)`
-	res, err := db.Exec(q, userId, 0)
+	res, err := db.Exec(q, userID, 0)
 	if err != nil {
 		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
 		tx.Rollback()
 		return 0, err
 	}
-	noteId, err := res.LastInsertId()
+	noteID, err := res.LastInsertId()
 	if err != nil {
-		LogErrorf("res.LastInsertId() of noteId failed with %s\n", err)
+		LogErrorf("res.LastInsertId() of noteID failed with %s\n", err)
 		tx.Rollback()
 		return 0, err
 	}
 	serilizedTags := serializeTags(note.tags)
 	if note.createdAt.IsZero() {
-		q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags) VALUES (?, ?, ?, ?, ?, ?, ?)`
-		res, err = db.Exec(q, noteId, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags)
+		q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, now())`
+		res, err = db.Exec(q, noteID, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags)
 	} else {
 		q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-		res, err = db.Exec(q, noteId, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags, note.createdAt)
+		res, err = db.Exec(q, noteID, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags, note.createdAt)
 	}
 	if err != nil {
 		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
 		tx.Rollback()
 		return 0, err
 	}
-	versionId, err := res.LastInsertId()
+	versionID, err := res.LastInsertId()
 	if err != nil {
 		LogErrorf("res.LastInsertId() of versionId failed with %s\n", err)
 		tx.Rollback()
 		return 0, err
 	}
 	q = `UPDATE notes SET curr_version_id=? WHERE id=?`
-	_, err = db.Exec(q, versionId, noteId)
+	_, err = db.Exec(q, versionID, noteID)
 	if err != nil {
 		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
 		tx.Rollback()
 		return 0, err
 	}
-	return int(noteId), tx.Commit()
+	return int(noteID), tx.Commit()
 }
 
 func getNotesForUser(user *User) ([]*Note, error) {
