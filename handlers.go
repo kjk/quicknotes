@@ -26,7 +26,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL.Path)
 	name := r.URL.Path[1:]
 	if strings.HasSuffix(name, ".html") {
-		path := filepath.Join("tmpl", name)
+		path := filepath.Join("s", name)
 		if u.PathExists(path) {
 			http.ServeFile(w, r, path)
 			return
@@ -49,19 +49,6 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 func handleStatic(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Path[len("/s/"):]
 	path := filepath.Join("s", fileName)
-	if u.PathExists(path) {
-		//logger.Noticef("serveFileFromDir(): %q", filePath)
-		http.ServeFile(w, r, path)
-	} else {
-		fmt.Printf("handleS() file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
-		http.NotFound(w, r)
-	}
-}
-
-// /tmpl/$rest
-func handleTmpl(w http.ResponseWriter, r *http.Request) {
-	fileName := r.URL.Path[len("/tmpl/"):]
-	path := filepath.Join("tmpl", fileName)
 	if u.PathExists(path) {
 		//logger.Noticef("serveFileFromDir(): %q", filePath)
 		http.ServeFile(w, r, path)
@@ -252,7 +239,6 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
-	http.HandleFunc("/tmpl/", handleTmpl)
 	http.HandleFunc("/u/", handleUser)
 	http.HandleFunc("/n/", handleNote)
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)

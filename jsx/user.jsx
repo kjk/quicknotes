@@ -1,10 +1,11 @@
+var utils = require('./utils.js');
+
 var NoteEdit = React.createClass({
   getInitialState: function() {
     return {visible:false};
   },
 
   render: function() {
-    var note = this.props.note;
     if (this.state.visible) {
       return (
           <div className="btn-small note-edit"
@@ -61,7 +62,7 @@ var Note = React.createClass({
     }
   },
 
-  editNote: function(e) {
+  editNote: function() {
     var note = this.props.note;
     console.log("editNote on: " + note.Title);
   },
@@ -129,8 +130,9 @@ var NotesList = React.createClass({
   }
 });
 
+/*
 var NewNote = React.createClass({
-  newNote: function(e) {
+  newNote: function() {
     console.log("new note");
   },
 
@@ -147,6 +149,7 @@ var NewNote = React.createClass({
     );
   }
 });
+*/
 
 var LogInLink = React.createClass({
   render: function() {
@@ -286,33 +289,6 @@ var LeftSidebar = React.createClass({
   }
 });
 
-function noteHasTag(note, tag) {
-  var tags = note.Tags;
-  if (!tags) {
-    return false;
-  }
-  for (var i=0; i < tags.length; i++) {
-    if (tags[i] == tag) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function filterNotesByTag(notes, tag) {
-  if (tag == "") {
-    return notes;
-  }
-  var res = [];
-  for (var i=0; i < notes.length; i++) {
-    var note = notes[i];
-    if (noteHasTag(note, tag)) {
-      res.push(note);
-    }
-  }
-  return res;
-}
-
 var AppUser = React.createClass({
   getInitialState: function() {
     return {
@@ -326,7 +302,7 @@ var AppUser = React.createClass({
   },
 
   tagSelected: function(tag) {
-    var selectedNotes = filterNotesByTag(this.state.allNotes, tag);
+    var selectedNotes = utils.filterNotesByTag(this.state.allNotes, tag);
     this.setState({
       selectedNotes: selectedNotes,
       selectedTag: tag
@@ -336,7 +312,7 @@ var AppUser = React.createClass({
   componentDidMount: function() {
     $.get("/api/getnotes.json?user=kjk", function(json) {
       var tags = tagsFromNotes(json.Notes);
-      var selectedNotes = filterNotesByTag(json.Notes, this.state.selectedTag);
+      var selectedNotes = utils.filterNotesByTag(json.Notes, this.state.selectedTag);
       this.setState({
         allNotes: json.Notes,
         selectedNotes: selectedNotes,

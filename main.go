@@ -88,7 +88,7 @@ func parseFlags() {
 }
 
 func startWebpackWatch() {
-	cmd := exec.Command("./scripts/webpack.sh")
+	cmd := exec.Command("./scripts/webpack-dev.sh")
 	cmdStr := strings.Join(cmd.Args, " ")
 	fmt.Printf("starting '%s'\n", cmdStr)
 	cmd.Stdout = os.Stdout
