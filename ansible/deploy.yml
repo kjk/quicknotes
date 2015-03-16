@@ -3,10 +3,10 @@
   hosts: quicknotes
   tasks:
   - name: get repo sha1
-    local_action: command ./ansible/get-sha1.sh
+    local_action: command ./get-sha1.sh
     register: sha1
   - name: build
-    local_action: command python ./ansible/build.py
+    local_action: command python build.py
   - name: create .initd file
     copy: src=sumatrawebsite.initd dest=/etc/init.d/sumatrawebsite owner=root group=root mode=0755
     sudo: yes

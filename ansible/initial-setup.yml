@@ -3,6 +3,8 @@
   hosts: quicknotes-initial
   sudo: True
   tasks:
+    - name: install nginx
+      apt: name=nginx state=latest update_cache=yes
     - name: create directory for nginx logs
       file: >
         path=/var/log/nginx/quicknotes/ state=directory mode=0755

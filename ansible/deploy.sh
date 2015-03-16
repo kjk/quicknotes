@@ -4,4 +4,5 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-ansible-playbook ansible/deploy.yml
+cd ansible
+ansible-playbook deploy.yml

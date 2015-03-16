@@ -42,7 +42,6 @@ def zip_files(zip_path):
     zf.write("quicknotes_linux", "quicknotes")
     zf.write(pj("scripts", "server_run.sh"), "server_run.sh")
     add_dir_files(zf, "s")
-    add_dir_files(zf, "tmpl")
     zf.close()
 
 if __name__ == "__main__":
