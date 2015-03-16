@@ -5,6 +5,10 @@
   tasks:
     - name: install nginx
       apt: name=nginx state=latest update_cache=yes
+    - name: install unzip
+      apt: name=unzip state=latest update_cache=yes
+    - name: install tar
+      apt: name=tar state=latest update_cache=yes
     - name: create directory for nginx logs
       file: >
         path=/var/log/nginx/quicknotes/ state=directory mode=0755
