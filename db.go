@@ -310,7 +310,7 @@ CREATE TABLE users (
     login        VARCHAR(255),
     name         VARCHAR(255),
     email        VARCHAR(255),
-    created_at   DATETIME NOT NULL,
+    created_at   TIMESTAMP NOT NULL,
     PRIMARY KEY USING HASH (id),
     INDEX USING HASH (login),
     INDEX USING HASH (name),
@@ -321,7 +321,7 @@ CREATE TABLE users (
 	execMust(db, `
 CREATE TABLE versions (
     id              INT NOT NULL AUTO_INCREMENT,
-    created_at      DATETIME NOT NULL,
+    created_at      TIMESTAMP NOT NULL,
     note_id         INT NOT NULL,
     size            INT NOT NULL,
     format          INT NOT NULL,
