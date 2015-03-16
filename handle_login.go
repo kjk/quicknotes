@@ -1,25 +1,44 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/garyburd/go-oauth/oauth"
+	"golang.org/x/oauth2"
+)
+
+var (
+	// random string for oauth2 API calls to protect against CSRF
+	oauthSecretString = "5576867039"
+
+	githubEndpoint = oauth2.Endpoint{
+		AuthURL:  "https://github.com/login/oauth/authorize",
+		TokenURL: "https://github.com/login/oauth/access_token",
+	}
+
+	twitterEndpoint = oauth2.Endpoint{
+		AuthURL:  "https://api.twitter.com/oauth/authorize",
+		TokenURL: "https://api.twitter.com/oauth/access_token",
+	}
+
+	oauthGitHubConf = &oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		// select level of access you want https://developer.github.com/v3/oauth/#scopes
+		Scopes:   []string{"user:email", "repo"},
+		Endpoint: githubEndpoint,
+	}
 )
 
 type SecureCookieValue struct {
-	UserID      string
-	TwitterTemp string
+	UserID string
 }
 
 func setSecureCookie(w http.ResponseWriter, cookieVal *SecureCookieValue) {
 	val := make(map[string]string)
 	val["user"] = cookieVal.UserID
-	val["twittertemp"] = cookieVal.TwitterTemp
 	if encoded, err := secureCookie.Encode(cookieName, val); err == nil {
 		// TODO: set expiration (Expires    time.Time) long time in the future?
 		cookie := &http.Cookie{
@@ -33,7 +52,7 @@ func setSecureCookie(w http.ResponseWriter, cookieVal *SecureCookieValue) {
 	}
 }
 
-const WeekInSeconds = 60 * 60 * 24 * 7
+const weekInSeconds = 60 * 60 * 24 * 7
 
 // to delete the cookie value (e.g. for logging out), we need to set an
 // invalid value
@@ -41,7 +60,7 @@ func deleteSecureCookie(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:   cookieName,
 		Value:  "deleted",
-		MaxAge: WeekInSeconds,
+		MaxAge: weekInSeconds,
 		Path:   "/",
 	}
 	http.SetCookie(w, cookie)
@@ -69,10 +88,7 @@ func getSecureCookie(r *http.Request) *SecureCookieValue {
 			fmt.Printf("Error decoding cookie, no 'user' field\n")
 			return nil
 		}
-		if ret.TwitterTemp, ok = val["twittertemp"]; !ok {
-			fmt.Printf("Error decoding cookie, no 'twittertemp' field\n")
-			return nil
-		}
+
 	}
 	return ret
 }
@@ -85,97 +101,69 @@ func decodeUserFromCookie(r *http.Request) string {
 	return cookie.UserID
 }
 
-func decodeTwitterTempFromCookie(r *http.Request) string {
-	cookie := getSecureCookie(r)
-	if nil == cookie {
-		return ""
-	}
-	return cookie.TwitterTemp
-}
-
-// getTwitter gets a resource from the Twitter API and decodes the json response to data.
-func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data interface{}) error {
-	if params == nil {
-		params = make(url.Values)
-	}
-	oauthClient.SignParam(cred, "GET", urlStr, params)
-	resp, err := http.Get(urlStr + "?" + params.Encode())
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	bodyData, _ := ioutil.ReadAll(resp.Body)
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("Get %s returned status %d, %s", urlStr, resp.StatusCode, bodyData)
-	}
-	//fmt.Printf("getTwitter(): json: %s\n", string(bodyData))
-	return json.Unmarshal(bodyData, data)
-}
-
-// url: GET /oauthtwittercb?redirect=$redirect
+// url: GET /logintwittercb?redirect=$redirect
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
-	//fmt.Printf("handleOauthTwitterCallback()\n")
-	redirect := strings.TrimSpace(r.FormValue("redirect"))
-	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /login")
+	fmt.Printf("handleOauthTwitterCallback()\n")
+	state := r.FormValue("state")
+	if state != oauthSecretString {
+		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretString, state)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	tempCred := oauth.Credentials{
-		Token: r.FormValue("oauth_token"),
+
+	oauthTwitterConf := &oauth2.Config{
+		ClientID:     "rYmWoMXQ3Wwx69do31TW4DRes",
+		ClientSecret: "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928",
+		// select level of access you want https://developer.github.com/v3/oauth/#scopes
+		Scopes:   []string{"user:email", "repo"},
+		Endpoint: twitterEndpoint,
 	}
-	tempCred.Secret = decodeTwitterTempFromCookie(r)
-	if "" == tempCred.Secret {
-		http.Error(w, "Error getting temp token secret from cookie, ", 500)
-		return
-	}
-	//fmt.Printf("  tempCred.Secret: %s\n", tempCred.Secret)
-	tokenCred, _, err := oauthClient.RequestToken(http.DefaultClient, &tempCred, r.FormValue("oauth_verifier"))
+
+	code := r.FormValue("code")
+	token, err := oauthTwitterConf.Exchange(oauth2.NoContext, code)
 	if err != nil {
-		http.Error(w, "Error getting request token, "+err.Error(), 500)
+		fmt.Printf("oauthTwitterConf.Exchange() failed with '%s'\n", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	//fmt.Printf("  tokenCred.Token: %s\n", tokenCred.Token)
-
-	var info map[string]interface{}
-	if err := getTwitter(
-		tokenCred,
-		"https://api.twitter.com/1.1/account/verify_credentials.json",
-		nil,
-		&info); err != nil {
-		http.Error(w, "Error getting timeline, "+err.Error(), 500)
-		return
-	}
-	if user, ok := info["screen_name"].(string); ok {
-		//fmt.Printf("  username: %s\n", user)
-		cookie := getSecureCookie(r)
-		cookie.UserID = user
-		setSecureCookie(w, cookie)
-	}
-	http.Redirect(w, r, redirect, 302)
+	fmt.Printf("twitter token: %#v\n", token)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
-// url: GET /login?redirect=$redirect
-func handleLogin(w http.ResponseWriter, r *http.Request) {
+// url: GET /logintwitter?redirect=$redirect
+func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("handleLoginTwitter\n")
 	redirect := strings.TrimSpace(r.FormValue("redirect"))
 	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /login")
+		httpErrorf(w, "Missing redirect value for /logintwitter")
 		return
 	}
+
 	q := url.Values{
 		"redirect": {redirect},
 	}.Encode()
+	cb := "http://" + r.Host + "/logintwittercb?" + q
 
-	cb := "http://" + r.Host + "/oauthtwittercb" + "?" + q
-	//fmt.Printf("handleLogin: cb=%s\n", cb)
-	tempCred, err := oauthClient.RequestTemporaryCredentials(http.DefaultClient, cb, nil)
-	if err != nil {
-		http.Error(w, "Error getting temp cred, "+err.Error(), 500)
+	oauthTwitterConf := &oauth2.Config{
+		ClientID:     "rYmWoMXQ3Wwx69do31TW4DRes",
+		ClientSecret: "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928",
+		Endpoint:     twitterEndpoint,
+		RedirectURL:  cb,
+	}
+	uri := oauthTwitterConf.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
+	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
+}
+
+// /logingithub?redirect=$redirect
+func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
+	redirect := strings.TrimSpace(r.FormValue("redirect"))
+	if redirect == "" {
+		httpErrorf(w, "Missing redirect value for /logintwitter")
 		return
 	}
-	cookie := &SecureCookieValue{TwitterTemp: tempCred.Secret}
-	setSecureCookie(w, cookie)
-	http.Redirect(w, r, oauthClient.AuthorizationURL(tempCred, nil), 302)
+	uri := oauthGitHubConf.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
+	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
 // url: GET /logout?redirect=$redirect

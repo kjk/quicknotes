@@ -346,7 +346,9 @@ CREATE TABLE notes (
 
 	execMust(db, fmt.Sprintf(`INSERT INTO kv VALUES ('schema_version', '%s')`, currSchemaVersionStr))
 
-	execMust(db, `INSERT INTO users (login, name, email, created_at) VALUES (?, ?, ?, now())`, kjkLogin, "kjk", "kkowalczyk@gmail.com")
+	/*
+		execMust(db, `INSERT INTO users (login, name, email, created_at) VALUES (?, ?, ?, now())`, kjkLogin, "kjk", "kkowalczyk@gmail.com")
+	*/
 
 	LogVerbosef("created database\n")
 	err = db.Ping()
@@ -575,12 +577,14 @@ func deleteDatabaseMust() {
 func recreateDatabaseMust() {
 	deleteDatabaseMust()
 	createDatabaseMust()
-	user, err := getUserByLogin(kjkLogin)
-	if err != nil {
-		LogErrorf("getUserByLogin() failed with %s\n", err)
-	} else {
-		LogVerbosef("userId: %d\n", user.ID)
-	}
+	/*
+		user, err := getUserByLogin(kjkLogin)
+		if err != nil {
+			LogErrorf("getUserByLogin() failed with %s\n", err)
+		} else {
+			LogVerbosef("userId: %d\n", user.ID)
+		}*/
+
 }
 
 // note: no locking. the presumption is that this is called at startup and

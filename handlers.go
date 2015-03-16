@@ -32,9 +32,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	http.Redirect(w, r, "/u/kjk", 302)
-	//model := struct{}{}
-	//ExecTemplate(w, tmplIndex, model)
+	model := struct{}{}
+	execTemplate(w, tmplIndex, model)
 }
 
 func getReferer(r *http.Request) string {
@@ -241,6 +240,11 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/s/", handleStatic)
 	http.HandleFunc("/u/", handleUser)
 	http.HandleFunc("/n/", handleNote)
+	http.HandleFunc("/logintwitter", handleLoginTwitter)
+	http.HandleFunc("logintwittercb", handleOauthTwitterCallback)
+	http.HandleFunc("/logingithub", handleLoginGitHub)
+	//http.HandleFunc("/logingoogle", handleLoginGoogle)
+	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
 	http.HandleFunc("/api/username.json", handleAPIUserName)
