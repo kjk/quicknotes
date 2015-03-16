@@ -18,4 +18,4 @@ var NotePartial = React.createClass({
   }
 });
 
-module.exports = NotePartial
+module.exports = NotePartial;

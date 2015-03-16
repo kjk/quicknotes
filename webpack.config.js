@@ -10,7 +10,7 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx$/,
-        loader: 'jsx-loader?insertPragma=React.DOM'
+        loader: 'jsx-loader'
       }
     ]
   },

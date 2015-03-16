@@ -1,50 +1,12 @@
 var utils = require('./utils.js');
-var Note = require('./Note.jsx');
-
-var NotesList = React.createClass({
-
-  createNote: function(note) {
-    return (
-        <Note compact={this.props.compact} note={note} key={note.ID}/>
-      );
-  },
-
-  render: function () {
-    return (
-      <div className="notes-list">
-        <NewNoteSmall />
-        {this.props.notes.map(this.createNote)}
-      </div>
-    );
-  }
-});
-
-/*
-var NewNote = React.createClass({
-  newNote: function() {
-    console.log("new note");
-  },
-
-  render: function() {
-    var s = {
-      marginLeft: 8
-    }
-
-    return (
-      <div className="left btn-small"
-        style={s}
-        onClick={this.newNote}
-      >new note</div>
-    );
-  }
-});
-*/
+var NotesList = require('./NotesList.jsx');
 
 var LogInLink = React.createClass({
   render: function() {
     var s = {
       marginLeft: 16
     }
+
     var txt = "Log In";
     var url = encodeURI("/login?redir=" + window.location);
     if (this.props.isLoggedIn) {
@@ -109,17 +71,6 @@ function tagsFromNotes(notes) {
   });
   return tags;
 }
-
-var NewNoteSmall = React.createClass({
-  render: function() {
-    return (
-        <textarea
-            id="newNoteSmall"
-            placeholder="enter new note"
-          />
-      );
-  }
-});
 
 var TagCount = React.createClass({
 

@@ -17,4 +17,4 @@ var NoteEdit = React.createClass({
   }
 });
 
-module.exports = NoteEdit
+module.exports = NoteEdit;
