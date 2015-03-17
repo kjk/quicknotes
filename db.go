@@ -200,11 +200,11 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 		return i, nil
 	}
 	timeStart := time.Now()
-	user, err := getUserByHandle(userHandle)
+	user, err := dbGetUserByHandle(userHandle)
 	if user == nil {
 		return nil, err
 	}
-	notes, err := getNotesForUser(user)
+	notes, err := dbGetNotesForUser(user)
 	if err != nil {
 		return nil, err
 	}
@@ -230,9 +230,9 @@ type User struct {
 	Handle           string // e.g. 'kjk'
 	FullName         string // e.g. 'Krzysztof Kowalczyk'
 	Email            string
-	TwitterOauthJson string
-	GitHubOauthJson  string
-	GoogleOauthJson  string
+	TwitterOauthJSON string
+	GitHubOauthJSON  string
+	GoogleOauthJSON  string
 	CreatedAt        time.Time
 }
 
@@ -371,7 +371,7 @@ func loadContent(sha1 []byte) ([]byte, error) {
 	return d, nil
 }
 
-func createNewNote(userID int, note *NewNote) (int, error) {
+func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	u.PanicIf(len(note.content) == 0)
 	contentSha1, snippetSha1, err := saveContent(note.content)
 	if err != nil {
@@ -426,7 +426,7 @@ func createNewNote(userID int, note *NewNote) (int, error) {
 	return int(noteID), tx.Commit()
 }
 
-func getNotesForUser(user *User) ([]*Note, error) {
+func dbGetNotesForUser(user *User) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()
 	qs := `
@@ -473,37 +473,41 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
-func getUserByLogin(login string) (*User, error) {
+func dbGetUserByQuery(qs string, args ...interface{}) (*User, error) {
 	var user User
 	db := getDbMust()
-	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
-	err := db.QueryRow(qs, login).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
+	err := db.QueryRow(qs, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		LogErrorf("db.QueryRow() failed with %s\n", err)
 		return nil, err
 	}
 	return &user, nil
 }
 
-func getUserByHandle(userHandle string) (*User, error) {
-	var userID int
-	var login, email string
-	var createdAt time.Time
-	db := getDbMust()
-	qs := `SELECT id, login, email, created_at FROM users WHERE handle=?`
-	err := db.QueryRow(qs, userHandle).Scan(&userID, &login, &email, &createdAt)
+func dbGetUserByID(userID int) (*User, error) {
+	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
+	return dbGetUserByQuery(qs, userID)
+}
+
+func dbGetUserByLogin(login string) (*User, error) {
+	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
+	return dbGetUserByQuery(qs, login)
+}
+
+func dbGetUserByHandle(userHandle string) (*User, error) {
+	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE handle=?`
+	return dbGetUserByQuery(qs, userHandle)
+}
+
+func dbGetOrCreateUser(userHandle string, fullName string) (*User, error) {
+	user, err := dbGetUserByHandle(userHandle)
 	if err != nil {
-		LogErrorf("db.QueryRow('%s') failed with %s\n", qs, err)
 		return nil, err
 	}
-	res := &User{
-		ID:        userID,
-		Login:     login,
-		Handle:    userHandle,
-		Email:     email,
-		CreatedAt: createdAt,
-	}
-	return res, nil
+	return user, nil
 }
 
 func deleteDatabaseMust() {

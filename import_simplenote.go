@@ -79,7 +79,7 @@ func readNotes(path string) ([]*noteJSON, error) {
 }
 
 func importSimplenote() error {
-	user, err := getUserByLogin(kjkLogin)
+	user, err := dbGetUserByLogin(kjkLogin)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func importSimplenote() error {
 			continue
 		}
 
-		noteID, err := createNewNote(user.ID, &newNote)
+		noteID, err := dbCreateNewNote(user.ID, &newNote)
 		if err != nil {
 			return err
 		}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"log"
@@ -11,21 +10,11 @@ import (
 	"strings"
 
 	"github.com/garyburd/go-oauth/oauth"
-	"github.com/gorilla/securecookie"
 	"github.com/kjk/u"
-)
-
-const (
-	cookieAuthKeyHexStr = "513521f0ef43c9446ed7bf359a5a9700ef5fa5a5eb15d0db5eae8e93856d99bd"
-	cookieEncrKeyHexStr = "4040ed16d4352320b5a7f51e26443342d55a0f46be2acfe5ba694a123230376a"
-	cookieName          = "qnckie" // "quicknotes cookie"
 )
 
 var (
 	httpAddr            = ":5111"
-	cookieAuthKey       []byte
-	cookieEncrKey       []byte
-	secureCookie        *securecookie.SecureCookie
 	flgIsLocal          bool // local means using local mysql database, production means google's cloud
 	flgDelDatabase      bool
 	flgRecreateDatabase bool
@@ -39,19 +28,8 @@ var (
 	testMainUser *User
 )
 
-func initApp() {
-	var err error
-	cookieAuthKey, err = hex.DecodeString(cookieAuthKeyHexStr)
-	u.PanicIfErr(err)
-	cookieEncrKey, err = hex.DecodeString(cookieEncrKeyHexStr)
-	u.PanicIfErr(err)
-	secureCookie = securecookie.New(cookieAuthKey, cookieEncrKey)
-	// verify auth/encr keys are correct
-	val := map[string]string{
-		"foo": "bar",
-	}
-	_, err = secureCookie.Encode(cookieName, val)
-	u.PanicIfErr(err)
+func initAppMust() {
+	initCookieMust()
 }
 
 func verifyDirs() {
@@ -156,7 +134,11 @@ func main() {
 		startWebpackWatch()
 	}
 
-	initApp()
+	initAppMust()
+	if false {
+		dbGetUserByHandle("unkown user")
+		return
+	}
 	startWebServer()
 	// TODO: this isn't actually called
 	localStore.Close()

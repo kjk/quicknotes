@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,10 +11,23 @@ import (
 	"sync"
 
 	"github.com/garyburd/go-oauth/oauth"
+	"github.com/gorilla/securecookie"
+	"github.com/kjk/u"
 	"golang.org/x/oauth2"
 )
 
+const (
+	cookieAuthKeyHexStr = "513521f0ef43c9446ed7bf359a5a9700ef5fa5a5eb15d0db5eae8e93856d99bd"
+	cookieEncrKeyHexStr = "4040ed16d4352320b5a7f51e26443342d55a0f46be2acfe5ba694a123230376a"
+	cookieName          = "qnckie" // "quicknotes cookie"
+)
+
 var (
+	cookieAuthKey []byte
+	cookieEncrKey []byte
+
+	secureCookie *securecookie.SecureCookie
+
 	// random string for oauth2 API calls to protect against CSRF
 	oauthSecretString = "5576867039"
 
@@ -39,15 +53,38 @@ var (
 			Token:  "rYmWoMXQ3Wwx69do31TW4DRes",
 		},
 	}
+
+	secretsMutex sync.Mutex
+	secrets      = map[string]string{}
 )
 
+// SecureCookieValue is value of the cookie
 type SecureCookieValue struct {
-	UserID string
+	UserID int
+}
+
+func initCookieMust() {
+	var err error
+	cookieAuthKey, err = hex.DecodeString(cookieAuthKeyHexStr)
+	u.PanicIfErr(err)
+	cookieEncrKey, err = hex.DecodeString(cookieEncrKeyHexStr)
+	u.PanicIfErr(err)
+	secureCookie = securecookie.New(cookieAuthKey, cookieEncrKey)
+	// verify auth/encr keys are correct
+	val := map[string]string{
+		"foo": "bar",
+	}
+	_, err = secureCookie.Encode(cookieName, val)
+	u.PanicIfErr(err)
 }
 
 func setSecureCookie(w http.ResponseWriter, cookieVal *SecureCookieValue) {
-	val := make(map[string]string)
-	val["user"] = cookieVal.UserID
+	val, err := json.Marshal(cookieVal)
+	if err != nil {
+		LogErrorf("json.Marshal(%#v) failed with %s\n", cookieVal, err)
+		return
+	}
+
 	if encoded, err := secureCookie.Encode(cookieName, val); err == nil {
 		// TODO: set expiration (Expires    time.Time) long time in the future?
 		cookie := &http.Cookie{
@@ -75,54 +112,46 @@ func deleteSecureCookie(w http.ResponseWriter) {
 	http.SetCookie(w, cookie)
 }
 
-func getSecureCookie(r *http.Request) *SecureCookieValue {
-	var ret *SecureCookieValue
-	if cookie, err := r.Cookie(cookieName); err == nil {
-		// detect a deleted cookie
-		if "deleted" == cookie.Value {
-			return nil
-		}
-		val := make(map[string]string)
-		if err = secureCookie.Decode(cookieName, cookie.Value, &val); err != nil {
-			// most likely expired cookie, so ignore. Ideally should delete the
-			// cookie, but that requires access to http.ResponseWriter, so not
-			// convenient for us
-			//fmt.Printf("Error decoding cookie %s\n", err)
-			return nil
-		}
-		//fmt.Printf("Got cookie %q\n", val)
-		ret = new(SecureCookieValue)
-		var ok bool
-		if ret.UserID, ok = val["user"]; !ok {
-			fmt.Printf("Error decoding cookie, no 'user' field\n")
-			return nil
-		}
-
+func getSecureCookie(r *http.Request, w http.ResponseWriter) *SecureCookieValue {
+	cookie, err := r.Cookie(cookieName)
+	if err != nil {
+		return nil
 	}
-	return ret
+	// detect a deleted cookie
+	if "deleted" == cookie.Value {
+		return nil
+	}
+	var ret SecureCookieValue
+	if err = secureCookie.Decode(cookieName, cookie.Value, &ret); err != nil {
+		// most likely expired cookie, so ignore and delete
+		LogErrorf("secureCookie.Decode() failed with %s\n", err)
+		deleteSecureCookie(w)
+		return nil
+	}
+	fmt.Printf("Got cookie %#v\n", ret)
+	return &ret
 }
 
-func decodeUserFromCookie(r *http.Request) string {
-	cookie := getSecureCookie(r)
-	if nil == cookie {
-		return ""
+func getUserFromCookie(r *http.Request, w http.ResponseWriter) *User {
+	sc := getSecureCookie(r, w)
+	if sc == nil {
+		return nil
 	}
-	return cookie.UserID
+	user, err := dbGetUserByID(sc.UserID)
+	if err != nil {
+		LogErrorf("dbGetUserById(%d) failed with %s\n", sc.UserID, err)
+		return nil
+	}
+	return user
 }
 
-var (
-	// secrets maps credential tokens to credential secrets. A real application will use a database to store credentials.
-	secretsMutex sync.Mutex
-	secrets      = map[string]string{}
-)
-
-func putCredentials(cred *oauth.Credentials) {
+func putTempCredentials(cred *oauth.Credentials) {
 	secretsMutex.Lock()
 	defer secretsMutex.Unlock()
 	secrets[cred.Token] = cred.Secret
 }
 
-func getCredentials(token string) *oauth.Credentials {
+func getTempCredentials(token string) *oauth.Credentials {
 	secretsMutex.Lock()
 	defer secretsMutex.Unlock()
 	if secret, ok := secrets[token]; ok {
@@ -131,7 +160,7 @@ func getCredentials(token string) *oauth.Credentials {
 	return nil
 }
 
-func deleteCredentials(token string) {
+func deleteTempCredentials(token string) {
 	secretsMutex.Lock()
 	defer secretsMutex.Unlock()
 	delete(secrets, token)
@@ -159,42 +188,52 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 // url: GET /logintwittercb?redirect=$redirect
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleOauthTwitterCallback() url: '%s'\n", r.URL)
-	tempCred := getCredentials(r.FormValue("oauth_token"))
+	tempCred := getTempCredentials(r.FormValue("oauth_token"))
 	if tempCred == nil {
 		http.Error(w, "Unknown oauth_token.", 500)
 		return
 	}
-	deleteCredentials(tempCred.Token)
+	deleteTempCredentials(tempCred.Token)
 	tokenCred, _, err := oauthTwitterClient.RequestToken(nil, tempCred, r.FormValue("oauth_verifier"))
 	if err != nil {
 		http.Error(w, "Error getting request token, "+err.Error(), 500)
 		return
 	}
-	putCredentials(tokenCred)
+	putTempCredentials(tokenCred)
 	fmt.Printf("tempCred: %#v\n", tempCred)
 	fmt.Printf("tokenCred: %#v\n", tokenCred)
 
 	var info map[string]interface{}
-	if err := getTwitter(
-		tokenCred,
-		"https://api.twitter.com/1.1/account/verify_credentials.json",
-		nil,
-		&info); err != nil {
+	uri := "https://api.twitter.com/1.1/account/verify_credentials.json"
+	err = getTwitter(tokenCred, uri, nil, &info)
+	if err != nil {
 		http.Error(w, "Error getting timeline, "+err.Error(), 500)
 		return
 	}
-	user, okUser := info["screen_name"].(string)
-	//name, okName := info["name"].(string)
+	userHandle, okUser := info["screen_name"].(string)
+	if !okUser {
+		LogErrorf("no 'screen_name' in %#v\n", info)
+		// TODO: show error to the user
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	fullName, _ := info["name"].(string)
 	// also might be useful:
 	// profile_image_url
 	// profile_image_url_https
-
-	if okUser {
-		fmt.Printf("twitter user name: '%s'\n", user)
-	} else {
-		LogErrorf("failed to get twitter screen_name from %#v\n", info)
+	user, err := dbGetOrCreateUser(userHandle, fullName)
+	if err != nil {
+		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
+		// TODO: show error to the user
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
 	}
-	// TODO: get or create a user in the database
+	cookieVal := &SecureCookieValue{
+		UserID: user.ID,
+	}
+	setSecureCookie(w, cookieVal)
+	// TODO: dbUserSetTwitterOauth(user, tokenCredJson)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
@@ -218,7 +257,7 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error getting temp cred, "+err.Error(), 500)
 		return
 	}
-	putCredentials(tempCred)
+	putTempCredentials(tempCred)
 	http.Redirect(w, r, oauthTwitterClient.AuthorizationURL(tempCred, nil), 302)
 }
 

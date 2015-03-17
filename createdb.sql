@@ -16,8 +16,7 @@ CREATE TABLE users (
     PRIMARY KEY (id),
     INDEX (login),
     INDEX (handle),
-    INDEX (email),
-    INDEX (session_id)
+    INDEX (email)
 );
 
 CREATE TABLE versions (
