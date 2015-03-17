@@ -473,10 +473,10 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
-func dbGetUserByQuery(qs string, args ...interface{}) (*User, error) {
+func dbGetUserByQuery(q string, args ...interface{}) (*User, error) {
 	var user User
 	db := getDbMust()
-	err := db.QueryRow(qs, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
+	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -488,26 +488,51 @@ func dbGetUserByQuery(qs string, args ...interface{}) (*User, error) {
 }
 
 func dbGetUserByID(userID int) (*User, error) {
-	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
-	return dbGetUserByQuery(qs, userID)
+	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
+	return dbGetUserByQuery(q, userID)
 }
 
 func dbGetUserByLogin(login string) (*User, error) {
-	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
-	return dbGetUserByQuery(qs, login)
+	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
+	return dbGetUserByQuery(q, login)
 }
 
 func dbGetUserByHandle(userHandle string) (*User, error) {
-	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE handle=?`
-	return dbGetUserByQuery(qs, userHandle)
+	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE handle=?`
+	return dbGetUserByQuery(q, userHandle)
 }
 
-func dbGetOrCreateUser(userHandle string, fullName string) (*User, error) {
-	user, err := dbGetUserByHandle(userHandle)
+// given userLogin like "twitter:kjk", return unique userHandle e.g. kjk,
+// kjk_twitter, kjk_twitter1 etc.
+func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
+	parts := strings.SplitN(userLogin, ":", 2)
+	if len(parts) != 2 {
+		return "", fmt.Errorf("dbGetUniqueHandleFromLogin(): invaild userLogin '%s'", userLogin)
+	}
+	// TODO: ensure that handle is unique
+	return parts[1], nil
+}
+
+func dbGetOrCreateUser(userLogin string, fullName string) (*User, error) {
+	user, err := dbGetUserByLogin(userLogin)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	if user != nil {
+		return user, nil
+	}
+	userHandle, err := dbGetUniqueHandleFromLogin(userLogin)
+	if err != nil {
+		return nil, err
+	}
+
+	db := getDbMust()
+	q := `INSERT INTO users (login, handle, fulL_name) VALUES (?, ?, ?)`
+	_, err = db.Exec(q, userLogin, userHandle, fullName)
+	if err != nil {
+		return nil, err
+	}
+	return dbGetUserByLogin(userLogin)
 }
 
 func deleteDatabaseMust() {
