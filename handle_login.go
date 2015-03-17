@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,6 +34,10 @@ var (
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
 		TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
 		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
+		Credentials: oauth.Credentials{
+			Secret: "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928",
+			Token:  "rYmWoMXQ3Wwx69do31TW4DRes",
+		},
 	}
 )
 
@@ -131,10 +137,28 @@ func deleteCredentials(token string) {
 	delete(secrets, token)
 }
 
+// getTwitter gets a resource from the Twitter API and decodes the json response to data.
+func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data interface{}) error {
+	if params == nil {
+		params = make(url.Values)
+	}
+	oauthTwitterClient.SignParam(cred, "GET", urlStr, params)
+	resp, err := http.Get(urlStr + "?" + params.Encode())
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	bodyData, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("GET %s returned status %d, %s", urlStr, resp.StatusCode, bodyData)
+	}
+	fmt.Printf("getTwitter(): json: %s\n", string(bodyData))
+	return json.Unmarshal(bodyData, data)
+}
+
 // url: GET /logintwittercb?redirect=$redirect
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("handleOauthTwitterCallback()\n")
-
+	fmt.Printf("handleOauthTwitterCallback() url: '%s'\n", r.URL)
 	tempCred := getCredentials(r.FormValue("oauth_token"))
 	if tempCred == nil {
 		http.Error(w, "Unknown oauth_token.", 500)
@@ -150,21 +174,27 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("tempCred: %#v\n", tempCred)
 	fmt.Printf("tokenCred: %#v\n", tokenCred)
 
-	/*
-		http.SetCookie(w, &http.Cookie{
-			Name:     "auth",
-			Path:     "/",
-			HttpOnly: true,
-			Value:    tokenCred.Token,
-		})*/
+	var info map[string]interface{}
+	if err := getTwitter(
+		tokenCred,
+		"https://api.twitter.com/1.1/account/verify_credentials.json",
+		nil,
+		&info); err != nil {
+		http.Error(w, "Error getting timeline, "+err.Error(), 500)
+		return
+	}
+	if user, ok := info["screen_name"].(string); ok {
+		fmt.Printf("twitter user name: '%s'\n", user)
+	} else {
+		LogErrorf("failed to get twitter screen_name from %#v\n", info)
+	}
+	// TODO: get or create a user in the database
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
 // url: GET /logintwitter?redirect=$redirect
 func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("handleLoginTwitter\n")
-	oauthTwitterClient.Credentials.Secret = "wdDXapzG5zEeQ7ToJnABvBIoGmLFLdvueT7vGMPjCvjUNAU928"
-	oauthTwitterClient.Credentials.Token = "rYmWoMXQ3Wwx69do31TW4DRes"
+	fmt.Printf("handleLoginTwitter() url: '%s'\n", r.URL)
 
 	redirect := strings.TrimSpace(r.FormValue("redirect"))
 	if redirect == "" {
