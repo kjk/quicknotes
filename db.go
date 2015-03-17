@@ -56,13 +56,13 @@ type CachedContentInfo struct {
 // User is an information about the user
 type DbUser struct {
 	ID               int
-	Login            string // e.g. 'google:kkowalczyk@gmail'
-	Handle           string // e.g. 'kjk'
-	FullName         string // e.g. 'Krzysztof Kowalczyk'
-	Email            string
-	TwitterOauthJSON string
-	GitHubOauthJSON  string
-	GoogleOauthJSON  string
+	Login            sql.NullString // e.g. 'google:kkowalczyk@gmail'
+	Handle           sql.NullString // e.g. 'kjk'
+	FullName         sql.NullString // e.g. 'Krzysztof Kowalczyk'
+	Email            sql.NullString
+	TwitterOauthJSON sql.NullString
+	GitHubOauthJSON  sql.NullString
+	GoogleOauthJSON  sql.NullString
 	CreatedAt        time.Time
 }
 
@@ -509,7 +509,7 @@ func dbGetUserByHandle(userHandle string) (*DbUser, error) {
 func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 	parts := strings.SplitN(userLogin, ":", 2)
 	if len(parts) != 2 {
-		return "", fmt.Errorf("dbGetUniqueHandleFromLogin(): invaild userLogin '%s'", userLogin)
+		return "", fmt.Errorf("dbGetUniqueHandleFromLogin(): invalid userLogin '%s'", userLogin)
 	}
 	// TODO: ensure that handle is unique
 	return parts[1], nil

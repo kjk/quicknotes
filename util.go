@@ -10,5 +10,5 @@ func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
 	if len(args) > 0 {
 		msg = fmt.Sprintf(format, args...)
 	}
-	http.Error(w, msg, http.StatusBadRequest)
+	http.Error(w, msg, http.StatusInternalServerError)
 }

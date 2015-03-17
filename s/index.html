@@ -19,15 +19,15 @@
   <p>Welcome to QuickNotes!</p>
   {{if .UserHandle}}
     You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
-    <a href="/logout?redirect/">Log out</a>.
+    <a href="/logout?redirect=/">Log out</a>.
   {{else}}
-    <p>Log in with:
+    <p>You're not logged in. Log in with:
       <ul>
         <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
         <!-- <li><a href="/logingithub?redirect=%2F">GitHub</a></li> -->
         <!-- <li><a href="/logingoogle?redirect=%2F">Google</a></li> -->
       </ul>
-  {{endif}}
+  {{end}}
 
   </body>
 </html>

@@ -79,13 +79,7 @@ func initCookieMust() {
 }
 
 func setSecureCookie(w http.ResponseWriter, cookieVal *SecureCookieValue) {
-	val, err := json.Marshal(cookieVal)
-	if err != nil {
-		LogErrorf("json.Marshal(%#v) failed with %s\n", cookieVal, err)
-		return
-	}
-
-	if encoded, err := secureCookie.Encode(cookieName, val); err == nil {
+	if encoded, err := secureCookie.Encode(cookieName, cookieVal); err == nil {
 		// TODO: set expiration (Expires    time.Time) long time in the future?
 		cookie := &http.Cookie{
 			Name:  cookieName,
@@ -181,7 +175,7 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("GET %s returned status %d, %s", urlStr, resp.StatusCode, bodyData)
 	}
-	fmt.Printf("getTwitter(): json: %s\n", string(bodyData))
+	//fmt.Printf("getTwitter(): json: %s\n", string(bodyData))
 	return json.Unmarshal(bodyData, data)
 }
 
@@ -200,8 +194,8 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	putTempCredentials(tokenCred)
-	fmt.Printf("tempCred: %#v\n", tempCred)
-	fmt.Printf("tokenCred: %#v\n", tokenCred)
+	//fmt.Printf("tempCred: %#v\n", tempCred)
+	//fmt.Printf("tokenCred: %#v\n", tokenCred)
 
 	var info map[string]interface{}
 	uri := "https://api.twitter.com/1.1/account/verify_credentials.json"
@@ -210,7 +204,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error getting timeline, "+err.Error(), 500)
 		return
 	}
-	userHandle, okUser := info["screen_name"].(string)
+	twitterHandle, okUser := info["screen_name"].(string)
 	if !okUser {
 		LogErrorf("no 'screen_name' in %#v\n", info)
 		// TODO: show error to the user
@@ -222,6 +216,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	// also might be useful:
 	// profile_image_url
 	// profile_image_url_https
+	userHandle := "twitter:" + twitterHandle
 	user, err := dbGetOrCreateUser(userHandle, fullName)
 	if err != nil {
 		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
@@ -254,7 +249,7 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 
 	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cb, nil)
 	if err != nil {
-		http.Error(w, "Error getting temp cred, "+err.Error(), 500)
+		httpErrorf(w, "oauthTwitterClient.RequestTemporaryCredentials() failed with '%s'", err)
 		return
 	}
 	putTempCredentials(tempCred)

@@ -37,7 +37,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		UserHandle string
 	}{}
 	if user != nil {
-		model.UserHandle = user.Handle
+		model.UserHandle = user.Handle.String
 	}
 	execTemplate(w, tmplIndex, model)
 }
@@ -171,7 +171,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		NotesCount int
 		Notes      []*Note
 	}{
-		User:       i.user.Handle,
+		User:       i.user.Handle.String,
 		NotesCount: len(i.notes),
 		Notes:      i.notes,
 	}
