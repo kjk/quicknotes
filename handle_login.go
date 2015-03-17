@@ -55,7 +55,7 @@ var (
 	}
 
 	secretsMutex sync.Mutex
-	secrets      = map[string]string{}
+	tempSecrets  = map[string]string{}
 )
 
 // SecureCookieValue is value of the cookie
@@ -112,7 +112,7 @@ func deleteSecureCookie(w http.ResponseWriter) {
 	http.SetCookie(w, cookie)
 }
 
-func getSecureCookie(r *http.Request, w http.ResponseWriter) *SecureCookieValue {
+func getSecureCookie(w http.ResponseWriter, r *http.Request) *SecureCookieValue {
 	cookie, err := r.Cookie(cookieName)
 	if err != nil {
 		return nil
@@ -132,8 +132,8 @@ func getSecureCookie(r *http.Request, w http.ResponseWriter) *SecureCookieValue 
 	return &ret
 }
 
-func getUserFromCookie(r *http.Request, w http.ResponseWriter) *DbUser {
-	sc := getSecureCookie(r, w)
+func getUserFromCookie(w http.ResponseWriter, r *http.Request) *DbUser {
+	sc := getSecureCookie(w, r)
 	if sc == nil {
 		return nil
 	}
@@ -148,13 +148,13 @@ func getUserFromCookie(r *http.Request, w http.ResponseWriter) *DbUser {
 func putTempCredentials(cred *oauth.Credentials) {
 	secretsMutex.Lock()
 	defer secretsMutex.Unlock()
-	secrets[cred.Token] = cred.Secret
+	tempSecrets[cred.Token] = cred.Secret
 }
 
 func getTempCredentials(token string) *oauth.Credentials {
 	secretsMutex.Lock()
 	defer secretsMutex.Unlock()
-	if secret, ok := secrets[token]; ok {
+	if secret, ok := tempSecrets[token]; ok {
 		return &oauth.Credentials{Token: token, Secret: secret}
 	}
 	return nil
@@ -163,7 +163,7 @@ func getTempCredentials(token string) *oauth.Credentials {
 func deleteTempCredentials(token string) {
 	secretsMutex.Lock()
 	defer secretsMutex.Unlock()
-	delete(secrets, token)
+	delete(tempSecrets, token)
 }
 
 // getTwitter gets a resource from the Twitter API and decodes the json response to data.
@@ -185,7 +185,7 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 	return json.Unmarshal(bodyData, data)
 }
 
-// url: GET /logintwittercb?redirect=$redirect
+// url: GET /logintwittercb?redirect=${redirect}
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleOauthTwitterCallback() url: '%s'\n", r.URL)
 	tempCred := getTempCredentials(r.FormValue("oauth_token"))
@@ -237,7 +237,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
-// url: GET /logintwitter?redirect=$redirect
+// url: GET /logintwitter?redirect=${redirect}
 func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleLoginTwitter() url: '%s'\n", r.URL)
 
@@ -261,7 +261,7 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, oauthTwitterClient.AuthorizationURL(tempCred, nil), 302)
 }
 
-// /logingithub?redirect=$redirect
+// /logingithub?redirect=${redirect}
 func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 	redirect := strings.TrimSpace(r.FormValue("redirect"))
 	if redirect == "" {
@@ -272,12 +272,12 @@ func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
-// url: GET /logout?redirect=$redirect
+// url: GET /logout?redirect=${redirect}
 func handleLogout(w http.ResponseWriter, r *http.Request) {
 	redirect := strings.TrimSpace(r.FormValue("redirect"))
 	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /logout")
-		return
+		LogErrorf("Missing redirect value for /logout\n")
+		redirect = "/"
 	}
 	deleteSecureCookie(w)
 	http.Redirect(w, r, redirect, 302)

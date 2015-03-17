@@ -25,6 +25,7 @@ Big picture:
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL.Path)
 	name := r.URL.Path[1:]
+	user := getUserFromCookie(w, r)
 	if strings.HasSuffix(name, ".html") {
 		path := filepath.Join("s", name)
 		if u.PathExists(path) {
@@ -32,7 +33,12 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	model := struct{}{}
+	model := struct {
+		UserHandle string
+	}{}
+	if user != nil {
+		model.UserHandle = user.Handle
+	}
 	execTemplate(w, tmplIndex, model)
 }
 
