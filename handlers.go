@@ -68,7 +68,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	model := struct {
 		ColorsCSS string
-		User      *User
+		User      *DbUser
 		Notes     []*Note
 	}{
 		ColorsCSS: colorsCssString,

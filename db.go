@@ -53,6 +53,19 @@ type CachedContentInfo struct {
 	d              []byte
 }
 
+// User is an information about the user
+type DbUser struct {
+	ID               int
+	Login            string // e.g. 'google:kkowalczyk@gmail'
+	Handle           string // e.g. 'kjk'
+	FullName         string // e.g. 'Krzysztof Kowalczyk'
+	Email            string
+	TwitterOauthJSON string
+	GitHubOauthJSON  string
+	GoogleOauthJSON  string
+	CreatedAt        time.Time
+}
+
 /*
 type Note struct {
 	Id           string
@@ -153,7 +166,7 @@ func (n *Note) Content() string {
 }
 
 type CachedUserInfo struct {
-	user  *User
+	user  *DbUser
 	notes []*Note
 }
 
@@ -221,19 +234,6 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	mu.Unlock()
 	LogVerbosef("took %s for user '%s'\n", time.Since(timeStart), userHandle)
 	return res, nil
-}
-
-// User is an information about the user
-type User struct {
-	ID               int
-	Login            string // e.g. 'google:kkowalczyk@gmail'
-	Handle           string // e.g. 'kjk'
-	FullName         string // e.g. 'Krzysztof Kowalczyk'
-	Email            string
-	TwitterOauthJSON string
-	GitHubOauthJSON  string
-	GoogleOauthJSON  string
-	CreatedAt        time.Time
 }
 
 // NewNote describes a new note to be inserted into a database
@@ -426,7 +426,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	return int(noteID), tx.Commit()
 }
 
-func dbGetNotesForUser(user *User) ([]*Note, error) {
+func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()
 	qs := `
@@ -473,8 +473,8 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
-func dbGetUserByQuery(q string, args ...interface{}) (*User, error) {
-	var user User
+func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
+	var user DbUser
 	db := getDbMust()
 	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
@@ -487,17 +487,17 @@ func dbGetUserByQuery(q string, args ...interface{}) (*User, error) {
 	return &user, nil
 }
 
-func dbGetUserByID(userID int) (*User, error) {
+func dbGetUserByID(userID int) (*DbUser, error) {
 	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
 	return dbGetUserByQuery(q, userID)
 }
 
-func dbGetUserByLogin(login string) (*User, error) {
+func dbGetUserByLogin(login string) (*DbUser, error) {
 	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
 	return dbGetUserByQuery(q, login)
 }
 
-func dbGetUserByHandle(userHandle string) (*User, error) {
+func dbGetUserByHandle(userHandle string) (*DbUser, error) {
 	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE handle=?`
 	return dbGetUserByQuery(q, userHandle)
 }
@@ -513,7 +513,7 @@ func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 	return parts[1], nil
 }
 
-func dbGetOrCreateUser(userLogin string, fullName string) (*User, error) {
+func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
 	if err != nil {
 		return nil, err

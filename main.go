@@ -25,7 +25,6 @@ var (
 		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
 		TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
 	}
-	testMainUser *User
 )
 
 func initAppMust() {
