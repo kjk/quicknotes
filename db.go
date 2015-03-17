@@ -282,6 +282,8 @@ func getCreateDbStatementsMust() []string {
 }
 
 func upgradeDbMust(db *sql.DB) {
+	//q := `SELECT 1 FROM migrations WHERE version = ?`
+	//q := `INSERT INTO migrations (version) VALUES (?)``
 	// TODO: implement me
 }
 

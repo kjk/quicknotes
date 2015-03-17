@@ -40,3 +40,7 @@ CREATE TABLE notes (
     PRIMARY KEY (id),
     INDEX (user_id)
 );
+
+CREATE TABLE migrations (
+	version int NOT NULL
+);
