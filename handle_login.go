@@ -183,7 +183,13 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error getting timeline, "+err.Error(), 500)
 		return
 	}
-	if user, ok := info["screen_name"].(string); ok {
+	user, okUser := info["screen_name"].(string)
+	//name, okName := info["name"].(string)
+	// also might be useful:
+	// profile_image_url
+	// profile_image_url_https
+
+	if okUser {
 		fmt.Printf("twitter user name: '%s'\n", user)
 	} else {
 		LogErrorf("failed to get twitter screen_name from %#v\n", info)

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"sort"
 	"strings"
@@ -17,7 +18,6 @@ import (
 )
 
 const (
-	currSchemaVersionStr        = "1"
 	tagsSepByte                 = 30 // record separator
 	kjkLogin                    = "google:kkowalczyk@gmail.com"
 	snippetSizeThreshold        = 1024        // 1 KB
@@ -191,16 +191,16 @@ func getNoteContent(note *Note) ([]byte, error) {
 	return getCachedContent(note.ContentSha1)
 }
 
-func getCachedUserInfoByName(userName string) (*CachedUserInfo, error) {
+func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	mu.Lock()
-	i := userNameToCachedInfo[userName]
+	i := userNameToCachedInfo[userHandle]
 	mu.Unlock()
 	if i != nil {
-		LogVerbosef("user '%s', got from cache\n", userName)
+		LogVerbosef("user '%s', got from cache\n", userHandle)
 		return i, nil
 	}
 	timeStart := time.Now()
-	user, err := getUserByName(userName)
+	user, err := getUserByHandle(userHandle)
 	if user == nil {
 		return nil, err
 	}
@@ -217,19 +217,23 @@ func getCachedUserInfoByName(userName string) (*CachedUserInfo, error) {
 		notes: notes,
 	}
 	mu.Lock()
-	userNameToCachedInfo[userName] = res
+	userNameToCachedInfo[userHandle] = res
 	mu.Unlock()
-	LogVerbosef("took %s for user '%s'\n", time.Since(timeStart), userName)
+	LogVerbosef("took %s for user '%s'\n", time.Since(timeStart), userHandle)
 	return res, nil
 }
 
 // User is an information about the user
 type User struct {
-	ID        int
-	Login     string // e.g. 'google:kkowalczyk@gmail'
-	Name      string // e.g. 'kjk'
-	Email     string
-	CreatedAt time.Time
+	ID               int
+	Login            string // e.g. 'google:kkowalczyk@gmail'
+	Handle           string // e.g. 'kjk'
+	FullName         string // e.g. 'Krzysztof Kowalczyk'
+	Email            string
+	TwitterOauthJson string
+	GitHubOauthJson  string
+	GoogleOauthJson  string
+	CreatedAt        time.Time
 }
 
 // NewNote describes a new note to be inserted into a database
@@ -251,25 +255,12 @@ func ensureValidFormat(format int) {
 func getSqlConnectionRoot() string {
 	if flgIsLocal {
 		return "root@tcp(localhost:3306)/"
-	} else {
-		return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
 	}
+	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
 }
 
 func getSqlConnectionQuickNotes() string {
 	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
-}
-
-func upgradeDbMust(db *sql.DB) {
-	var currVerStr string
-	err := db.QueryRow(`SELECT v FROM kv WHERE k='schema_version'`).Scan(&currVerStr)
-	if err != nil {
-		log.Fatalf("db.QueryRow() failed with %s\n", err)
-	}
-	if currVerStr == currSchemaVersionStr {
-		return
-	}
-	log.Fatalf("invalid version '%s'\n", currVerStr)
 }
 
 func fatalIfErr(err error, what string) {
@@ -284,6 +275,16 @@ func execMust(db *sql.DB, q string, args ...interface{}) {
 	fatalIfErr(err, fmt.Sprintf("db.Exec('%s')", q))
 }
 
+func getCreateDbStatementsMust() []string {
+	d, err := ioutil.ReadFile("createdb.sql")
+	fatalIfErr(err, "getCreateDbStatementsMust")
+	return strings.Split(string(d), "\n\n")
+}
+
+func upgradeDbMust(db *sql.DB) {
+	// TODO: implement me
+}
+
 func createDatabaseMust() *sql.DB {
 	LogVerbosef("trying to create the database\n")
 	db, err := sql.Open("mysql", getSqlConnectionRoot())
@@ -295,60 +296,10 @@ func createDatabaseMust() *sql.DB {
 
 	db, err = sql.Open("mysql", getSqlConnectionQuickNotes())
 	fatalIfErr(err, "sql.Open()")
-
-	execMust(db, `
-CREATE TABLE kv (
-    k     VARCHAR(255) NOT NULL,
-    v     VARCHAR(255),
-    PRIMARY KEY (k)
-)
-`)
-
-	execMust(db, `
-CREATE TABLE users (
-    id           INT NOT NULL AUTO_INCREMENT,
-    login        VARCHAR(255),
-    name         VARCHAR(255),
-    email        VARCHAR(255),
-    created_at   TIMESTAMP NOT NULL,
-    PRIMARY KEY USING HASH (id),
-    INDEX USING HASH (login),
-    INDEX USING HASH (name),
-    INDEX USING HASH (email)
-)
-`)
-
-	execMust(db, `
-CREATE TABLE versions (
-    id              INT NOT NULL AUTO_INCREMENT,
-    created_at      TIMESTAMP NOT NULL,
-    note_id         INT NOT NULL,
-    size            INT NOT NULL,
-    format          INT NOT NULL,
-    title           VARCHAR(512),
-    content_sha1    VARBINARY(20),
-    snippet_sha1    VARBINARY(20),
-    tags            VARCHAR(512),
-    PRIMARY KEY USING HASH (id),
-    INDEX (note_id)
-)
-`)
-
-	execMust(db, `
-CREATE TABLE notes (
-    id                INT NOT NULL AUTO_INCREMENT,
-    user_id           INT NOT NULL ,
-    curr_version_id   INT NOT NULL,
-    PRIMARY KEY USING HASH (id),
-    INDEX (user_id)
-)
-`)
-
-	execMust(db, fmt.Sprintf(`INSERT INTO kv VALUES ('schema_version', '%s')`, currSchemaVersionStr))
-
-	/*
-		execMust(db, `INSERT INTO users (login, name, email, created_at) VALUES (?, ?, ?, now())`, kjkLogin, "kjk", "kkowalczyk@gmail.com")
-	*/
+	stmts := getCreateDbStatementsMust()
+	for _, stm := range stmts {
+		execMust(db, stm)
+	}
 
 	LogVerbosef("created database\n")
 	err = db.Ping()
@@ -428,7 +379,7 @@ func createNewNote(userID int, note *NewNote) (int, error) {
 		return 0, err
 	}
 	ensureValidFormat(note.format)
-	db := GetDbMust()
+	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
 		return 0, err
@@ -477,7 +428,7 @@ func createNewNote(userID int, note *NewNote) (int, error) {
 
 func getNotesForUser(user *User) ([]*Note, error) {
 	var notes []*Note
-	db := GetDbMust()
+	db := getDbMust()
 	qs := `
 SELECT
 	n.id,
@@ -523,33 +474,24 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 }
 
 func getUserByLogin(login string) (*User, error) {
-	var userID int
-	var name, email string
-	var createdAt time.Time
-	db := GetDbMust()
-	qs := `SELECT id, name, email, created_at FROM users WHERE login=?`
-	err := db.QueryRow(qs, login).Scan(&userID, &name, &email, &createdAt)
+	var user User
+	db := getDbMust()
+	qs := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
+	err := db.QueryRow(qs, login).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
 		LogErrorf("db.QueryRow() failed with %s\n", err)
 		return nil, err
 	}
-	res := &User{
-		ID:        userID,
-		Login:     login,
-		Name:      name,
-		Email:     email,
-		CreatedAt: createdAt,
-	}
-	return res, nil
+	return &user, nil
 }
 
-func getUserByName(name string) (*User, error) {
+func getUserByHandle(userHandle string) (*User, error) {
 	var userID int
 	var login, email string
 	var createdAt time.Time
-	db := GetDbMust()
-	qs := `SELECT id, login, email, created_at FROM users WHERE name=?`
-	err := db.QueryRow(qs, name).Scan(&userID, &login, &email, &createdAt)
+	db := getDbMust()
+	qs := `SELECT id, login, email, created_at FROM users WHERE handle=?`
+	err := db.QueryRow(qs, userHandle).Scan(&userID, &login, &email, &createdAt)
 	if err != nil {
 		LogErrorf("db.QueryRow('%s') failed with %s\n", qs, err)
 		return nil, err
@@ -557,7 +499,7 @@ func getUserByName(name string) (*User, error) {
 	res := &User{
 		ID:        userID,
 		Login:     login,
-		Name:      name,
+		Handle:    userHandle,
 		Email:     email,
 		CreatedAt: createdAt,
 	}
@@ -589,7 +531,7 @@ func recreateDatabaseMust() {
 
 // note: no locking. the presumption is that this is called at startup and
 // available throughout the lifetime of the program
-func GetDbMust() *sql.DB {
+func getDbMust() *sql.DB {
 	if sqlDb != nil {
 		return sqlDb
 	}
@@ -615,7 +557,7 @@ func GetDbMust() *sql.DB {
 	return sqlDb
 }
 
-func CloseDb() {
+func closeDb() {
 	if sqlDb != nil {
 		sqlDb.Close()
 		sqlDb = nil

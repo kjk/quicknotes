@@ -40,6 +40,7 @@ def add_dir_files(zip_file, dir, dirInZip=None):
 def zip_files(zip_path):
     zf = zipfile.ZipFile(zip_path, mode="w", compression=zipfile.ZIP_DEFLATED)
     zf.write("quicknotes_linux", "quicknotes")
+    zf.write("createdb.sql")
     zf.write(pj("scripts", "server_run.sh"), "server_run.sh")
     add_dir_files(zf, "s")
     zf.close()

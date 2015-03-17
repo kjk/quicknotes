@@ -151,7 +151,7 @@ func main() {
 		return
 	}
 
-	GetDbMust()
+	getDbMust()
 	if flgIsLocal {
 		startWebpackWatch()
 	}

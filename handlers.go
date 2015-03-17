@@ -57,15 +57,15 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// /u/{user_name}
+// /u/{user_handle}
 func handleUser(w http.ResponseWriter, r *http.Request) {
-	userName := r.URL.Path[len("/u/"):]
-	i, err := getCachedUserInfoByName(userName)
+	userHandle := r.URL.Path[len("/u/"):]
+	i, err := getCachedUserInfoByHandle(userHandle)
 	if err != nil || i == nil {
 		http.NotFound(w, r)
 		return
 	}
-	LogInfof("%d notes for user '%s'\n", len(i.notes), userName)
+	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	model := struct {
 		ColorsCSS string
 		User      *User
@@ -131,9 +131,9 @@ func httpServerError(w http.ResponseWriter, r *http.Request) {
 // TODO: user should come from the cookie
 // /api/getnotes.json?user=${user}&start=${start}&len=${len}
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
-	userName := strings.TrimSpace(r.FormValue("user"))
-	fmt.Printf("handleApiGetNotes userName: '%s'\n", userName)
-	if userName == "" {
+	userHandle := strings.TrimSpace(r.FormValue("user"))
+	fmt.Printf("handleApiGetNotes userName: '%s'\n", userHandle)
+	if userHandle == "" {
 		http.NotFound(w, r)
 		return
 	}
@@ -146,7 +146,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 			return
 		}*/
 
-	i, err := getCachedUserInfoByName(userName)
+	i, err := getCachedUserInfoByHandle(userHandle)
 	if err != nil || i == nil {
 		httpServerError(w, r)
 		return
@@ -158,14 +158,14 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		note.SetHumanSize()
 	}
 
-	LogInfof("%d notes for user '%s'\n", len(i.notes), userName)
+	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	// TODO: use start/len
 	v := struct {
 		User       string
 		NotesCount int
 		Notes      []*Note
 	}{
-		User:       i.user.Name,
+		User:       i.user.Handle,
 		NotesCount: len(i.notes),
 		Notes:      i.notes,
 	}
@@ -186,11 +186,11 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// TODO: get user from the cookie
-	userName := "kjk"
-	userInfo, err := getCachedUserInfoByName(userName)
+	userHandle := "kjk"
+	userInfo, err := getCachedUserInfoByHandle(userHandle)
 	if err != nil {
-		LogErrorf("getCachedUserInfoByName('%s') failed with %s\n", userName, err)
-		httpJSONError(w, "/api/getnote.json: getCachedUserInfoByName('%s') failed with'%s'", userName, err)
+		LogErrorf("getCachedUserInfoByName('%s') failed with %s\n", userHandle, err)
+		httpJSONError(w, "/api/getnote.json: getCachedUserInfoByName('%s') failed with'%s'", userHandle, err)
 		return
 	}
 
