@@ -178,6 +178,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	// TODO: hack, set CachedSnippet
 	var notes []*Note
 	for _, note := range i.notes {
+		// TODO: this is not safe, need to make a copy
 		note.SetCalculatedProperties()
 		if onlyPublic {
 			if note.IsPublic {
@@ -188,7 +189,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	LogInfof("%d notes of user '%s', logged in user: '%s', onlyPublic: %v\n", len(i.notes), loggedInUserHandle, userHandle, onlyPublic)
+	LogInfof("%d notes of user '%s', logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, loggedInUserHandle, onlyPublic)
 	v := struct {
 		LoggedInUserHandle string
 		NotesUserHandle    string
@@ -197,8 +198,8 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	}{
 		LoggedInUserHandle: loggedInUserHandle,
 		NotesUserHandle:    i.user.Handle.String,
-		NotesCount:         len(i.notes),
-		Notes:              i.notes,
+		NotesCount:         len(notes),
+		Notes:              notes,
 	}
 	httpOkWithJSON(w, v)
 }
