@@ -9,6 +9,7 @@ CREATE TABLE users (
     # for twitter, deduced from 'name'
     full_name    VARCHAR(255),
     email        VARCHAR(255),
+    password     VARCHAR(255),  # not used yet
     twitter_oauth_json VARCHAR(2048),
     github_oauth_json  VARCHAR(2048),
     google_oauth_json  VARCHAR(2048),

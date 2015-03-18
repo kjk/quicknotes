@@ -92,8 +92,14 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 
 // /n/{note_id}
 func handleNote(w http.ResponseWriter, r *http.Request) {
-	noteID := r.URL.Path[len("/n/"):]
-	LogInfof("note id: %s NYI\n", noteID)
+	noteIDStr := r.URL.Path[len("/n/"):]
+	LogInfof("note id: '%s' NYI\n", noteIDStr)
+	/*noteID, err := strconv.Atoi(noteIDStr)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}*/
+
 	http.NotFound(w, r)
 }
 

@@ -444,7 +444,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()
-	qs := `
+	q := `
 SELECT
 	n.id,
 	n.curr_version_id,
@@ -457,9 +457,9 @@ SELECT
 	v.tags
 FROM notes n, versions v
 WHERE user_id=? AND v.id = n.curr_version_id`
-	rows, err := db.Query(qs, user.ID)
+	rows, err := db.Query(q, user.ID)
 	if err != nil {
-		LogErrorf("db.Query('%s') failed with %s\n", qs, err)
+		LogErrorf("db.Query('%s') failed with %s\n", q, err)
 		return nil, err
 	}
 	for rows.Next() {
@@ -482,11 +482,31 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	}
 	err = rows.Err()
 	if err != nil {
-		LogErrorf("rows.Err() for '%s' failed with %s\n", qs, err)
+		LogErrorf("rows.Err() for '%s' failed with %s\n", q, err)
 		return nil, err
 	}
 	return notes, nil
 }
+
+/*
+func dbGetNoteByID(int id) (*Note, error) {
+	db := getDbMust()
+	q := `
+	SELECT
+		n.id,
+		n.user_id,
+		n.curr_version_id,
+		v.created_at,
+		v.size,
+		v.format,
+		v.title,
+		v.content_sha1,
+		v.snippet_sha1,
+		v.tags
+	FROM notes n, versions v
+	WHERE n.id=? AND v.id = n.curr_version_id`
+}
+*/
 
 func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	var user DbUser
