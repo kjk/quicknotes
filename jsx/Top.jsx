@@ -24,14 +24,11 @@ var Top = React.createClass({
         <div className="left" style={s3}>
           <input name="search" id="search"
             className="round-input input-not-focused"  type="text"
-            autocomplete="off" autocapitalize="off"
+            autoComplete="off" autoCapitalize="off"
             placeholder="Search (Ctrl-F)" size="68" />
         </div>
-        <div className="left">
-          &nbsp;User: {this.props.userName}&nbsp;
-          <span style={s2}>{this.props.notesCount} notes</span>
-        </div>
-        <LogInLink isLoggedIn={this.props.isLoggedIn}/>
+        <LogInLink isLoggedIn={this.props.isLoggedIn}
+          loggedInUserHandle={this.props.loggedInUserHandle}/>
         <div className="clear"></div>
       </div>
     );

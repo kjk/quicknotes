@@ -29,7 +29,8 @@ var LeftSidebar = React.createClass({
       return (
         <TagCount onTagSelected={onTagSelected}
           name={tagNameCount[0]}
-          count={tagNameCount[1]} />
+          count={tagNameCount[1]}
+          key={tagNameCount[0]} />
       )
     });
     return (

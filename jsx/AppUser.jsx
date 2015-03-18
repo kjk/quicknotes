@@ -27,8 +27,9 @@ var AppUser = React.createClass({
       notesCount: 0,
       selectedTag: "",
       isLoggedIn: false,
-      userName: "kjk"
-    };
+      notesUserHandle: "",
+      loggedInUserHandle: ""
+    }
   },
 
   tagSelected: function(tag) {
@@ -47,7 +48,10 @@ var AppUser = React.createClass({
         allNotes: json.Notes,
         selectedNotes: selectedNotes,
         notesCount: json.NotesCount,
-        tags: tags
+        tags: tags,
+        notesUserHandle: json.NotesUserHandle,
+        loggedInUserHandle: json.LoggedInUserHandle,
+        isLoggedIn: json.LoggedInUserHandle != "",
       });
     }.bind(this));
   },
@@ -57,7 +61,8 @@ var AppUser = React.createClass({
     return (
         <div>
             <Top isLoggedIn={this.state.isLoggedIn}
-              userName={this.state.userName}
+              loggedInUserHandle={this.state.loggedInUserHandle}
+              notesUserHandle={this.state.notesUserHandle}
               notesCount={this.state.notesCount}/>
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}

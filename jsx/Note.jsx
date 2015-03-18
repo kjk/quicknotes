@@ -60,6 +60,7 @@ var Note = React.createClass({
     var note = this.props.note;
     return (
       <div className="one-note"
+        key={note.ID}
         onMouseEnter={this.mouseEnter}
         onMouseLeave={this.mouseLeave}
         >

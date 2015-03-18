@@ -48,13 +48,13 @@ func init() {
 	contentCache = make(map[string]*CachedContentInfo)
 }
 
-// CachedContentInfo
+// CachedContentInfo is content with time when it was cached
 type CachedContentInfo struct {
 	lastAccessTime time.Time
 	d              []byte
 }
 
-// User is an information about the user
+// DbUser is an information about the user
 type DbUser struct {
 	ID               int
 	Login            sql.NullString // e.g. 'google:kkowalczyk@gmail'
@@ -120,11 +120,26 @@ func hasPublicTag(tags []string) bool {
 	return false
 }
 
+// SetSnippet sets a short version of note (if is big)
+func (n *Note) SetSnippet() {
+	if n.Snippet != "" {
+		return
+	}
+
+	snippet, err := getNoteSnippet(n)
+	if err != nil {
+		return
+	}
+	n.Snippet = string(getShortSnippet(snippet))
+	//LogInfof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
+}
+
 // SetCalculatedProperties calculates some props
 func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
 	n.HumanSize = humanize.Bytes(uint64(n.Size))
 	n.IsPublic = hasPublicTag(n.Tags)
+	n.SetSnippet()
 }
 
 func getShortSnippet(d []byte) []byte {
@@ -153,19 +168,7 @@ func getShortSnippet(d []byte) []byte {
 	return bytes.Join(lines, []byte{'\n'})
 }
 
-func (n *Note) SetSnippet() {
-	if n.Snippet != "" {
-		return
-	}
-
-	snippet, err := getNoteSnippet(n)
-	if err != nil {
-		return
-	}
-	n.Snippet = string(getShortSnippet(snippet))
-	//LogInfof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
-}
-
+// Content returns note content
 func (n *Note) Content() string {
 	content, err := getNoteContent(n)
 	if err != nil {
@@ -174,6 +177,7 @@ func (n *Note) Content() string {
 	return string(content)
 }
 
+// CachedUserInfo has cached user info
 type CachedUserInfo struct {
 	user  *DbUser
 	notes []*Note
