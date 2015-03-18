@@ -24,6 +24,10 @@
 			"Rev": "5f171f42328bdd573211bb82bdee8f259c4c61ae"
 		},
 		{
+			"ImportPath": "github.com/kjk/simplenote",
+			"Rev": "25ee5bff6e64437402073561b4551adf182c0ee7"
+		},
+		{
 			"ImportPath": "github.com/kjk/u",
 			"Rev": "a6fc06e80ad8a518e699bbc24068991fddc78a37"
 		},
