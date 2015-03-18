@@ -6,13 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>QuickNotes</title>
 
-  <style type=text/css>
-  body {
-  }
-  html,body{
-    height:100%;
-  }
-  </style>
+    <style type=text/css>
+      body {
+      }
+      html,body{
+        height:100%;
+      }
+      form {
+        /* Just to center the form on the page */
+        margin: 0 auto;
+        width: 400px;
+        /* To see the outline of the form */
+        padding: 1em;
+        border: 1px solid #CCC;
+        border-radius: 1em;
+      }
+      form div + div {
+        margin-top: 1em;
+      }
+      label {
+        /* To make sure that all label have the same size and are properly align */
+        display: inline-block;
+        width: 200px;
+        text-align: right;
+      }
+      input {
+        /* To make sure that all text fields have the same font settings
+           By default, textareas have a monospace font */
+        font: 1em sans-serif;
+
+        /* To give the same size to all text field */
+        width: 300px;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+
+        /* To harmonize the look & feel of text field border */
+        border: 1px solid #999;
+      }
+      input:focus, textarea:focus {
+        /* To give a little highlight on active elements */
+        border-color: #000;
+      }
+      .button {
+          /* To position the buttons to the same position of the text fields */
+          padding-left: 90px; /* same size as the label elements */
+      }
+      button {
+          /* This extra margin represent roughly the same space as the space
+             between the labels and their text fields */
+          margin-left: .5em;
+      }
+    </style>
 
   </head>
   <body>
@@ -20,19 +64,19 @@
   {{if .UserHandle}}
     <p>You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
     <a href="/logout?redirect=/">Log out</a>.</p>
-    <p>You can import your notes from simplenote.com:</p>
     <form action="/importsimplenote" method="GET">
-        <div>
-          <label for="email">SimpleNote email:</label>
-          <input type="text" id="email" name="email" />
-        </div>
-        <div>
-          <label for="password">SimpleNote pasword:</label>
-          <input type="text" id="password" name="password" />
-        </div>
-        <div>
-          <input type="submit" name="submit" value="Import from SimpleNote" />
-        </div>
+      <div>You can import your notes from simplenote.com:</div>
+      <div>
+        <label for="email">SimpleNote email:</label>
+        <input type="text" id="email" name="email" />
+      </div>
+      <div>
+        <label for="password">SimpleNote pasword:</label>
+        <input type="password" id="password" name="password" />
+      </div>
+      <div>
+        <input type="submit" name="submit" value="Import from SimpleNote" />
+      </div>
     </form>
   {{else}}
     <p>You're not logged in. Log in with:
