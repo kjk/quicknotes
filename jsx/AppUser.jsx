@@ -5,6 +5,9 @@ var LeftSidebar = require('./LeftSidebar.jsx');
 
 function tagsFromNotes(notes) {
   var tags = {};
+  if (!notes) {
+    return {};
+  }
   notes.map(function (note) {
     if (note.Tags) {
       note.Tags.map(function (tag) {
@@ -16,6 +19,7 @@ function tagsFromNotes(notes) {
       });
     }
   });
+  delete tags["__public"];
   return tags;
 }
 
@@ -42,10 +46,14 @@ var AppUser = React.createClass({
 
   componentDidMount: function() {
     $.get("/api/getnotes.json?user=kjk", function(json) {
-      var tags = tagsFromNotes(json.Notes);
-      var selectedNotes = utils.filterNotesByTag(json.Notes, this.state.selectedTag);
+      var allNotes = json.Notes;
+      if (!allNotes) {
+        allNotes = [];
+      }
+      var tags = tagsFromNotes(allNotes);
+      var selectedNotes = utils.filterNotesByTag(allNotes, this.state.selectedTag);
       this.setState({
-        allNotes: json.Notes,
+        allNotes: allNotes,
         selectedNotes: selectedNotes,
         notesCount: json.NotesCount,
         tags: tags,
