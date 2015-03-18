@@ -251,6 +251,7 @@ func registerHTTPHandlers() {
 	//http.HandleFunc("/logingithub", handleLoginGitHub)
 	//http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logout", handleLogout)
+	http.HandleFunc("/importsimplenote", handleImportSimpleNote)
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
 	http.HandleFunc("/api/username.json", handleAPIUserName)

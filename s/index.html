@@ -18,8 +18,9 @@
   <body>
   <p>Welcome to QuickNotes!</p>
   {{if .UserHandle}}
-    You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
-    <a href="/logout?redirect=/">Log out</a>.
+    <p>You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
+    <a href="/logout?redirect=/">Log out</a>.</p>
+    <p><a href="/importsimplenote">Import from SimpleNote</a></p>
   {{else}}
     <p>You're not logged in. Log in with:
       <ul>
