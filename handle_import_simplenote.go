@@ -41,13 +41,15 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 	}
 	email := strings.TrimSpace(r.FormValue("email"))
 	password := strings.TrimSpace(r.FormValue("password"))
-	fmt.Printf("Importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login.String, email, password)
+	LogInfof("Importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login.String, email, password)
 	client := simplenote.NewClient(simplenoteAPIKey, email, password)
 	notes, err := client.List()
 	if err != nil {
-		fmt.Printf("c.List() failed with '%s'\n", err)
+		LogErrorf("c.List() failed with '%s'\n", err)
 		httpErrorf(w, "c.List() failed with '%s'", err)
 	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(200)
 	n := 1
 	for _, note := range notes {
 		newNote := NewNote{
@@ -57,21 +59,21 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 		}
 		newNote.title, newNote.content = noteToTitleContent([]byte(note.Content))
 		if len(newNote.content) == 0 {
-			fmt.Printf("   skipping an empty note\n")
+			LogInfof("   skipping an empty note\n")
 			continue
 		}
 
 		noteID, err := dbCreateNewNote(dbUser.ID, &newNote)
 		if err != nil {
-			fmt.Printf("dbCreateNewNote() failed with %s\n", err)
+			LogErrorf("dbCreateNewNote() failed with %s\n", err)
 		}
-		fmt.Printf("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+		LogInfof("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+		msg := fmt.Sprintf("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+		w.Write([]byte(msg))
+		if f, ok := w.(http.Flusher); ok {
+			f.Flush()
+		}
 		n++
 	}
-	model := struct {
-		Message string
-	}{
-		Message: fmt.Sprintf("Imported %d notes from SimpleNote", n),
-	}
-	execTemplate(w, tmplResult, model)
+	w.Write([]byte("Finished importing notes\n"))
 }
