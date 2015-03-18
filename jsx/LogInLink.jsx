@@ -22,13 +22,13 @@ var LogInLink = React.createClass({
       marginLeft: 16
     };
 
-    var url = encodeURI("/login?redirect=" + window.location);
+    var twitterUrl = encodeURI("/logintwitter?redirect=" + window.location);
     return (
       <div className="left">
         <span className="left">
           &nbsp;Your're note logged in&nbsp;
         </span>
-        <a href={url} style={s}>Log In</a>
+        <span style={s}>Log in: <a href={twitterUrl}>with twitter</a></span>
       </div>
     );
   },

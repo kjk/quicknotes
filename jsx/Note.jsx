@@ -1,6 +1,13 @@
 var NoteEdit = require('./NoteEdit.jsx');
 var NotePartial = require('./NotePartial.jsx');
 
+function isSpecialTag(tag) {
+  if (tag == "__public") {
+    return true;
+  }
+  return false;
+}
+
 var Note = React.createClass({
   createTitle: function(note) {
     if (note.Title != "") {
@@ -14,11 +21,14 @@ var Note = React.createClass({
   createTags: function(tags) {
     if (tags) {
       var tagEls = tags.map(function (tag) {
-        tag = "#" + tag
-        return (
-          <span className="titletag">{tag}</span>
-        )
+        if (!isSpecialTag(tag)) {
+          tag = "#" + tag
+          return (
+            <span className="titletag">{tag}</span>
+          )
+        }
       });
+
       return (
         <span>{tagEls}</span>
       );
