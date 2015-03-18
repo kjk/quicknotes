@@ -22,6 +22,7 @@ const (
 	kjkLogin                    = "google:kkowalczyk@gmail.com"
 	snippetSizeThreshold        = 1024        // 1 KB
 	cachedContentSizeThresholed = 1024 * 1024 // 1 MB
+	tagPublic                   = "__public"
 )
 
 const (
@@ -95,6 +96,7 @@ type Note struct {
 	Snippet   string
 	IsPartial bool
 	HumanSize string
+	IsPublic  bool
 }
 
 type notesByCreatedAt []*Note
@@ -109,13 +111,20 @@ func (s notesByCreatedAt) Less(i, j int) bool {
 	return s[i].CreatedAt.After(s[j].CreatedAt)
 }
 
-// SetIsPartial calculates if the content is partial
-func (n *Note) SetIsPartial() {
-	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
+func hasPublicTag(tags []string) bool {
+	for _, tag := range tags {
+		if tag == tagPublic {
+			return true
+		}
+	}
+	return false
 }
 
-func (n *Note) SetHumanSize() {
+// SetCalculatedProperties calculates some props
+func (n *Note) SetCalculatedProperties() {
+	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
 	n.HumanSize = humanize.Bytes(uint64(n.Size))
+	n.IsPublic = hasPublicTag(n.Tags)
 }
 
 func getShortSnippet(d []byte) []byte {

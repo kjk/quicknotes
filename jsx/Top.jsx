@@ -13,7 +13,8 @@ var Top = React.createClass({
     };
     var s3 = {
       paddingLeft: 8
-    }
+    };
+
     return (
       <div id="header">
         <div className="left">

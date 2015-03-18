@@ -23,21 +23,27 @@ Big picture:
 */
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL.Path)
-	name := r.URL.Path[1:]
-	user := getUserFromCookie(w, r)
-	if strings.HasSuffix(name, ".html") {
-		path := filepath.Join("s", name)
-		if u.PathExists(path) {
-			http.ServeFile(w, r, path)
-			return
-		}
+	uri := r.URL.Path
+	LogInfof("url: '%s'\n", uri)
+	if uri != "/" {
+		http.NotFound(w, r)
+		return
 	}
+	dbUser := getUserFromCookie(w, r)
+	/*
+		name := r.URL.Path[1:]
+		if strings.HasSuffix(name, ".html") {
+			path := filepath.Join("s", name)
+			if u.PathExists(path) {
+				http.ServeFile(w, r, path)
+				return
+			}
+		}*/
 	model := struct {
 		UserHandle string
 	}{}
-	if user != nil {
-		model.UserHandle = user.Handle.String
+	if dbUser != nil {
+		model.UserHandle = dbUser.Handle.String
 	}
 	execTemplate(w, tmplIndex, model)
 }
@@ -134,9 +140,9 @@ func httpServerError(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "internal server error", http.StatusInternalServerError)
 }
 
-// TODO: user should come from the cookie
 // /api/getnotes.json?user=${user}&start=${start}&len=${len}
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
+	dbUser := getUserFromCookie(w, r)
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	fmt.Printf("handleApiGetNotes userName: '%s'\n", userHandle)
 	if userHandle == "" {
@@ -157,14 +163,26 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		httpServerError(w, r)
 		return
 	}
-	// TODO: hack, set CachedSnippet
-	for _, note := range i.notes {
-		note.SetSnippet()
-		note.SetIsPartial()
-		note.SetHumanSize()
+	loggedInUserHandle := ""
+	if dbUser != nil {
+		loggedInUserHandle = dbUser.Handle.String
 	}
 
-	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
+	onlyPublic := userHandle != loggedInUserHandle
+	// TODO: hack, set CachedSnippet
+	var notes []*Note
+	for _, note := range i.notes {
+		note.SetCalculatedProperties()
+		if onlyPublic {
+			if note.IsPublic {
+				notes = append(notes, note)
+			}
+		} else {
+			notes = append(notes, note)
+		}
+	}
+
+	LogInfof("%d notes of user '%s', onlyPublic: %v\n", len(i.notes), userHandle, onlyPublic)
 	// TODO: use start/len
 	v := struct {
 		User       string
