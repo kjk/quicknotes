@@ -93,14 +93,34 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 // /n/{note_id}
 func handleNote(w http.ResponseWriter, r *http.Request) {
 	noteIDStr := r.URL.Path[len("/n/"):]
-	LogInfof("note id: '%s' NYI\n", noteIDStr)
-	/*noteID, err := strconv.Atoi(noteIDStr)
+	LogInfof("note id: '%s'\n", noteIDStr)
+	noteID, err := strconv.Atoi(noteIDStr)
 	if err != nil {
 		http.NotFound(w, r)
 		return
-	}*/
-
-	http.NotFound(w, r)
+	}
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	// TODO: move it inside dbGetNoteByID() ?
+	note.SetCalculatedProperties()
+	if !note.IsPublic {
+		dbUser := getUserFromCookie(w, r)
+		if dbUser == nil || dbUser.ID != note.UserID {
+			// not authorized to view this note
+			// TODO: when we have sharing via secret link
+			http.NotFound(w, r)
+			return
+		}
+	}
+	model := struct {
+		Note *Note
+	}{
+		Note: note,
+	}
+	execTemplate(w, tmplNote, model)
 }
 
 func httpOkBytesWithContentType(w http.ResponseWriter, contentType string, content []byte) {
@@ -178,8 +198,6 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	// TODO: hack, set CachedSnippet
 	var notes []*Note
 	for _, note := range i.notes {
-		// TODO: this is not safe, need to make a copy
-		note.SetCalculatedProperties()
 		if onlyPublic {
 			if note.IsPublic {
 				notes = append(notes, note)

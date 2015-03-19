@@ -67,22 +67,10 @@ type DbUser struct {
 	CreatedAt        time.Time
 }
 
-/*
-type Note struct {
-	Id           string
-	Title        string
-	Format       string
-	Tags         []string `json:",omitempty"`
-	CreationTime time.Time
-	UpdateTime   time.Time
-	HtmlShort    string
-	Html         string // not always set
-}
-*/
-
-// Note describes note in memory
-type Note struct {
+// DbNote describes note as in database
+type DbNote struct {
 	ID            int
+	UserID        int
 	CurrVersionID int
 	Size          int
 	Title         string
@@ -91,6 +79,11 @@ type Note struct {
 	SnippetSha1   []byte
 	Tags          []string `json:",omitempty"`
 	CreatedAt     time.Time
+}
+
+// Note describes note in memory
+type Note struct {
+	DbNote
 	//UpdatedAt     time.Time
 	ColorID   int
 	Snippet   string
@@ -206,7 +199,6 @@ func getCachedContent(sha1 []byte) ([]byte, error) {
 	}
 	mu.Unlock()
 	return d, nil
-
 }
 
 func getNoteSnippet(note *Note) ([]byte, error) {
@@ -236,6 +228,7 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	}
 	sort.Sort(notesByCreatedAt(notes))
 	for i, n := range notes {
+		n.SetCalculatedProperties()
 		n.ColorID = i % nCssColors
 	}
 	res := &CachedUserInfo{
@@ -447,6 +440,7 @@ func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	q := `
 SELECT
 	n.id,
+	n.user_id,
 	n.curr_version_id,
 	v.created_at,
 	v.size,
@@ -463,22 +457,24 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 		return nil, err
 	}
 	for rows.Next() {
-		var note Note
+		var n Note
 		var tagsSerialized string
-		err = rows.Scan(&note.ID,
-			&note.CurrVersionID,
-			&note.CreatedAt,
-			&note.Size,
-			&note.Format,
-			&note.Title,
-			&note.ContentSha1,
-			&note.SnippetSha1,
+		err = rows.Scan(
+			&n.ID,
+			&n.UserID,
+			&n.CurrVersionID,
+			&n.CreatedAt,
+			&n.Size,
+			&n.Format,
+			&n.Title,
+			&n.ContentSha1,
+			&n.SnippetSha1,
 			&tagsSerialized)
 		if err != nil {
 			return nil, err
 		}
-		note.Tags = deserializeTags(tagsSerialized)
-		notes = append(notes, &note)
+		n.Tags = deserializeTags(tagsSerialized)
+		notes = append(notes, &n)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -488,8 +484,9 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
-/*
-func dbGetNoteByID(int id) (*Note, error) {
+func dbGetNoteByID(id int) (*Note, error) {
+	var n Note
+	var tagsSerialized string
 	db := getDbMust()
 	q := `
 	SELECT
@@ -505,8 +502,23 @@ func dbGetNoteByID(int id) (*Note, error) {
 		v.tags
 	FROM notes n, versions v
 	WHERE n.id=? AND v.id = n.curr_version_id`
+	err := db.QueryRow(q, id).Scan(
+		&n.ID,
+		&n.UserID,
+		&n.CurrVersionID,
+		&n.CreatedAt,
+		&n.Size,
+		&n.Format,
+		&n.Title,
+		&n.ContentSha1,
+		&n.SnippetSha1,
+		&tagsSerialized)
+	if err != nil {
+		return nil, err
+	}
+	n.Tags = deserializeTags(tagsSerialized)
+	return &n, nil
 }
-*/
 
 func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	var user DbUser
