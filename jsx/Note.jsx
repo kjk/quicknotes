@@ -24,7 +24,7 @@ var Note = React.createClass({
         if (!isSpecialTag(tag)) {
           tag = "#" + tag
           return (
-            <span className="titletag">{tag}</span>
+            <span key={tag} className="titletag">{tag}</span>
           )
         }
       });
@@ -50,12 +50,6 @@ var Note = React.createClass({
     this.refs.editBtn.setState({visible:false});
   },
 
-  createNoteBody: function(note) {
-      return (
-        <NotePartial note={note} />
-      );
-    },
-
   createNoteSnippet: function(note) {
     if (!this.props.compact) {
       return (
@@ -70,7 +64,6 @@ var Note = React.createClass({
     var note = this.props.note;
     return (
       <div className="one-note"
-        key={note.ID}
         onMouseEnter={this.mouseEnter}
         onMouseLeave={this.mouseLeave}
         >
@@ -80,7 +73,7 @@ var Note = React.createClass({
         </div>
         {this.createNoteSnippet(note)}
         <NoteEdit note={note} editCb={this.editNote} ref="editBtn"/>
-        {this.createNoteBody(note)}
+        <NotePartial note={note} />
       </div>
     );
   }
