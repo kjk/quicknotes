@@ -12,7 +12,7 @@ function noteHasTag(note, tag) {
 }
 
 function filterNotesByTag(notes, tag) {
-  if (tag === "") {
+  if (tag === "" || tag == "__all") {
     return notes;
   }
   var res = [];

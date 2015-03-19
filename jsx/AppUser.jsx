@@ -19,7 +19,6 @@ function tagsFromNotes(notes) {
       });
     }
   });
-  delete tags["__public"];
   return tags;
 }
 
@@ -51,7 +50,8 @@ var AppUser = React.createClass({
         allNotes = [];
       }
       var tags = tagsFromNotes(allNotes);
-      var selectedNotes = utils.filterNotesByTag(allNotes, this.state.selectedTag);
+      var selectedTag = this.state.selectedTag;
+      var selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
       this.setState({
         allNotes: allNotes,
         selectedNotes: selectedNotes,
@@ -66,6 +66,7 @@ var AppUser = React.createClass({
 
   render: function() {
     var compact = false;
+    var notesCount = this.state.allNotes.length;
     return (
         <div>
             <Top isLoggedIn={this.state.isLoggedIn}
@@ -74,6 +75,7 @@ var AppUser = React.createClass({
               notesCount={this.state.notesCount}/>
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
+                  notesCount={notesCount}
                   onTagSelected={this.tagSelected}/>
                 <NotesList notes={this.state.selectedNotes} compact={compact}/>
             </div>

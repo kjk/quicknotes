@@ -10,9 +10,14 @@ var LeftSidebar = React.createClass({
       );
     }
     var tagsArr = new Array();
+    var nPublicTags = 0;
     for (var key in tags) {
-      var el = [key, tags[key]];
-      tagsArr.push(el);
+      if (key == "__public") {
+        nPublicTags = tags[key];
+      } else {
+        var el = [key, tags[key]];
+        tagsArr.push(el);
+      }
     }
     tagsArr.sort(function (a, b) {
       // sort by name, which is first element of 2-element array
@@ -24,6 +29,10 @@ var LeftSidebar = React.createClass({
       }
       return 0;
     })
+    if (nPublicTags != 0) {
+      tagsArr.unshift(["public", nPublicTags, "__public"]);
+    }
+    tagsArr.unshift(["all", this.props.notesCount, "__all"])
     var onTagSelected=this.props.onTagSelected;
     var tagEls = tagsArr.map(function (tagInfo) {
       var displayName = tagInfo[0];
