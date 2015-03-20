@@ -69,7 +69,7 @@ type DbUser struct {
 
 // DbNote describes note as in database
 type DbNote struct {
-	ID            int
+	id            int
 	UserID        int
 	CurrVersionID int
 	Size          int
@@ -90,6 +90,7 @@ type Note struct {
 	IsPartial bool
 	HumanSize string
 	IsPublic  bool
+	IDStr     string
 }
 
 type notesByCreatedAt []*Note
@@ -132,6 +133,7 @@ func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
 	n.HumanSize = humanize.Bytes(uint64(n.Size))
 	n.IsPublic = hasPublicTag(n.Tags)
+	n.IDStr = hashInt(n.id)
 	n.SetSnippet()
 }
 
@@ -228,7 +230,6 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	}
 	sort.Sort(notesByCreatedAt(notes))
 	for i, n := range notes {
-		n.SetCalculatedProperties()
 		n.ColorID = i % nCssColors
 	}
 	res := &CachedUserInfo{
@@ -460,7 +461,7 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 		var n Note
 		var tagsSerialized string
 		err = rows.Scan(
-			&n.ID,
+			&n.id,
 			&n.UserID,
 			&n.CurrVersionID,
 			&n.CreatedAt,
@@ -474,6 +475,7 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 			return nil, err
 		}
 		n.Tags = deserializeTags(tagsSerialized)
+		n.SetCalculatedProperties()
 		notes = append(notes, &n)
 	}
 	err = rows.Err()
@@ -503,7 +505,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 	FROM notes n, versions v
 	WHERE n.id=? AND v.id = n.curr_version_id`
 	err := db.QueryRow(q, id).Scan(
-		&n.ID,
+		&n.id,
 		&n.UserID,
 		&n.CurrVersionID,
 		&n.CreatedAt,
@@ -517,6 +519,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 		return nil, err
 	}
 	n.Tags = deserializeTags(tagsSerialized)
+	n.SetCalculatedProperties()
 	return &n, nil
 }
 

@@ -90,27 +90,26 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplUser, model)
 }
 
-// /n/{note_id}
+// /n/{note_id}-rest
 func handleNote(w http.ResponseWriter, r *http.Request) {
 	noteIDStr := r.URL.Path[len("/n/"):]
-	LogInfof("note id: '%s'\n", noteIDStr)
-	noteID, err := strconv.Atoi(noteIDStr)
-	if err != nil {
-		http.NotFound(w, r)
-		return
+	// remove optional part after -, which is constructed from note title
+	if idx := strings.Index(noteIDStr, "-"); idx != -1 {
+		noteIDStr = noteIDStr[:idx-1]
 	}
+	noteID := dehashInt(noteIDStr)
+	LogInfof("note id str: '%s'\n", noteIDStr)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	// TODO: move it inside dbGetNoteByID() ?
-	note.SetCalculatedProperties()
 	if !note.IsPublic {
 		dbUser := getUserFromCookie(w, r)
 		if dbUser == nil || dbUser.ID != note.UserID {
 			// not authorized to view this note
-			// TODO: when we have sharing via secret link
+			// TODO: when we have sharing via secret link we'll have to check
+			// permissions
 			http.NotFound(w, r)
 			return
 		}
@@ -155,7 +154,7 @@ func httpJSONError(w http.ResponseWriter, format string, arg ...interface{}) {
 
 func findNoteByID(notes []*Note, id int) *Note {
 	for _, n := range notes {
-		if n.ID == id {
+		if n.id == id {
 			return n
 		}
 	}
@@ -257,14 +256,14 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := struct {
-		ID      int
+		IDStr   string
 		Title   string
 		ColorID int
 		Format  int
 		Content string
 		Tags    []string
 	}{
-		ID:      note.ID,
+		IDStr:   note.IDStr,
 		Title:   note.Title,
 		ColorID: note.ColorID,
 		Format:  note.Format,

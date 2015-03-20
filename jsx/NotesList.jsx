@@ -9,7 +9,7 @@ var NotesList = React.createClass({
       <div className="notes-list">
         <NewNoteSmall />
         {this.props.notes.map(function(note) {
-          return <Note compact={compact} note={note} key={note.ID}/>;
+          return <Note compact={compact} note={note} key={note.IDStr}/>;
         })}
       </div>
     );
