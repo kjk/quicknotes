@@ -1,10 +1,7 @@
 
-// TODO: should also replace non-kosher characters with url-safe things
-function urlify(s) {
-  if (s.length <= 32) {
-    return s;
-  }
-  return s.slice(0,32)
+function urlifyTitle(s) {
+  s = s.slice(0,32)
+  return s.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-');
 }
 
 var NotePartial = React.createClass({
@@ -12,10 +9,9 @@ var NotePartial = React.createClass({
     var s = {
       color: "gray"
     };
-    // TODO: shorten title
     var title = "";
     if (note.Title.length > 0) {
-      title = "-" + urlify(note.Title);
+      title = "-" + urlifyTitle(note.Title);
     }
     var url = "/n/" + note.IDStr + title;
     return (
