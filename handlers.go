@@ -206,7 +206,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	LogInfof("%d notes of user '%s', logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, loggedInUserHandle, onlyPublic)
+	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, i.user.Handle.String, loggedInUserHandle, onlyPublic)
 	v := struct {
 		LoggedInUserHandle string
 		NotesUserHandle    string

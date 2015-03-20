@@ -29,7 +29,7 @@ var LeftSidebar = React.createClass({
       }
       return 0;
     })
-    if (nPublicTags != 0) {
+    if (this.props.showPublicTags && nPublicTags != 0) {
       tagsArr.unshift(["public", nPublicTags, "__public"]);
     }
     tagsArr.unshift(["all", this.props.notesCount, "__all"])

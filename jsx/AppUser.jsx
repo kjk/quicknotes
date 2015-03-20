@@ -67,6 +67,7 @@ var AppUser = React.createClass({
   render: function() {
     var compact = false;
     var notesCount = this.state.allNotes.length;
+    var showPublicTags = this.state.isLoggedIn && (this.state.notesUserHandle == this.state.loggedInUserHandle);
     return (
         <div>
             <Top isLoggedIn={this.state.isLoggedIn}
@@ -76,6 +77,8 @@ var AppUser = React.createClass({
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
                   notesCount={notesCount}
+                  isLoggedIn={this.state.isLoggedIn}
+                  showPublicTags={showPublicTags}
                   onTagSelected={this.tagSelected}/>
                 <NotesList notes={this.state.selectedNotes} compact={compact}/>
             </div>
