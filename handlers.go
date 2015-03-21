@@ -12,6 +12,40 @@ import (
 	"github.com/kjk/u"
 )
 
+func httpOkBytesWithContentType(w http.ResponseWriter, contentType string, content []byte) {
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Length", strconv.Itoa(len(content)))
+	w.Write(content)
+}
+
+func httpOkWithText(w http.ResponseWriter, s string) {
+	w.Header().Set("Content-Type", "text/plain")
+	io.WriteString(w, s)
+}
+
+func httpOkWithJSON(w http.ResponseWriter, v interface{}) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		// should never happen
+		LogErrorf("json.MarshalIndent() failed with %q\n", err)
+	}
+	httpOkBytesWithContentType(w, "application/json", b)
+}
+
+func httpJSONError(w http.ResponseWriter, format string, arg ...interface{}) {
+	msg := fmt.Sprintf(format, arg...)
+	model := struct {
+		Error string
+	}{
+		Error: msg,
+	}
+	httpOkWithJSON(w, model)
+}
+
+func httpServerError(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "internal server error", http.StatusInternalServerError)
+}
+
 /*
 Big picture:
 / - main page, tbd (show public notes, on-boarding for new users?)
@@ -90,29 +124,38 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplUser, model)
 }
 
-// /n/{note_id}-rest
-func handleNote(w http.ResponseWriter, r *http.Request) {
-	noteIDStr := r.URL.Path[len("/n/"):]
-	// remove optional part after -, which is constructed from note title
-	if idx := strings.Index(noteIDStr, "-"); idx != -1 {
-		noteIDStr = noteIDStr[:idx-1]
-	}
-	noteID := dehashInt(noteIDStr)
-	LogInfof("note id str: '%s'\n", noteIDStr)
+func getNodeByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) *Note {
+	noteID := dehashInt(noteIDHashStr)
+	LogInfof("note id str: '%s'\n", noteIDHashStr)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
+		return nil
+	}
+	if note.IsPublic {
+		return note
+	}
+	dbUser := getUserFromCookie(w, r)
+	if dbUser == nil || dbUser.ID != note.UserID {
+		// not authorized to view this note
+		// TODO: when we have sharing via secret link we'll have to check
+		// permissions
+		return nil
+	}
+	return note
+}
+
+// /n/{note_id_hash}-rest
+func handleNote(w http.ResponseWriter, r *http.Request) {
+	noteIDHashStr := r.URL.Path[len("/n/"):]
+	// remove optional part after -, which is constructed from note title
+	if idx := strings.Index(noteIDHashStr, "-"); idx != -1 {
+		noteIDHashStr = noteIDHashStr[:idx-1]
+	}
+
+	note := getNodeByIDHash(w, r, noteIDHashStr)
+	if note == nil {
 		http.NotFound(w, r)
 		return
-	}
-	if !note.IsPublic {
-		dbUser := getUserFromCookie(w, r)
-		if dbUser == nil || dbUser.ID != note.UserID {
-			// not authorized to view this note
-			// TODO: when we have sharing via secret link we'll have to check
-			// permissions
-			http.NotFound(w, r)
-			return
-		}
 	}
 	model := struct {
 		Note *Note
@@ -122,47 +165,43 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplNote, model)
 }
 
-func httpOkBytesWithContentType(w http.ResponseWriter, contentType string, content []byte) {
-	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Content-Length", strconv.Itoa(len(content)))
-	w.Write(content)
-}
+// /api/getnote.json?id={note_id_hash}
+func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
+	vals := r.URL.Query()
+	noteIDHashStr := strings.TrimSpace(vals.Get("id"))
+	if noteIDHashStr == "" {
+		httpJSONError(w, "/api/getnote.json: missing 'id' attribute")
+		return
+	}
 
-func httpOkWithText(w http.ResponseWriter, s string) {
-	w.Header().Set("Content-Type", "text/plain")
-	io.WriteString(w, s)
-}
+	note := getNodeByIDHash(w, r, noteIDHashStr)
+	if note == nil {
+		httpJSONError(w, "/api/getnote.json: invalid id attribute '%s'", noteIDHashStr)
+		return
+	}
 
-func httpOkWithJSON(w http.ResponseWriter, v interface{}) {
-	b, err := json.MarshalIndent(v, "", "  ")
+	content, err := getCachedContent(note.ContentSha1)
 	if err != nil {
-		// should never happen
-		LogErrorf("json.MarshalIndent() failed with %q\n", err)
+		LogErrorf("getCachedContent() failed with %s\n", err)
+		httpJSONError(w, "/api/getnote.json: getCachedContent() failed with %s", err)
+		return
 	}
-	httpOkBytesWithContentType(w, "application/json", b)
-}
-
-func httpJSONError(w http.ResponseWriter, format string, arg ...interface{}) {
-	msg := fmt.Sprintf(format, arg...)
-	model := struct {
-		Error string
+	v := struct {
+		IDHash  string
+		Title   string
+		ColorID int
+		Format  int
+		Content string
+		Tags    []string
 	}{
-		Error: msg,
+		IDHash:  noteIDHashStr,
+		Title:   note.Title,
+		ColorID: note.ColorID,
+		Format:  note.Format,
+		Content: string(content),
+		Tags:    note.Tags,
 	}
-	httpOkWithJSON(w, model)
-}
-
-func findNoteByID(notes []*Note, id int) *Note {
-	for _, n := range notes {
-		if n.id == id {
-			return n
-		}
-	}
-	return nil
-}
-
-func httpServerError(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "internal server error", http.StatusInternalServerError)
+	httpOkWithJSON(w, v)
 }
 
 // /api/getnotes.json?user=${user}&start=${start}&len=${len}
@@ -221,66 +260,15 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
-// /api/getnote.json?id={noteId}
-func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
-	vals := r.URL.Query()
-	noteIDStr := strings.TrimSpace(vals.Get("id"))
-	if noteIDStr == "" {
-		httpJSONError(w, "/api/getnote.json: missing 'id' attribute")
-		return
-	}
-	noteID, err := strconv.Atoi(noteIDStr)
-	if err != nil {
-		httpJSONError(w, "/api/getnote.json: invalid id attribute '%s'", noteIDStr)
-		return
-	}
-	// TODO: get user from the cookie
-	userHandle := "kjk"
-	userInfo, err := getCachedUserInfoByHandle(userHandle)
-	if err != nil {
-		LogErrorf("getCachedUserInfoByName('%s') failed with %s\n", userHandle, err)
-		httpJSONError(w, "/api/getnote.json: getCachedUserInfoByName('%s') failed with'%s'", userHandle, err)
-		return
-	}
-
-	note := findNoteByID(userInfo.notes, noteID)
-	if note == nil {
-		LogErrorf("findNoteById('%d') didn't find a note\n", noteID)
-		httpJSONError(w, "/api/getnote.json: findNoteById('%d') didn't find a note", noteID)
-		return
-	}
-	content, err := getCachedContent(note.ContentSha1)
-	if err != nil {
-		LogErrorf("getCachedContent() failed with %s\n", err)
-		httpJSONError(w, "/api/getnote.json: getCachedContent() failed with %s", err)
-		return
-	}
-	v := struct {
-		IDStr   string
-		Title   string
-		ColorID int
-		Format  int
-		Content string
-		Tags    []string
-	}{
-		IDStr:   note.IDStr,
-		Title:   note.Title,
-		ColorID: note.ColorID,
-		Format:  note.Format,
-		Content: string(content),
-		Tags:    note.Tags,
-	}
-	httpOkWithJSON(w, v)
-}
-
-func handleAPIUserName(w http.ResponseWriter, r *http.Request) {
-	LogInfof("handleApiUserName()\n")
-	v := struct {
-		UserName string
-	}{
-		UserName: "kjk",
-	}
-	httpOkWithJSON(w, v)
+// POST /api/createorupdatenote
+//  noteIdHash : if given, this is an update, if not, this is create new
+//  format     : "text", "0", "markdown", "1"
+//  content    : text of the note
+//  ispublic   : "true", "1", "false", "0"
+//  tags       : tag1,tag2,tag3, can be empty
+func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
+	// TODO: write me
+	httpServerError(w, r)
 }
 
 func registerHTTPHandlers() {
@@ -297,7 +285,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/importsimplenote", handleImportSimpleNote)
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
-	http.HandleFunc("/api/username.json", handleAPIUserName)
+	http.HandleFunc("/api/createnote", handleAPICreateNote)
 }
 
 func startWebServer() {
