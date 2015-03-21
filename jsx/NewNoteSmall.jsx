@@ -8,7 +8,9 @@ var NewNoteSmall = React.createClass({
     // ctrl+Enter submits a note
     if (e.charCode == 13 && e.ctrlKey) {
         e.preventDefault();
-        this.newNote(e.target.value);
+        var s = e.target.value;
+        e.target.value = "";
+        this.newNote(s);
         return
     }
     //console.log("handleKeyPress: code:", e.charCode, " ctrl: ", e.ctrlKey);

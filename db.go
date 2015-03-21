@@ -242,6 +242,12 @@ func getNoteContent(note *Note) ([]byte, error) {
 	return getCachedContent(note.ContentSha1)
 }
 
+func clearCachedUserInfoByHandle(userHandle string) {
+	mu.Lock()
+	delete(userNameToCachedInfo, userHandle)
+	mu.Unlock()
+}
+
 func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	mu.Lock()
 	i := userNameToCachedInfo[userHandle]

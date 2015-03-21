@@ -272,6 +272,7 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
 		return
 	}
+	clearCachedUserInfoByHandle(dbUser.Handle.String)
 	v := struct {
 		IDStr string
 	}{

@@ -43,7 +43,7 @@ var AppUser = React.createClass({
     });
   },
 
-  componentDidMount: function() {
+  updateNotes: function() {
     $.get("/api/getnotes.json?user=kjk", function(json) {
       var allNotes = json.Notes;
       if (!allNotes) {
@@ -64,9 +64,23 @@ var AppUser = React.createClass({
     }.bind(this));
   },
 
+  componentDidMount: function() {
+    this.updateNotes();
+  },
+
   createNewTextNoteCb: function(s) {
     s = s.trim();
-    console.log("createNewTextNoteCb:", s)
+    console.log("createNewTextNoteCb:", s);
+    var data = {
+      format: "text",
+      content: s
+    };
+    $.post( "/api/createorupdatenote.json", data, function() {
+      this.updateNotes();
+    }.bind(this))
+    .fail(function() {
+      alert( "error" );
+    });
   },
 
   render: function() {
