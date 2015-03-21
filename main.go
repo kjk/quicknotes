@@ -20,7 +20,6 @@ var (
 	flgIsLocal          bool // local means using local mysql database, production means google's cloud
 	flgDelDatabase      bool
 	flgRecreateDatabase bool
-	flgImportSimplenote bool
 	localStore          *LocalStore
 	oauthClient         = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
@@ -89,7 +88,6 @@ func parseFlags() {
 	flag.BoolVar(&flgIsLocal, "local", false, "running locally?")
 	flag.BoolVar(&flgDelDatabase, "deldb", false, "completely delete the database? dangerous!")
 	flag.BoolVar(&flgRecreateDatabase, "recreatedb", false, "recreate database")
-	flag.BoolVar(&flgImportSimplenote, "import-simplenote", false, "import simplenote notes from notes.json.bz2")
 	flag.Parse()
 }
 
@@ -143,17 +141,6 @@ func main() {
 
 	if false {
 		testListObjects()
-		return
-	}
-
-	if flgImportSimplenote {
-		fmt.Printf("importing simple note\n")
-		err := importSimplenote()
-		if err != nil {
-			fmt.Printf("finished importing simple note, err: %s\n", err)
-		} else {
-			fmt.Printf("finished importing simple note\n")
-		}
 		return
 	}
 

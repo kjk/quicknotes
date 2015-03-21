@@ -260,6 +260,28 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
+func newNoteFromArgs(r *http.Request) *NewNote {
+	var note NewNote
+	formatArg := strings.TrimSpace(r.FormValue("format"))
+	note.format = formatFromString(formatArg)
+	if note.format == formatInvalid {
+		return nil
+	}
+	note.content = []byte(strings.TrimSpace(r.FormValue("content")))
+	if len(note.content) == 0 {
+		return nil
+	}
+	tagsArg := strings.TrimSpace(r.FormValue("tags"))
+	note.tags = deserializeTags(tagsArg)
+	isPublicArg := strings.TrimSpace(r.FormValue("ispublic"))
+	isPublic := boolFromString(isPublicArg)
+	if isPublic {
+		note.tags = append(note.tags, tagPublic)
+	}
+	return &note
+}
+
+// TODO: return json as a result?
 // POST /api/createorupdatenote
 //  noteIdHash : if given, this is an update, if not, this is create new
 //  format     : "text", "0", "markdown", "1"
@@ -267,8 +289,28 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 //  ispublic   : "true", "1", "false", "0"
 //  tags       : tag1,tag2,tag3, can be empty
 func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
-	// TODO: write me
-	httpServerError(w, r)
+	LogInfof("handleAPICreateNote(): url: '%s'\n", r.URL)
+	dbUser := getUserFromCookie(w, r)
+	if dbUser == nil {
+		LogErrorf("handleAPICreateNote(): not logged int\n")
+		httpServerError(w, r)
+		return
+	}
+	// TODO: notIDHash not supported yet
+	note := newNoteFromArgs(r)
+	if note == nil {
+		LogErrorf("handleAPICreateNote(): newNoteFromArgs() returned nil\n")
+		httpServerError(w, r)
+		return
+	}
+
+	_, err := dbCreateNewNote(dbUser.ID, note)
+	if err != nil {
+		LogErrorf("handleAPICreateNote(): dbCreateNewNote() failed with %s\n", err)
+		httpServerError(w, r)
+		return
+	}
+	httpOkWithText(w, "note created")
 }
 
 func registerHTTPHandlers() {

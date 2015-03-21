@@ -18,19 +18,18 @@ import (
 )
 
 const (
-	tagsSepByte                 = 30 // record separator
-	kjkLogin                    = "google:kkowalczyk@gmail.com"
+	tagsSepByte                 = 30          // record separator
 	snippetSizeThreshold        = 1024        // 1 KB
 	cachedContentSizeThresholed = 1024 * 1024 // 1 MB
 	tagPublic                   = "__public"
 )
 
 const (
-	formatInvalid = iota
-	formatText
-	formatMarkdown
-	formatHTML
-	formatLast = formatHTML
+	formatInvalid  = 0
+	formatText     = 1
+	formatMarkdown = 2
+	formatHTML     = 3
+	formatLast     = formatHTML
 )
 
 var (
@@ -46,6 +45,29 @@ var (
 func init() {
 	userNameToCachedInfo = make(map[string]*CachedUserInfo)
 	contentCache = make(map[string]*CachedContentInfo)
+}
+
+// returns formatInvalid if invalid format
+func formatFromString(s string) int {
+	s = strings.ToLower(s)
+	switch s {
+	case "text", "1":
+		return formatText
+	case "markdown", "2":
+		return formatMarkdown
+	case "html", "3":
+		return formatHTML
+	default:
+		return formatInvalid
+	}
+}
+
+func boolFromString(s string) bool {
+	s = strings.TrimSpace(s)
+	if s == "1" || s == "true" {
+		return true
+	}
+	return false
 }
 
 // CachedContentInfo is content with time when it was cached
@@ -91,6 +113,15 @@ type Note struct {
 	HumanSize string
 	IsPublic  bool
 	IDStr     string
+}
+
+// NewNote describes a new note to be inserted into a database
+type NewNote struct {
+	title     string
+	format    int
+	content   []byte
+	tags      []string
+	createdAt time.Time
 }
 
 type notesByCreatedAt []*Note
@@ -241,15 +272,6 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	mu.Unlock()
 	LogVerbosef("took %s for user '%s'\n", time.Since(timeStart), userHandle)
 	return res, nil
-}
-
-// NewNote describes a new note to be inserted into a database
-type NewNote struct {
-	title     string
-	format    int
-	content   []byte
-	tags      []string
-	createdAt time.Time
 }
 
 func ensureValidFormat(format int) {
@@ -598,14 +620,6 @@ func deleteDatabaseMust() {
 func recreateDatabaseMust() {
 	deleteDatabaseMust()
 	createDatabaseMust()
-	/*
-		user, err := getUserByLogin(kjkLogin)
-		if err != nil {
-			LogErrorf("getUserByLogin() failed with %s\n", err)
-		} else {
-			LogVerbosef("userId: %d\n", user.ID)
-		}*/
-
 }
 
 // note: no locking. the presumption is that this is called at startup and
