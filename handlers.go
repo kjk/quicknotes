@@ -1,50 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/kjk/u"
 )
-
-func httpOkBytesWithContentType(w http.ResponseWriter, contentType string, content []byte) {
-	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("Content-Length", strconv.Itoa(len(content)))
-	w.Write(content)
-}
-
-func httpOkWithText(w http.ResponseWriter, s string) {
-	w.Header().Set("Content-Type", "text/plain")
-	io.WriteString(w, s)
-}
-
-func httpOkWithJSON(w http.ResponseWriter, v interface{}) {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		// should never happen
-		LogErrorf("json.MarshalIndent() failed with %q\n", err)
-	}
-	httpOkBytesWithContentType(w, "application/json", b)
-}
-
-func httpJSONError(w http.ResponseWriter, format string, arg ...interface{}) {
-	msg := fmt.Sprintf(format, arg...)
-	model := struct {
-		Error string
-	}{
-		Error: msg,
-	}
-	httpOkWithJSON(w, model)
-}
-
-func httpServerError(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "internal server error", http.StatusInternalServerError)
-}
 
 /*
 Big picture:
@@ -170,20 +133,20 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 	vals := r.URL.Query()
 	noteIDHashStr := strings.TrimSpace(vals.Get("id"))
 	if noteIDHashStr == "" {
-		httpJSONError(w, "/api/getnote.json: missing 'id' attribute")
+		httpErrorWithJSONf(w, "/api/getnote.json: missing 'id' attribute")
 		return
 	}
 
 	note := getNodeByIDHash(w, r, noteIDHashStr)
 	if note == nil {
-		httpJSONError(w, "/api/getnote.json: invalid id attribute '%s'", noteIDHashStr)
+		httpErrorWithJSONf(w, "/api/getnote.json: invalid id attribute '%s'", noteIDHashStr)
 		return
 	}
 
 	content, err := getCachedContent(note.ContentSha1)
 	if err != nil {
 		LogErrorf("getCachedContent() failed with %s\n", err)
-		httpJSONError(w, "/api/getnote.json: getCachedContent() failed with %s", err)
+		httpErrorWithJSONf(w, "/api/getnote.json: getCachedContent() failed with %s", err)
 		return
 	}
 	v := struct {
@@ -281,8 +244,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	return &note
 }
 
-// TODO: return json as a result?
-// POST /api/createorupdatenote
+// POST /api/createorupdatenote.json
 //  noteIdHash : if given, this is an update, if not, this is create new
 //  format     : "text", "0", "markdown", "1"
 //  content    : text of the note
@@ -293,24 +255,29 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
 		LogErrorf("handleAPICreateNote(): not logged int\n")
-		httpServerError(w, r)
+		httpErrorWithJSONf(w, "user not logged in")
 		return
 	}
 	// TODO: notIDHash not supported yet
 	note := newNoteFromArgs(r)
 	if note == nil {
 		LogErrorf("handleAPICreateNote(): newNoteFromArgs() returned nil\n")
-		httpServerError(w, r)
+		httpErrorWithJSONf(w, "newNoteFromArgs() returned nil")
 		return
 	}
 
-	_, err := dbCreateNewNote(dbUser.ID, note)
+	noteID, err := dbCreateNewNote(dbUser.ID, note)
 	if err != nil {
 		LogErrorf("handleAPICreateNote(): dbCreateNewNote() failed with %s\n", err)
-		httpServerError(w, r)
+		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
 		return
 	}
-	httpOkWithText(w, "note created")
+	v := struct {
+		IDStr string
+	}{
+		IDStr: hashInt(noteID),
+	}
+	httpOkWithJSON(w, v)
 }
 
 func registerHTTPHandlers() {
@@ -327,7 +294,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/importsimplenote", handleImportSimpleNote)
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
-	http.HandleFunc("/api/createnote", handleAPICreateNote)
+	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
 }
 
 func startWebServer() {
