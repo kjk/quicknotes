@@ -64,6 +64,11 @@ var AppUser = React.createClass({
     }.bind(this));
   },
 
+  createNewTextNoteCb: function(s) {
+    s = s.trim();
+    console.log("createNewTextNoteCb:", s)
+  },
+
   render: function() {
     var compact = false;
     var notesCount = this.state.allNotes.length;
@@ -76,11 +81,15 @@ var AppUser = React.createClass({
               notesCount={this.state.notesCount}/>
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
-                  notesCount={notesCount}
-                  isLoggedIn={this.state.isLoggedIn}
-                  showPublicTags={showPublicTags}
-                  onTagSelected={this.tagSelected}/>
-                <NotesList notes={this.state.selectedNotes} compact={compact}/>
+                notesCount={notesCount}
+                isLoggedIn={this.state.isLoggedIn}
+                showPublicTags={showPublicTags}
+                onTagSelected={this.tagSelected}/>
+              <NotesList
+                notes={this.state.selectedNotes}
+                compact={compact}
+                createNewTextNoteCb={this.createNewTextNoteCb}
+              />
             </div>
         </div>
     );
