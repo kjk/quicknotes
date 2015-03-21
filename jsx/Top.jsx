@@ -6,7 +6,8 @@ var Top = React.createClass({
       paddingRight: 4,
       paddingLeft: 4,
       backgroundColor: "#0DBCBF",
-      color: "#FFF"
+      color: "#FFF",
+      textDecoration: "none"
     };
     var s2 = {
       fontWeight: "normal",
@@ -15,10 +16,12 @@ var Top = React.createClass({
       paddingLeft: 8
     };
 
+    // TODO: link should have a different style on hover, so it's more obvious
+    // it's a link
     return (
       <div id="header">
         <div className="left">
-          <span style={s1}>QuickNotes</span>
+          <a href="/" style={s1}>QuickNotes</a>
         </div>
 
         <div className="left" style={s3}>

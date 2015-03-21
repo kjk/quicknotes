@@ -32,7 +32,7 @@ var AppUser = React.createClass({
       isLoggedIn: false,
       notesUserHandle: "",
       loggedInUserHandle: ""
-    }
+    };
   },
 
   tagSelected: function(tag) {
@@ -59,7 +59,7 @@ var AppUser = React.createClass({
         tags: tags,
         notesUserHandle: json.NotesUserHandle,
         loggedInUserHandle: json.LoggedInUserHandle,
-        isLoggedIn: json.LoggedInUserHandle != "",
+        isLoggedIn: json.LoggedInUserHandle !== "",
       });
     }.bind(this));
   },
