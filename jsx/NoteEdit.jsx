@@ -6,10 +6,10 @@ var NoteEdit = React.createClass({
   render: function() {
     if (this.state.visible) {
       return (
-          <div className="btn-small note-edit"
+          <span className="btn-small"
                onClick={this.props.editCb}>
             edit
-          </div>
+          </span>
       );
     } else {
       return <div />

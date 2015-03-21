@@ -83,6 +83,10 @@ var AppUser = React.createClass({
     });
   },
 
+  deleteNoteCb: function(note) {
+    console.log("deleteNoteCb");
+  },
+
   render: function() {
     var compact = false;
     var notesCount = this.state.allNotes.length;
@@ -92,17 +96,20 @@ var AppUser = React.createClass({
             <Top isLoggedIn={this.state.isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.state.notesUserHandle}
-              notesCount={this.state.notesCount}/>
+              notesCount={this.state.notesCount}
+            />
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
                 notesCount={notesCount}
                 isLoggedIn={this.state.isLoggedIn}
                 showPublicTags={showPublicTags}
-                onTagSelected={this.tagSelected}/>
+                onTagSelected={this.tagSelected}
+              />
               <NotesList
                 notes={this.state.selectedNotes}
                 compact={compact}
                 createNewTextNoteCb={this.createNewTextNoteCb}
+                deleteNoteCb={this.deleteNoteCb}
               />
             </div>
         </div>

@@ -1,4 +1,5 @@
 var NoteEdit = require('./NoteEdit.jsx');
+var NoteDelete = require('./NoteDelete.jsx');
 var NotePartial = require('./NotePartial.jsx');
 
 function isSpecialTag(tag) {
@@ -43,11 +44,13 @@ var Note = React.createClass({
   mouseEnter: function(e) {
     e.preventDefault();
     this.refs.editBtn.setState({visible:true});
+    this.refs.deleteBtn.setState({visible:true});
   },
 
   mouseLeave: function(e) {
     e.preventDefault();
     this.refs.editBtn.setState({visible:false});
+    this.refs.deleteBtn.setState({visible:false});
   },
 
   createNoteSnippet: function(note) {
@@ -72,8 +75,15 @@ var Note = React.createClass({
           {this.createTags(note.Tags)}
         </div>
         {this.createNoteSnippet(note)}
+        <NoteDelete
+          note={note}
+          deleteNoteCb={this.props.deleteNoteCb}
+          ref="deleteBtn"
+        />
+      <div className="note-btn-wrap">
         <NoteEdit note={note} editCb={this.editNote} ref="editBtn"/>
         <NotePartial note={note} />
+      </div>
       </div>
     );
   }
