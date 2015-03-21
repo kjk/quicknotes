@@ -33,17 +33,17 @@ const (
 )
 
 var (
-	sqlDb                *sql.DB
-	sqlDbMu              sync.Mutex
-	tagSepStr            = string([]byte{30})
-	userNameToCachedInfo map[string]*CachedUserInfo
-	contentCache         map[string]*CachedContentInfo
+	sqlDb              *sql.DB
+	sqlDbMu            sync.Mutex
+	tagSepStr          = string([]byte{30})
+	userIDToCachedInfo map[int]*CachedUserInfo
+	contentCache       map[string]*CachedContentInfo
 	// general purpose mutex for short-lived ops (like lookup/insert in a map)
 	mu sync.Mutex
 )
 
 func init() {
-	userNameToCachedInfo = make(map[string]*CachedUserInfo)
+	userIDToCachedInfo = make(map[int]*CachedUserInfo)
 	contentCache = make(map[string]*CachedContentInfo)
 }
 
@@ -122,6 +122,12 @@ type NewNote struct {
 	content   []byte
 	tags      []string
 	createdAt time.Time
+}
+
+// CachedUserInfo has cached user info
+type CachedUserInfo struct {
+	user  *DbUser
+	notes []*Note
 }
 
 type notesByCreatedAt []*Note
@@ -203,12 +209,6 @@ func (n *Note) Content() string {
 	return string(content)
 }
 
-// CachedUserInfo has cached user info
-type CachedUserInfo struct {
-	user  *DbUser
-	notes []*Note
-}
-
 func getCachedContent(sha1 []byte) ([]byte, error) {
 	k := string(sha1)
 	mu.Lock()
@@ -242,22 +242,22 @@ func getNoteContent(note *Note) ([]byte, error) {
 	return getCachedContent(note.ContentSha1)
 }
 
-func clearCachedUserInfoByHandle(userHandle string) {
+func clearCachedUserInfo(userID int) {
 	mu.Lock()
-	delete(userNameToCachedInfo, userHandle)
+	delete(userIDToCachedInfo, userID)
 	mu.Unlock()
 }
 
-func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
+func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	mu.Lock()
-	i := userNameToCachedInfo[userHandle]
+	i := userIDToCachedInfo[userID]
 	mu.Unlock()
 	if i != nil {
-		LogVerbosef("user '%s', got from cache\n", userHandle)
+		LogVerbosef("user '%d', got from cache\n", userID)
 		return i, nil
 	}
 	timeStart := time.Now()
-	user, err := dbGetUserByHandle(userHandle)
+	user, err := dbGetUserByID(userID)
 	if user == nil {
 		return nil, err
 	}
@@ -274,10 +274,18 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 		notes: notes,
 	}
 	mu.Lock()
-	userNameToCachedInfo[userHandle] = res
+	userIDToCachedInfo[userID] = res
 	mu.Unlock()
-	LogVerbosef("took %s for user '%s'\n", time.Since(timeStart), userHandle)
+	LogVerbosef("took %s for user '%d'\n", time.Since(timeStart), userID)
 	return res, nil
+}
+
+func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
+	user, err := dbGetUserByHandle(userHandle)
+	if err != nil {
+		return nil, err
+	}
+	return getCachedUserInfo(user.ID)
 }
 
 func ensureValidFormat(format int) {
@@ -460,15 +468,18 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		tx.Rollback()
 		return 0, err
 	}
+	clearCachedUserInfo(userID)
 	return int(noteID), tx.Commit()
 }
 
-func dbDeleteNote(noteID int) error {
+// TODO: change this to 'deleted' attribute
+func dbDeleteNote(userID, noteID int) error {
 	db := getDbMust()
 	q := `
 DELETE FROM notes
 WHERE n.id=?`
 	_, err := db.Exec(q, noteID)
+	clearCachedUserInfo(userID)
 	return err
 }
 
@@ -574,6 +585,7 @@ func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	return &user, nil
 }
 
+// TODO: cache this in memory as dbGetUserByIDCached
 func dbGetUserByID(userID int) (*DbUser, error) {
 	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
 	return dbGetUserByQuery(q, userID)

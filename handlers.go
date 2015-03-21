@@ -263,7 +263,6 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
 		return
 	}
-	clearCachedUserInfoByHandle(dbUser.Handle.String)
 	v := struct {
 		IDStr string
 	}{
@@ -295,12 +294,11 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "note doesn't belong to this user")
 		return
 	}
-	err = dbDeleteNote(noteID)
+	err = dbDeleteNote(dbUser.ID, noteID)
 	if err != nil {
 		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
 		return
 	}
-	clearCachedUserInfoByHandle(dbUser.Handle.String)
 	v := struct {
 		Msg string
 	}{

@@ -150,10 +150,6 @@ func main() {
 	}
 
 	initAppMust()
-	if false {
-		dbGetUserByHandle("unkown user")
-		return
-	}
 	startWebServer()
 	// TODO: this isn't actually called
 	localStore.Close()
