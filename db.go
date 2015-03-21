@@ -463,6 +463,15 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	return int(noteID), tx.Commit()
 }
 
+func dbDeleteNote(noteID int) error {
+	db := getDbMust()
+	q := `
+DELETE FROM notes
+WHERE n.id=?`
+	_, err := db.Exec(q, noteID)
+	return err
+}
+
 func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()

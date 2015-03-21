@@ -45,10 +45,6 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplIndex, model)
 }
 
-func getReferer(r *http.Request) string {
-	return r.Header.Get("Referer")
-}
-
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
@@ -87,9 +83,10 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplUser, model)
 }
 
-func getNodeByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) *Note {
+func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) *Note {
+	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
 	noteID := dehashInt(noteIDHashStr)
-	LogInfof("note id str: '%s'\n", noteIDHashStr)
+	LogInfof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		return nil
@@ -115,7 +112,7 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		noteIDHashStr = noteIDHashStr[:idx-1]
 	}
 
-	note := getNodeByIDHash(w, r, noteIDHashStr)
+	note := getNoteByIDHash(w, r, noteIDHashStr)
 	if note == nil {
 		http.NotFound(w, r)
 		return
@@ -130,16 +127,10 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 
 // /api/getnote.json?id={note_id_hash}
 func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
-	vals := r.URL.Query()
-	noteIDHashStr := strings.TrimSpace(vals.Get("id"))
-	if noteIDHashStr == "" {
-		httpErrorWithJSONf(w, "/api/getnote.json: missing 'id' attribute")
-		return
-	}
-
-	note := getNodeByIDHash(w, r, noteIDHashStr)
+	noteIDHashStr := r.FormValue("id")
+	note := getNoteByIDHash(w, r, noteIDHashStr)
 	if note == nil {
-		httpErrorWithJSONf(w, "/api/getnote.json: invalid id attribute '%s'", noteIDHashStr)
+		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
 		return
 	}
 
@@ -281,6 +272,43 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
+// GET /api/deletenote.json
+// noteIdHash
+func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
+	LogInfof("handleAPIDeleteNote(): url: '%s'\n", r.URL)
+	dbUser := getUserFromCookie(w, r)
+	if dbUser == nil {
+		LogErrorf("handleAPIDeleteNote(): not logged int\n")
+		httpErrorWithJSONf(w, "user not logged in")
+		return
+	}
+
+	noteIDHashStr := strings.TrimSpace(r.FormValue("noteIdHash"))
+	noteID := dehashInt(noteIDHashStr)
+	LogInfof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "note doesn't exist")
+		return
+	}
+	if note.UserID != dbUser.ID {
+		httpErrorWithJSONf(w, "note doesn't belong to this user")
+		return
+	}
+	err = dbDeleteNote(noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
+		return
+	}
+	clearCachedUserInfoByHandle(dbUser.Handle.String)
+	v := struct {
+		Msg string
+	}{
+		Msg: "note has been deleted",
+	}
+	httpOkWithJSON(w, v)
+}
+
 func registerHTTPHandlers() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
@@ -296,6 +324,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
+	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
 }
 
 func startWebServer() {

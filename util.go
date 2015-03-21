@@ -49,3 +49,7 @@ func httpErrorWithJSONf(w http.ResponseWriter, format string, arg ...interface{}
 func httpServerError(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "internal server error", http.StatusInternalServerError)
 }
+
+func getReferer(r *http.Request) string {
+	return r.Header.Get("Referer")
+}
