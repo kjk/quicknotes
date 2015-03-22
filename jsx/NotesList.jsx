@@ -4,18 +4,16 @@ var NewNoteSmall = require('./NewNoteSmall.jsx');
 var NotesList = React.createClass({
 
   render: function () {
-    var compact = this.props.compact;
-    var createNewTextNoteCb = this.props.createNewTextNoteCb;
-    var deleteNoteCb = this.props.deleteNoteCb;
+    var self = this;
     return (
       <div className="notes-list">
-        <NewNoteSmall createNewTextNoteCb={createNewTextNoteCb}/>
+        <NewNoteSmall createNewTextNoteCb={this.props.createNewTextNoteCb}/>
         {this.props.notes.map(function(note) {
           return <Note
-            compact={compact}
+            compact={self.props.compact}
             note={note}
             key={note.IDStr}
-            deleteNoteCb={deleteNoteCb}
+            delUndelNoteCb={self.props.delUndelNoteCb}
           />;
         })}
       </div>

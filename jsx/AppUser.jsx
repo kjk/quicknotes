@@ -83,8 +83,8 @@ var AppUser = React.createClass({
     });
   },
 
-  deleteNoteCb: function(note) {
-    console.log("deleteNoteCb");
+  delUndelNoteCb: function(note) {
+    console.log("delUndelNoteCb");
   },
 
   render: function() {
@@ -109,7 +109,7 @@ var AppUser = React.createClass({
                 notes={this.state.selectedNotes}
                 compact={compact}
                 createNewTextNoteCb={this.createNewTextNoteCb}
-                deleteNoteCb={this.deleteNoteCb}
+                delUndelNoteCb={this.delUndelNoteCb}
               />
             </div>
         </div>

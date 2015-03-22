@@ -290,3 +290,7 @@ html,body{
 .tag:hover {
   background-color: lightgrey;
 }
+
+.noteLink {
+  margin-left: 8px;
+}
