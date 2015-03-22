@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -117,6 +118,9 @@ func startJsxWatch() {
 
 func main() {
 	var err error
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	parseFlags()
 	logToStdout = true
 	verifyDirs()
