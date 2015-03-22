@@ -25,7 +25,7 @@ function getDeletedNotdeletedNotes(notes) {
   return {
     deleted: deleted,
     notDeleted: notDeleted
-  }
+  };
 }
 
 function filterNotesByTag(notes, tag) {

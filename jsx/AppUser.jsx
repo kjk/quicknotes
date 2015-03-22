@@ -13,10 +13,10 @@ function tagsFromNotes(notes) {
   }
   notes.map(function (note) {
     if (note.IsDeleted) {
-      tags["__deleted"] += 1;
+      tags.__deleted += 1;
       return;
     } else {
-      tags["__all"] += 1;
+      tags.__all += 1;
     }
     if (note.Tags) {
       note.Tags.map(function (tag) {
@@ -92,11 +92,9 @@ var AppUser = React.createClass({
   delUndelNoteCb: function(note) {
     var data = {
       noteIdHash: note.IDStr
-    }
+    };
     if (note.IsDeleted) {
-      console.log("delUndelNoteCb: undelete")
       $.post( "/api/undeletenote.json", data, function() {
-        console.log("undeleted note ", note.Title)
         this.updateNotes();
       }.bind(this))
       .fail(function() {
@@ -105,7 +103,6 @@ var AppUser = React.createClass({
     } else {
       console.log("delUndelNoteCb: delete");
       $.post( "/api/deletenote.json", data, function() {
-        console.log("deleted note ", note.Title)
         this.updateNotes();
       }.bind(this))
       .fail(function() {
