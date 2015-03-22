@@ -124,12 +124,7 @@ var Note = React.createClass({
 
   createActions: function(note) {
     if (this.state.showActions) {
-      return (
-        <span>
-          {this.createDelUndel(note)}
-          {this.createEdit(note)}
-          {this.createViewLink(note)}
-        </span>
+      return (   <span>{this.createDelUndel(note)}{this.createEdit(note)}{this.createViewLink(note)}</span>
       );
     }
     return (

@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"sort"
 	"strings"
 	"sync"
@@ -306,12 +305,6 @@ func getSqlConnectionRoot() string {
 
 func getSqlConnectionQuickNotes() string {
 	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
-}
-
-func fatalIfErr(err error, what string) {
-	if err != nil {
-		log.Fatalf("%s failed with %s\n", what, err)
-	}
 }
 
 func execMust(db *sql.DB, q string, args ...interface{}) {

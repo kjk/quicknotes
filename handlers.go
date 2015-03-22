@@ -224,6 +224,10 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	if len(note.content) == 0 {
 		return nil
 	}
+	note.title = strings.TrimSpace(r.FormValue("title"))
+	if note.title == "" && note.format == formatText {
+		note.title, note.content = noteToTitleContent(note.content)
+	}
 	tagsArg := strings.TrimSpace(r.FormValue("tags"))
 	note.tags = deserializeTags(tagsArg)
 	isPublicArg := strings.TrimSpace(r.FormValue("ispublic"))
@@ -236,6 +240,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 
 // POST /api/createorupdatenote.json
 //  noteIdHash : if given, this is an update, if not, this is create new
+//  title      : (optional)
 //  format     : "text", "0", "markdown", "1"
 //  content    : text of the note
 //  ispublic   : "true", "1", "false", "0"

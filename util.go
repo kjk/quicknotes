@@ -1,12 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 )
+
+func fatalIfErr(err error, what string) {
+	if err != nil {
+		log.Fatalf("%s failed with %s\n", what, err)
+	}
+}
 
 func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
 	msg := format
@@ -52,4 +60,24 @@ func httpServerError(w http.ResponseWriter, r *http.Request) {
 
 func getReferer(r *http.Request) string {
 	return r.Header.Get("Referer")
+}
+
+// heuristic: auto-detects title from the note body. Title is first line if
+// relatively short and followed by empty line
+func noteToTitleContent(d []byte) (string, []byte) {
+	// title is a short line followed by an empty line
+	advance1, line1, err := bufio.ScanLines(d, false)
+	if err != nil || len(line1) > 100 {
+		return "", d
+	}
+	advance2, line2, err := bufio.ScanLines(d[advance1:], false)
+	if err != nil || len(line2) > 0 {
+		return "", d
+	}
+	title, content := string(line1), d[advance1+advance2:]
+	if len(content) == 0 && len(title) > 0 {
+		content = []byte(title)
+		title = ""
+	}
+	return title, content
 }
