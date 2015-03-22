@@ -25,17 +25,17 @@ var Note = React.createClass({
       return (
         <span className={cls}>{note.Title}</span>
         );
-    };
+    }
   },
 
   createTags: function(tags) {
     if (tags) {
       var tagEls = tags.map(function (tag) {
         if (!isSpecialTag(tag)) {
-          tag = "#" + tag
+          tag = "#" + tag;
           return (
             <span key={tag} className="titletag">{tag}</span>
-          )
+          );
         }
       });
 
@@ -150,4 +150,4 @@ var Note = React.createClass({
   }
 });
 
-module.exports = Note
+module.exports = Note;

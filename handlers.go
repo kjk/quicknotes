@@ -344,6 +344,52 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
+// GET /api/makenoteprivate.json
+// args:
+// - noteIdHash
+func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := noteDelUndelCommon(w, r)
+	if dbUser == nil {
+		return
+	}
+	err := dbMakeNotePrivate(dbUser.ID, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to make note private with '%s'", err)
+		return
+	}
+	LogInfof("made note %d private\n", noteID)
+	v := struct {
+		Msg string
+	}{
+		Msg: "made note private",
+	}
+	httpOkWithJSON(w, v)
+}
+
+// GET /api/makenotepublic.json
+// args:
+// - noteIdHash
+func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := noteDelUndelCommon(w, r)
+	if dbUser == nil {
+		return
+	}
+	err := dbMakeNotePublic(dbUser.ID, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to make note public with '%s'", err)
+		return
+	}
+	LogInfof("made note %d public\n", noteID)
+	v := struct {
+		Msg string
+	}{
+		Msg: "made note public",
+	}
+	httpOkWithJSON(w, v)
+}
+
 func registerHTTPHandlers() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
@@ -361,6 +407,8 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
 	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)
+	http.HandleFunc("/api/makenoteprivate.json", handleAPIMakeNotePrivate)
+	http.HandleFunc("/api/makenotepublic.json", handleAPIMakeNotePublic)
 }
 
 func startWebServer() {

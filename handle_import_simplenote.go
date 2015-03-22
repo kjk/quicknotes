@@ -12,6 +12,16 @@ const (
 	simplenoteAPIKey = "b6550d1ac75048988d9007aeae5dda6b"
 )
 
+func tagsToPublicTags(tags []string) (bool, []string) {
+	for i, tag := range tags {
+		if tag == "__public" {
+			tags = append(tags[:i], tags[i+1:]...)
+			return true, tags
+		}
+	}
+	return false, tags
+}
+
 // url: GET /importsimplenote?email=${email}&password=${password}
 func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 	LogInfof("handleImportSimpleNote(): url: '%s'\n", r.URL.Path)
@@ -35,10 +45,10 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 	for _, note := range notes {
 		newNote := NewNote{
 			format:    formatText,
-			tags:      note.Tags,
 			createdAt: note.CreationDate,
 			isDeleted: note.Deleted,
 		}
+		newNote.isPublic, newNote.tags = tagsToPublicTags(note.Tags)
 		newNote.title, newNote.content = noteToTitleContent([]byte(note.Content))
 		if len(newNote.content) == 0 {
 			LogInfof("   skipping an empty note\n")

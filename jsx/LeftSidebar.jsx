@@ -45,7 +45,7 @@ var LeftSidebar = React.createClass({
     if (showDeletedTag) {
       tagNames.unshift("__deleted");
     }
-    var nPublic = tags["__public"];
+    var nPublic = tags.__public;
     if (this.props.showPublicTags && nPublic > 0) {
       tagNames.unshift("__public");
     }
@@ -61,7 +61,7 @@ var LeftSidebar = React.createClass({
           tagName={tagName}
           count={count}
           key={tagName} />
-      )
+      );
     });
     return (
       <div id="leftSidebar">

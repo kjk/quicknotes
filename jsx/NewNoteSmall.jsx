@@ -11,7 +11,7 @@ var NewNoteSmall = React.createClass({
         var s = e.target.value;
         e.target.value = "";
         this.newNote(s);
-        return
+        return;
     }
     //console.log("handleKeyPress: code:", e.charCode, " ctrl: ", e.ctrlKey);
   },
