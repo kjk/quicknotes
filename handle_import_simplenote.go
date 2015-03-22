@@ -56,6 +56,7 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 			format:    formatText,
 			tags:      note.Tags,
 			createdAt: note.CreationDate,
+			isDeleted: note.Deleted,
 		}
 		newNote.title, newNote.content = noteToTitleContent([]byte(note.Content))
 		if len(newNote.content) == 0 {
@@ -67,8 +68,11 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			LogErrorf("dbCreateNewNote() failed with %s\n", err)
 		}
-		LogInfof("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
 		msg := fmt.Sprintf("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+		if newNote.isDeleted {
+			msg = fmt.Sprintf("deleted note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+		}
+		LogInfof(msg) // TODO: add LogInfo(), this is not great if msg contains formatting instructions
 		w.Write([]byte(msg))
 		if f, ok := w.(http.Flusher); ok {
 			f.Flush()

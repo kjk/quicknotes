@@ -95,7 +95,7 @@ func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr strin
 		return note
 	}
 	dbUser := getUserFromCookie(w, r)
-	if dbUser == nil || dbUser.ID != note.UserID {
+	if dbUser == nil || dbUser.ID != note.userID {
 		// not authorized to view this note
 		// TODO: when we have sharing via secret link we'll have to check
 		// permissions
@@ -290,7 +290,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "note doesn't exist")
 		return
 	}
-	if note.UserID != dbUser.ID {
+	if note.userID != dbUser.ID {
 		httpErrorWithJSONf(w, "note doesn't belong to this user")
 		return
 	}

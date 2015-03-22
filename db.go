@@ -92,8 +92,9 @@ type DbUser struct {
 // DbNote describes note as in database
 type DbNote struct {
 	id            int
-	UserID        int
+	userID        int
 	CurrVersionID int
+	IsDeleted     bool
 	Size          int
 	Title         string
 	Format        int
@@ -122,6 +123,7 @@ type NewNote struct {
 	content   []byte
 	tags      []string
 	createdAt time.Time
+	isDeleted bool
 }
 
 // CachedUserInfo has cached user info
@@ -429,8 +431,8 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	q := `INSERT INTO notes (user_id, curr_version_id) VALUES (?, ?)`
-	res, err := db.Exec(q, userID, 0)
+	q := `INSERT INTO notes (user_id, curr_version_id, is_deleted) VALUES (?, ?, ?)`
+	res, err := db.Exec(q, userID, 0, note.isDeleted)
 	if err != nil {
 		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
 		tx.Rollback()
@@ -473,6 +475,17 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 }
 
 // TODO: change this to 'deleted' attribute
+func dbPurgeNote(userID, noteID int) error {
+	db := getDbMust()
+	// TODO: delete all versions? what if vesi
+	q := `
+DELETE FROM notes
+WHERE n.id=?`
+	_, err := db.Exec(q, noteID)
+	clearCachedUserInfo(userID)
+	return err
+}
+
 func dbDeleteNote(userID, noteID int) error {
 	db := getDbMust()
 	q := `
@@ -491,13 +504,14 @@ SELECT
 	n.id,
 	n.user_id,
 	n.curr_version_id,
+	n.is_deleted,
 	v.created_at,
 	v.size,
 	v.format,
 	v.title,
 	v.content_sha1,
 	v.snippet_sha1,
-	v.tags
+	v.tags,
 FROM notes n, versions v
 WHERE user_id=? AND v.id = n.curr_version_id`
 	rows, err := db.Query(q, user.ID)
@@ -510,8 +524,9 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 		var tagsSerialized string
 		err = rows.Scan(
 			&n.id,
-			&n.UserID,
+			&n.userID,
 			&n.CurrVersionID,
+			&n.IsDeleted,
 			&n.CreatedAt,
 			&n.Size,
 			&n.Format,
@@ -543,6 +558,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 		n.id,
 		n.user_id,
 		n.curr_version_id,
+		n.is_deleted,
 		v.created_at,
 		v.size,
 		v.format,
@@ -554,8 +570,9 @@ func dbGetNoteByID(id int) (*Note, error) {
 	WHERE n.id=? AND v.id = n.curr_version_id`
 	err := db.QueryRow(q, id).Scan(
 		&n.id,
-		&n.UserID,
+		&n.userID,
 		&n.CurrVersionID,
+		&n.IsDeleted,
 		&n.CreatedAt,
 		&n.Size,
 		&n.Format,
