@@ -16,7 +16,7 @@ function tagsFromNotes(notes) {
       tags.__deleted += 1;
       return;
     } else {
-      tag.__all += 1;
+      tags.__all += 1;
     }
     if (note.Tags) {
       note.Tags.map(function (tag) {
