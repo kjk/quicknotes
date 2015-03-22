@@ -2,7 +2,6 @@
 // Note: unused
 var NewNote = React.createClass({
   newNote: function() {
-    console.log("new note");
   },
 
   render: function() {

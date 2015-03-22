@@ -14,6 +14,7 @@ var NotesList = React.createClass({
             note={note}
             key={note.IDStr}
             delUndelNoteCb={self.props.delUndelNoteCb}
+            makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
           />;
         })}
       </div>

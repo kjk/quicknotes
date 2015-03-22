@@ -6,18 +6,26 @@ var LeftSidebar = require('./LeftSidebar.jsx');
 function tagsFromNotes(notes) {
   var tags = {
     __all: 0,
-    __deleted: 0
+    __deleted: 0,
+    __public: 0,
   };
   if (!notes) {
     return {};
   }
+
   notes.map(function (note) {
+    // a deleted note won't show up under other tags or under "all" or "public"
     if (note.IsDeleted) {
       tags.__deleted += 1;
       return;
-    } else {
-      tags.__all += 1;
     }
+
+    tags.__all += 1;
+
+    if (note.IsPublic) {
+      tags.__public += 1;
+    }
+
     if (note.Tags) {
       note.Tags.map(function (tag) {
         utils.dictInc(tags, tag);
@@ -74,7 +82,6 @@ var AppUser = React.createClass({
 
   createNewTextNoteCb: function(s) {
     s = s.trim();
-    console.log("createNewTextNoteCb:", s);
     var data = {
       format: "text",
       content: s
@@ -98,35 +105,36 @@ var AppUser = React.createClass({
         this.updateNotes();
       }.bind(this))
       .fail(function() {
-        alert( "error undeleting a note" );
+        alert( "error undeleting a note");
       });
     } else {
       $.post( "/api/deletenote.json", data, function() {
         this.updateNotes();
       }.bind(this))
       .fail(function() {
-        alert( "error deleting a note" );
+        alert( "error deleting a note");
       });
     }
   },
 
-  toggleNotePublicStateCb: function(note) {
+  makeNotePublicPrivateCb: function(note) {
     var data = {
       noteIdHash: note.IDStr
     };
+    console.log("makeNotePublicPrivateCb, note.IsPublic: ", note.IsPublic);
     if (note.IsPublic) {
-      $.post( "/api/undeletenote.json", data, function() {
+      $.post( "/api/makenoteprivate.json", data, function() {
         this.updateNotes();
       }.bind(this))
       .fail(function() {
-        alert( "error undeleting a note" );
+        alert( "error making note private");
       });
     } else {
-      $.post( "/api/deletenote.json", data, function() {
+      $.post( "/api/makenotepublic.json", data, function() {
         this.updateNotes();
       }.bind(this))
       .fail(function() {
-        alert( "error deleting a note" );
+        alert( "error making note private");
       });
     }
   },
@@ -152,6 +160,7 @@ var AppUser = React.createClass({
                 compact={compact}
                 createNewTextNoteCb={this.createNewTextNoteCb}
                 delUndelNoteCb={this.delUndelNoteCb}
+                makeNotePublicPrivateCb={this.makeNotePublicPrivateCb}
               />
             </div>
         </div>

@@ -1,10 +1,3 @@
-function isSpecialTag(tag) {
-  if (tag == "__public") {
-    return true;
-  }
-  return false;
-}
-
 function urlifyTitle(s) {
   s = s.slice(0,32);
   return s.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-');
@@ -18,7 +11,6 @@ var Note = React.createClass({
     };
   },
 
-
   createTitle: function(note) {
     if (note.Title !== "") {
       var cls = "title tcol" + note.ColorID;
@@ -29,20 +21,21 @@ var Note = React.createClass({
   },
 
   createTags: function(tags) {
-    if (tags) {
-      var tagEls = tags.map(function (tag) {
-        if (!isSpecialTag(tag)) {
-          tag = "#" + tag;
-          return (
-            <span key={tag} className="titletag">{tag}</span>
-          );
-        }
-      });
-
+    if (!tags) {
       return (
-        <span>{tagEls}</span>
+        <span></span>
       );
     }
+    var tagEls = tags.map(function (tag) {
+        tag = "#" + tag;
+        return (
+          <span key={tag} className="titletag">{tag}</span>
+        );
+    });
+
+    return (
+      <span>{tagEls}</span>
+    );
   },
 
   mouseEnter: function(e) {
@@ -74,6 +67,13 @@ var Note = React.createClass({
     this.props.delUndelNoteCb(this.props.note);
   },
 
+  handleMakePublicPrivate: function(e) {
+    e.preventDefault();
+    var note = this.props.note;
+    console.log("handleMakePublicPrivate, note.IsPublic: ", note.IsPublic);
+    this.props.makeNotePublicPrivateCb(note);
+  },
+
   createDelUndel: function(note) {
     if (note.IsDeleted) {
       return (
@@ -86,9 +86,8 @@ var Note = React.createClass({
   },
 
   handleEdit: function(e) {
-    console.log("handleEdit");
     e.preventDefault();
-    //this.props.editCb(this.props.note)
+    //this.props.editCb(this.props.note);
   },
 
   createEdit: function(note) {
@@ -115,16 +114,42 @@ var Note = React.createClass({
     }
     var url = "/n/" + note.IDStr + title;
     return (
-      <span>
-        <a href={url} className="noteLink" target="_blank">{txt}</a>
-        &nbsp;<span style={s}>{note.HumanSize}</span>
-      </span>
+      <a href={url} className="noteLink" target="_blank">{txt}</a>
     );
+  },
+
+  createSize: function(note) {
+    var s = {
+      color: "gray",
+      fontSize: "80%"
+    };
+    return (
+      <span style={s}>{note.HumanSize}</span>
+    );
+  },
+
+  createMakePublicPrivate: function(note) {
+    if (note.IsPublic) {
+      return (
+        <a href="#" className="noteLink" onClick={this.handleMakePublicPrivate}>make private</a>
+      );
+    } else {
+      return (
+        <a href="#" className="noteLink" onClick={this.handleMakePublicPrivate}>make public</a>
+      );
+    }
   },
 
   createActions: function(note) {
     if (this.state.showActions) {
-      return (   <span>{this.createDelUndel(note)}{this.createEdit(note)}{this.createViewLink(note)}</span>
+      return (
+       <span>
+        {this.createDelUndel(note)}
+        {this.createMakePublicPrivate(note)}
+        {this.createEdit(note)}
+        {this.createViewLink(note)}
+        {this.createSize(note)}
+      </span>
       );
     }
     return (

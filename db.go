@@ -20,7 +20,6 @@ const (
 	tagsSepByte                 = 30          // record separator
 	snippetSizeThreshold        = 1024        // 1 KB
 	cachedContentSizeThresholed = 1024 * 1024 // 1 MB
-	tagPublic                   = "__public"
 )
 
 const (
@@ -119,7 +118,6 @@ type Note struct {
 	Snippet   string
 	IsPartial bool
 	HumanSize string
-	IsPublic  bool
 	IDStr     string
 }
 
@@ -152,15 +150,6 @@ func (s notesByCreatedAt) Less(i, j int) bool {
 	return s[i].CreatedAt.After(s[j].CreatedAt)
 }
 
-func hasPublicTag(tags []string) bool {
-	for _, tag := range tags {
-		if tag == tagPublic {
-			return true
-		}
-	}
-	return false
-}
-
 // SetSnippet sets a short version of note (if is big)
 func (n *Note) SetSnippet() {
 	if n.Snippet != "" {
@@ -179,7 +168,6 @@ func (n *Note) SetSnippet() {
 func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
 	n.HumanSize = humanize.Bytes(uint64(n.Size))
-	n.IsPublic = hasPublicTag(n.Tags)
 	n.IDStr = hashInt(n.id)
 	n.SetSnippet()
 }
@@ -295,7 +283,6 @@ func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	LogInfof("got user: %#v\n", user)
 	return getCachedUserInfo(user.ID)
 }
 
@@ -504,6 +491,7 @@ func dbUndeleteNote(userID, noteID int) error {
 }
 
 func dbSetNotePublicState(userID, noteID int, isPublic bool) error {
+	LogInfof("userID: %d, noteID: %d, isPublic: %v\n", userID, noteID, isPublic)
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
 	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`

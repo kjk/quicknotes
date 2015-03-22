@@ -232,10 +232,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	tagsArg := strings.TrimSpace(r.FormValue("tags"))
 	note.tags = deserializeTags(tagsArg)
 	isPublicArg := strings.TrimSpace(r.FormValue("ispublic"))
-	isPublic := boolFromString(isPublicArg)
-	if isPublic {
-		note.tags = append(note.tags, tagPublic)
-	}
+	note.isPublic = boolFromString(isPublicArg)
 	return &note
 }
 
