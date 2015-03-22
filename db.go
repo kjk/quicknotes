@@ -291,7 +291,6 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 }
 
 func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
-	LogInfof("userHandle: '%s'\n", userHandle)
 	user, err := dbGetUserByHandle(userHandle)
 	if err != nil {
 		return nil, err
@@ -625,8 +624,7 @@ func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	db := getDbMust()
 	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
-		if err != sql.ErrNoRows || true {
-			LogErrorf("db.QueryRow('%s') failed with %s\n", q, err)
+		if err != sql.ErrNoRows {
 			LogInfof("db.QueryRow('%s') failed with %s\n", q, err)
 		}
 		return nil, err
