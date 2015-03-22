@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>QuickNotes</title>
 
-    <style type=text/css>
+    <style type="text/css">
       body {
       }
       html,body{
@@ -62,8 +62,10 @@
   <body>
   <p>Welcome to QuickNotes!</p>
   {{if .UserHandle}}
-    <p>You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
-    <a href="/logout?redirect=/">Log out</a>.</p>
+    <p>
+      You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
+      <a href="/logout?redirect=/">Log out</a>.
+    </p>
     <form action="/importsimplenote" method="GET">
       <div>You can import your notes from simplenote.com:</div>
       <div>
@@ -79,12 +81,12 @@
       </div>
     </form>
   {{else}}
-    <p>You're not logged in. Log in with:
-      <ul>
-        <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
-        <!-- <li><a href="/logingithub?redirect=%2F">GitHub</a></li> -->
-        <!-- <li><a href="/logingoogle?redirect=%2F">Google</a></li> -->
-      </ul>
+    <p>You're not logged in. Log in with:</p>
+    <ul>
+      <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
+      <!-- <li><a href="/logingithub?redirect=%2F">GitHub</a></li> -->
+      <!-- <li><a href="/logingoogle?redirect=%2F">Google</a></li> -->
+    </ul>
   {{end}}
 
   </body>
