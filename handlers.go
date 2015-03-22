@@ -66,6 +66,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	userHandle := r.URL.Path[len("/u/"):]
 	i, err := getCachedUserInfoByHandle(userHandle)
 	if err != nil || i == nil {
+		LogInfof("no user '%s', url: '%s', err: %s\n", userHandle, r.URL, err)
 		http.NotFound(w, r)
 		return
 	}

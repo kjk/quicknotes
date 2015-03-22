@@ -46,6 +46,13 @@ func init() {
 	contentCache = make(map[string]*CachedContentInfo)
 }
 
+func getSqlConnectionRoot() string {
+	if flgIsLocal {
+		return "root@tcp(localhost:3306)/"
+	}
+	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
+}
+
 // returns formatInvalid if invalid format
 func formatFromString(s string) int {
 	s = strings.ToLower(s)
@@ -284,10 +291,12 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 }
 
 func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
+	LogInfof("userHandle: '%s'\n", userHandle)
 	user, err := dbGetUserByHandle(userHandle)
 	if err != nil {
 		return nil, err
 	}
+	LogInfof("got user: %#v\n", user)
 	return getCachedUserInfo(user.ID)
 }
 
@@ -298,14 +307,7 @@ func ensureValidFormat(format int) {
 	LogFatalf("invalid format: %d\n", format)
 }
 
-func getSqlConnectionRoot() string {
-	if flgIsLocal {
-		return "root@tcp(localhost:3306)/"
-	}
-	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
-}
-
-func getSqlConnectionQuickNotes() string {
+func getSqlConnection() string {
 	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
 }
 
@@ -336,7 +338,7 @@ func createDatabaseMust() *sql.DB {
 	execMust(db, `CREATE DATABASE quicknotes CHARACTER SET utf8 COLLATE utf8_general_ci`)
 	db.Close()
 
-	db, err = sql.Open("mysql", getSqlConnectionQuickNotes())
+	db, err = sql.Open("mysql", getSqlConnection())
 	fatalIfErr(err, "sql.Open()")
 	stmts := getCreateDbStatementsMust()
 	for _, stm := range stmts {
@@ -426,8 +428,8 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	q := `INSERT INTO notes (user_id, curr_version_id, is_deleted) VALUES (?, ?, ?)`
-	res, err := db.Exec(q, userID, 0, note.isDeleted)
+	q := `INSERT INTO notes (user_id, curr_version_id, is_deleted, is_public) VALUES (?, ?, ?, ?)`
+	res, err := db.Exec(q, userID, 0, note.isDeleted, note.isPublic)
 	if err != nil {
 		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
 		tx.Rollback()
@@ -623,8 +625,9 @@ func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	db := getDbMust()
 	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
-		if err != sql.ErrNoRows {
-			LogErrorf("db.QueryRow() failed with %s\n", err)
+		if err != sql.ErrNoRows || true {
+			LogErrorf("db.QueryRow('%s') failed with %s\n", q, err)
+			LogInfof("db.QueryRow('%s') failed with %s\n", q, err)
 		}
 		return nil, err
 	}
@@ -701,7 +704,7 @@ func getDbMust() *sql.DB {
 	}
 	sqlDbMu.Lock()
 	defer sqlDbMu.Unlock()
-	db, err := sql.Open("mysql", getSqlConnectionQuickNotes())
+	db, err := sql.Open("mysql", getSqlConnection())
 	if err != nil {
 		LogFatalf("sql.Open() failed with %s", err)
 	}
