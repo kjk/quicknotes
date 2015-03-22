@@ -30,7 +30,6 @@ CREATE TABLE versions (
     content_sha1    VARBINARY(20),
     snippet_sha1    VARBINARY(20),
     tags            VARCHAR(512),
-    is_deleted      TINYINT(1),
     PRIMARY KEY (id),
     INDEX (note_id)
 );
@@ -39,6 +38,7 @@ CREATE TABLE notes (
     id                INT NOT NULL AUTO_INCREMENT,
     user_id           INT NOT NULL ,
     curr_version_id   INT NOT NULL,
+    is_deleted        TINYINT(1),
     PRIMARY KEY (id),
     INDEX (user_id)
 );

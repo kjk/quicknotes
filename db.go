@@ -511,7 +511,7 @@ SELECT
 	v.title,
 	v.content_sha1,
 	v.snippet_sha1,
-	v.tags,
+	v.tags
 FROM notes n, versions v
 WHERE user_id=? AND v.id = n.curr_version_id`
 	rows, err := db.Query(q, user.ID)
