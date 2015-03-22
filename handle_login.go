@@ -224,6 +224,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+	LogInfof("created user %d with handle '%s'\n", user.ID, userHandle)
 	cookieVal := &SecureCookieValue{
 		UserID: user.ID,
 	}

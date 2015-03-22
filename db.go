@@ -593,10 +593,9 @@ func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	db := getDbMust()
 	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
+		if err != sql.ErrNoRows {
+			LogErrorf("db.QueryRow() failed with %s\n", err)
 		}
-		LogErrorf("db.QueryRow() failed with %s\n", err)
 		return nil, err
 	}
 	return &user, nil
@@ -631,10 +630,8 @@ func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
-	if err != nil {
-		return nil, err
-	}
 	if user != nil {
+		u.PanicIfErr(err)
 		return user, nil
 	}
 	userHandle, err := dbGetUniqueHandleFromLogin(userLogin)
