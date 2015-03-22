@@ -41,14 +41,15 @@ var AppUser = React.createClass({
     return {
       allNotes: [],
       selectedNotes: [],
-      selectedTag: "",
+      selectedTag: "__all",
       isLoggedIn: false,
       notesUserHandle: "",
       loggedInUserHandle: ""
     };
   },
 
-  tagSelected: function(tag) {
+  handleTagSelected: function(tag) {
+    console.log("selected tag: ", tag);
     var selectedNotes = utils.filterNotesByTag(this.state.allNotes, tag);
     this.setState({
       selectedNotes: selectedNotes,
@@ -153,7 +154,8 @@ var AppUser = React.createClass({
               <LeftSidebar tags={this.state.tags}
                 isLoggedIn={this.state.isLoggedIn}
                 showPublicTags={showPublicTags}
-                onTagSelected={this.tagSelected}
+                onTagSelected={this.handleTagSelected}
+                selectedTag={this.state.selectedTag}
               />
               <NotesList
                 notes={this.state.selectedNotes}

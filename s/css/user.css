@@ -291,6 +291,17 @@ html,body{
   background-color: lightgrey;
 }
 
+.tagSelected {
+  cursor: pointer;
+  background-color: lightblue;
+  clear: both;
+}
+
+.tagSelected:hover {
+  background-color: lightgrey;
+}
+
+
 .noteLink {
   margin-left: 8px;
 }
