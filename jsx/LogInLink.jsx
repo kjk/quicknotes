@@ -26,7 +26,7 @@ var LogInLink = React.createClass({
     return (
       <div className="left">
         <span className="left">
-          &nbsp;Your're note logged in&nbsp;
+          &nbsp;Your're not logged in&nbsp;
         </span>
         <span style={s}>Log in: <a href={twitterUrl}>with twitter</a></span>
       </div>
