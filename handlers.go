@@ -307,6 +307,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
 		return
 	}
+	LogInfof("deleted note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -324,15 +325,16 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 	if dbUser == nil {
 		return
 	}
-	err := dbDeleteNote(dbUser.ID, noteID)
+	err := dbUndeleteNote(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
+		httpErrorWithJSONf(w, "failed to undelete note with '%s'", err)
 		return
 	}
+	LogInfof("undeleted note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{
-		Msg: "note has been deleted",
+		Msg: "note has been undeleted",
 	}
 	httpOkWithJSON(w, v)
 }

@@ -490,8 +490,11 @@ WHERE n.id=?`
 func dbDeleteNote(userID, noteID int) error {
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
-	q := `UPDATE notes SET is_deleted=0 WHERE id=? AND user_id=?`
+	q := `UPDATE notes SET is_deleted=true WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, noteID, userID)
+	if err != nil {
+		LogErrorf("dbUndeleteNote() failed with '%s'\n", err)
+	}
 	clearCachedUserInfo(userID)
 	return err
 }
@@ -499,8 +502,11 @@ func dbDeleteNote(userID, noteID int) error {
 func dbUndeleteNote(userID, noteID int) error {
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
-	q := `UPDATE notes SET is_deleted=0 WHERE id=? AND user_id=?`
+	q := `UPDATE notes SET is_deleted=false WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, noteID, userID)
+	if err != nil {
+		LogErrorf("dbUndeleteNote() failed with '%s'\n", err)
+	}
 	clearCachedUserInfo(userID)
 	return err
 }

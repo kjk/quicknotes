@@ -79,12 +79,35 @@ var AppUser = React.createClass({
       this.updateNotes();
     }.bind(this))
     .fail(function() {
-      alert( "error" );
+      alert( "error creating new note" );
     });
   },
 
+  // TODO: after delete/undelete should show a message at the top
+  // with 'undo' link
   delUndelNoteCb: function(note) {
-    console.log("delUndelNoteCb");
+    var data = {
+      noteIdHash: note.IDStr
+    }
+    if (note.IsDeleted) {
+      console.log("delUndelNoteCb: undelete")
+      $.post( "/api/undeletenote.json", data, function() {
+        console.log("undeleted note ", note.Title)
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error undeleting a note" );
+      });
+    } else {
+      console.log("delUndelNoteCb: delete");
+      $.post( "/api/deletenote.json", data, function() {
+        console.log("deleted note ", note.Title)
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error deleting a note" );
+      });
+    }
   },
 
   render: function() {

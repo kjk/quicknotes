@@ -70,9 +70,8 @@ var Note = React.createClass({
   },
 
   handleDelUndel: function(e) {
-    console.log("handleDelUndel");
     e.preventDefault();
-    //this.props.deleteNoteCb(this.props.note);
+    this.props.delUndelNoteCb(this.props.note);
   },
 
   createDelUndel: function(note) {
