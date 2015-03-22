@@ -535,6 +535,7 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 		LogErrorf("db.Query('%s') failed with %s\n", q, err)
 		return nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var n Note
 		var tagsSerialized string
