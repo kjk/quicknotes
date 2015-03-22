@@ -11,6 +11,14 @@ function urlifyTitle(s) {
 }
 
 var Note = React.createClass({
+
+  getInitialState: function() {
+    return {
+      showActions: false
+    };
+  },
+
+
   createTitle: function(note) {
     if (note.Title !== "") {
       var cls = "title tcol" + note.ColorID;
@@ -38,13 +46,17 @@ var Note = React.createClass({
   },
 
   mouseEnter: function(e) {
-    // TODO: show delete/edit buttons
     e.preventDefault();
+    this.setState({
+      showActions: true
+    });
   },
 
   mouseLeave: function(e) {
-    // TODO: hide delete/edit buttons
     e.preventDefault();
+    this.setState({
+      showActions: false
+    });
   },
 
   createNoteSnippet: function(note) {
@@ -111,6 +123,21 @@ var Note = React.createClass({
     );
   },
 
+  createActions: function(note) {
+    if (this.state.showActions) {
+      return (
+        <span>
+          {this.createDelUndel(note)}
+          {this.createEdit(note)}
+          {this.createViewLink(note)}
+        </span>
+      );
+    }
+    return (
+      <span></span>
+    );
+  },
+
   render: function() {
     var note = this.props.note;
     return (
@@ -121,9 +148,7 @@ var Note = React.createClass({
         <div>
           {this.createTitle(note)}
           {this.createTags(note.Tags)}
-          {this.createDelUndel(note)}
-          {this.createEdit(note)}
-          {this.createViewLink(note)}
+          {this.createActions(note)}
         </div>
         {this.createNoteSnippet(note)}
       </div>
