@@ -4,21 +4,27 @@ var Top = require('./Top.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
 
 function tagsFromNotes(notes) {
-  var tags = {};
+  var tags = {
+    __all: 0,
+    __deleted: 0
+  };
   if (!notes) {
     return {};
   }
   notes.map(function (note) {
+    if (note.IsDeleted) {
+      tags["__deleted"] += 1;
+      return;
+    } else {
+      tags["__all"] += 1;
+    }
     if (note.Tags) {
       note.Tags.map(function (tag) {
-        if (tags[tag]) {
-          tags[tag] = tags[tag] + 1;
-        } else {
-          tags[tag] = 1;
-        }
+        utils.dictInc(tags, tag);
       });
     }
   });
+
   return tags;
 }
 
@@ -27,7 +33,6 @@ var AppUser = React.createClass({
     return {
       allNotes: [],
       selectedNotes: [],
-      notesCount: 0,
       selectedTag: "",
       isLoggedIn: false,
       notesUserHandle: "",
@@ -55,7 +60,6 @@ var AppUser = React.createClass({
       this.setState({
         allNotes: allNotes,
         selectedNotes: selectedNotes,
-        notesCount: json.NotesCount,
         tags: tags,
         notesUserHandle: json.NotesUserHandle,
         loggedInUserHandle: json.LoggedInUserHandle,
@@ -112,18 +116,16 @@ var AppUser = React.createClass({
 
   render: function() {
     var compact = false;
-    var notesCount = this.state.allNotes.length;
+    //var notesCount = this.state.allNotes.length;
     var showPublicTags = this.state.isLoggedIn && (this.state.notesUserHandle == this.state.loggedInUserHandle);
     return (
         <div>
             <Top isLoggedIn={this.state.isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.state.notesUserHandle}
-              notesCount={this.state.notesCount}
             />
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
-                notesCount={notesCount}
                 isLoggedIn={this.state.isLoggedIn}
                 showPublicTags={showPublicTags}
                 onTagSelected={this.tagSelected}

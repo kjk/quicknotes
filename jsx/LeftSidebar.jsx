@@ -1,5 +1,29 @@
 var TagCount = require('./TagCount.jsx');
 
+var showDeletedTag = true;
+
+var specialTagNames = {
+  __all: "all",
+  __public: "public",
+  __deleted: "deleted"
+};
+
+function isSpecialTag(tag) {
+  return specialTagNames[tag];
+}
+
+function tagNameToDisplayName(tagName) {
+  var translated = specialTagNames[tagName];
+  if (!translated) {
+    return tagName;
+  }
+  return translated;
+}
+
+function getTagCountTuple(tagToCount, tag) {
+  return [tag, tagToCount[tag]];
+}
+
 var LeftSidebar = React.createClass({
   render: function() {
     var tags = this.props.tags;
@@ -9,35 +33,28 @@ var LeftSidebar = React.createClass({
         </div>
       );
     }
-    var tagsArr = new Array();
-    var nPublicTags = 0;
-    for (var key in tags) {
-      if (key == "__public") {
-        nPublicTags = tags[key];
-      } else {
-        var el = [key, tags[key]];
-        tagsArr.push(el);
+    var tagNames = [];
+    for (var tagName in tags) {
+      if (!isSpecialTag(tagName)) {
+        tagNames.push(tagName);
       }
     }
-    tagsArr.sort(function (a, b) {
-      // sort by name, which is first element of 2-element array
-      if (a[0] > b[0]) {
-        return 1;
-      }
-      if (a[0] < b[0]) {
-        return -1;
-      }
-      return 0;
-    })
-    if (this.props.showPublicTags && nPublicTags != 0) {
-      tagsArr.unshift(["public", nPublicTags, "__public"]);
+    tagNames.sort();
+
+    // add special tags: all, public, deleted (in reverse order)
+    if (showDeletedTag) {
+      tagNames.unshift("__deleted");
     }
-    tagsArr.unshift(["all", this.props.notesCount, "__all"])
+    var nPublic = tags["__public"];
+    if (this.props.showPublicTags && nPublic > 0) {
+      tagNames.unshift("__public");
+    }
+    tagNames.unshift("__all");
+
     var onTagSelected=this.props.onTagSelected;
-    var tagEls = tagsArr.map(function (tagInfo) {
-      var displayName = tagInfo[0];
-      var count = tagInfo[1];
-      var tagName = tagInfo[2] || displayName;
+    var tagEls = tagNames.map(function (tagName) {
+      var count = tags[tagName];
+      var displayName = tagNameToDisplayName(tagName);
       return (
         <TagCount onTagSelected={onTagSelected}
           displayName={displayName}

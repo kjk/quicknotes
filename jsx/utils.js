@@ -11,10 +11,32 @@ function noteHasTag(note, tag) {
   return false;
 }
 
-function filterNotesByTag(notes, tag) {
-  if (tag === "" || tag == "__all") {
-    return notes;
+function getDeletedNotdeletedNotes(notes) {
+  var deleted = [];
+  var notDeleted = [];
+  for (var i = 0; i < notes.length; i++) {
+    var note = notes[i];
+    if (note.IsDeleted) {
+      deleted.push(note);
+    } else {
+      notDeleted.push(note);
+    }
   }
+  return {
+    deleted: deleted,
+    notDeleted: notDeleted
+  }
+}
+
+function filterNotesByTag(notes, tag) {
+  var specialNotes = getDeletedNotdeletedNotes(notes);
+  if (tag === "" || tag == "__all") {
+    return specialNotes.notDeleted;
+  }
+  if (tag == "__deleted") {
+    return specialNotes.deleted;
+  }
+
   var res = [];
   for (var i = 0; i < notes.length; i++) {
     var note = notes[i];
@@ -25,4 +47,13 @@ function filterNotesByTag(notes, tag) {
   return res;
 }
 
+function dictInc(d, key) {
+  if (d[key]) {
+    d[key] += 1;
+  } else {
+    d[key] = 1;
+  }
+}
+
 exports.filterNotesByTag = filterNotesByTag;
+exports.dictInc = dictInc;
