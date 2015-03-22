@@ -11,7 +11,7 @@ function isSpecialTag(tag) {
 
 var Note = React.createClass({
   createTitle: function(note) {
-    if (note.Title != "") {
+    if (note.Title !== "") {
       var cls = "title tcol" + note.ColorID;
       return (
         <span className={cls}>{note.Title}</span>

@@ -474,10 +474,10 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	return int(noteID), tx.Commit()
 }
 
-// TODO: change this to 'deleted' attribute
+/*
 func dbPurgeNote(userID, noteID int) error {
 	db := getDbMust()
-	// TODO: delete all versions? what if vesi
+	// TODO: delete all versions as well?
 	q := `
 DELETE FROM notes
 WHERE n.id=?`
@@ -485,13 +485,22 @@ WHERE n.id=?`
 	clearCachedUserInfo(userID)
 	return err
 }
+*/
 
 func dbDeleteNote(userID, noteID int) error {
 	db := getDbMust()
-	q := `
-DELETE FROM notes
-WHERE n.id=?`
-	_, err := db.Exec(q, noteID)
+	// matching against user_id is not necessary, added just to prevent potential bugs
+	q := `UPDATE notes SET is_deleted=0 WHERE id=? AND user_id=?`
+	_, err := db.Exec(q, noteID, userID)
+	clearCachedUserInfo(userID)
+	return err
+}
+
+func dbUndeleteNote(userID, noteID int) error {
+	db := getDbMust()
+	// matching against user_id is not necessary, added just to prevent potential bugs
+	q := `UPDATE notes SET is_deleted=0 WHERE id=? AND user_id=?`
+	_, err := db.Exec(q, noteID, userID)
 	clearCachedUserInfo(userID)
 	return err
 }

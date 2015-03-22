@@ -54,10 +54,9 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Path[len("/s/"):]
 	path := filepath.Join("s", fileName)
 	if u.PathExists(path) {
-		//logger.Noticef("serveFileFromDir(): %q", filePath)
 		http.ServeFile(w, r, path)
 	} else {
-		fmt.Printf("handleS() file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
+		LogInfof("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
 		http.NotFound(w, r)
 	}
 }
@@ -162,7 +161,7 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	dbUser := getUserFromCookie(w, r)
 	userHandle := strings.TrimSpace(r.FormValue("user"))
-	fmt.Printf("handleApiGetNotes userName: '%s'\n", userHandle)
+	LogInfof("userName: '%s'\n", userHandle)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -242,24 +241,24 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 //  ispublic   : "true", "1", "false", "0"
 //  tags       : tag1,tag2,tag3, can be empty
 func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("handleAPICreateNote(): url: '%s'\n", r.URL)
+	LogInfof("url: '%s'\n", r.URL)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
-		LogErrorf("handleAPICreateNote(): not logged int\n")
+		LogErrorf("not logged int\n")
 		httpErrorWithJSONf(w, "user not logged in")
 		return
 	}
 	// TODO: notIDHash not supported yet
 	note := newNoteFromArgs(r)
 	if note == nil {
-		LogErrorf("handleAPICreateNote(): newNoteFromArgs() returned nil\n")
+		LogErrorf("newNoteFromArgs() returned nil\n")
 		httpErrorWithJSONf(w, "newNoteFromArgs() returned nil")
 		return
 	}
 
 	noteID, err := dbCreateNewNote(dbUser.ID, note)
 	if err != nil {
-		LogErrorf("handleAPICreateNote(): dbCreateNewNote() failed with %s\n", err)
+		LogErrorf("dbCreateNewNote() failed with %s\n", err)
 		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
 		return
 	}
@@ -271,15 +270,12 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
-// GET /api/deletenote.json
-// noteIdHash
-func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("handleAPIDeleteNote(): url: '%s'\n", r.URL)
+func noteDelUndelCommon(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
-		LogErrorf("handleAPIDeleteNote(): not logged int\n")
+		LogErrorf("not logged int\n")
 		httpErrorWithJSONf(w, "user not logged in")
-		return
+		return nil, 0
 	}
 
 	noteIDHashStr := strings.TrimSpace(r.FormValue("noteIdHash"))
@@ -288,13 +284,47 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		httpErrorWithJSONf(w, "note doesn't exist")
-		return
+		return nil, 0
 	}
 	if note.userID != dbUser.ID {
 		httpErrorWithJSONf(w, "note doesn't belong to this user")
+		return nil, 0
+	}
+	return dbUser, noteID
+}
+
+// GET /api/deletenote.json
+// args:
+// - noteIdHash
+func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := noteDelUndelCommon(w, r)
+	if dbUser == nil {
 		return
 	}
-	err = dbDeleteNote(dbUser.ID, noteID)
+	err := dbDeleteNote(dbUser.ID, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
+		return
+	}
+	v := struct {
+		Msg string
+	}{
+		Msg: "note has been deleted",
+	}
+	httpOkWithJSON(w, v)
+}
+
+// GET /api/undeletenote.json
+// args:
+// - noteIdHash
+func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := noteDelUndelCommon(w, r)
+	if dbUser == nil {
+		return
+	}
+	err := dbDeleteNote(dbUser.ID, noteID)
 	if err != nil {
 		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
 		return
@@ -323,6 +353,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
+	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)
 }
 
 func startWebServer() {
