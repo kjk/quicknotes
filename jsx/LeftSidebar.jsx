@@ -5,7 +5,9 @@ var showDeletedTag = true;
 var specialTagNames = {
   __all: "all",
   __public: "public",
-  __deleted: "deleted"
+  __private: "private",
+  __deleted: "deleted",
+  __starred: "starred"
 };
 
 function isSpecialTag(tag) {
@@ -45,10 +47,11 @@ var LeftSidebar = React.createClass({
     if (showDeletedTag) {
       tagNames.unshift("__deleted");
     }
-    var nPublic = tags.__public;
-    if (this.props.showPublicTags && nPublic > 0) {
+    tagNames.unshift("__private");
+    if (this.props.showPublicTags) {
       tagNames.unshift("__public");
     }
+    tagNames.unshift("__starred");
     tagNames.unshift("__all");
 
     var onTagSelected=this.props.onTagSelected;

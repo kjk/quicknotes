@@ -140,7 +140,6 @@ var Note = React.createClass({
     }
   },
 
-
   handleStarUnstarNote: function(e) {
     e.preventDefault();
     var note = this.props.note;
