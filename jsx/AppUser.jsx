@@ -68,6 +68,7 @@ var AppUser = React.createClass({
     var userHandle = this.props.notesUserHandle;
     console.log("updateNotes: userHandle=", userHandle);
     var uri = "/api/getnotes.json?user=" + userHandle;
+    console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       var allNotes = json.Notes;
       if (!allNotes) {
