@@ -167,11 +167,11 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
-// /api/getnotes.json?user=${user}&start=${start}&len=${len}
+// /api/getnotes.json?user=${userHandle}&start=${start}&len=${len}
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	dbUser := getUserFromCookie(w, r)
 	userHandle := strings.TrimSpace(r.FormValue("user"))
-	LogInfof("userName: '%s'\n", userHandle)
+	LogInfof("userHandle: '%s'\n", userHandle)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -211,13 +211,9 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, i.user.Handle.String, loggedInUserHandle, onlyPublic)
 	v := struct {
 		LoggedInUserHandle string
-		NotesUserHandle    string
-		NotesCount         int
 		Notes              []*Note
 	}{
 		LoggedInUserHandle: loggedInUserHandle,
-		NotesUserHandle:    i.user.Handle.String,
-		NotesCount:         len(notes),
 		Notes:              notes,
 	}
 	httpOkWithJSON(w, v)

@@ -50,7 +50,6 @@ var AppUser = React.createClass({
       selectedNotes: [],
       selectedTag: "__all",
       isLoggedIn: false,
-      notesUserHandle: "",
       loggedInUserHandle: ""
     };
   },
@@ -66,7 +65,9 @@ var AppUser = React.createClass({
 
   updateNotes: function() {
     // TODO: url-escape uri?
-    var uri = "/api/getnotes.json?user=" + notesUserHandle;
+    var userHandle = this.props.notesUserHandle;
+    console.log("updateNotes: userHandle=", userHandle);
+    var uri = "/api/getnotes.json?user=" + userHandle;
     $.get(uri, function(json) {
       var allNotes = json.Notes;
       if (!allNotes) {
@@ -79,7 +80,6 @@ var AppUser = React.createClass({
         allNotes: allNotes,
         selectedNotes: selectedNotes,
         tags: tags,
-        notesUserHandle: json.NotesUserHandle,
         loggedInUserHandle: json.LoggedInUserHandle,
         isLoggedIn: json.LoggedInUserHandle !== "",
       });
@@ -136,7 +136,6 @@ var AppUser = React.createClass({
     var data = {
       noteIdHash: note.IDStr
     };
-    console.log("makeNotePublicPrivateCb, note.IsPublic: ", note.IsPublic);
     if (note.IsPublic) {
       $.post( "/api/makenoteprivate.json", data, function() {
         this.updateNotes();
@@ -158,7 +157,6 @@ var AppUser = React.createClass({
     var data = {
       noteIdHash: note.IDStr
     };
-    console.log("startUnstarNoteCb, note.IsStarred: ", note.IsStarred);
     if (note.IsStarred) {
       $.post( "/api/unstarnote.json", data, function() {
         this.updateNotes();
@@ -178,12 +176,12 @@ var AppUser = React.createClass({
 
   render: function() {
     var compact = false;
-    var showPublicTags = this.state.isLoggedIn && (this.state.notesUserHandle == this.state.loggedInUserHandle);
+    var showPublicTags = this.state.isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
     return (
         <div >
             <Top isLoggedIn={this.state.isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
-              notesUserHandle={this.state.notesUserHandle}
+              notesUserHandle={this.props.notesUserHandle}
             />
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
@@ -207,8 +205,9 @@ var AppUser = React.createClass({
 });
 
 function userStart() {
+  console.log("gNotesUserHandle: ", gNotesUserHandle);
   React.render(
-    <AppUser />,
+    <AppUser notesUserHandle={gNotesUserHandle}/>,
     document.getElementById('main')
   );
 }
