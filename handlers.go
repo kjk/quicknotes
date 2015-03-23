@@ -169,7 +169,6 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 
 // /api/getnotes.json?user=${userHandle}&start=${start}&len=${len}
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
-	dbUser := getUserFromCookie(w, r)
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	LogInfof("userHandle: '%s'\n", userHandle)
 	if userHandle == "" {
@@ -191,6 +190,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	loggedInUserHandle := ""
+	dbUser := getUserFromCookie(w, r)
 	if dbUser != nil {
 		loggedInUserHandle = dbUser.Handle.String
 	}
