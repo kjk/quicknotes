@@ -140,6 +140,28 @@ var AppUser = React.createClass({
     }
   },
 
+  startUnstarNoteCb: function(note) {
+    var data = {
+      noteIdHash: note.IDStr
+    };
+    console.log("startUnstarNoteCb, note.IsStarred: ", note.IsStarred);
+    if (note.IsStarred) {
+      $.post( "/api/unstarnote.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error unstarring note");
+      });
+    } else {
+      $.post( "/api/starnote.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error starring note");
+      });
+    }
+  },
+
   render: function() {
     var compact = false;
     //var notesCount = this.state.allNotes.length;
@@ -163,6 +185,7 @@ var AppUser = React.createClass({
                 createNewTextNoteCb={this.createNewTextNoteCb}
                 delUndelNoteCb={this.delUndelNoteCb}
                 makeNotePublicPrivateCb={this.makeNotePublicPrivateCb}
+                startUnstarNoteCb={this.startUnstarNoteCb}
               />
             </div>
         </div>

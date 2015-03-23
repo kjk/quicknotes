@@ -140,12 +140,33 @@ var Note = React.createClass({
     }
   },
 
+
+  handleStarUnstarNote: function(e) {
+    e.preventDefault();
+    var note = this.props.note;
+    console.log("handleStarUnstarNote, note.IsStarred: ", note.IsStarred);
+    this.props.startUnstarNoteCb(note);
+  },
+
+  createStarUnstar: function(note) {
+    if (note.IsStarred) {
+      return (
+        <a href="#" className="noteLink" onClick={this.handleStarUnstarNote}>unstar</a>
+      );
+    } else {
+      return (
+        <a href="#" className="noteLink" onClick={this.handleStarUnstarNote}>star</a>
+      );
+    }
+  },
+
   createActions: function(note) {
     if (this.state.showActions) {
       return (
        <span>
         {this.createDelUndel(note)}
         {this.createMakePublicPrivate(note)}
+        {this.createStarUnstar(note)}
         {this.createEdit(note)}
         {this.createViewLink(note)}
         {this.createSize(note)}
