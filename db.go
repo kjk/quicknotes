@@ -689,6 +689,7 @@ func dbGetAllUsers() ([]*DbUser, error) {
 
 // given userLogin like "twitter:kjk", return unique userHandle e.g. kjk,
 // kjk_twitter, kjk_twitter1 etc.
+// TODO: this needs to be protected with a mutex
 func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 	parts := strings.SplitN(userLogin, ":", 2)
 	if len(parts) != 2 {
@@ -700,10 +701,11 @@ func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 	var id int
 	for i := 1; i < 10; i++ {
 		err := db.QueryRow(q, handle).Scan(&id)
-		if err == nil {
-			return handle, nil
-		}
-		if err != sql.ErrNoRows {
+		if err != nil {
+			// if error is 'no more rows', this is a free handle
+			if err == sql.ErrNoRows {
+				return handle, nil
+			}
 			return "", err
 		}
 		handle = fmt.Sprintf("%s%d", parts[1], i)
