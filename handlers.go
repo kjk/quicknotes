@@ -36,7 +36,12 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}*/
-	LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login.String, dbUser.Handle.String)
+
+	if dbUser != nil {
+		LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login.String, dbUser.Handle.String)
+	} else {
+		LogInfof("url: '%s'\n", uri)
+	}
 
 	model := struct {
 		UserHandle string
