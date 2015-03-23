@@ -1,0 +1,70 @@
+package main
+
+import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"time"
+)
+
+type noteJSON struct {
+	Title        string
+	Content      []byte
+	Format       int
+	Tags         []string `json:",omitempty"`
+	IsPublic     bool
+	IsDeleted    bool
+	CreationTime time.Time
+}
+
+// TODO: support .bz2 files
+func importNotesFromJSON(path, userHandle string) {
+	if path == "" || userHandle == "" {
+		log.Fatalf("missing path ('%s') or user handle ('%s')\n", path, userHandle)
+	}
+	dbUser, err := dbGetUserByHandle(userHandle)
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatalf("dbGetUserByHandle() failed with '%s'\n", err)
+	}
+	if dbUser == nil {
+		log.Fatalf("no user with handle '%s'\n", userHandle)
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		log.Fatalf("os.Open('%s') failed with '%s'", path, err)
+	}
+	defer f.Close()
+	dec := json.NewDecoder(f)
+	nImported := 0
+	for {
+		var n noteJSON
+		err = dec.Decode(&n)
+		if err != nil {
+			break
+		}
+		newNote := NewNote{
+			title:     n.Title,
+			format:    n.Format,
+			content:   n.Content,
+			tags:      n.Tags,
+			createdAt: n.CreationTime,
+			isDeleted: n.IsDeleted,
+			isPublic:  n.IsPublic,
+		}
+		_, err = dbCreateNewNote(dbUser.ID, &newNote)
+		if err != nil {
+			log.Fatalf("dbCreateNewNote() failed with '%s'", err)
+		}
+		nImported++
+	}
+	if err == io.EOF {
+		err = nil
+	}
+	if err != nil {
+		log.Fatalf("dec.Decode() failed with '%s'", err)
+	}
+	fmt.Printf("imported %d notes\n", nImported)
+}

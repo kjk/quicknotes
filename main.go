@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -136,19 +135,6 @@ func listDbUsers() {
 	}
 }
 
-func importNotesFromJSON(path, userHandle string) {
-	if path == "" || userHandle == "" {
-		log.Fatalf("missing path ('%s') or user handle ('%s')\n", path, userHandle)
-	}
-	dbUser, err := dbGetUserByHandle(userHandle)
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatalf("dbGetUserByHandle() failed with '%s'\n", err)
-	}
-	if dbUser == nil {
-		log.Fatalf("no user with handle '%s'\n", userHandle)
-	}
-}
-
 func main() {
 	var err error
 
@@ -166,14 +152,14 @@ func main() {
 		return
 	}
 
-	if flgImportJSONFile != "" {
-		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserHandle)
-		return
-	}
-
 	localStore, err = NewLocalStore(getLocalStoreDir())
 	if err != nil {
 		LogFatalf("NewLocalStore() failed with %s\n", err)
+	}
+
+	if flgImportJSONFile != "" {
+		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserHandle)
+		return
 	}
 
 	if flgDelDatabase {
