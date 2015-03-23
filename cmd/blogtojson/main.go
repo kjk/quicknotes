@@ -29,13 +29,13 @@ const (
 
 // Note describes a note that can be imported into QuickNotes
 type Note struct {
-	Title        string
-	Content      []byte
-	Format       int
-	Tags         []string `json:",omitempty"`
-	IsPublic     bool
-	IsDeleted    bool
-	CreationTime time.Time
+	Title     string
+	Content   []byte
+	Format    int
+	Tags      []string `json:",omitempty"`
+	IsPublic  bool
+	IsDeleted bool
+	CreatedAt time.Time
 }
 
 func isSepLine(s string) bool {
@@ -126,7 +126,7 @@ func readNote(path string) *Note {
 		case "date":
 			d, err := parseDate(v)
 			u.PanicIfErr(err)
-			n.CreationTime = d
+			n.CreatedAt = d
 		default:
 			log.Fatalf("Unexpected key: %q\n", k)
 			return nil

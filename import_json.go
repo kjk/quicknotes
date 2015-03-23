@@ -13,13 +13,13 @@ import (
 )
 
 type noteJSON struct {
-	Title        string
-	Content      []byte
-	Format       int
-	Tags         []string `json:",omitempty"`
-	IsPublic     bool
-	IsDeleted    bool
-	CreationTime time.Time
+	Title     string
+	Content   []byte
+	Format    int
+	Tags      []string `json:",omitempty"`
+	IsPublic  bool
+	IsDeleted bool
+	CreatedAt time.Time
 }
 
 // TODO: support .bz2 files
@@ -57,7 +57,7 @@ func importNotesFromJSON(path, userHandle string) {
 			format:    n.Format,
 			content:   n.Content,
 			tags:      n.Tags,
-			createdAt: n.CreationTime,
+			createdAt: n.CreatedAt,
 			isDeleted: n.IsDeleted,
 			isPublic:  n.IsPublic,
 		}
