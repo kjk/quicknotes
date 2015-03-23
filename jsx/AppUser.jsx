@@ -65,7 +65,9 @@ var AppUser = React.createClass({
   },
 
   updateNotes: function() {
-    $.get("/api/getnotes.json?user=kjk", function(json) {
+    // TODO: url-escape uri?
+    var uri = "/api/getnotes.json?user=" + notesUserHandle;
+    $.get(uri, function(json) {
       var allNotes = json.Notes;
       if (!allNotes) {
         allNotes = [];

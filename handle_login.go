@@ -314,7 +314,7 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
+	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login.String, dbUser.Handle.String)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
