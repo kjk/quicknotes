@@ -109,7 +109,7 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 	noteIDHashStr := r.URL.Path[len("/n/"):]
 	// remove optional part after -, which is constructed from note title
 	if idx := strings.Index(noteIDHashStr, "-"); idx != -1 {
-		noteIDHashStr = noteIDHashStr[:idx-1]
+		noteIDHashStr = noteIDHashStr[:idx]
 	}
 
 	note := getNoteByIDHash(w, r, noteIDHashStr)
