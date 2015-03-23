@@ -104,6 +104,7 @@ type DbNote struct {
 	CurrVersionID int
 	IsDeleted     bool
 	IsPublic      bool
+	IsStarred     bool
 	Size          int
 	Title         string
 	Format        int
@@ -479,7 +480,7 @@ func dbSetNoteDeleteState(userID, noteID int, isDeleted bool) error {
 	q := `UPDATE notes SET is_deleted=? WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, isDeleted, noteID, userID)
 	if err != nil {
-		LogErrorf("dbSetNoteDeleteState(isDeleted=%v) failed with '%s'\n", isDeleted, err)
+		LogErrorf("db.Exec() failed with '%s'\n", err)
 	}
 	clearCachedUserInfo(userID)
 	return err
@@ -500,7 +501,7 @@ func dbSetNotePublicState(userID, noteID int, isPublic bool) error {
 	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, isPublic, noteID, userID)
 	if err != nil {
-		LogErrorf("dbSetNotePublicState(isPublic=%v) failed with '%s'\n", isPublic, err)
+		LogErrorf("db.Exec() failed with '%s'\n", err)
 	}
 	clearCachedUserInfo(userID)
 	return err
@@ -514,6 +515,27 @@ func dbMakeNotePrivate(userID, noteID int) error {
 	return dbSetNotePublicState(userID, noteID, false)
 }
 
+func dbSetNoteStarredState(userID, noteID int, isStarred bool) error {
+	LogInfof("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
+	db := getDbMust()
+	// matching against user_id is not necessary, added just to prevent potential bugs
+	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`
+	_, err := db.Exec(q, isStarred, noteID, userID)
+	if err != nil {
+		LogErrorf("db.Exec() failed with '%s'\n", err)
+	}
+	clearCachedUserInfo(userID)
+	return err
+}
+
+func dbUnstarNote(userID, noteID int) error {
+	return dbSetNoteStarredState(userID, noteID, false)
+}
+
+func dbStarNote(userID, noteID int) error {
+	return dbSetNoteStarredState(userID, noteID, true)
+}
+
 func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()
@@ -524,6 +546,7 @@ SELECT
 	n.curr_version_id,
 	n.is_deleted,
 	n.is_public,
+	n.is_starred,
 	v.created_at,
 	v.size,
 	v.format,
@@ -548,6 +571,7 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 			&n.CurrVersionID,
 			&n.IsDeleted,
 			&n.IsPublic,
+			&n.IsStarred,
 			&n.CreatedAt,
 			&n.Size,
 			&n.Format,
@@ -581,6 +605,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 		n.curr_version_id,
 		n.is_deleted,
 		n.is_public,
+		n.is_starred,
 		v.created_at,
 		v.size,
 		v.format,
@@ -596,6 +621,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 		&n.CurrVersionID,
 		&n.IsDeleted,
 		&n.IsPublic,
+		&n.IsStarred,
 		&n.CreatedAt,
 		&n.Size,
 		&n.Format,

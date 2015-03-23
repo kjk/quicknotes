@@ -1,11 +1,11 @@
 CREATE TABLE users (
     id                  INT NOT NULL AUTO_INCREMENT,
     # in the form of twitter:kjk, github:kjk, google:kowalczyk@gmail.com etc.
-    login               VARCHAR(255),
+    login               VARCHAR(255) NOT NULL,
     # short name. we use twitter/github handle if not already taken
     # otherwise we use kjk_twitter, kjk_github and append a number until we
     # create a unique handle
-    handle              VARCHAR(255),
+    handle              VARCHAR(255) NOT NULL,
     # for twitter, deduced from 'name'
     full_name           VARCHAR(255),
     email               VARCHAR(255),
@@ -40,6 +40,7 @@ CREATE TABLE notes (
     curr_version_id   INT NOT NULL,
     is_deleted        TINYINT(1) NOT NULL,
     is_public         TINYINT(1) NOT NULL,
+    is_starred        TINYINT(1) NOT NULL,
     PRIMARY KEY (id),
     INDEX (user_id)
 );
