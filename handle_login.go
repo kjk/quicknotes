@@ -306,15 +306,15 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	// also might be useful:
 	// profile_image_url
 	// profile_image_url_https
-	userHandle := "github:" + githubLogin
-	dbUser, err := dbGetOrCreateUser(userHandle, fullName)
+	userLogin := "github:" + githubLogin
+	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
-		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
+		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("created user %d with handle '%s'\n", user.ID, userHandle)
+	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
