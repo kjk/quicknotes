@@ -1,6 +1,17 @@
 var LogInLink = require('./LogInLink.jsx');
 
 var Top = React.createClass({
+
+  inputKeyDown: function(e) {
+    // on ESC loose focus and reset the value
+    if (e.keyCode == 27) {
+      e.preventDefault();
+      e.target.blur();
+      e.target.value = "";
+      return;
+    }
+  },
+
   render: function() {
     var s1 = {
       paddingRight: 4,
@@ -26,6 +37,7 @@ var Top = React.createClass({
 
         <div className="left" style={s3}>
           <input name="search" id="search"
+            onKeyDown={this.inputKeyDown}
             className="round-input input-not-focused"  type="text"
             autoComplete="off" autoCapitalize="off"
             placeholder="Search (Ctrl-F)" size="68" />

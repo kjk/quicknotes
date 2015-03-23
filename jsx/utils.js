@@ -78,5 +78,11 @@ function dictInc(d, key) {
   }
 }
 
+// focus "search" input area at the top of the page
+function focusSearch() {
+  $("#search").focus();
+}
+
 exports.filterNotesByTag = filterNotesByTag;
 exports.dictInc = dictInc;
+exports.focusSearch = focusSearch;
