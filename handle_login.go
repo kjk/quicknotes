@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/garyburd/go-oauth/oauth"
+	"github.com/google/go-github/github"
 	"github.com/gorilla/securecookie"
 	"github.com/kjk/u"
 	"golang.org/x/oauth2"
@@ -37,8 +38,8 @@ var (
 	}
 
 	oauthGitHubConf = &oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
+		ClientID:     "0de5b60a98b0f3fbb187",
+		ClientSecret: "a46a61a26d7841a5206b5e1d9313cf3e3f1150e8",
 		// select level of access you want https://developer.github.com/v3/oauth/#scopes
 		Scopes:   []string{"user:email", "repo"},
 		Endpoint: githubEndpoint,
@@ -214,8 +215,8 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 
 	fullName, _ := info["name"].(string)
 	// also might be useful:
-	// profile_image_url
-	// profile_image_url_https
+	// email
+	// avatar_url
 	userHandle := "twitter:" + twitterHandle
 	user, err := dbGetOrCreateUser(userHandle, fullName)
 	if err != nil {
@@ -255,6 +256,71 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	}
 	putTempCredentials(tempCred)
 	http.Redirect(w, r, oauthTwitterClient.AuthorizationURL(tempCred, nil), 302)
+}
+
+func tokenToJSON(token *oauth2.Token) (string, error) {
+	d, err := json.Marshal(token)
+	if err != nil {
+		return "", err
+	}
+	return string(d), nil
+}
+
+func tokenFromJSON(jsonStr string) (*oauth2.Token, error) {
+	var token oauth2.Token
+	if err := json.Unmarshal([]byte(jsonStr), &token); err != nil {
+		return nil, err
+	}
+	return &token, nil
+}
+
+// logingithubcb?redirect
+func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
+	state := r.FormValue("state")
+	if state != oauthSecretString {
+		LogErrorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretString, state)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	code := r.FormValue("code")
+	token, err := oauthGitHubConf.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		LogErrorf("oauthGitHubConf.Exchange() failed with '%s'\n", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	oauthClient := oauthGitHubConf.Client(oauth2.NoContext, token)
+	client := github.NewClient(oauthClient)
+	user, _, err := client.Users.Get("")
+	if err != nil {
+		LogErrorf("client.Users.Get() faled with '%s'\n", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	LogInfof("Logged in as GitHub user: %s\n", *user.Login)
+	githubLogin := *user.Login
+	fullName := *user.Name
+
+	// also might be useful:
+	// profile_image_url
+	// profile_image_url_https
+	userHandle := "github:" + githubLogin
+	dbUser, err := dbGetOrCreateUser(userHandle, fullName)
+	if err != nil {
+		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
+		// TODO: show error to the user
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	LogInfof("created user %d with handle '%s'\n", user.ID, userHandle)
+	cookieVal := &SecureCookieValue{
+		UserID: dbUser.ID,
+	}
+	setSecureCookie(w, cookieVal)
+	// TODO: dbUserSetGithubOauth(user, tokenCredJson)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
 // /logingithub?redirect=${redirect}

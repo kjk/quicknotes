@@ -694,8 +694,21 @@ func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 	if len(parts) != 2 {
 		return "", fmt.Errorf("dbGetUniqueHandleFromLogin(): invalid userLogin '%s'", userLogin)
 	}
-	// TODO: ensure that handle is unique
-	return parts[1], nil
+	db := getDbMust()
+	q := `SELECT id FROM users WHERE handle=?`
+	handle := parts[1]
+	var id int
+	for i := 1; i < 10; i++ {
+		err := db.QueryRow(q, handle).Scan(&id)
+		if err == nil {
+			return handle, nil
+		}
+		if err != sql.ErrNoRows {
+			return "", err
+		}
+		handle = fmt.Sprintf("%s%d", parts[1], i)
+	}
+	return "", fmt.Errorf("couldn't generate unique handle for %s", userLogin)
 }
 
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
