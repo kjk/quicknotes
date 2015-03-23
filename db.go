@@ -16,6 +16,8 @@ import (
 	"github.com/kjk/u"
 )
 
+// TODO: use prepared statements more
+
 const (
 	tagsSepByte                 = 30          // record separator
 	snippetSizeThreshold        = 1024        // 1 KB
@@ -83,7 +85,8 @@ type CachedContentInfo struct {
 
 // DbUser is an information about the user
 type DbUser struct {
-	ID               int
+	ID int
+	// TODO: less use of sql.NullString
 	Login            sql.NullString // e.g. 'google:kkowalczyk@gmail'
 	Handle           sql.NullString // e.g. 'kjk'
 	FullName         sql.NullString // e.g. 'Krzysztof Kowalczyk'
@@ -635,6 +638,27 @@ func dbGetUserByLogin(login string) (*DbUser, error) {
 func dbGetUserByHandle(userHandle string) (*DbUser, error) {
 	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE handle=?`
 	return dbGetUserByQuery(q, userHandle)
+}
+
+func dbGetAllUsers() ([]*DbUser, error) {
+	db := getDbMust()
+	q := `SELECT id, handle, full_name, email, created_at FROM users`
+	rows, err := db.Query(q)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var res []*DbUser
+	for rows.Next() {
+		var user DbUser
+		err = rows.Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, &user)
+	}
+	return res, nil
 }
 
 // given userLogin like "twitter:kjk", return unique userHandle e.g. kjk,

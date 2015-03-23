@@ -17,12 +17,17 @@ import (
 )
 
 var (
-	httpAddr            = ":5111"
-	flgIsLocal          bool // local means using local mysql database, production means google's cloud
-	flgDelDatabase      bool
-	flgRecreateDatabase bool
-	localStore          *LocalStore
-	oauthClient         = oauth.Client{
+	httpAddr = ":5111"
+
+	flgIsLocal              bool // local means using local mysql database, production means google's cloud
+	flgDelDatabase          bool
+	flgRecreateDatabase     bool
+	flgImportJSONUserHandle string
+	flgImportJSONFile       string
+	flgListUsers            bool
+
+	localStore  *LocalStore
+	oauthClient = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
 		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
 		TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
@@ -89,6 +94,9 @@ func parseFlags() {
 	flag.BoolVar(&flgIsLocal, "local", false, "running locally?")
 	flag.BoolVar(&flgDelDatabase, "deldb", false, "completely delete the database? dangerous!")
 	flag.BoolVar(&flgRecreateDatabase, "recreatedb", false, "recreate database")
+	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
+	flag.StringVar(&flgImportJSONUserHandle, "import-user", "", "handle of the user (users.handle) for which to import notes")
+	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
 	flag.Parse()
 }
 
@@ -116,6 +124,21 @@ func startJsxWatch() {
 	}
 }
 
+func listDbUsers() {
+	users, err := dbGetAllUsers()
+	if err != nil {
+		log.Fatalf("dbGetAllUsers() failed with '%s'", err)
+	}
+	fmt.Printf("Number of users: %d\n", len(users))
+	for _, u := range users {
+		fmt.Printf("handle: '%s'\n", u.Handle.String)
+	}
+}
+
+func importNotesFromJSON(path, userHandle string) {
+
+}
+
 func main() {
 	var err error
 
@@ -127,6 +150,16 @@ func main() {
 	OpenLogFiles()
 	IncLogVerbosity()
 	LogInfof("local: %v, sql connection: %s, data dir: %s\n", flgIsLocal, getSqlConnectionRoot(), getDataDir())
+
+	if flgListUsers {
+		listDbUsers()
+		return
+	}
+
+	if flgImportJSONFile != "" {
+		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserHandle)
+		return
+	}
 
 	localStore, err = NewLocalStore(getLocalStoreDir())
 	if err != nil {
