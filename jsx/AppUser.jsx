@@ -8,6 +8,8 @@ function tagsFromNotes(notes) {
     __all: 0,
     __deleted: 0,
     __public: 0,
+    __private: 0,
+    __starred: 0,
   };
   if (!notes) {
     return {};
@@ -21,9 +23,14 @@ function tagsFromNotes(notes) {
     }
 
     tags.__all += 1;
+    if (note.IsStarred) {
+      tags.__starred += 1;
+    }
 
     if (note.IsPublic) {
       tags.__public += 1;
+    } else {
+      tags.__private += 1;
     }
 
     if (note.Tags) {
