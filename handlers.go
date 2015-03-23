@@ -17,11 +17,11 @@ Big picture:
 /u/{name} - main page for a given user. Shows read-write UI if it's a logged-in
             user. Show public messages of user if not this logged-in user
 /n/{note_id} - show a single note
+/api/*.json - api calls
 */
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	uri := r.URL.Path
-	LogInfof("url: '%s'\n", uri)
 	if uri != "/" {
 		http.NotFound(w, r)
 		return
@@ -36,6 +36,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}*/
+	LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login.String, dbUser.Handle.String)
+
 	model := struct {
 		UserHandle string
 	}{}
