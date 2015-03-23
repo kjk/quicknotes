@@ -1,12 +1,14 @@
 package main
 
 import (
+	"compress/bzip2"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -22,6 +24,7 @@ type noteJSON struct {
 
 // TODO: support .bz2 files
 func importNotesFromJSON(path, userHandle string) {
+	var r io.Reader
 	if path == "" || userHandle == "" {
 		log.Fatalf("missing path ('%s') or user handle ('%s')\n", path, userHandle)
 	}
@@ -37,6 +40,10 @@ func importNotesFromJSON(path, userHandle string) {
 		log.Fatalf("os.Open('%s') failed with '%s'", path, err)
 	}
 	defer f.Close()
+	r = f
+	if strings.HasSuffix(path, ".bz2") {
+		r = bzip2.NewReader(r)
+	}
 	dec := json.NewDecoder(f)
 	nImported := 0
 	for {
