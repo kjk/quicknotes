@@ -519,7 +519,7 @@ func dbSetNoteStarredState(userID, noteID int, isStarred bool) error {
 	LogInfof("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
-	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`
+	q := `UPDATE notes SET is_starred=? WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, isStarred, noteID, userID)
 	if err != nil {
 		LogErrorf("db.Exec() failed with '%s'\n", err)

@@ -273,7 +273,7 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
-func noteDelUndelCommon(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
+func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
 		LogErrorf("not logged int\n")
@@ -301,7 +301,7 @@ func noteDelUndelCommon(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
 // - noteIdHash
 func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
-	dbUser, noteID := noteDelUndelCommon(w, r)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
 	}
@@ -324,7 +324,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 // - noteIdHash
 func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
-	dbUser, noteID := noteDelUndelCommon(w, r)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
 	}
@@ -347,7 +347,7 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 // - noteIdHash
 func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
-	dbUser, noteID := noteDelUndelCommon(w, r)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
 	}
@@ -370,7 +370,7 @@ func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 // - noteIdHash
 func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
-	dbUser, noteID := noteDelUndelCommon(w, r)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
 	}
@@ -384,6 +384,52 @@ func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 		Msg string
 	}{
 		Msg: "made note public",
+	}
+	httpOkWithJSON(w, v)
+}
+
+// GET /api/starnote.json
+// args:
+// - noteIdHash
+func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
+	if dbUser == nil {
+		return
+	}
+	err := dbStarNote(dbUser.ID, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to star note with '%s'", err)
+		return
+	}
+	LogInfof("starred note %d\n", noteID)
+	v := struct {
+		Msg string
+	}{
+		Msg: "starred note",
+	}
+	httpOkWithJSON(w, v)
+}
+
+// GET /api/unstarnote.json
+// args:
+// - noteIdHash
+func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
+	if dbUser == nil {
+		return
+	}
+	err := dbUnstarNote(dbUser.ID, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to unstar note with '%s'", err)
+		return
+	}
+	LogInfof("unstarred note %d\n", noteID)
+	v := struct {
+		Msg string
+	}{
+		Msg: "unstarred note",
 	}
 	httpOkWithJSON(w, v)
 }
@@ -407,6 +453,8 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)
 	http.HandleFunc("/api/makenoteprivate.json", handleAPIMakeNotePrivate)
 	http.HandleFunc("/api/makenotepublic.json", handleAPIMakeNotePublic)
+	http.HandleFunc("/api/starnote.json", handleAPIStarNote)
+	http.HandleFunc("/api/unstarnote.json", handleAPIUnstarNote)
 }
 
 func startWebServer() {
