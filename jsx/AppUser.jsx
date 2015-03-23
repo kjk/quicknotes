@@ -85,7 +85,12 @@ var AppUser = React.createClass({
   },
 
   componentDidMount: function() {
+    key('ctrl+f', utils.focusSearch);
     this.updateNotes();
+  },
+
+  componentWillUnmount: function() {
+    key.unbind('ctrl+f', utils.focusSearch);
   },
 
   createNewTextNoteCb: function(s) {
@@ -171,10 +176,9 @@ var AppUser = React.createClass({
 
   render: function() {
     var compact = false;
-    //var notesCount = this.state.allNotes.length;
     var showPublicTags = this.state.isLoggedIn && (this.state.notesUserHandle == this.state.loggedInUserHandle);
     return (
-        <div>
+        <div >
             <Top isLoggedIn={this.state.isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.state.notesUserHandle}
