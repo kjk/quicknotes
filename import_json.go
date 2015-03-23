@@ -44,7 +44,7 @@ func importNotesFromJSON(path, userHandle string) {
 	if strings.HasSuffix(path, ".bz2") {
 		r = bzip2.NewReader(r)
 	}
-	dec := json.NewDecoder(f)
+	dec := json.NewDecoder(r)
 	nImported := 0
 	for {
 		var n noteJSON
