@@ -79,13 +79,15 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	}
 	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	model := struct {
-		ColorsCSS string
-		User      *DbUser
-		Notes     []*Note
+		ColorsCSS    string
+		UserHandle   string
+		LoggedInUser *DbUser
+		Notes        []*Note
 	}{
-		ColorsCSS: colorsCssString,
-		User:      i.user,
-		Notes:     i.notes,
+		ColorsCSS:    colorsCssString,
+		UserHandle:   userHandle,
+		LoggedInUser: i.user,
+		Notes:        i.notes,
 	}
 	execTemplate(w, tmplUser, model)
 }
