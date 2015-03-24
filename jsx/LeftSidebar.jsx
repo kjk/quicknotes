@@ -43,15 +43,15 @@ var LeftSidebar = React.createClass({
     }
     tagNames.sort();
 
-    // add special tags: all, public, deleted (in reverse order)
-    if (showDeletedTag) {
-      tagNames.unshift("__deleted");
-    }
-    tagNames.unshift("__private");
-    if (this.props.showPublicTags) {
+    if (this.props.myNotes) {
+      // add special tags: all, public, deleted (in reverse order)
+      if (showDeletedTag) {
+        tagNames.unshift("__deleted");
+      }
+      tagNames.unshift("__private");
       tagNames.unshift("__public");
+      tagNames.unshift("__starred");
     }
-    tagNames.unshift("__starred");
     tagNames.unshift("__all");
 
     var onTagSelected=this.props.onTagSelected;

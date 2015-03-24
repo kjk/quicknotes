@@ -252,7 +252,7 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
-		LogErrorf("not logged int\n")
+		LogErrorf("not logged in\n")
 		httpErrorWithJSONf(w, "user not logged in")
 		return
 	}
