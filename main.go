@@ -131,7 +131,7 @@ func listDbUsers() {
 	}
 	fmt.Printf("Number of users: %d\n", len(users))
 	for _, u := range users {
-		fmt.Printf("handle: '%s'\n", u.Handle.String)
+		fmt.Printf("handle: '%s'\n", u.Handle)
 	}
 }
 

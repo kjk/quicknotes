@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/kjk/u"
 	"golang.org/x/oauth2"
+	goauth2 "google.golang.org/api/oauth2/v2"
 )
 
 const (
@@ -35,6 +36,19 @@ var (
 	githubEndpoint = oauth2.Endpoint{
 		AuthURL:  "https://github.com/login/oauth/authorize",
 		TokenURL: "https://github.com/login/oauth/access_token",
+	}
+
+	googleEndpoint = oauth2.Endpoint{
+		AuthURL:  "https://accounts.google.com/o/oauth2/auth",
+		TokenURL: "https://accounts.google.com/o/oauth2/token",
+	}
+
+	oauthGoogleConf = &oauth2.Config{
+		ClientID:     "393285548407-rau0ccv7h7chin1auv5v179jdq7rkvqf.apps.googleusercontent.com",
+		ClientSecret: "KP7eRR9zVPlY3fXNeTUl5ZIr",
+		//Scopes:   []string{"user:email", "repo"},
+		Scopes:   []string{goauth2.UserinfoProfileScope},
+		Endpoint: googleEndpoint,
 	}
 
 	oauthGitHubConf = &oauth2.Config{
@@ -274,7 +288,7 @@ func tokenFromJSON(jsonStr string) (*oauth2.Token, error) {
 	return &token, nil
 }
 
-// logingithubcb?redirect
+// logingithubcb?redirect={redirect}
 func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
 	if state != oauthSecretString {
@@ -314,7 +328,7 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login.String, dbUser.Handle.String)
+	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
@@ -327,10 +341,87 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 	redirect := strings.TrimSpace(r.FormValue("redirect"))
 	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /logintwitter")
+		httpErrorf(w, "Missing redirect value for /logingithub")
 		return
 	}
 	uri := oauthGitHubConf.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
+	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
+}
+
+// logingooglecb?redirect={redirect}
+func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: %s", r.URL)
+	state := r.FormValue("state")
+	if state != oauthSecretString {
+		LogErrorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretString, state)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	code := r.FormValue("code")
+	token, err := oauthGoogleConf.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		LogErrorf("oauthGoogleConf.Exchange() failed with '%s'\n", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	oauthClient := oauthGoogleConf.Client(oauth2.NoContext, token)
+
+	service, err := goauth2.New(oauthClient)
+	if err != nil {
+		LogErrorf("goauth2.New() failed with %s\n", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	call := service.Userinfo.Get()
+	userInfo, err := call.Do()
+	if err != nil {
+		LogErrorf("call.Do() failed with %s", err)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	LogInfof("Logged in as Google user: %s\n", userInfo.Email)
+	fullName := userInfo.Name
+
+	// also might be useful:
+	// Picture
+	userLogin := "google:" + userInfo.Email
+	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
+	if err != nil {
+		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
+		// TODO: show error to the user
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
+	cookieVal := &SecureCookieValue{
+		UserID: dbUser.ID,
+	}
+	setSecureCookie(w, cookieVal)
+	// TODO: dbUserSetGithubOauth(user, tokenCredJson)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+}
+
+// /logingoogle?redirect=${redirect}
+func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
+	redirect := strings.TrimSpace(r.FormValue("redirect"))
+	if redirect == "" {
+		httpErrorf(w, "Missing redirect value for /logingoogle")
+		return
+	}
+
+	// TODO: Google doesn't allow anything after the url, so we can't pass
+	// redirect argument. Needs to
+	cb := "http://" + r.Host + "/logingooglecb"
+	//cb = "http://quicknotes.io/logingooglecb"
+	//cb = "http://127.0.0.1:5111/logingooglecb"
+	oauth := oauthGoogleConf
+	oauth.RedirectURL = cb
+
+	uri := oauth.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
