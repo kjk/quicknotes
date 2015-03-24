@@ -13,6 +13,7 @@ var NotesList = React.createClass({
             compact={self.props.compact}
             note={note}
             key={note.IDStr}
+            myNotes={self.props.myNotes}
             delUndelNoteCb={self.props.delUndelNoteCb}
             makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
             startUnstarNoteCb={self.props.startUnstarNoteCb}

@@ -49,8 +49,7 @@ var AppUser = React.createClass({
       allNotes: [],
       selectedNotes: [],
       selectedTag: "__all",
-      isLoggedIn: false,
-      loggedInUserHandle: ""
+            loggedInUserHandle: ""
     };
   },
 
@@ -81,8 +80,7 @@ var AppUser = React.createClass({
         allNotes: allNotes,
         selectedNotes: selectedNotes,
         tags: tags,
-        loggedInUserHandle: json.LoggedInUserHandle,
-        isLoggedIn: json.LoggedInUserHandle !== "",
+        loggedInUserHandle: json.LoggedInUserHandle
       });
     }.bind(this));
   },
@@ -177,22 +175,25 @@ var AppUser = React.createClass({
 
   render: function() {
     var compact = false;
-    var showPublicTags = this.state.isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
+    var isLoggedIn = this.state.loggedInUserHandle !== "";
+
+    var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
     return (
         <div >
-            <Top isLoggedIn={this.state.isLoggedIn}
+            <Top isLoggedIn={isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.props.notesUserHandle}
             />
             <div id="contentWrapper">
               <LeftSidebar tags={this.state.tags}
-                isLoggedIn={this.state.isLoggedIn}
-                showPublicTags={showPublicTags}
+                isLoggedIn={isLoggedIn}
+                myNotes={myNotes}
                 onTagSelected={this.handleTagSelected}
                 selectedTag={this.state.selectedTag}
               />
               <NotesList
                 notes={this.state.selectedNotes}
+                myNotes={myNotes}
                 compact={compact}
                 createNewTextNoteCb={this.createNewTextNoteCb}
                 delUndelNoteCb={this.delUndelNoteCb}

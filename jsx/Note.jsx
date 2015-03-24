@@ -121,7 +121,8 @@ var Note = React.createClass({
   createSize: function(note) {
     var s = {
       color: "gray",
-      fontSize: "80%"
+      fontSize: "80%",
+      marginLeft: 8
     };
     return (
       <span style={s}>{note.HumanSize}</span>
@@ -159,7 +160,7 @@ var Note = React.createClass({
     }
   },
 
-  createActions: function(note) {
+  createActionsIfMyNotes: function(note) {
     if (this.state.showActions) {
       return (
        <span>
@@ -175,6 +176,28 @@ var Note = React.createClass({
     return (
       <span></span>
     );
+  },
+
+  createActionsIfNotMyNotes: function(note) {
+    if (this.state.showActions) {
+      return (
+       <span>
+        {this.createViewLink(note)}
+        {this.createSize(note)}
+      </span>
+      );
+    }
+    return (
+      <span></span>
+    );
+  },
+
+  createActions: function(note) {
+    if (this.props.myNotes) {
+        return this.createActionsIfMyNotes(note);
+    } else {
+      return this.createActionsIfNotMyNotes(note);
+    }
   },
 
   render: function() {
