@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"database/sql"
+	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -211,6 +213,15 @@ func (n *Note) Content() string {
 	return string(content)
 }
 
+// ContentHTML returns note content in HTML
+func (n *Note) ContentHTML() template.HTML {
+	content, err := getNoteContentHTML(n)
+	if err != nil {
+		return template.HTML("")
+	}
+	return template.HTML(content)
+}
+
 func getCachedContent(sha1 []byte) ([]byte, error) {
 	k := string(sha1)
 	mu.Lock()
@@ -242,6 +253,27 @@ func getNoteSnippet(note *Note) ([]byte, error) {
 
 func getNoteContent(note *Note) ([]byte, error) {
 	return getCachedContent(note.ContentSha1)
+}
+
+func getNoteContentHTML(note *Note) (template.HTML, error) {
+	c, err := getCachedContent(note.ContentSha1)
+	if err != nil {
+		return "", err
+	}
+	if note.Format == formatText {
+		// TODO: escape < etc. chars
+		s := "<pre>" + string(c) + "</pre>"
+		return template.HTML(s), nil
+	}
+	if note.Format == formatHTML {
+		s := string(c)
+		return template.HTML(s), nil
+	}
+	if note.Format == formatMarkdown {
+		s := markdownToHTML(c)
+		return template.HTML(s), nil
+	}
+	return "", errors.New("unknown format")
 }
 
 func clearCachedUserInfo(userID int) {

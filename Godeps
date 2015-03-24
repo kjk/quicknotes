@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/kjk/quicknotes",
-	"GoVersion": "go1.4.1",
+	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
 			"ImportPath": "github.com/bradfitz/slice",
@@ -20,6 +20,14 @@
 			"Rev": "cebeb3599d51814753350e87cd21f24b3ddaa66e"
 		},
 		{
+			"ImportPath": "github.com/google/go-github/github",
+			"Rev": "7ea4ee6d222607c11ea86e99a6f6723beeae785d"
+		},
+		{
+			"ImportPath": "github.com/google/go-querystring/query",
+			"Rev": "d8840cbb2baa915f4836edda4750050a2c0b7aea"
+		},
+		{
 			"ImportPath": "github.com/gorilla/securecookie",
 			"Rev": "5f171f42328bdd573211bb82bdee8f259c4c61ae"
 		},
@@ -32,6 +40,23 @@
 			"Rev": "a6fc06e80ad8a518e699bbc24068991fddc78a37"
 		},
 		{
+			"ImportPath": "github.com/microcosm-cc/bluemonday",
+			"Rev": "fcd0f5074e55df204568c7419509fb59ddcad228"
+		},
+		{
+			"ImportPath": "github.com/russross/blackfriday",
+			"Comment": "v1.2-44-g6928e11",
+			"Rev": "6928e11ecd2bf32f22ba9a46b542257fa76bdc34"
+		},
+		{
+			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
+			"Rev": "8e87604bec3c645a4eeaee97dfec9f25811ff20d"
+		},
+		{
+			"ImportPath": "github.com/speps/go-hashids",
+			"Rev": "7cef70747157a6339dc0fb179fe5c8408db35b61"
+		},
+		{
 			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
 			"Rev": "87e4e645d80ae9c537e8f2dee52b28036a5dd75e"
 		},
@@ -41,7 +66,11 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "59b0df9b1f7abda5aab0495ee54f408daf182ce7"
+			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
+		},
+		{
+			"ImportPath": "golang.org/x/net/html",
+			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2",
