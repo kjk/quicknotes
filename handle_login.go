@@ -46,9 +46,8 @@ var (
 	oauthGoogleConf = &oauth2.Config{
 		ClientID:     "393285548407-rau0ccv7h7chin1auv5v179jdq7rkvqf.apps.googleusercontent.com",
 		ClientSecret: "KP7eRR9zVPlY3fXNeTUl5ZIr",
-		//Scopes:   []string{"user:email", "repo"},
-		Scopes:   []string{goauth2.UserinfoProfileScope},
-		Endpoint: googleEndpoint,
+		Scopes:       []string{goauth2.UserinfoProfileScope, goauth2.UserinfoEmailScope},
+		Endpoint:     googleEndpoint,
 	}
 
 	oauthGitHubConf = &oauth2.Config{
@@ -383,7 +382,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	LogInfof("Logged in as Google user: %s\n", userInfo.Email)
+	//LogInfof("Logged in as Google user: %s\n", userInfo.Email)
 	fullName := userInfo.Name
 
 	// also might be useful:
