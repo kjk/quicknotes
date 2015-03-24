@@ -32,7 +32,7 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 	}
 	email := strings.TrimSpace(r.FormValue("email"))
 	password := strings.TrimSpace(r.FormValue("password"))
-	LogInfof("Importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login.String, email, password)
+	LogInfof("Importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login, email, password)
 	client := simplenote.NewClient(simplenoteAPIKey, email, password)
 	notes, err := client.List()
 	if err != nil {

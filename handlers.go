@@ -38,7 +38,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		}*/
 
 	if dbUser != nil {
-		LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login.String, dbUser.Handle.String)
+		LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
 	} else {
 		LogInfof("url: '%s'\n", uri)
 	}
@@ -47,7 +47,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		UserHandle string
 	}{}
 	if dbUser != nil {
-		model.UserHandle = dbUser.Handle.String
+		model.UserHandle = dbUser.Handle
 	}
 	execTemplate(w, tmplIndex, model)
 }
@@ -192,7 +192,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	loggedInUserHandle := ""
 	dbUser := getUserFromCookie(w, r)
 	if dbUser != nil {
-		loggedInUserHandle = dbUser.Handle.String
+		loggedInUserHandle = dbUser.Handle
 	}
 
 	onlyPublic := userHandle != loggedInUserHandle
@@ -208,7 +208,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, i.user.Handle.String, loggedInUserHandle, onlyPublic)
+	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, onlyPublic)
 	v := struct {
 		LoggedInUserHandle string
 		Notes              []*Note
@@ -449,6 +449,9 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
 	http.HandleFunc("/logingithub", handleLoginGitHub)
 	http.HandleFunc("/logingithubcb", handleOauthGitHubCallback)
+	http.HandleFunc("/logingoogle", handleLoginGoogle)
+	http.HandleFunc("/logingooglecb", handleOauthGoogleCallback)
+
 	//http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/importsimplenote", handleImportSimpleNote)

@@ -89,8 +89,8 @@ type CachedContentInfo struct {
 type DbUser struct {
 	ID int
 	// TODO: less use of sql.NullString
-	Login            sql.NullString // e.g. 'google:kkowalczyk@gmail'
-	Handle           sql.NullString // e.g. 'kjk'
+	Login            string         // e.g. 'google:kkowalczyk@gmail'
+	Handle           string         // e.g. 'kjk'
 	FullName         sql.NullString // e.g. 'Krzysztof Kowalczyk'
 	Email            sql.NullString
 	TwitterOauthJSON sql.NullString
