@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	"golang.org/x/net/context"
@@ -58,21 +59,25 @@ uU0geujcQuO125xyqvI7C8JzozWtMwlNwMAR0tFETlPQFQ==
 func testListObjects() {
 	ctx := getGoogleStorageContext()
 	var query *storage.Query
+	nTotal := 0
+	timeStart := time.Now()
 	for {
 		objects, err := storage.ListObjects(ctx, notenikBucket, query)
 		if err != nil {
 			LogErrorf("storage.ListObjects() failed with %s\n", err)
 			return
 		}
-		LogInfof("%d objects\n", len(objects.Results))
-		for _, obj := range objects.Results {
-			fmt.Printf("name: %s, size: %v\n", obj.Name, obj.Size)
-		}
+		//LogInfof("%d objects\n", len(objects.Results))
+		//for _, obj := range objects.Results {
+		//	fmt.Printf("name: %s, size: %v\n", obj.Name, obj.Size)
+		//}
+		nTotal += len(objects.Results)
 		query = objects.Next
 		if query == nil {
 			break
 		}
 	}
+	LogInfof("listed %d objects in %s\n", nTotal, time.Since(timeStart))
 }
 
 func noteGoogleStoragePath(sha1 []byte) string {
@@ -113,4 +118,22 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 	}
 	LogVerbosef("saved %d bytes in %s, file: '%s'\n", len(d), time.Since(timeStart), path)
 	return nil
+}
+
+func readNoteFromGoogleStorage(sha1 []byte) ([]byte, error) {
+	timeStart := time.Now()
+	path := noteGoogleStoragePath(sha1)
+	ctx := getGoogleStorageContext()
+
+	r, err := storage.NewReader(ctx, notenikBucket, path)
+	if err != nil {
+		return nil, err
+	}
+	d, err := ioutil.ReadAll(r)
+	r.Close()
+	if err != nil {
+		return nil, err
+	}
+	LogInfof("downloaded %s from google storage in %s\n", path, time.Since(timeStart))
+	return d, nil
 }

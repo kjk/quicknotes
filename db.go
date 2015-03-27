@@ -431,8 +431,12 @@ func saveContent(d []byte) ([]byte, []byte, error) {
 func loadContent(sha1 []byte) ([]byte, error) {
 	d, err := localStore.GetContentBySha1(sha1)
 	if err != nil {
-		// TODO: read from google storage
-		return nil, err
+		d, err = readNoteFromGoogleStorage(sha1)
+		if err != nil {
+			return nil, err
+		}
+		// cache locally
+		localStore.PutContent(d)
 	}
 	return d, nil
 }
