@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 var TagCount = require('./TagCount.jsx');
 
 var showDeletedTag = true;

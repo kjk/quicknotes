@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 var Note = require('./Note.jsx');
 var NewNoteSmall = require('./NewNoteSmall.jsx');
 

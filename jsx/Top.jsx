@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 var LogInLink = require('./LogInLink.jsx');
 
 var Top = React.createClass({

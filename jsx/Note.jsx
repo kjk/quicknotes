@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 function urlifyTitle(s) {
   s = s.slice(0,32);
   return s.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-');

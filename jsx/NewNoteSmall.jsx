@@ -1,3 +1,5 @@
+/* jshint -W097 */
+'use strict';
 
 var NewNoteSmall = React.createClass({
   newNote: function(s) {

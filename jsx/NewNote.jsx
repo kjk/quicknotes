@@ -1,3 +1,5 @@
+/* jshint -W097 */
+'use strict';
 
 // Note: unused
 var NewNote = React.createClass({

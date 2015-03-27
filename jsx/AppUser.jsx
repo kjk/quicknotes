@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 var utils = require('./utils.js');
 var NotesList = require('./NotesList.jsx');
 var Top = require('./Top.jsx');
