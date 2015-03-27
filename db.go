@@ -576,6 +576,66 @@ func dbStarNote(userID, noteID int) error {
 	return dbSetNoteStarredState(userID, noteID, true)
 }
 
+// note: only use locally for testing search, not in production
+func dbGetAllNotes() ([]*Note, error) {
+	var notes []*Note
+	db := getDbMust()
+	q := `
+SELECT
+	n.id,
+	n.user_id,
+	n.curr_version_id,
+	n.is_deleted,
+	n.is_public,
+	n.is_starred,
+	v.created_at,
+	v.size,
+	v.format,
+	v.title,
+	v.content_sha1,
+	v.snippet_sha1,
+	v.tags
+FROM notes n, versions v
+WHERE v.id = n.curr_version_id
+LIMIT 10000`
+	rows, err := db.Query(q)
+	if err != nil {
+		LogErrorf("db.Query('%s') failed with %s\n", q, err)
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var n Note
+		var tagsSerialized string
+		err = rows.Scan(
+			&n.id,
+			&n.userID,
+			&n.CurrVersionID,
+			&n.IsDeleted,
+			&n.IsPublic,
+			&n.IsStarred,
+			&n.CreatedAt,
+			&n.Size,
+			&n.Format,
+			&n.Title,
+			&n.ContentSha1,
+			&n.SnippetSha1,
+			&tagsSerialized)
+		if err != nil {
+			return nil, err
+		}
+		n.Tags = deserializeTags(tagsSerialized)
+		n.SetCalculatedProperties()
+		notes = append(notes, &n)
+	}
+	err = rows.Err()
+	if err != nil {
+		LogErrorf("rows.Err() for '%s' failed with %s\n", q, err)
+		return nil, err
+	}
+	return notes, nil
+}
+
 func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()
