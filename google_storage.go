@@ -19,6 +19,8 @@ const (
 
 var (
 	googleStorageContext *context.Context
+	// if true, don't save notes to Google Storage. Enabled when running locally
+	onlyLocalStorage bool
 )
 
 func getGoogleStorageContext() context.Context {
@@ -86,6 +88,9 @@ func noteGoogleStoragePath(sha1 []byte) string {
 
 // TODO: remember timing of requests somewhere for analysis
 func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
+	if onlyLocalStorage {
+		return nil
+	}
 	timeStart := time.Now()
 	path := noteGoogleStoragePath(sha1)
 	ctx := getGoogleStorageContext()

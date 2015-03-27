@@ -98,6 +98,9 @@ func parseFlags() {
 	flag.StringVar(&flgImportJSONUserHandle, "import-user", "", "handle of the user (users.handle) for which to import notes")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
 	flag.Parse()
+	if flgIsLocal {
+		onlyLocalStorage = true
+	}
 }
 
 func startWebpackWatch() {
