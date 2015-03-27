@@ -182,7 +182,7 @@ var AppUser = React.createClass({
 
     var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
     return (
-        <div >
+        <div>
             <Top isLoggedIn={isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.props.notesUserHandle}
@@ -213,7 +213,7 @@ function userStart() {
   console.log("gNotesUserHandle: ", gNotesUserHandle);
   React.render(
     <AppUser notesUserHandle={gNotesUserHandle}/>,
-    document.getElementById('main')
+    document.body
   );
 }
 
