@@ -38,9 +38,14 @@ CREATE TABLE notes (
     id                INT NOT NULL AUTO_INCREMENT,
     user_id           INT NOT NULL ,
     curr_version_id   INT NOT NULL,
+    # cached for speed, this is versions.created_at of the first version
+    # updated_at is versions.created_at of the curr_version_id but we don't
+    # cache it because we read that anyway
+    created_at        TIMESTAMP NOT NULL,
     is_deleted        TINYINT(1) NOT NULL,
     is_public         TINYINT(1) NOT NULL,
     is_starred        TINYINT(1) NOT NULL,
+    versions_count    INT NOT NULL,
     PRIMARY KEY (id),
     INDEX (user_id)
 );

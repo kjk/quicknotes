@@ -437,6 +437,8 @@ func loadContent(sha1 []byte) ([]byte, error) {
 	return d, nil
 }
 
+// create a new note. if note.createdAt is non-zero value, this is an import
+// of from somewhere else, so we want to preserve that
 func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	u.PanicIf(len(note.content) == 0)
 	contentSha1, snippetSha1, err := saveContent(note.content)
@@ -450,47 +452,49 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	q := `INSERT INTO notes (user_id, curr_version_id, is_deleted, is_public) VALUES (?, ?, ?, ?)`
-	res, err := db.Exec(q, userID, 0, note.isDeleted, note.isPublic)
+	defer func() {
+		if tx != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// for non-imported notes use current time as note creation time
+	if note.createdAt.IsZero() {
+		note.createdAt = time.Now()
+	}
+	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count) VALUES (?, ?, ?, ?, ?, 1)`
+	res, err := tx.Exec(q, userID, 0, note.createdAt, note.isDeleted, note.isPublic)
 	if err != nil {
-		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
-		tx.Rollback()
+		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
 	noteID, err := res.LastInsertId()
 	if err != nil {
 		LogErrorf("res.LastInsertId() of noteID failed with %s\n", err)
-		tx.Rollback()
 		return 0, err
 	}
 	serilizedTags := serializeTags(note.tags)
-	if note.createdAt.IsZero() {
-		q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, now())`
-		res, err = db.Exec(q, noteID, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags)
-	} else {
-		q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-		res, err = db.Exec(q, noteID, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags, note.createdAt)
-	}
+	q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags, note.createdAt)
 	if err != nil {
-		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
-		tx.Rollback()
+		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
 	versionID, err := res.LastInsertId()
 	if err != nil {
 		LogErrorf("res.LastInsertId() of versionId failed with %s\n", err)
-		tx.Rollback()
 		return 0, err
 	}
 	q = `UPDATE notes SET curr_version_id=? WHERE id=?`
-	_, err = db.Exec(q, versionID, noteID)
+	_, err = tx.Exec(q, versionID, noteID)
 	if err != nil {
-		LogErrorf("db.Exec('%s') failed with %s\n", q, err)
-		tx.Rollback()
+		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
+	err = tx.Commit()
+	tx = nil
 	clearCachedUserInfo(userID)
-	return int(noteID), tx.Commit()
+	return int(noteID), err
 }
 
 /*
