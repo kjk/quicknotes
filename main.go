@@ -24,6 +24,7 @@ var (
 	flgRecreateDatabase     bool
 	flgImportJSONUserHandle string
 	flgImportJSONFile       string
+	flgSearchTerm           string
 	flgListUsers            bool
 
 	localStore  *LocalStore
@@ -97,6 +98,7 @@ func parseFlags() {
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
 	flag.StringVar(&flgImportJSONUserHandle, "import-user", "", "handle of the user (users.handle) for which to import notes")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
+	flag.StringVar(&flgSearchTerm, "search", "", "search notes for a given term")
 	flag.Parse()
 	if flgIsLocal {
 		onlyLocalStorage = true
@@ -149,6 +151,7 @@ func main() {
 	OpenLogFiles()
 	IncLogVerbosity()
 	LogInfof("local: %v, sql connection: %s, data dir: %s\n", flgIsLocal, getSqlConnectionRoot(), getDataDir())
+	initAppMust()
 
 	if flgListUsers {
 		listDbUsers()
@@ -181,11 +184,16 @@ func main() {
 	}
 
 	getDbMust()
+
+	if flgSearchTerm != "" {
+		searchAllNotes(flgSearchTerm)
+		return
+	}
+
 	if flgIsLocal {
 		startWebpackWatch()
 	}
 
-	initAppMust()
 	startWebServer()
 	// TODO: this isn't actually called
 	localStore.Close()
