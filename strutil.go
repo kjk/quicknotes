@@ -28,13 +28,13 @@ func isNewline(c byte) bool {
 // PosLen return position and length of 0-based lineNo
 // length includes newline characters at the end
 // we don't validate lineNo
-// newlines are: cr, lf or crlf
 func (i *LinesInfo) PosLen(lineNo int) (int, int) {
 	start := i.Pos[lineNo]
 	end := i.Pos[lineNo+1]
 	return start, end - start
 }
 
+// newlines are: cr, lf or cr+lf
 func nextLine(d []byte) int {
 	for i, c := range d {
 		if c == lf {
