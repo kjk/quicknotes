@@ -1,3 +1,6 @@
+/* jshint -W097 */
+'use strict';
+
 function noteHasTag(note, tag) {
   var tags = note.Tags;
   if (!tags) {
@@ -12,33 +15,33 @@ function noteHasTag(note, tag) {
 }
 
 function getSpecialNotes(notes) {
-  var deleted = [];
-  var notDeleted = [];
-  var public = [];
-  var private = [];
-  var starred = [];
+  var deletedNotes = [];
+  var notDeletedNotes = [];
+  var publicNotes = [];
+  var privateNotes = [];
+  var starredNotes = [];
   for (var i = 0; i < notes.length; i++) {
     var note = notes[i];
     if (note.IsDeleted) {
-      deleted.push(note);
+      deletedNotes.push(note);
     } else {
-      notDeleted.push(note);
+      notDeletedNotes.push(note);
       if (note.IsPublic) {
-        public.push(note);
+        publicNotes.push(note);
       } else {
-        private.push(note);
+        privateNotes.push(note);
       }
       if (note.IsStarred) {
-        starred.push(note);
+        starredNotes.push(note);
       }
     }
   }
   return {
-    __all: notDeleted,
-    __deleted: deleted,
-    __public: public,
-    __private: private,
-    __starred: starred,
+    __all: notDeletedNotes,
+    __deleted: deletedNotes,
+    __public: publicNotes,
+    __private: privateNotes,
+    __starred: starredNotes,
   };
 }
 
