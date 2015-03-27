@@ -22,7 +22,6 @@ type noteJSON struct {
 	CreatedAt time.Time
 }
 
-// TODO: support .bz2 files
 func importNotesFromJSON(path, userHandle string) {
 	var r io.Reader
 	if path == "" || userHandle == "" {
@@ -66,6 +65,7 @@ func importNotesFromJSON(path, userHandle string) {
 			log.Fatalf("dbCreateNewNote() failed with '%s'", err)
 		}
 		nImported++
+		fmt.Printf("imported note %d, %s\n", nImported, n.Title)
 	}
 	if err == io.EOF {
 		err = nil
