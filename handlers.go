@@ -213,17 +213,17 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 }
 
 const (
-	NOTE_HASH_ID = iota
-	NOTE_TITLE
-	NOTE_SIZE
-	NOTE_FLAGS
-	NOTE_CREATED_AT
-	//NOTE_UPDATED_AT
-	NOTE_TAGS
-	NOTE_SNIPPET
-	NOTE_FORMAT
-	NOTE_CURR_VERSION_ID
-	NOTE_FIELDS_COUNT
+	noteHashIDIdx = iota
+	noteTitleIdx
+	noteSizeIdx
+	noteFlagsIdx
+	noteCreatedAtIdx
+	//noteUpdatedAtIdx
+	noteTagsIdx
+	noteSnippetIdx
+	noteFormatIdx
+	noteCurrentVersionIDIdx
+	noteFieldsCount
 )
 
 func boolToInt(b bool) int {
@@ -244,17 +244,17 @@ func encodeNoteFlags(n *Note) int {
 }
 
 func noteToCompact(n *Note) []interface{} {
-	res := make([]interface{}, NOTE_FIELDS_COUNT, NOTE_FIELDS_COUNT)
-	res[NOTE_HASH_ID] = n.IDStr
-	res[NOTE_TITLE] = n.Title
-	res[NOTE_SIZE] = n.Size
-	res[NOTE_FLAGS] = encodeNoteFlags(n)
-	res[NOTE_CREATED_AT] = n.CreatedAt
-	//res[NOTE_UPDATED_AT] = n.CreatedAt // TODO: UpdatedAt
-	res[NOTE_TAGS] = n.Tags
-	res[NOTE_SNIPPET] = n.Snippet
-	res[NOTE_FORMAT] = n.Format
-	res[NOTE_CURR_VERSION_ID] = n.CurrVersionID
+	res := make([]interface{}, noteFieldsCount, noteFieldsCount)
+	res[noteHashIDIdx] = n.IDStr
+	res[noteTitleIdx] = n.Title
+	res[noteSizeIdx] = n.Size
+	res[noteFlagsIdx] = encodeNoteFlags(n)
+	res[noteCreatedAtIdx] = n.CreatedAt
+	//res[noteUpdatedAtIdx] = n.CreatedAt // TODO: UpdatedAt
+	res[noteTagsIdx] = n.Tags
+	res[noteSnippetIdx] = n.Snippet
+	res[noteFormatIdx] = n.Format
+	res[noteCurrentVersionIDIdx] = n.CurrVersionID
 	return res
 }
 
@@ -518,6 +518,61 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
+// SearchResult has search results sent to client
+type SearchResult struct {
+	NoteIDStr   string
+	PreviewHTML string
+}
+
+// GET /api/searchusernotes.json
+// args:
+// - user : user handle
+// - term : search term
+func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
+	userHandle := strings.TrimSpace(r.FormValue("user"))
+	if userHandle == "" {
+		LogErrorf("missing user arg in '%s'\n", r.URL)
+		http.NotFound(w, r)
+		return
+	}
+	searchTerm := strings.TrimSpace(r.FormValue("term"))
+	if searchTerm == "" {
+		LogErrorf("missing search term in '%s'\n", r.URL)
+	}
+	loggedInUserHandle := ""
+	dbUser := getUserFromCookie(w, r)
+	if dbUser != nil {
+		loggedInUserHandle = dbUser.Handle
+	}
+	searchPrivate := userHandle == loggedInUserHandle
+
+	LogInfof("userHandle: '%s', term: '%s', private: %v, url: '%s'\n", userHandle, searchTerm, searchPrivate, r.URL)
+
+	i, err := getCachedUserInfoByHandle(userHandle)
+	if err != nil || i == nil {
+		httpServerError(w, r)
+		return
+	}
+	var notes []*Note
+	for _, note := range i.notes {
+		if note.IsPublic || searchPrivate {
+			notes = append(notes, note)
+		}
+	}
+
+	var res []SearchResult
+
+	v := struct {
+		Term    string
+		Results []SearchResult
+	}{
+		Term:    searchTerm,
+		Results: res,
+	}
+	// TODO: move to httpOkWithJSONCompact() when debugged
+	httpOkWithJSON(w, v)
+}
+
 func registerHTTPHandlers() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
@@ -537,6 +592,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnotescompact.json", handleAPIGetNotesCompact)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
+	http.HandleFunc("/api/searchusernotes.json", handleSearchUserNotes)
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
 	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)

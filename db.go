@@ -310,6 +310,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	return res, nil
 }
 
+// TODO: add withPrivateNotes
 func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
 	user, err := dbGetUserByHandle(userHandle)
 	if err != nil {
