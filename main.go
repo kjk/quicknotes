@@ -186,7 +186,7 @@ func main() {
 	getDbMust()
 
 	if flgSearchTerm != "" {
-		searchAllNotes(flgSearchTerm)
+		searchAllNotesTest(flgSearchTerm)
 		return
 	}
 

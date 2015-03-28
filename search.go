@@ -141,13 +141,10 @@ func collapseSameLines(lineMatches []*LineMatch) []*LineMatch {
 	return res
 }
 
-func searchAllNotes(term string) {
-	timeStart := time.Now()
-	notes, err := dbGetAllNotes()
-	u.PanicIfErr(err)
-	fmt.Printf("got %d notes in %s\n", len(notes), time.Since(timeStart))
-
-	timeStart = time.Now()
+// TODO: sort results by score
+// TODO: break term by space and use it as AND filter (e.g. "foo bar" is where
+// both "foo" and "bar" are present)
+func searchNotes(term string, notes []*Note) []*Match {
 	term = strings.ToLower(term)
 	var matches []*Match
 	for _, n := range notes {
@@ -156,15 +153,36 @@ func searchAllNotes(term string) {
 			matches = append(matches, match)
 		}
 	}
+	return matches
+}
 
+func printNoteID(n *Note, shown *bool) {
+	if *shown {
+		return
+	}
+	fmt.Printf("\nNote id: %s\n", n.IDStr)
+}
+
+func searchAllNotesTest(term string) {
+	timeStart := time.Now()
+	notes, err := dbGetAllNotes()
+	u.PanicIfErr(err)
+	fmt.Printf("got %d notes in %s\n", len(notes), time.Since(timeStart))
+
+	timeStart = time.Now()
+
+	matches := searchNotes(term, notes)
 	for _, match := range matches {
-		note := match.note
+		n := match.note
+		shownId := false
 		if len(match.titleMatchPos) > 0 {
-			s := decorate(match.note.Title, len(term), match.titleMatchPos)
+			printNoteID(n, &shownId)
+			s := decorate(n.Title, len(term), match.titleMatchPos)
 			fmt.Printf("Title: %s\n", s)
 		}
 		if len(match.bodyMatchPos) > 0 {
-			lineMatches := matchToLines([]byte(note.Content()), match.bodyMatchPos)
+			printNoteID(n, &shownId)
+			lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
 			lineMatches = collapseSameLines(lineMatches)
 			for _, lm := range lineMatches {
 				s := decorate(lm.line, len(term), lm.matches)
@@ -173,5 +191,5 @@ func searchAllNotes(term string) {
 			}
 		}
 	}
-	fmt.Printf("found %d matches in %s\n", len(matches), time.Since(timeStart))
+	fmt.Printf("found %d matching notes in %s\n", len(matches), time.Since(timeStart))
 }
