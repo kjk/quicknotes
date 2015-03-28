@@ -27,6 +27,7 @@ func importNotesFromJSON(path, userHandle string) {
 	if path == "" || userHandle == "" {
 		log.Fatalf("missing path ('%s') or user handle ('%s')\n", path, userHandle)
 	}
+	isBlog := strings.Contains(path, "blog.json")
 	dbUser, err := dbGetUserByHandle(userHandle)
 	if err != nil && err != sql.ErrNoRows {
 		log.Fatalf("dbGetUserByHandle() failed with '%s'\n", err)
@@ -59,6 +60,9 @@ func importNotesFromJSON(path, userHandle string) {
 			createdAt: n.CreatedAt,
 			isDeleted: n.IsDeleted,
 			isPublic:  n.IsPublic,
+		}
+		if isBlog {
+			newNote.tags = append(newNote.tags, "blog")
 		}
 		_, err = dbCreateNewNote(dbUser.ID, &newNote)
 		if err != nil {
