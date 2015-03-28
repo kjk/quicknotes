@@ -152,14 +152,12 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 	v := struct {
 		IDHash  string
 		Title   string
-		ColorID int
 		Format  int
 		Content string
 		Tags    []string
 	}{
 		IDHash:  noteIDHashStr,
 		Title:   note.Title,
-		ColorID: note.ColorID,
 		Format:  note.Format,
 		Content: string(content),
 		Tags:    note.Tags,

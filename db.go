@@ -120,7 +120,6 @@ type DbNote struct {
 type Note struct {
 	DbNote
 	//UpdatedAt     time.Time
-	ColorID   int
 	Snippet   string
 	IsPartial bool
 	HumanSize string
@@ -300,9 +299,6 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 		return nil, err
 	}
 	sort.Sort(notesByCreatedAt(notes))
-	for i, n := range notes {
-		n.ColorID = i % nCssColors
-	}
 	res := &CachedUserInfo{
 		user:  user,
 		notes: notes,
