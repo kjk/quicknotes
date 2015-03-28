@@ -193,20 +193,15 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		loggedInUserHandle = dbUser.Handle
 	}
 
-	onlyPublic := userHandle != loggedInUserHandle
-	// TODO: hack, set CachedSnippet
+	showPrivate := userHandle == loggedInUserHandle
 	var notes []*Note
 	for _, note := range i.notes {
-		if onlyPublic {
-			if note.IsPublic {
-				notes = append(notes, note)
-			}
-		} else {
+		if note.IsPublic || showPrivate {
 			notes = append(notes, note)
 		}
 	}
 
-	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', onlyPublic: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, onlyPublic)
+	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
 	v := struct {
 		LoggedInUserHandle string
 		Notes              []*Note
@@ -214,7 +209,93 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSONCompact(w, v)
+}
+
+const (
+	NOTE_HASH_ID = iota
+	NOTE_TITLE
+	NOTE_SIZE
+	NOTE_FLAGS
+	NOTE_CREATED_AT
+	//NOTE_UPDATED_AT
+	NOTE_TAGS
+	NOTE_SNIPPET
+	NOTE_FORMAT
+	NOTE_CURR_VERSION_ID
+	NOTE_FIELDS_COUNT
+)
+
+func boolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+// encode multiple bool flags as a single int
+func encodeNoteFlags(n *Note) int {
+	res := 0
+	res += 1 * boolToInt(n.IsStarred)
+	res += 2 * boolToInt(n.IsDeleted)
+	res += 4 * boolToInt(n.IsPublic)
+	res += 8 * boolToInt(n.IsPartial)
+	return res
+}
+
+func noteToCompact(n *Note) []interface{} {
+	res := make([]interface{}, NOTE_FIELDS_COUNT, NOTE_FIELDS_COUNT)
+	res[NOTE_HASH_ID] = n.IDStr
+	res[NOTE_TITLE] = n.Title
+	res[NOTE_SIZE] = n.Size
+	res[NOTE_FLAGS] = encodeNoteFlags(n)
+	res[NOTE_CREATED_AT] = n.CreatedAt
+	//res[NOTE_UPDATED_AT] = n.CreatedAt // TODO: UpdatedAt
+	res[NOTE_TAGS] = n.Tags
+	res[NOTE_SNIPPET] = n.Snippet
+	res[NOTE_FORMAT] = n.Format
+	res[NOTE_CURR_VERSION_ID] = n.CurrVersionID
+	return res
+}
+
+// /api/getnotescompact.json?user=${userHandle}&start=${start}&len=${len}
+// More ideas:
+// - send dates as number of seconds
+// - send tags as numbers
+func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
+	userHandle := strings.TrimSpace(r.FormValue("user"))
+	LogInfof("userHandle: '%s'\n", userHandle)
+	if userHandle == "" {
+		http.NotFound(w, r)
+		return
+	}
+	i, err := getCachedUserInfoByHandle(userHandle)
+	if err != nil || i == nil {
+		httpServerError(w, r)
+		return
+	}
+	loggedInUserHandle := ""
+	dbUser := getUserFromCookie(w, r)
+	if dbUser != nil {
+		loggedInUserHandle = dbUser.Handle
+	}
+
+	showPrivate := userHandle == loggedInUserHandle
+	var notes [][]interface{}
+	for _, note := range i.notes {
+		if note.IsPublic || showPrivate {
+			notes = append(notes, noteToCompact(note))
+		}
+	}
+	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
+	v := struct {
+		LoggedInUserHandle string
+		Notes              [][]interface{}
+	}{
+		LoggedInUserHandle: loggedInUserHandle,
+		Notes:              notes,
+	}
+	httpOkWithJSONCompact(w, v)
 }
 
 func newNoteFromArgs(r *http.Request) *NewNote {
@@ -454,6 +535,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/importsimplenote", handleImportSimpleNote)
 	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
+	http.HandleFunc("/api/getnotescompact.json", handleAPIGetNotesCompact)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
