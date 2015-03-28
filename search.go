@@ -156,11 +156,38 @@ func searchNotes(term string, notes []*Note) []*Match {
 	return matches
 }
 
-func printNoteID(n *Note, shown *bool) {
+func sprintNoteID(n *Note, shown *bool) string {
 	if *shown {
-		return
+		return ""
 	}
-	fmt.Printf("\nNote id: %s\n", n.IDStr)
+	return fmt.Sprintf("\nNote id: %s\n", n.IDStr)
+}
+
+func noteMatchToHTML(n *Note) string {
+	return ""
+}
+
+func noteMatchToString(term string, match *Match) string {
+	n := match.note
+
+	shownID := false
+	var res string
+	if len(match.titleMatchPos) > 0 {
+		res += sprintNoteID(n, &shownID)
+		s := decorate(n.Title, len(term), match.titleMatchPos)
+		res += fmt.Sprintf("Title: %s\n", s)
+	}
+	if len(match.bodyMatchPos) > 0 {
+		res += sprintNoteID(n, &shownID)
+		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
+		lineMatches = collapseSameLines(lineMatches)
+		for _, lm := range lineMatches {
+			s := decorate(lm.line, len(term), lm.matches)
+			s = trimSpaceLineRight(s)
+			res += fmt.Sprintf("%d: %s\n", lm.lineNo+1, s)
+		}
+	}
+	return res
 }
 
 func searchAllNotesTest(term string) {
@@ -173,23 +200,7 @@ func searchAllNotesTest(term string) {
 
 	matches := searchNotes(term, notes)
 	for _, match := range matches {
-		n := match.note
-		shownId := false
-		if len(match.titleMatchPos) > 0 {
-			printNoteID(n, &shownId)
-			s := decorate(n.Title, len(term), match.titleMatchPos)
-			fmt.Printf("Title: %s\n", s)
-		}
-		if len(match.bodyMatchPos) > 0 {
-			printNoteID(n, &shownId)
-			lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
-			lineMatches = collapseSameLines(lineMatches)
-			for _, lm := range lineMatches {
-				s := decorate(lm.line, len(term), lm.matches)
-				s = trimSpaceLineRight(s)
-				fmt.Printf("%d: %s\n", lm.lineNo+1, s)
-			}
-		}
+		fmt.Print(noteMatchToString(term, match))
 	}
 	fmt.Printf("found %d matching notes in %s\n", len(matches), time.Since(timeStart))
 }
