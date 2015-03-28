@@ -36,7 +36,16 @@ func httpOkWithText(w http.ResponseWriter, s string) {
 }
 
 func httpOkWithJSON(w http.ResponseWriter, v interface{}) {
-	b, err := json.MarshalIndent(v, "", "  ")
+	b, err := json.MarshalIndent(v, "", "\t")
+	if err != nil {
+		// should never happen
+		LogErrorf("json.MarshalIndent() failed with %q\n", err)
+	}
+	httpOkBytesWithContentType(w, "application/json", b)
+}
+
+func httpOkWithJSONCompact(w http.ResponseWriter, v interface{}) {
+	b, err := json.Marshal(v)
 	if err != nil {
 		// should never happen
 		LogErrorf("json.MarshalIndent() failed with %q\n", err)
