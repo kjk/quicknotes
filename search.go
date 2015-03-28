@@ -93,14 +93,6 @@ type LineMatch struct {
 	matches []int // can be empty
 }
 
-func trimSpaceLineRight(s string) string {
-	n := len(s) - 1
-	for n >= 0 && isNewline(s[n]) {
-		n--
-	}
-	return s[:n]
-}
-
 func findLineForPos(linesInfo *LinesInfo, pos int) *LineMatch {
 	for i := 0; i < linesInfo.LineCount(); i++ {
 		lineStart, lineLen := linesInfo.PosLen(i)
@@ -163,8 +155,23 @@ func sprintNoteID(n *Note, shown *bool) string {
 	return fmt.Sprintf("\nNote id: %s\n", n.IDStr)
 }
 
-func noteMatchToHTML(n *Note) string {
-	return ""
+func noteMatchToHTML(term string, match *Match) string {
+	n := match.note
+	var res string
+	if len(match.titleMatchPos) > 0 {
+		s := decorate(n.Title, len(term), match.titleMatchPos)
+		res += fmt.Sprintf("Title: %s\n", s)
+	}
+	if len(match.bodyMatchPos) > 0 {
+		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
+		lineMatches = collapseSameLines(lineMatches)
+		for _, lm := range lineMatches {
+			s := decorate(lm.line, len(term), lm.matches)
+			s = trimSpaceLineRight(s)
+			res += fmt.Sprintf("%d: %s\n", lm.lineNo+1, s)
+		}
+	}
+	return res
 }
 
 func noteMatchToString(term string, match *Match) string {
