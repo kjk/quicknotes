@@ -16,7 +16,7 @@ var Note = React.createClass({
 
   createTitle: function(note) {
     if (note.Title !== "") {
-      var cls = "title tcol" + note.ColorID;
+      var cls = "title";
       return (
         <span className={cls}>{note.Title}</span>
         );
