@@ -90,3 +90,14 @@ func noteToTitleContent(d []byte) (string, []byte) {
 	}
 	return title, content
 }
+
+func trimSpaceLineRight(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	n := len(s) - 1
+	for n >= 0 && isNewline(s[n]) {
+		n--
+	}
+	return s[:n+1]
+}
