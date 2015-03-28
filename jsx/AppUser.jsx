@@ -217,4 +217,6 @@ function userStart() {
   );
 }
 
-module.exports = userStart();
+window.userStart = userStart;
+
+module.exports = AppUser;

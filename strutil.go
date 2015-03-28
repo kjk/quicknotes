@@ -7,6 +7,7 @@ const (
 
 // LinesInfo contains information about where the lines start in a piece of text
 type LinesInfo struct {
+	d []byte
 	// start position of nth line, with a fake entry for last+1 line
 	Pos []int
 }
@@ -56,6 +57,7 @@ func nextLine(d []byte) int {
 
 func detectLines(d []byte) *LinesInfo {
 	res := &LinesInfo{
+		d:   d,
 		Pos: []int{0},
 	}
 	lineStart := 0

@@ -86,6 +86,61 @@ func searchNote(term string, note *Note) *Match {
 	return nil
 }
 
+// LineMatch represents a match in the line
+type LineMatch struct {
+	lineNo  int
+	line    string
+	matches []int // can be empty
+}
+
+func trimSpaceLineRight(s string) string {
+	n := len(s) - 1
+	for n >= 0 && isNewline(s[n]) {
+		n--
+	}
+	return s[:n]
+}
+
+func findLineForPos(linesInfo *LinesInfo, pos int) *LineMatch {
+	for i := 0; i < linesInfo.LineCount(); i++ {
+		lineStart, lineLen := linesInfo.PosLen(i)
+		if pos >= lineStart && pos < lineStart+lineLen {
+			d := linesInfo.d
+			res := &LineMatch{
+				lineNo:  i,
+				line:    string(d[lineStart : lineStart+lineLen]),
+				matches: []int{pos - lineStart},
+			}
+			return res
+		}
+	}
+	return nil
+}
+
+func matchToLines(d []byte, matchPos []int) []*LineMatch {
+	linesInfo := detectLines(d)
+	var res []*LineMatch
+	for _, pos := range matchPos {
+		m := findLineForPos(linesInfo, pos)
+		res = append(res, m)
+	}
+	return res
+}
+
+func collapseSameLines(lineMatches []*LineMatch) []*LineMatch {
+	if len(lineMatches) < 2 {
+		return lineMatches
+	}
+	res := lineMatches
+	for i := 1; i < len(res); i++ {
+		if res[i].lineNo == res[i-1].lineNo {
+			res[i-1].matches = append(res[i-1].matches, res[i].matches[0])
+			res = append(res[:i], res[i+1:]...)
+		}
+	}
+	return res
+}
+
 func searchAllNotes(term string) {
 	timeStart := time.Now()
 	notes, err := dbGetAllNotes()
@@ -101,11 +156,22 @@ func searchAllNotes(term string) {
 			matches = append(matches, match)
 		}
 	}
-	fmt.Printf("found %d matches in %s\n", len(matches), time.Since(timeStart))
+
 	for _, match := range matches {
+		note := match.note
 		if len(match.titleMatchPos) > 0 {
 			s := decorate(match.note.Title, len(term), match.titleMatchPos)
-			fmt.Printf("%s\n", s)
+			fmt.Printf("Title: %s\n", s)
+		}
+		if len(match.bodyMatchPos) > 0 {
+			lineMatches := matchToLines([]byte(note.Content()), match.bodyMatchPos)
+			lineMatches = collapseSameLines(lineMatches)
+			for _, lm := range lineMatches {
+				s := decorate(lm.line, len(term), lm.matches)
+				s = trimSpaceLineRight(s)
+				fmt.Printf("%d: %s\n", lm.lineNo+1, s)
+			}
 		}
 	}
+	fmt.Printf("found %d matches in %s\n", len(matches), time.Since(timeStart))
 }
