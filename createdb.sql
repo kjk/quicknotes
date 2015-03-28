@@ -50,12 +50,12 @@ CREATE TABLE notes (
   INDEX (user_id)
 );
 
-CREATE TABLE tag_names {
+CREATE TABLE tag_names (
   id    INT NOT NULL AUTO_INCREMENT,
   tag   VARCHAR(256) NOT NULL,
   PRIMARY KEY (id),
   INDEX (tag)
-}
+);
 
 CREATE TABLE migrations (
 	version int NOT NULL
