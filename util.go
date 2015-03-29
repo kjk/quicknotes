@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func fatalIfErr(err error, what string) {
@@ -100,4 +101,10 @@ func trimSpaceLineRight(s string) string {
 		n--
 	}
 	return s[:n+1]
+}
+
+// given foo@bar.com, returns foo
+func nameFromEmail(email string) string {
+	parts := strings.Split(email, "@")
+	return parts[0]
 }
