@@ -52,7 +52,7 @@ var AppUser = React.createClass({
       allNotes: [],
       selectedNotes: [],
       selectedTag: "__all",
-            loggedInUserHandle: ""
+      loggedInUserHandle: ""
     };
   },
 
