@@ -137,6 +137,9 @@ func collapseSameLines(lineMatches []*LineMatch) []*LineMatch {
 // TODO: break term by space and use it as AND filter (e.g. "foo bar" is where
 // both "foo" and "bar" are present)
 func searchNotes(term string, notes []*Note) []*Match {
+	if len(term) == 0 {
+		return nil
+	}
 	term = strings.ToLower(term)
 	var matches []*Match
 	for _, n := range notes {
@@ -155,20 +158,22 @@ func sprintNoteID(n *Note, shown *bool) string {
 	return fmt.Sprintf("\nNote id: %s\n", n.IDStr)
 }
 
+// TODO: actually return html
 func noteMatchToHTML(term string, match *Match) string {
 	n := match.note
 	var res string
 	if len(match.titleMatchPos) > 0 {
-		s := decorate(n.Title, len(term), match.titleMatchPos)
-		res += fmt.Sprintf("Title: %s\n", s)
+		s := n.Title
+		res += fmt.Sprintf("Title: %s<br>\n", s)
 	}
 	if len(match.bodyMatchPos) > 0 {
 		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
 		lineMatches = collapseSameLines(lineMatches)
+		// TODO: limit number of matched lines to some reasonable number (e.g. 8)
 		for _, lm := range lineMatches {
-			s := decorate(lm.line, len(term), lm.matches)
+			s := lm.line
 			s = trimSpaceLineRight(s)
-			res += fmt.Sprintf("%d: %s\n", lm.lineNo+1, s)
+			res += fmt.Sprintf("%d: %s<br>\n", lm.lineNo+1, s)
 		}
 	}
 	return res

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/kjk/u"
 )
@@ -262,6 +263,7 @@ func noteToCompact(n *Note) []interface{} {
 // More ideas:
 // - send dates as number of seconds
 // - send tags as numbers
+// - single array instead of array of arrays
 func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	LogInfof("userHandle: '%s'\n", userHandle)
@@ -528,6 +530,7 @@ type SearchResult struct {
 // args:
 // - user : user handle
 // - term : search term
+// TODO: limit number of hits to some reasonable number e.g. 100?
 func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	if userHandle == "" {
@@ -535,9 +538,11 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	searchTerm := strings.TrimSpace(r.FormValue("term"))
+	searchTerm := r.FormValue("term")
 	if searchTerm == "" {
 		LogErrorf("missing search term in '%s'\n", r.URL)
+		httpServerError(w, r)
+		return
 	}
 	loggedInUserHandle := ""
 	dbUser := getUserFromCookie(w, r)
@@ -560,8 +565,20 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var res []SearchResult
+	timeStart := time.Now()
+	matches := searchNotes(searchTerm, notes)
+	fmt.Sprintf("searchNotes('%s') of %d notes took %s\n", searchTerm, len(matches), time.Since(timeStart))
 
+	var res []SearchResult
+	for _, match := range matches {
+		s := noteMatchToHTML(searchTerm, match)
+		sr := SearchResult{
+			NoteIDStr:   match.note.IDStr,
+			PreviewHTML: s,
+		}
+		res = append(res, sr)
+	}
+	// Maybe: return Results as aray
 	v := struct {
 		Term    string
 		Results []SearchResult
