@@ -387,7 +387,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 
 	// also might be useful:
 	// Picture
-	userLogin := "google:" + userInfo.Email
+	userLogin := "google:" + nameFromEmail(userInfo.Email)
 	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
 		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
