@@ -213,7 +213,7 @@ function userStart() {
   console.log("gNotesUserHandle: ", gNotesUserHandle);
   React.render(
     <AppUser notesUserHandle={gNotesUserHandle}/>,
-    document.body
+    document.getElementById('root')
   );
 }
 
