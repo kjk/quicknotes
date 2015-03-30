@@ -12,6 +12,13 @@
     - name: create directory for nginx logs
       file: >
         path=/var/log/nginx/quicknotes/ state=directory mode=0755
+    - name: create directory for nginx certificates
+      file: >
+        path=/etc/nginx/ssl/ state=directory mode=0755
+    - name: copy nginx certificate
+      copy: src=nginx.crt dest=/etc/nginx/ssl/quicknotes.crt
+    - name: copy nginx key
+      copy: src=nginx.key dest=/etc/nginx/ssl/quicknotes.key
     - name: copy nginx config file
       copy: src=nginx.conf dest=/etc/nginx/sites-available/quicknotes
     - name: enable website
