@@ -12,7 +12,7 @@
 		},
 		{
 			"ImportPath": "github.com/garyburd/go-oauth/oauth",
-			"Rev": "fa02955a8929c2f007c533fbdfb8ddc91bb6a731"
+			"Rev": "3131beb69b81ff119923bdefbf029318f1f53794"
 		},
 		{
 			"ImportPath": "github.com/go-sql-driver/mysql",
