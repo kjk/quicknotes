@@ -12,6 +12,10 @@ src_dir = pj(gopath, "src", "github.com", "kjk", "quicknotes")
 
 assert os.path.exists(src_dir), "%s doesn't exit" % src_dir
 
+def abort(s):
+    print(s)
+    sys.exit(1)
+
 def git_ensure_clean():
     out = subprocess.check_output(["git", "status", "--porcelain"])
     if len(out) != 0:
