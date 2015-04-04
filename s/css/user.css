@@ -7,7 +7,8 @@ html, body {
 }
 
 body {
-  font-family: ;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-size: 14px;
 }
 
 #root, #header, #left-sidebar, #notes-list, #composer {
@@ -22,20 +23,42 @@ body {
 /**/
 #header {
   top: 0; left: 0; right: 0;
-  background: #FFF;
   height: 56px;
+  background: #F8F8FA;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(252,252,252,1) 100%);
+}
+
+#header:after {
+  content: "";
+  position: absolute;
+  display: block;
+  bottom: 0; left: 0; right: 0;
+  border-bottom: 1px solid rgba(0,0,0,.2);
 }
 
 #header #logo {
   width: 220px;
   height: 56px;
+  line-height: 56px;
   display: block;
-  background: red;
   float: left;
+  background: rgba(0,0,0,.02);
 }
 
 #header #search-wrapper {
   float: left;
+  position: relative;
+  top: 12px; left: 16px;
+}
+
+#header #search-wrapper input {
+  width: 400px;
+  height: 22px;
+  font-size: 14px;
+  padding: 2px 16px;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 20px;
+  outline: none;
 }
 
 #header #user {
@@ -66,11 +89,6 @@ body {
   margin-bottom: 16px;
 }
 
-.tag.selected {
-  cursor: default;
-  color: rgba(255,255,255,1);
-}
-
 .tag-name {
   padding-left: 16px;
 }
@@ -80,7 +98,18 @@ body {
   float: right;
   margin-right: 16px;
   font-size: 11px;
+  color: rgba(255,255,255,.3);
 }
+
+.tag.selected {
+  cursor: default;
+  color: rgba(255,255,255,1);
+}
+
+.tag.selected .tag-count {
+  color: rgba(255,255,255,.6);
+}
+
 
 
 /**/
@@ -102,24 +131,78 @@ body {
   margin-top: 16px;
 }
 
+#notes-list .note:last-of-type {
+  margin-bottom: 16px;
+}
+
 #notes-list .note pre {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
 #notes-list .note .note-header {
-  
+  height: 26px;
+  position: relative;
+  line-height: 26px;
+  margin-bottom: 4px;
 }
 
-#notes-list .note .note-tags {
+#notes-list .note .note-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#notes-list .note .note-actions {
+  position: absolute;
+  top: 0; right: 0;
+}
+
+#notes-list .note .note-actions a {
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  display: inline-block;
+  text-align: center;
+  overflow: hidden;
+  background: red;
+  margin-left: 6px;
+}
+
+#notes-list .note .note-content {
+  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 13px;
+  line-height: 18px;
+  color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-footer {
+  height: 22px;
   border-top: 1px solid rgba(0,0,0,.05);
   margin-top: 10px;
   padding-top: 10px;
+  line-height: 22px;
+}
+
+#notes-list .note .note-tags {
+  float: left;
 }
 
 #notes-list .note .note-tag {
   font-weight: bold;
+  font-size: 13px;
   margin-right: 6px;
+  cursor: pointer;
+  color: rgba(0,0,0,.5);
+}
+
+#notes-list .note .note-tag:hover {
+  color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-size {
+  float: right;
+  font-size: 11px;
+  color: rgba(0,0,0,.4);
 }
 
 
@@ -128,6 +211,7 @@ body {
   height: 64px;
   background: #FFF;
   bottom: 0; left: 220px; right: 0;
+  border-top: 1px solid rgba(0,0,0,.2);
 }
 
 #composer .inner {

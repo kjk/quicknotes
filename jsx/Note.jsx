@@ -57,7 +57,7 @@ var Note = React.createClass({
   createNoteSnippet: function(note) {
     if (!this.props.compact) {
       return (
-        <div className="content">
+        <div className="note-content">
           <pre className="snippet">{note.Snippet}</pre>
         </div>
       );
@@ -118,7 +118,7 @@ var Note = React.createClass({
 
   createSize: function(note) {
     return (
-      <span>{note.HumanSize}</span>
+      <span className="note-size">{note.HumanSize}</span>
     );
   },
 
@@ -156,32 +156,30 @@ var Note = React.createClass({
   createActionsIfMyNotes: function(note) {
     if (this.state.showActions) {
       return (
-       <span>
+      <div className="note-actions">
         {this.createDelUndel(note)}
         {this.createMakePublicPrivate(note)}
-        {this.createStarUnstar(note)}
         {this.createEdit(note)}
         {this.createViewLink(note)}
-        {this.createSize(note)}
-      </span>
+        {this.createStarUnstar(note)}
+      </div>
       );
     }
     return (
-      <span></span>
+      <div className="note-actions"></div>
     );
   },
 
   createActionsIfNotMyNotes: function(note) {
     if (this.state.showActions) {
       return (
-       <span>
+      <div className="note-actions">
         {this.createViewLink(note)}
-        {this.createSize(note)}
-      </span>
+      </div>
       );
     }
     return (
-      <span></span>
+      <div className="note-actions"></div>
     );
   },
 
@@ -205,7 +203,10 @@ var Note = React.createClass({
           {this.createActions(note)}
         </div>
         {this.createNoteSnippet(note)}
-        {this.createTags(note.Tags)}
+        <div className="note-footer">
+          {this.createTags(note.Tags)}
+          {this.createSize(note)}
+        </div>
       </div>
     );
   }
