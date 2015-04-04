@@ -79,11 +79,15 @@ var Note = React.createClass({
   createDelUndel: function(note) {
     if (note.IsDeleted) {
       return (
-        <a href="#" className="note-action" onClick={this.handleDelUndel}>undelete</a>
+        <a href="#" className="note-action" onClick={this.handleDelUndel}>
+          <i className="fa fa-undo"></i>
+        </a>
       );
     }
     return (
-      <a href="#" className="note-action" onClick={this.handleDelUndel}>delete</a>
+      <a href="#" className="note-action" onClick={this.handleDelUndel}>
+        <i className="fa fa-trash-o"></i>
+      </a>
     );
   },
 
@@ -95,7 +99,9 @@ var Note = React.createClass({
   createEdit: function(note) {
     if (!note.IsDeleted) {
       return (
-        <a href="#" className="note-action" onClick={this.handleEdit}>edit</a>
+        <a href="#" className="note-action" onClick={this.handleEdit}>
+          <i className="fa fa-pencil"></i>
+        </a>
       );
     } else {
       return (
@@ -105,14 +111,15 @@ var Note = React.createClass({
   },
 
   createViewLink: function(note) {
-    var txt = "view";
     var title = "";
     if (note.Title.length > 0) {
       title = "-" + urlifyTitle(note.Title);
     }
     var url = "/n/" + note.IDStr + title;
     return (
-      <a href={url} className="note-action" target="_blank">{txt}</a>
+      <a href={url} className="note-action" target="_blank">
+        <i className="fa fa-share"></i>
+      </a>
     );
   },
 
@@ -148,7 +155,7 @@ var Note = React.createClass({
   createStarUnstar: function(note) {
     if (note.IsStarred) {
       return (
-        <a href="#" className="note-action note-star" onClick={this.handleStarUnstarNote}>
+        <a href="#" className="note-action note-star note-starred" onClick={this.handleStarUnstarNote}>
           <i className="fa fa-star"></i>
         </a>
       );
