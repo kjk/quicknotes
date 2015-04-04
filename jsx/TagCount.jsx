@@ -15,7 +15,7 @@ var TagCount = React.createClass({
     }
     return (
       <div className={cls} onClick={this.click}>
-        <span className="tagName">{this.props.displayName}</span>&nbsp;
+        <span className="tagName">{this.props.displayName}</span>
         <span className="tagCount">{this.props.count}</span>
       </div>
     );
