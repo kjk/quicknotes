@@ -9,8 +9,7 @@ var NotesList = React.createClass({
   render: function () {
     var self = this;
     return (
-      <div className="notes-list">
-        <NewNoteSmall createNewTextNoteCb={this.props.createNewTextNoteCb}/>
+      <div id="notes-list">
         {this.props.notes.map(function(note) {
           return <Note
             compact={self.props.compact}

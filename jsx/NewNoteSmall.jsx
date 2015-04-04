@@ -20,11 +20,13 @@ var NewNoteSmall = React.createClass({
 
   render: function() {
     return (
+      <div id="composer">
         <textarea
             id="newNoteSmall"
             placeholder="enter new note"
             onKeyPress={this.handleKeyPress}
           />
+      </div>
       );
   }
 });
