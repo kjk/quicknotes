@@ -16,9 +16,8 @@ var Note = React.createClass({
 
   createTitle: function(note) {
     if (note.Title !== "") {
-      var cls = "title";
       return (
-        <span className={cls}>{note.Title}</span>
+        <span className="note-title">{note.Title}</span>
         );
     }
   },
@@ -32,12 +31,12 @@ var Note = React.createClass({
     var tagEls = tags.map(function (tag) {
         tag = "#" + tag;
         return (
-          <span key={tag} className="titletag">{tag}</span>
+          <span key={tag} className="note-tag">{tag}</span>
         );
     });
 
     return (
-      <span>{tagEls}</span>
+      <div className="note-tags">{tagEls}</div>
     );
   },
 
@@ -58,9 +57,9 @@ var Note = React.createClass({
   createNoteSnippet: function(note) {
     if (!this.props.compact) {
       return (
-        <span className="message">
+        <div className="content">
           <pre className="snippet">{note.Snippet}</pre>
-        </span>
+        </div>
       );
     }
   },
@@ -107,10 +106,6 @@ var Note = React.createClass({
 
   createViewLink: function(note) {
     var txt = "view";
-    var s = {
-      color: "gray",
-      fontSize: "80%"
-    };
     var title = "";
     if (note.Title.length > 0) {
       title = "-" + urlifyTitle(note.Title);
@@ -122,13 +117,8 @@ var Note = React.createClass({
   },
 
   createSize: function(note) {
-    var s = {
-      color: "gray",
-      fontSize: "80%",
-      marginLeft: 8
-    };
     return (
-      <span style={s}>{note.HumanSize}</span>
+      <span>{note.HumanSize}</span>
     );
   },
 
@@ -206,16 +196,16 @@ var Note = React.createClass({
   render: function() {
     var note = this.props.note;
     return (
-      <div className="one-note"
+      <div className="note"
         onMouseEnter={this.mouseEnter}
         onMouseLeave={this.mouseLeave}
         >
-        <div>
+        <div className="note-header">
           {this.createTitle(note)}
-          {this.createTags(note.Tags)}
           {this.createActions(note)}
         </div>
         {this.createNoteSnippet(note)}
+        {this.createTags(note.Tags)}
       </div>
     );
   }

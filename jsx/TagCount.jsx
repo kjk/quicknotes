@@ -11,12 +11,12 @@ var TagCount = React.createClass({
   render: function() {
     var cls = "tag";
     if (this.props.isSelected) {
-      cls = "tagSelected";
+      cls = "tag selected";
     }
     return (
       <div className={cls} onClick={this.click}>
-        <span className="tagName">{this.props.displayName}</span>
-        <span className="tagCount">{this.props.count}</span>
+        <span className="tag-name">{this.props.displayName}</span>
+        <span className="tag-count">{this.props.count}</span>
       </div>
     );
   }
