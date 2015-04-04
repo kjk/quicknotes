@@ -58,7 +58,7 @@ var LeftSidebar = React.createClass({
     var specialTagsList = this.createTagsList("SPECIAL", specialTagNames, tags);
     var tagsList = this.createTagsList("TAGS", tagNames, tags);
     return (
-      <div id="leftSidebar">
+      <div id="left-sidebar">
         {specialTagsList}
         {tagsList}
       </div>

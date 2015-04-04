@@ -16,9 +16,8 @@ var Note = React.createClass({
 
   createTitle: function(note) {
     if (note.Title !== "") {
-      var cls = "title";
       return (
-        <span className={cls}>{note.Title}</span>
+        <span className="note-title">{note.Title}</span>
         );
     }
   },
@@ -32,12 +31,12 @@ var Note = React.createClass({
     var tagEls = tags.map(function (tag) {
         tag = "#" + tag;
         return (
-          <span key={tag} className="titletag">{tag}</span>
+          <span key={tag} className="note-tag">{tag}</span>
         );
     });
 
     return (
-      <span>{tagEls}</span>
+      <div className="note-tags">{tagEls}</div>
     );
   },
 
@@ -58,9 +57,9 @@ var Note = React.createClass({
   createNoteSnippet: function(note) {
     if (!this.props.compact) {
       return (
-        <span className="message">
+        <div className="note-content">
           <pre className="snippet">{note.Snippet}</pre>
-        </span>
+        </div>
       );
     }
   },
@@ -80,11 +79,15 @@ var Note = React.createClass({
   createDelUndel: function(note) {
     if (note.IsDeleted) {
       return (
-        <a href="#" className="noteLink" onClick={this.handleDelUndel}>undelete</a>
+        <a href="#" className="note-action" onClick={this.handleDelUndel}>
+          <i className="fa fa-undo"></i>
+        </a>
       );
     }
     return (
-      <a href="#" className="noteLink" onClick={this.handleDelUndel}>delete</a>
+      <a href="#" className="note-action" onClick={this.handleDelUndel}>
+        <i className="fa fa-trash-o"></i>
+      </a>
     );
   },
 
@@ -96,7 +99,9 @@ var Note = React.createClass({
   createEdit: function(note) {
     if (!note.IsDeleted) {
       return (
-        <a href="#" className="noteLink" onClick={this.handleEdit}>edit</a>
+        <a href="#" className="note-action" onClick={this.handleEdit}>
+          <i className="fa fa-pencil"></i>
+        </a>
       );
     } else {
       return (
@@ -106,40 +111,36 @@ var Note = React.createClass({
   },
 
   createViewLink: function(note) {
-    var txt = "view";
-    var s = {
-      color: "gray",
-      fontSize: "80%"
-    };
     var title = "";
     if (note.Title.length > 0) {
       title = "-" + urlifyTitle(note.Title);
     }
     var url = "/n/" + note.IDStr + title;
     return (
-      <a href={url} className="noteLink" target="_blank">{txt}</a>
+      <a href={url} className="note-action" target="_blank">
+        <i className="fa fa-share"></i>
+      </a>
     );
   },
 
   createSize: function(note) {
-    var s = {
-      color: "gray",
-      fontSize: "80%",
-      marginLeft: 8
-    };
     return (
-      <span style={s}>{note.HumanSize}</span>
+      <span className="note-size">{note.HumanSize}</span>
     );
   },
 
   createMakePublicPrivate: function(note) {
     if (note.IsPublic) {
       return (
-        <a href="#" className="noteLink" onClick={this.handleMakePublicPrivate}>make private</a>
+        <a href="#" className="note-action" onClick={this.handleMakePublicPrivate}>
+          <i className="fa fa-unlock"></i>
+        </a>
       );
     } else {
       return (
-        <a href="#" className="noteLink" onClick={this.handleMakePublicPrivate}>make public</a>
+        <a href="#" className="note-action" onClick={this.handleMakePublicPrivate}>
+          <i className="fa fa-lock"></i>
+        </a>
       );
     }
   },
@@ -154,11 +155,15 @@ var Note = React.createClass({
   createStarUnstar: function(note) {
     if (note.IsStarred) {
       return (
-        <a href="#" className="noteLink" onClick={this.handleStarUnstarNote}>unstar</a>
+        <a href="#" className="note-action note-star note-starred" onClick={this.handleStarUnstarNote}>
+          <i className="fa fa-star"></i>
+        </a>
       );
     } else {
       return (
-        <a href="#" className="noteLink" onClick={this.handleStarUnstarNote}>star</a>
+        <a href="#" className="note-action note-star" onClick={this.handleStarUnstarNote}>
+          <i className="fa fa-star-o"></i>
+        </a>
       );
     }
   },
@@ -166,32 +171,30 @@ var Note = React.createClass({
   createActionsIfMyNotes: function(note) {
     if (this.state.showActions) {
       return (
-       <span>
+      <div className="note-actions">
         {this.createDelUndel(note)}
         {this.createMakePublicPrivate(note)}
-        {this.createStarUnstar(note)}
         {this.createEdit(note)}
         {this.createViewLink(note)}
-        {this.createSize(note)}
-      </span>
+        {this.createStarUnstar(note)}
+      </div>
       );
     }
     return (
-      <span></span>
+      <div className="note-actions"></div>
     );
   },
 
   createActionsIfNotMyNotes: function(note) {
     if (this.state.showActions) {
       return (
-       <span>
+      <div className="note-actions">
         {this.createViewLink(note)}
-        {this.createSize(note)}
-      </span>
+      </div>
       );
     }
     return (
-      <span></span>
+      <div className="note-actions"></div>
     );
   },
 
@@ -206,16 +209,19 @@ var Note = React.createClass({
   render: function() {
     var note = this.props.note;
     return (
-      <div className="one-note"
+      <div className="note"
         onMouseEnter={this.mouseEnter}
         onMouseLeave={this.mouseLeave}
         >
-        <div>
+        <div className="note-header">
           {this.createTitle(note)}
-          {this.createTags(note.Tags)}
           {this.createActions(note)}
         </div>
         {this.createNoteSnippet(note)}
+        <div className="note-footer">
+          {this.createTags(note.Tags)}
+          {this.createSize(note)}
+        </div>
       </div>
     );
   }

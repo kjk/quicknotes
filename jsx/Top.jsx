@@ -58,29 +58,14 @@ var Top = React.createClass({
   },
 
   render: function() {
-    var s1 = {
-      paddingRight: 4,
-      paddingLeft: 4,
-      backgroundColor: "#0DBCBF",
-      color: "#FFF",
-      textDecoration: "none"
-    };
-    var s2 = {
-      fontWeight: "normal",
-    };
-    var s3 = {
-      paddingLeft: 8
-    };
 
     // TODO: link should have a different style on hover, so it's more obvious
     // it's a link
     return (
       <div id="header">
-        <div className="left">
-          <a href="/" style={s1}>QuickNotes</a>
-        </div>
+        <a id="logo" href="/">QuickNotes</a>
 
-        <div className="left" style={s3}>
+        <div id="search-wrapper" className="left">
           <input name="search" id="search"
             onKeyDown={this.handleInputKeyDown}
             onChange={this.handleInputChange}
@@ -90,7 +75,6 @@ var Top = React.createClass({
         </div>
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>
-        <div className="clear"></div>
       </div>
     );
   }

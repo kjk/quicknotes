@@ -4,33 +4,25 @@
 var LogInLink = React.createClass({
 
   createLoggedIn: function() {
-    var s = {
-      marginLeft: 16
-    };
-
     var url = encodeURI("/logout?redirect=" + window.location);
     return (
-      <div className="left">
-        <span className="left">
-          &nbsp;You're logged in as: {this.props.loggedInUserHandle}&nbsp;
+      <div id="user">
+        <span>
+          {this.props.loggedInUserHandle}
         </span>
-        <a href={url} style={s}>Log Out</a>
+        <a href={url}>Log Out</a>
       </div>
     );
   },
 
   createLoggedOut: function() {
-    var s = {
-      marginLeft: 16
-    };
-
     var twitterUrl = encodeURI("/logintwitter?redirect=" + window.location);
     return (
-      <div className="left">
-        <span className="left">
-          &nbsp;You're not logged in&nbsp;
+      <div id="user">
+        <span>
+          You're not logged in
         </span>
-        <span style={s}>Log in: <a href={twitterUrl}>with twitter</a></span>
+        <span>Log in: <a href={twitterUrl}>with twitter</a></span>
       </div>
     );
   },

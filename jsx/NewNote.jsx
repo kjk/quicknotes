@@ -7,15 +7,8 @@ var NewNote = React.createClass({
   },
 
   render: function() {
-    var s = {
-      marginLeft: 8
-    };
-
     return (
-      <div className="left btn-small"
-        style={s}
-        onClick={this.newNote}
-      >new note</div>
+      <div className="left btn-small" onClick={this.newNote}>new note</div>
     );
   }
 });
