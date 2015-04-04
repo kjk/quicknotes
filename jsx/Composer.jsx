@@ -1,7 +1,7 @@
 /* jshint -W097 */
 'use strict';
 
-var NewNoteSmall = React.createClass({
+var Composer = React.createClass({
   newNote: function(s) {
     this.props.createNewTextNoteCb(s);
   },
@@ -22,7 +22,7 @@ var NewNoteSmall = React.createClass({
     return (
       <div id="composer">
         <textarea
-            id="newNoteSmall"
+            id="Composer"
             placeholder="enter new note"
             onKeyPress={this.handleKeyPress}
           />
@@ -31,4 +31,4 @@ var NewNoteSmall = React.createClass({
   }
 });
 
-module.exports = NewNoteSmall;
+module.exports = Composer;

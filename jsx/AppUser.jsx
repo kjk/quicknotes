@@ -5,7 +5,7 @@ var utils = require('./utils.js');
 var NotesList = require('./NotesList.jsx');
 var Top = require('./Top.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
-var NewNoteSmall = require('./NewNoteSmall.jsx');
+var Composer = require('./Composer.jsx');
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -198,12 +198,11 @@ var AppUser = React.createClass({
               notes={this.state.selectedNotes}
               myNotes={myNotes}
               compact={compact}
-              createNewTextNoteCb={this.createNewTextNoteCb}
               delUndelNoteCb={this.delUndelNoteCb}
               makeNotePublicPrivateCb={this.makeNotePublicPrivateCb}
               startUnstarNoteCb={this.startUnstarNoteCb}
             />
-            <NewNoteSmall createNewTextNoteCb={this.props.createNewTextNoteCb}/>
+            <Composer createNewTextNoteCb={this.createNewTextNoteCb}/>
         </div>
     );
   }
