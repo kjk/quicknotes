@@ -12,7 +12,7 @@ var LogInLink = React.createClass({
     return (
       <div className="left">
         <span className="left">
-          &nbsp;You're logged in as: {this.props.loggedInUserHandle}&nbsp;
+          {this.props.loggedInUserHandle}
         </span>
         <a href={url} style={s}>Log Out</a>
       </div>

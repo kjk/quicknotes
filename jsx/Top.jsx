@@ -80,7 +80,7 @@ var Top = React.createClass({
           <a href="/" style={s1}>QuickNotes</a>
         </div>
 
-        <div className="left" style={s3}>
+        <div id="search-wrapper" className="left" style={s3}>
           <input name="search" id="search"
             onKeyDown={this.handleInputKeyDown}
             onChange={this.handleInputChange}
@@ -90,7 +90,6 @@ var Top = React.createClass({
         </div>
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>
-        <div className="clear"></div>
       </div>
     );
   }
