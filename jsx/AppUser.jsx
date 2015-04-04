@@ -6,6 +6,7 @@ var NotesList = require('./NotesList.jsx');
 var Top = require('./Top.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
 var Composer = require('./Composer.jsx');
+var FullComposer = require('./FullComposer.jsx');
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -53,7 +54,8 @@ var AppUser = React.createClass({
       allNotes: [],
       selectedNotes: [],
       selectedTag: "__all",
-      loggedInUserHandle: ""
+      loggedInUserHandle: "",
+      isFullComposerShown: false
     };
   },
 
@@ -203,6 +205,7 @@ var AppUser = React.createClass({
               startUnstarNoteCb={this.startUnstarNoteCb}
             />
             <Composer createNewTextNoteCb={this.createNewTextNoteCb}/>
+            <FullComposer isShown={this.state.isFullComposerShown}/>
         </div>
     );
   }

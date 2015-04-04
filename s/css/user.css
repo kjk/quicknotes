@@ -228,5 +228,6 @@ body {
   resize: none;
 }
 
-
-
+.collapsed {
+  visibility: collapsed;
+}
