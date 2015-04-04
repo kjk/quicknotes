@@ -1,35 +1,29 @@
 /* jshint -W097 */
 'use strict';
 
-var TagCount = require('./TagCount.jsx');
+var TagsList = require('./TagsList.jsx');
+var utils = require('./utils.js');
 
 var showDeletedTag = true;
 
-var specialTagNames = {
-  __all: "all",
-  __public: "public",
-  __private: "private",
-  __deleted: "deleted",
-  __starred: "starred"
-};
-
-function isSpecialTag(tag) {
-  return specialTagNames[tag];
-}
-
-function tagNameToDisplayName(tagName) {
-  var translated = specialTagNames[tagName];
-  if (!translated) {
-    return tagName;
-  }
-  return translated;
-}
-
-function getTagCountTuple(tagToCount, tag) {
-  return [tag, tagToCount[tag]];
-}
-
 var LeftSidebar = React.createClass({
+
+  createTagsList: function(sectionName, tagNames, tags) {
+    if (tagNames.length == 0) {
+      return;
+    }
+
+    return (
+      <TagsList
+        sectionName={sectionName}
+        tagNames={tagNames}
+        tags={tags}
+        selectedTag={this.props.selectedTag}
+        onTagSelected={this.props.onTagSelected}
+      />
+    );
+  },
+
   render: function() {
     var tags = this.props.tags;
     if (!tags) {
@@ -39,8 +33,10 @@ var LeftSidebar = React.createClass({
       );
     }
     var tagNames = [];
+    var specialTagNames = []
+
     for (var tagName in tags) {
-      if (!isSpecialTag(tagName)) {
+      if (!utils.isSpecialTag(tagName)) {
         tagNames.push(tagName);
       }
     }
@@ -49,32 +45,22 @@ var LeftSidebar = React.createClass({
     if (this.props.myNotes) {
       // add special tags: all, public, deleted (in reverse order)
       if (showDeletedTag) {
-        tagNames.unshift("__deleted");
+        specialTagNames.unshift("__deleted");
       }
-      tagNames.unshift("__private");
-      tagNames.unshift("__public");
-      tagNames.unshift("__starred");
+      specialTagNames.unshift("__private");
+      specialTagNames.unshift("__public");
+      specialTagNames.unshift("__starred");
+      specialTagNames.unshift("__all")
+    } else {
+      tagNames.unshift("__all");
     }
-    tagNames.unshift("__all");
 
-    var onTagSelected=this.props.onTagSelected;
-    var selectedTag=this.props.selectedTag;
-    var tagEls = tagNames.map(function (tagName) {
-      var count = tags[tagName];
-      var displayName = tagNameToDisplayName(tagName);
-      var isSelected = (tagName == selectedTag);
-      return (
-        <TagCount onTagSelected={onTagSelected}
-          isSelected={isSelected}
-          displayName={displayName}
-          tagName={tagName}
-          count={count}
-          key={tagName} />
-      );
-    });
+    var specialTagsList = this.createTagsList("SPECIAL", specialTagNames, tags);
+    var tagsList = this.createTagsList("TAGS", tagNames, tags);
     return (
       <div id="leftSidebar">
-          {tagEls}
+        {specialTagsList}
+        {tagsList}
       </div>
     );
   }

@@ -41,20 +41,28 @@ function getSpecialNotes(notes) {
     __deleted: deletedNotes,
     __public: publicNotes,
     __private: privateNotes,
-    __starred: starredNotes,
+    __starred: starredNotes
   };
 }
 
+var specialTagNames = {
+  __all: "all",
+  __public: "public",
+  __private: "private",
+  __deleted: "trash",
+  __starred: "starred"
+};
+
 function isSpecialTag(tag) {
-  switch (tag) {
-    case "__all":
-    case "__deleted":
-    case "__public":
-    case "__private":
-    case "__starred":
-      return true;
+  return specialTagNames[tag];
+}
+
+function tagNameToDisplayName(tagName) {
+  var translated = specialTagNames[tagName];
+  if (!translated) {
+    return tagName;
   }
-  return false;
+  return translated;
 }
 
 function filterNotesByTag(notes, tag) {
@@ -89,3 +97,5 @@ function focusSearch() {
 exports.filterNotesByTag = filterNotesByTag;
 exports.dictInc = dictInc;
 exports.focusSearch = focusSearch;
+exports.tagNameToDisplayName = tagNameToDisplayName;
+exports.isSpecialTag = isSpecialTag;

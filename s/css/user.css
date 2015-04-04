@@ -303,7 +303,15 @@ html,body{
   background-color: lightgrey;
 }
 
+.tagsList {
+  margin-bottom: 8px;
+}
+
+.tagsSectionName {
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .noteLink {
-  margin-left: 8px;
 }
