@@ -1,317 +1,259 @@
-* {
-  box-sizing: border-box;
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+html, body {
+  width: 100%;
+  height: 100%;
 }
 
 body {
-  font-size: .9rem;
-  font-family: "Helvetica Neue",Helvetica,"Segoe UI",Tahoma,Arial,sans-serif;
-  line-height: 1.15rem;ß
-  margin-top: 8px;
-  margin-bottom: 8px;
-  margin-left: 16px;
-  margin-right: 16px;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-size: 14px;
 }
 
-/* http://webdesign.tutsplus.com/articles/quick-tip-tooltips-courtesy-of-html5-data-attributes--webdesign-4826
-another implementation: http://codepen.io/cbracco/pen/qzukg;
-TODO: should show up relative to the element; */
-a.tooltip::before {
-  content: attr(data-tip) ;
-
-  font-size: 10px;
-  position:absolute;
-  z-index: 999;
-  white-space:nowrap;
-  bottom:9999px;
-  left: 50%;
-  background:#000;
-  color:#e0e0e0;
-  padding:0px 7px;
-  line-height: 24px;
-  height: 24px;
-
-  opacity: 0;
-  transition:opacity 0.4s ease-out;
+#root, #header, #left-sidebar, #notes-list, #composer, #full-composer {
+  position: absolute;
 }
 
-a.tooltip:hover::before {
-  opacity: 1;
-  bottom:-35px;
+#root {
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
 }
 
-html,body{
-  height:100%;
-}
-
-.left {
-  float: left;
-}
-.right {
-  float: right;
-  text-align: right;
-}
-.clear {
-  clear: both;
-}
-
-/* over-write ugly box-shadow from solarized theme */
-.cm-s-solarized.CodeMirror {
-  -moz-box-shadow: none;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-
-.one-note {
-  border-top: 1px solid #efefef;
-  margin-top: 5px;
-  position: relative;
-}
-
-.title {
-  //font-weight: bold;
-  color: #428bca;
-  color: #0DBCBF;
-}
-
+/**/
 #header {
-  font-weight: bold;
-  background-color: #f6f6f6;
-  padding-bottom: 1em;
-  padding-top: 1em
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: #F8F8FA;
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(252,252,252,1) 100%);
 }
 
-.round-input {
-  padding-left: 8px;
-  padding-right: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  outline: none;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
-  padding: 4px 20px 4px 8px;
-}
-.input-not-focused {
-  font-style: italic;
-  color: #aaa;
-}
-.input-focused {
-  font-style: normal;
-  color: #000;
-}
-
-#note-editor {
-  position: fixed;
-  top: 38px;
-  left: 0px;
-  right: 0px;
-  margin-left: auto;
-  margin-right: auto;
-  /*background-color: #eee; */
-  background-color: #fff;
-  /* background-color: #fdf6e3; */
-  padding: 8px;
-  z-index: 99;
-}
-
-.snippet {
-  display:inline;
-  word-wrap:
-  break-word;
-}
-
-#note-text-area {
-}
-
-#note-close {
-  color: black;
-}
-
-#note-close:hover {
-  color: red;
-  background-color: #fff;
-}
-
-#note-title {
-  font-weight: bold;
-  min-width: 64px;
-}
-
-[contenteditable]:hover:not(:focus) {
-  outline: 1px dotted #ccc;
-}
-
-[contenteditable]:focus {
-  outline: 1px dotted #ccc;
-  outline: none;
-}
-
-.btn-small {
-  padding-left: 8px;
-  padding-right: 8px;
-  color: #fff;
-  background-color: #4d90fe;
-  background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
-  background-image: linear-gradient(top,#4d90fe,#4787ed);
-  cursor: pointer;
-}
-.btn-small:hover {
-  background-color: #357ae8;
-  background-image: -webkit-linear-gradient(top, #4d90fe, #357ae8);
-  background-image: linear-gradient(top, #4d90fe, #357ae8);
-  color: #BED4F7;
-}
-
-.btn {
-  color: #fff;
-  background-color: #4d90fe;
-  background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
-  background-image: linear-gradient(top,#4d90fe,#4787ed);
-  border: 1px solid #3079ed;
-  border-radius: 2px;
-  vertical-align: middle;
-  font-size: 11px;
-  font-weight: bold;
-  text-align: center;
-  white-space: nowrap;
-  height: 27px;
-  line-height: 27px;
-  min-width: 54px;
-  outline: 0;
-  margin-top: 8px;
-  padding: 0 8px;
-  cursor: pointer;
-}
-.btn:hover {
-  background-color: #357ae8;
-  background-image: -webkit-linear-gradient(top, #4d90fe, #357ae8);
-  background-image: linear-gradient(top, #4d90fe, #357ae8);
-  border: 1px solid #2f5bb7;
-  border-bottom-color: #2f5bb7;
-}
-
-.btn-disabled {
-  background-color: gray;
-  background-image: none;
-  color: lightgrey;
-  cursor: default;
-  border: 0px;
-}
-
-.btn-disabled:hover {
-  background-color: gray;
-  background-image: none;
-  color: lightgrey;
-  cursor: default;
-  border: 0px;
-}
-
-.title-placeholder {
-  color: gray;
-  font-style: italic;
-}
-
-#note-bottom {
+#header:after {
+  content: "";
   position: absolute;
-  bottom: 8px;
-}
-
-#note-format {
-  padding-right: 16px;
-  padding-left: 8px;
-  min-width: 64px;
-  /* background-color: #faa; */
-}
-#note-format:hover {
-  color: #888;
-}
-
-.CodeMirror {
-  padding: 0;
-}
-
-.note-btn-wrap {
-  position:absolute;
-  top:0px;
-  right:0px;
-}
-
-.note-more {
-  position: absolute;
-  bottom:0px;
-  right:0px;
-}
-
-#editorWrap {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: 44px;
-  bottom: 32px;
-  background: lightyellow;
-  display: none;
-}
-
-#newNoteSmall {
-  width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  height: 4em;
   display: block;
-  resize: none;
+  bottom: 0; left: 0; right: 0;
+  border-bottom: 1px solid rgba(0,0,0,.2);
 }
 
-.titletag {
-  color: gray;
-  font-style: bold;
-  margin-left: 8px;
+#header #logo {
+  width: 220px;
+  height: 56px;
+  line-height: 56px;
+  display: block;
+  float: left;
+  background: rgba(0,0,0,.02);
 }
 
-#contentWrapper {
-  display: flex;
-  margin-top: 8px;
+#header #search-wrapper {
+  float: left;
+  position: relative;
+  top: 12px; left: 16px;
 }
 
-#leftSidebar {
-  min-width: 100px;
-  font-size: 80%;
-  background-color: #f7f8f5;
-  margin-right: 8px;
+#header #search-wrapper input {
+  width: 400px;
+  height: 22px;
+  font-size: 14px;
+  padding: 2px 16px;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 20px;
+  outline: none;
 }
 
-.tagCount {
+#header #user {
   float: right;
-  margin-right: 8px;
-  color: #bdbdbd;
+}
+
+
+/**/
+#left-sidebar {
+  width: 220px;
+  background: #444550;
+  left: 0; top: 56px; bottom: 0;
+  overflow-y: auto;
 }
 
 .tag {
+  line-height: 24px;
+  padding: 2px 0;
   cursor: pointer;
-  clear: both;
+  color: rgba(255,255,255,.5);
 }
 
-.tag:hover {
-  background-color: lightgrey;
+.tag:first-of-type {
+  margin-top: 16px;
 }
 
-.tagSelected {
-  cursor: pointer;
-  background-color: lightblue;
-  clear: both;
+.tag:last-of-type {
+  margin-bottom: 16px;
 }
 
-.tagSelected:hover {
-  background-color: lightgrey;
+.tag-name {
+  padding-left: 16px;
 }
 
-.tagsList {
-  margin-bottom: 8px;
+.tag-count {
+  text-align: right;
+  float: right;
+  margin-right: 16px;
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
 }
 
-.tagsSectionName {
+.tag.selected {
+  cursor: default;
+  color: rgba(255,255,255,1);
+}
+
+.tag.selected .tag-count {
+  color: rgba(255,255,255,.6);
+}
+
+
+
+/**/
+#notes-list {
+  background: #E3E3E3;
+  left: 220px; top: 56px; bottom: 64px; right: 0;
+  overflow-y: auto;
+}
+
+#notes-list .note {
+  position: relative;
+  margin: 8px 16px;
+  background: #FFF;
+  padding: 10px;
+  border-radius: 2px;
+}
+
+#notes-list .note:first-of-type {
+  margin-top: 16px;
+}
+
+#notes-list .note:last-of-type {
+  margin-bottom: 16px;
+}
+
+#notes-list .note pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+#notes-list .note .note-header {
+  height: 26px;
+  position: relative;
+  line-height: 26px;
+  margin-bottom: 4px;
+}
+
+#notes-list .note .note-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#notes-list .note .note-actions {
+  position: absolute;
+  top: 0; right: 0;
+}
+
+#notes-list .note .note-actions a {
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  display: inline-block;
+  text-align: center;
+  overflow: hidden;
+  margin-left: 6px;
+  color: rgba(0,0,0,.4);
+}
+#notes-list .note .note-actions a:hover {
+  color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-actions .note-starred {
+  color: #FFEB3B;
+}
+
+#notes-list .note .note-content {
+  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 13px;
+  line-height: 18px;
+  color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-footer {
+  height: 18px;
+  border-top: 1px solid rgba(0,0,0,.05);
+  margin-top: 10px;
+  padding-top: 10px;
+  line-height: 18px;
+}
+
+#notes-list .note .note-tags {
+  float: left;
+}
+
+#notes-list .note .note-tag {
   font-weight: bold;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 13px;
+  margin-right: 6px;
+  cursor: pointer;
+  color: rgba(0,0,0,.5);
 }
 
-.noteLink {
+#notes-list .note .note-tag:hover {
+  color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-size {
+  float: right;
+  font-size: 11px;
+  color: rgba(0,0,0,.4);
+}
+
+
+/**/
+#composer {
+  height: 64px;
+  background: #FFF;
+  bottom: 0; left: 220px; right: 0;
+  border-top: 1px solid rgba(0,0,0,.2);
+}
+
+#composer .inner {
+  position: absolute;
+  top: 12px; right: 16px; bottom: 12px; left: 16px;
+}
+
+#composer textarea {
+  width: 100%;
+  height: 38px;
+  padding: 0;
+  font-size: 14px;
+  border: 1px solid rgba(0,0,0,.2);
+  resize: none;
+}
+
+.collapsed {
+  visibility: collapsed;
+}
+
+/**/
+#full-composer {
+  top: 56px; left: 220px; right: 0; bottom: 0;
+  background: #FFF;
+}
+
+#full-composer.collapsed {
+  display: none;
+}
+
+#full-composer textarea {
+  width: 100%;
+  border: 0;
+  display: block;
+  position: absolute;
+  top: 0; right: 0; bottom: 0 ; left: 0;
+  resize: none;
 }

@@ -5,6 +5,8 @@ var utils = require('./utils.js');
 var NotesList = require('./NotesList.jsx');
 var Top = require('./Top.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
+var Composer = require('./Composer.jsx');
+var FullComposer = require('./FullComposer.jsx');
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -52,7 +54,8 @@ var AppUser = React.createClass({
       allNotes: [],
       selectedNotes: [],
       selectedTag: "__all",
-      loggedInUserHandle: ""
+      loggedInUserHandle: "",
+      isFullComposerShown: false
     };
   },
 
@@ -187,23 +190,22 @@ var AppUser = React.createClass({
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.props.notesUserHandle}
             />
-            <div id="contentWrapper">
-              <LeftSidebar tags={this.state.tags}
-                isLoggedIn={isLoggedIn}
-                myNotes={myNotes}
-                onTagSelected={this.handleTagSelected}
-                selectedTag={this.state.selectedTag}
-              />
-              <NotesList
-                notes={this.state.selectedNotes}
-                myNotes={myNotes}
-                compact={compact}
-                createNewTextNoteCb={this.createNewTextNoteCb}
-                delUndelNoteCb={this.delUndelNoteCb}
-                makeNotePublicPrivateCb={this.makeNotePublicPrivateCb}
-                startUnstarNoteCb={this.startUnstarNoteCb}
-              />
-            </div>
+            <LeftSidebar tags={this.state.tags}
+              isLoggedIn={isLoggedIn}
+              myNotes={myNotes}
+              onTagSelected={this.handleTagSelected}
+              selectedTag={this.state.selectedTag}
+            />
+            <NotesList
+              notes={this.state.selectedNotes}
+              myNotes={myNotes}
+              compact={compact}
+              delUndelNoteCb={this.delUndelNoteCb}
+              makeNotePublicPrivateCb={this.makeNotePublicPrivateCb}
+              startUnstarNoteCb={this.startUnstarNoteCb}
+            />
+            <Composer createNewTextNoteCb={this.createNewTextNoteCb}/>
+            <FullComposer isShown={this.state.isFullComposerShown}/>
         </div>
     );
   }
