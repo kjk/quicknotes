@@ -164,8 +164,15 @@ body {
   display: inline-block;
   text-align: center;
   overflow: hidden;
-  background: red;
   margin-left: 6px;
+  color: rgba(0,0,0,.4);
+}
+#notes-list .note .note-actions a:hover {
+  color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-actions .note-starred {
+  color: #FFEB3B;
 }
 
 #notes-list .note .note-content {
