@@ -467,7 +467,9 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	res, err := tx.Exec(q, userID, 0, note.createdAt, note.isDeleted, note.isPublic)
 	if err != nil {
 		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
-		return 0, err
+		//TODO: ignore for now
+		//return 0, err
+		return 0, nil
 	}
 	noteID, err := res.LastInsertId()
 	if err != nil {
