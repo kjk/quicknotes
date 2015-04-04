@@ -2,7 +2,6 @@
 'use strict';
 
 var Note = require('./Note.jsx');
-var Composer = require('./Composer.jsx');
 
 var NotesList = React.createClass({
 
