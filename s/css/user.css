@@ -176,11 +176,11 @@ body {
 }
 
 #notes-list .note .note-footer {
-  height: 22px;
+  height: 18px;
   border-top: 1px solid rgba(0,0,0,.05);
   margin-top: 10px;
   padding-top: 10px;
-  line-height: 22px;
+  line-height: 18px;
 }
 
 #notes-list .note .note-tags {
