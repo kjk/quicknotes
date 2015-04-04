@@ -463,7 +463,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	if note.createdAt.IsZero() {
 		note.createdAt = time.Now()
 	}
-	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count) VALUES (?, ?, ?, ?, ?, 1)`
+	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count, is_starred) VALUES (?, ?, ?, ?, ?, 1, false)`
 	res, err := tx.Exec(q, userID, 0, note.createdAt, note.isDeleted, note.isPublic)
 	if err != nil {
 		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)

@@ -30,7 +30,6 @@ var TagsList = React.createClass({
 
     return (
       <div className="tagsList">
-        <div className="tagsSectionName">{sectionName}</div>
         {tagEls}
       </div>
     );

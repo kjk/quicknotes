@@ -52,7 +52,7 @@ CREATE TABLE notes (
 
 CREATE TABLE tag_names (
   id    INT NOT NULL AUTO_INCREMENT,
-  tag   VARCHAR(256) NOT NULL,
+  tag   VARCHAR(128) NOT NULL,
   PRIMARY KEY (id),
   INDEX (tag)
 );
