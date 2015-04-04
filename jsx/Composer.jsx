@@ -21,11 +21,13 @@ var Composer = React.createClass({
   render: function() {
     return (
       <div id="composer">
-        <textarea
+        <div className="inner">
+          <textarea
             id="Composer"
             placeholder="enter new note"
             onKeyPress={this.handleKeyPress}
           />
+        </div>
       </div>
       );
   }
