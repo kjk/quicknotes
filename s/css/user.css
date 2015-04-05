@@ -354,6 +354,18 @@ a {
   flex-direction: row;
 }
 
+#full-composer-title {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#full-composer-tags {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
 #full-composer-textarea {
   width: 50%;
   border: 0;
