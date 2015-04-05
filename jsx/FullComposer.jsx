@@ -55,7 +55,10 @@ var FullComposer = React.createClass({
     if (n1.Title != n2.Title) {
       return true;
     }
-    if (n1.Content != n2.Content) {
+    // Note: maybe should compare after trim() ?
+    var c1 = n1.Content;
+    var c2 = n2.Content;
+    if (c1 != c2) {
       return true;
     }
     if (n1.Format != n2.Format) {
@@ -82,14 +85,12 @@ var FullComposer = React.createClass({
 
   handleSave: function(e) {
       console.log("onSave");
-      e.preventDefault();
       // TODO: get properties on the note before calling save
       this.props.saveNoteCb(this.props.note);
   },
 
   handleCancel: function(e) {
     console.log("onCancel");
-    e.preventDefault();
     this.props.cancelNoteEditCb(this.props.note);
   },
 
@@ -98,11 +99,6 @@ var FullComposer = React.createClass({
     el.focus();
     this.updatePreview(this.props.note.Content);
   },
-
-  /*componentDidUpdate: function() {
-    var el = React.findDOMNode(this.refs.editArea);
-    el.focus();
-  },*/
 
   updatePreview: function(s) {
     var note = this.state.note;
@@ -131,11 +127,23 @@ var FullComposer = React.createClass({
       e.preventDefault();
     }
     s = s.trim();
+    var note = utils.deepCloneObject(this.state.note);
+    note.Content = s;
+    this.setState({
+      note: note
+    });
     this.updatePreview(s);
   },
 
+  handlePublicChanged: function(e) {
+    var note = utils.deepCloneObject(this.state.note);
+    note.IsPublic = e.target.checked;
+    this.setState({
+      note: note
+    });
+  },
+
   handleTitleChanged: function(e) {
-    e.preventDefault();
     var s = e.target.value.trim();
     var note = utils.deepCloneObject(this.state.note);
     note.Title = s;
@@ -145,44 +153,69 @@ var FullComposer = React.createClass({
   },
 
   handleTagsChanged: function(e) {
-    e.preventDefault();
-    var s = e.target.value;
-    console.log("new tags: " + s);
+    var tagsStr = e.target.value;
     var note = utils.deepCloneObject(this.state.note);
-    note.Tags = textToTags(s);
-    console.log("new tags arr: " + note.Tags);
+    note.Tags = textToTags(tagsStr);
     this.setState({
       note: note
     });
   },
 
+  handleFormatChanged: function(e) {
+    var formatName = e.target.value;
+    var note = utils.deepCloneObject(this.state.note);
+    note.Format = format.nameToNumber(formatName);
+    this.setState({
+      note: note
+    });
+  },
+
+  renderFormatSelect: function(formats, selected) {
+    var options = formats.map(function(format) {
+      return <option key={format}>{format}</option>;
+    });
+    return (
+      <select value={selected} onChange={this.handleFormatChanged}>{options}</select>
+    );
+  },
+
   render: function() {
     var initialTags = tagsToText(this.props.note.Tags);
-
     var note = this.state.note;
-    var content = note.Content;
-    var title = note.Title;
-    var isPublic = note.IsPublic;
     var previewHtml = { __html: this.state.previewHtml };
     var saveDisabled = !this.noteChanged();
+    var formatTxt = format.numberToName(note.Format);
+    var formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
 
+    // TODO: if editing code, change CodeMirror mode property to match code being edited
+    // TODO: hook up ESC so that it dismisses editing ui
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-title">
           <span>Title:</span>
-          <input type="text" onChange={this.handleTitleChanged} value={title} size="80"/>
+          <input
+            style={{flexGrow: 3}}
+            type="text"
+            onChange={this.handleTitleChanged}
+            value={note.Title} size="128"/>
         </div>
 
         <div id="full-composer-tags">
           <span>Tags:</span>
-          <input type="text" onChange={this.handleTagsChanged} defaultValue={initialTags} size="80"/>
+          <input
+            style={{flexGrow: 3}}
+            type="text"
+            onChange={this.handleTagsChanged}
+            defaultValue={initialTags}
+            size="128"/>
         </div>
 
         <div id="full-composer-top">
           <CodeMirrorEditor
+            mode="text"
             className="full-composer-editor"
-            codeText={content}
-            value={content}
+            codeText={note.Content}
+            value={note.Content}
             onChange={this.textChanged}
             ref="editArea" />
           <div id="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
@@ -192,8 +225,10 @@ var FullComposer = React.createClass({
           <button onClick={this.handleCancel}>Cancel</button>
           <input
             type="checkbox"
-            defaultChecked={isPublic}
-            ref="isPublic">public</input>
+            onChange={this.handlePublicChanged}
+            checked={note.IsPublic}>public</input>
+          &nbsp;&nbsp;format:&nbsp;
+          {formatSelect}
         </div>
       </div>
     );
