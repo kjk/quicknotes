@@ -1,4 +1,4 @@
-/* jshint -W097 */
+/* jshint -W097,-W117 */
 'use strict';
 
 function urlifyTitle(s) {
@@ -92,8 +92,9 @@ var Note = React.createClass({
   },
 
   handleEdit: function(e) {
+    console.log("Note.handleEdit");
     e.preventDefault();
-    //this.props.editCb(this.props.note);
+    this.props.editCb(this.props.note);
   },
 
   createEdit: function(note) {
