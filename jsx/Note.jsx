@@ -153,7 +153,7 @@ var Note = React.createClass({
   },
 
   createStarUnstar: function(note) {
-    if (!this.props.myNotes) {
+    if (!this.props.myNotes || note.IsDeleted) {
       return (<span></span>);
     }
 
