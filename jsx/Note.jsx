@@ -176,7 +176,6 @@ var Note = React.createClass({
         {this.createMakePublicPrivate(note)}
         {this.createEdit(note)}
         {this.createViewLink(note)}
-        {this.createStarUnstar(note)}
       </div>
       );
     }
@@ -214,6 +213,7 @@ var Note = React.createClass({
         onMouseLeave={this.mouseLeave}
         >
         <div className="note-header">
+          {this.createStarUnstar(note)}
           {this.createTitle(note)}
           {this.createActions(note)}
         </div>
