@@ -173,6 +173,7 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 
 // /api/getnotes.json?user=${userHandle}&start=${start}&len=${len}
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
+	timeStart := time.Now()
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	LogInfof("userHandle: '%s'\n", userHandle)
 	if userHandle == "" {
@@ -207,7 +208,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
+	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v, time: %s\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate, time.Since(timeStart))
 	v := struct {
 		LoggedInUserHandle string
 		Notes              []*Note
