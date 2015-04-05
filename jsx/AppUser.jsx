@@ -219,11 +219,23 @@ var AppUser = React.createClass({
     }.bind(this));
   },
 
+  createFullComposer: function() {
+    if (this.state.noteBeingEdited) {
+      return (
+        <FullComposer
+          note={this.state.noteBeingEdited}
+          saveNoteCb={this.saveNote}
+          cancelNoteEditCb={this.cancelNoteEdit}/>
+      )
+    }
+  },
+
   render: function() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
 
     var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
+    var fullComposer = this.createFullComposer();
     return (
         <div>
             <Top isLoggedIn={isLoggedIn}
@@ -246,10 +258,7 @@ var AppUser = React.createClass({
               editCb={this.editNote}
             />
             <Composer createNewTextNoteCb={this.createNewTextNote}/>
-            <FullComposer
-              note={this.state.noteBeingEdited}
-              saveNoteCb={this.saveNote}
-              cancelNoteEditCb={this.cancelNoteEdit}/>
+            {fullComposer}
         </div>
     );
   }
