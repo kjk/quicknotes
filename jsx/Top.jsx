@@ -58,9 +58,6 @@ var Top = React.createClass({
   },
 
   render: function() {
-
-    // TODO: link should have a different style on hover, so it's more obvious
-    // it's a link
     return (
       <div id="header">
         <a id="logo" href="/">QuickNotes</a>
@@ -71,7 +68,7 @@ var Top = React.createClass({
             onChange={this.handleInputChange}
             className="round-input input-not-focused"  type="text"
             autoComplete="off" autoCapitalize="off"
-            placeholder="Search (Ctrl-F)" size="68" />
+            placeholder="Search (Ctrl-F)" />
         </div>
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>

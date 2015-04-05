@@ -29,7 +29,7 @@ var TagsList = React.createClass({
     });
 
     return (
-      <div className="tagsList">
+      <div className="tags-list">
         {tagEls}
       </div>
     );
