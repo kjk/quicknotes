@@ -153,6 +153,10 @@ var Note = React.createClass({
   },
 
   createStarUnstar: function(note) {
+    if (!this.props.myNotes) {
+      return (<span></span>);
+    }
+
     if (note.IsStarred) {
       return (
         <a href="#" className="note-action note-star note-starred" title="Unstar" onClick={this.handleStarUnstarNote}>
