@@ -326,7 +326,7 @@ a {
   position: absolute;
   top: 56px; left: 220px; right: 0; bottom: 0;
   background: #FFF;
-  z-index: 99;
+  z-index: 10;
 
   display: flex;
   flex-wrap: nowrap;
@@ -344,28 +344,41 @@ a {
   width: 100%;
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;
 }
 
 #full-composer-title {
   width: 100%;
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;
 }
 
 #full-composer-tags {
   width: 100%;
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;
 }
 
 .full-composer-editor {
   width: 50%;
   border: 0;
+  resize: none;
   background-color: lightyellow;
+  min-height: 100vw;
+}
+
+.full-composer-text-area {
+  resize: none;
+  width: 100%;
+  border: 0;
+  min-height: 100vw;
 }
 
 #full-composer-preview {
   width: 50%;
   background-color: lightblue;
   border: 0;
+  overflow: scroll;
 }

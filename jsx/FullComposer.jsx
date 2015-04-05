@@ -2,6 +2,8 @@
 'use strict';
 
 var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
+var utils = require('./utils.js');
+var format = require('./format.js');
 
 function tagsToText(tags) {
   if (!tags) {
@@ -9,7 +11,7 @@ function tagsToText(tags) {
   }
   var s = "";
   tags.forEach(function(tag) {
-    if (s != "") {
+    if (s !== "") {
       s += " ";
     }
     s += "#" + tag;
@@ -18,6 +20,29 @@ function tagsToText(tags) {
 }
 
 var FullComposer = React.createClass({
+  getInitialState: function() {
+    return {
+      note: utils.deepCloneObject(this.props.note),
+      previewHtml: ""
+    };
+  },
+
+  noteChanged: function() {
+    var n1 = this.props.note;
+    var n2 = this.state.note;
+    // TODO: trim title/content, compare tags, format etc.
+    if (n1.IsPublic != n2.IsPublic) {
+      return true;
+    }
+    if (n1.Title != n2.Title) {
+      return true;
+    }
+    if (n1.Content != n2.Content) {
+      return true;
+    }
+    return false;
+  },
+
   handleSave: function(e) {
       console.log("onSave");
       e.preventDefault();
@@ -34,27 +59,50 @@ var FullComposer = React.createClass({
   componentDidMount: function() {
     var el = React.findDOMNode(this.refs.editArea);
     el.focus();
+    this.updatePreview(this.props.note.Content);
   },
 
-  componentDidUpdate: function() {
+  /*componentDidUpdate: function() {
     var el = React.findDOMNode(this.refs.editArea);
     el.focus();
+  },*/
+
+  updatePreview: function(s) {
+    var note = this.state.note;
+    if (note.Format == format.Text) {
+      // TODO: escape html chars in s
+      s = "<pre>" + s + "</pre>";
+    } else if (note.Format == format.Markdown) {
+      // TODO: call api to convert to html
+      s = "<pre>" + s + "</pre>";
+    }
+    if (s !== this.state.previewHtml) {
+      this.setState({
+        previewHtml: s
+      });
+    }
   },
 
   textChanged: function(e) {
-    var s = e.target.value;
-    console.log("s: " + s);
-    var el = React.findDOMNode(this.refs.preview);
-    el.value = s;
-    e.preventDefault();
+    var s;
+    if (true) {
+      // CodeMirror
+      s = e;
+    } else {
+      // textarea
+      s = e.target.value;
+      e.preventDefault();
+    }
+    this.updatePreview(s);
   },
 
   render: function() {
-    var note = this.props.note;
+    var note = this.state.note;
     var content = note.Content;
     var title = note.Title;
     var tags = tagsToText(note.Tags);
     var isPublic = note.IsPublic;
+    var previewHtml = { __html: this.state.previewHtml };
 
     return (
       <div id="full-composer-wrapper">
@@ -72,9 +120,10 @@ var FullComposer = React.createClass({
           <CodeMirrorEditor
             className="full-composer-editor"
             codeText={content}
+            value={content}
             onChange={this.textChanged}
             ref="editArea" />
-          <div id="full-composer-preview" ref="preview"></div>
+          <div id="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
         </div>
         <div id="full-composer-bottom">
           <button onClick={this.handleSave}>Save</button>
