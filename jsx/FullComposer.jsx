@@ -50,6 +50,8 @@ var FullComposer = React.createClass({
     var content = note.Content;
     var title = note.Title;
     var tags = tagsToText(note.Tags);
+    var isPublic = note.IsPublic;
+
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-title">
@@ -73,9 +75,10 @@ var FullComposer = React.createClass({
         <div id="full-composer-bottom">
           <button onClick={this.handleSave}>Save</button>
           <button onClick={this.handleCancel}>Cancel</button>
+          <input type="checkbox" defaultChecked={isPublic} ref="isPublic">public</input>
         </div>
       </div>
-      );
+    );
   }
 });
 
