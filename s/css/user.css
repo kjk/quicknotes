@@ -321,10 +321,6 @@ a {
   resize: none;
 }
 
-.collapsed {
-  visibility: collapsed;
-}
-
 /**/
 #full-composer-wrapper {
   position: absolute;
@@ -335,10 +331,6 @@ a {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
-}
-
-#full-composer-wrapper.collapsed {
-  display: none;
 }
 
 #full-composer-top {
