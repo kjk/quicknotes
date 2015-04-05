@@ -1,13 +1,13 @@
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
 
 var IS_MOBILE = (
-  navigator.userAgent.match(/Android/i)
-    || navigator.userAgent.match(/webOS/i)
-    || navigator.userAgent.match(/iPhone/i)
-    || navigator.userAgent.match(/iPad/i)
-    || navigator.userAgent.match(/iPod/i)
-    || navigator.userAgent.match(/BlackBerry/i)
-    || navigator.userAgent.match(/Windows Phone/i)
+  navigator.userAgent.match(/Android/i) ||
+    navigator.userAgent.match(/webOS/i) ||
+    navigator.userAgent.match(/iPhone/i) ||
+    navigator.userAgent.match(/iPad/i) ||
+    navigator.userAgent.match(/iPod/i) ||
+    navigator.userAgent.match(/BlackBerry/i) ||
+    navigator.userAgent.match(/Windows Phone/i)
 );
 
 var CodeMirrorEditor = React.createClass({
@@ -50,20 +50,22 @@ var CodeMirrorEditor = React.createClass({
   },
 
   render: function() {
-    // wrap in a div to fully contain CodeMirror
     var editor;
 
     if (IS_MOBILE) {
-      editor = <pre style={{overflow: 'scroll'}}>{this.props.codeText}</pre>;
+      return (
+        <pre className={this.props.className} style={{overflow: 'scroll'}}>{this.props.codeText}</pre>
+      );
     } else {
-      editor = <textarea ref="editor" defaultValue={this.props.codeText} />;
+      return (
+        <div className={this.props.className}>
+          <textarea
+            ref="editor"
+            className="full-composer-text-area"
+            defaultValue={this.props.codeText} />
+        </div>
+      );
     }
-
-    return (
-      <div style={this.props.style} className={this.props.className}>
-        {editor}
-      </div>
-    );
   }
 });
 
