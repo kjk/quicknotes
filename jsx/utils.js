@@ -1,4 +1,4 @@
-/* jshint -W097 */
+/* jshint -W097,-W117 */
 'use strict';
 
 function noteHasTag(note, tag) {
@@ -94,8 +94,14 @@ function focusSearch() {
   $("#search").focus();
 }
 
+// http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
+function deepCloneObject(o) {
+  return JSON.parse(JSON.stringify(o));
+}
+
 exports.filterNotesByTag = filterNotesByTag;
 exports.dictInc = dictInc;
 exports.focusSearch = focusSearch;
 exports.tagNameToDisplayName = tagNameToDisplayName;
 exports.isSpecialTag = isSpecialTag;
+exports.deepCloneObject = deepCloneObject;
