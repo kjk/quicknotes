@@ -17,11 +17,11 @@
 		{
 			"ImportPath": "github.com/go-sql-driver/mysql",
 			"Comment": "v1.2-28-gcebeb35",
-			"Rev": "cebeb3599d51814753350e87cd21f24b3ddaa66e"
+			"Rev": "a197e5d40516f2e9f74dcee085a5f2d4604e94df"
 		},
 		{
 			"ImportPath": "github.com/google/go-github/github",
-			"Rev": "7ea4ee6d222607c11ea86e99a6f6723beeae785d"
+			"Rev": "2431923100d4989611dcc339f1ff8d280bd9c84c"
 		},
 		{
 			"ImportPath": "github.com/google/go-querystring/query",
@@ -46,7 +46,7 @@
 		{
 			"ImportPath": "github.com/russross/blackfriday",
 			"Comment": "v1.2-44-g6928e11",
-			"Rev": "6928e11ecd2bf32f22ba9a46b542257fa76bdc34"
+			"Rev": "3a90da10e373e33f9d809d0324741aade90b7299"
 		},
 		{
 			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
@@ -58,7 +58,7 @@
 		},
 		{
 			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
-			"Rev": "87e4e645d80ae9c537e8f2dee52b28036a5dd75e"
+			"Rev": "4875955338b0a434238a31165cb87255ab6e9e4a"
 		},
 		{
 			"ImportPath": "github.com/syndtr/gosnappy/snappy",
@@ -74,19 +74,19 @@
 		},
 		{
 			"ImportPath": "golang.org/x/oauth2",
-			"Rev": "721c86aedbb404bcb5a439cd05c1e0a6bf7d8923"
+			"Rev": "d2a4aec992687834e77c30ac9940622c987389e4"
 		},
 		{
 			"ImportPath": "google.golang.org/api/googleapi",
-			"Rev": "caddaef3288600132bb9c9ea3f638e565d74cd54"
+			"Rev": "538bea96a868ee06164f134e414aa42ae2d98ac5"
 		},
 		{
 			"ImportPath": "google.golang.org/api/storage/v1",
-			"Rev": "caddaef3288600132bb9c9ea3f638e565d74cd54"
+			"Rev": "538bea96a868ee06164f134e414aa42ae2d98ac5"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud",
-			"Rev": "ddb49c03ad0fb1933e730c73efed33571efa4ad0"
+			"Rev": "f20d6dcccb44ed49de45ae3703312cb46e627db1"
 		}
 	]
 }
