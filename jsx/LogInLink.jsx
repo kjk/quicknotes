@@ -5,12 +5,21 @@ var LogInLink = React.createClass({
 
   createLoggedIn: function() {
     var url = encodeURI("/logout?redirect=" + window.location);
+    var userUrl = "/u/" + this.props.loggedInUserHandle;
     return (
       <div id="user">
-        <span>
+        <a href={userUrl} className="user">
           {this.props.loggedInUserHandle}
-        </span>
-        <a href={url}>Log Out</a>
+        </a>
+        <div className="dropdown">
+          <i className="fa fa-chevron-down"></i>
+          
+          <div className="dropdown-content">
+            <a href="#">Settings</a>
+            <a href="#">Import notes</a>
+            <a href={url}>Log Out</a>
+          </div>
+        </div>
       </div>
     );
   },

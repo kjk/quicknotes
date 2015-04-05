@@ -79,13 +79,13 @@ var Note = React.createClass({
   createDelUndel: function(note) {
     if (note.IsDeleted) {
       return (
-        <a href="#" className="note-action" onClick={this.handleDelUndel}>
+        <a href="#" className="note-action" title="Undo trash" onClick={this.handleDelUndel}>
           <i className="fa fa-undo"></i>
         </a>
       );
     }
     return (
-      <a href="#" className="note-action" onClick={this.handleDelUndel}>
+      <a href="#" className="note-action" title="Trash note" onClick={this.handleDelUndel}>
         <i className="fa fa-trash-o"></i>
       </a>
     );
@@ -99,7 +99,7 @@ var Note = React.createClass({
   createEdit: function(note) {
     if (!note.IsDeleted) {
       return (
-        <a href="#" className="note-action" onClick={this.handleEdit}>
+        <a href="#" className="note-action" title="Edit note" onClick={this.handleEdit}>
           <i className="fa fa-pencil"></i>
         </a>
       );
@@ -117,7 +117,7 @@ var Note = React.createClass({
     }
     var url = "/n/" + note.IDStr + title;
     return (
-      <a href={url} className="note-action" target="_blank">
+      <a href={url} className="note-action" title="View note" target="_blank">
         <i className="fa fa-share"></i>
       </a>
     );
@@ -132,13 +132,13 @@ var Note = React.createClass({
   createMakePublicPrivate: function(note) {
     if (note.IsPublic) {
       return (
-        <a href="#" className="note-action" onClick={this.handleMakePublicPrivate}>
+        <a href="#" className="note-action" title="Public" onClick={this.handleMakePublicPrivate}>
           <i className="fa fa-unlock"></i>
         </a>
       );
     } else {
       return (
-        <a href="#" className="note-action" onClick={this.handleMakePublicPrivate}>
+        <a href="#" className="note-action" title="Private" onClick={this.handleMakePublicPrivate}>
           <i className="fa fa-lock"></i>
         </a>
       );
@@ -155,13 +155,13 @@ var Note = React.createClass({
   createStarUnstar: function(note) {
     if (note.IsStarred) {
       return (
-        <a href="#" className="note-action note-star note-starred" onClick={this.handleStarUnstarNote}>
+        <a href="#" className="note-action note-star note-starred" title="Unstar" onClick={this.handleStarUnstarNote}>
           <i className="fa fa-star"></i>
         </a>
       );
     } else {
       return (
-        <a href="#" className="note-action note-star" onClick={this.handleStarUnstarNote}>
+        <a href="#" className="note-action note-star" title="Star" onClick={this.handleStarUnstarNote}>
           <i className="fa fa-star-o"></i>
         </a>
       );
