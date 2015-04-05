@@ -132,13 +132,13 @@ var Note = React.createClass({
   createMakePublicPrivate: function(note) {
     if (note.IsPublic) {
       return (
-        <a href="#" className="note-action" title="Public" onClick={this.handleMakePublicPrivate}>
+        <a href="#" className="note-action" title="Make private" onClick={this.handleMakePublicPrivate}>
           <i className="fa fa-unlock"></i>
         </a>
       );
     } else {
       return (
-        <a href="#" className="note-action" title="Private" onClick={this.handleMakePublicPrivate}>
+        <a href="#" className="note-action" title="Make public" onClick={this.handleMakePublicPrivate}>
           <i className="fa fa-lock"></i>
         </a>
       );
