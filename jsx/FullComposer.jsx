@@ -1,6 +1,8 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
+
 function tagsToText(tags) {
   if (!tags) {
     return "";
@@ -42,6 +44,8 @@ var FullComposer = React.createClass({
   textChanged: function(e) {
     var s = e.target.value;
     console.log("s: " + s);
+    var el = React.findDOMNode(this.refs.preview);
+    el.value = s;
     e.preventDefault();
   },
 
@@ -65,17 +69,20 @@ var FullComposer = React.createClass({
         </div>
 
         <div id="full-composer-top">
-          <textarea
-            id="full-composer-textarea"
-            value={content}
+          <CodeMirrorEditor
+            className="full-composer-editor"
+            codeText={content}
             onChange={this.textChanged}
-            ref="editArea"></textarea>
-          <div id="full-composer-preview"></div>
+            ref="editArea" />
+          <div id="full-composer-preview" ref="preview"></div>
         </div>
         <div id="full-composer-bottom">
           <button onClick={this.handleSave}>Save</button>
           <button onClick={this.handleCancel}>Cancel</button>
-          <input type="checkbox" defaultChecked={isPublic} ref="isPublic">public</input>
+          <input
+            type="checkbox"
+            defaultChecked={isPublic}
+            ref="isPublic">public</input>
         </div>
       </div>
     );

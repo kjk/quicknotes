@@ -358,10 +358,9 @@ a {
   flex-direction: row;
 }
 
-#full-composer-textarea {
+.full-composer-editor {
   width: 50%;
   border: 0;
-  resize: none;
   background-color: lightyellow;
 }
 
