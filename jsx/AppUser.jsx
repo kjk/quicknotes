@@ -1,4 +1,4 @@
-/* jshint -W097 */
+/* jshint -W097,-W117 */
 'use strict';
 
 var utils = require('./utils.js');
@@ -55,7 +55,7 @@ var AppUser = React.createClass({
       selectedNotes: [],
       selectedTag: "__all",
       loggedInUserHandle: "",
-      isFullComposerShown: false
+      noteBeingEdited: null
     };
   },
 
@@ -100,7 +100,7 @@ var AppUser = React.createClass({
     key.unbind('ctrl+f', utils.focusSearch);
   },
 
-  createNewTextNoteCb: function(s) {
+  createNewTextNote: function(s) {
     s = s.trim();
     var data = {
       format: "text",
@@ -116,7 +116,7 @@ var AppUser = React.createClass({
 
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
-  delUndelNoteCb: function(note) {
+  delUndelNote: function(note) {
     var data = {
       noteIdHash: note.IDStr
     };
@@ -137,7 +137,7 @@ var AppUser = React.createClass({
     }
   },
 
-  makeNotePublicPrivateCb: function(note) {
+  makeNotePublicPrivate: function(note) {
     var data = {
       noteIdHash: note.IDStr
     };
@@ -158,7 +158,7 @@ var AppUser = React.createClass({
     }
   },
 
-  startUnstarNoteCb: function(note) {
+  startUnstarNote: function(note) {
     var data = {
       noteIdHash: note.IDStr
     };
@@ -177,6 +177,28 @@ var AppUser = React.createClass({
         alert( "error starring note");
       });
     }
+  },
+
+  saveNote: function(note) {
+    console.log("saveNote: " + note);
+    /*s = s.trim();
+    var data = {
+      format: "text",
+      content: s
+    };
+    $.post( "/api/createorupdatenote.json", data, function() {
+      this.updateNotes();
+    }.bind(this))
+    .fail(function() {
+      alert( "error creating new note" );
+    });*/
+  },
+
+  cancelNoteEdit: function(note) {
+    console.log("cancelNoteEdit" + note.IDStr);
+    this.setState({
+      noteBeingEdited: null
+    });
   },
 
   render: function() {
@@ -200,12 +222,14 @@ var AppUser = React.createClass({
               notes={this.state.selectedNotes}
               myNotes={myNotes}
               compact={compact}
-              delUndelNoteCb={this.delUndelNoteCb}
-              makeNotePublicPrivateCb={this.makeNotePublicPrivateCb}
-              startUnstarNoteCb={this.startUnstarNoteCb}
+              delUndelNoteCb={this.delUndelNote}
+              makeNotePublicPrivateCb={this.makeNotePublicPrivate}
+              startUnstarNoteCb={this.startUnstarNote}
             />
-            <Composer createNewTextNoteCb={this.createNewTextNoteCb}/>
-            <FullComposer isShown={this.state.isFullComposerShown}/>
+            <Composer createNewTextNoteCb={this.createNewTextNote}/>
+            <FullComposer note={this.state.noteBeingEdited}
+              saveNoteCb={this.saveNote}
+              cancelNoteEditCb={this.canceNoteEdit}/>
         </div>
     );
   }
