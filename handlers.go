@@ -80,12 +80,10 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	}
 	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	model := struct {
-		ColorsCSS    string
 		UserHandle   string
 		LoggedInUser *DbUser
 		Notes        []*Note
 	}{
-		ColorsCSS:    colorsCssString,
 		UserHandle:   userHandle,
 		LoggedInUser: i.user,
 		Notes:        i.notes,
@@ -143,7 +141,7 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
 		return
 	}
-
+	// TODO: return error if the note doesn't belong to logged in user
 	content, err := getCachedContent(note.ContentSha1)
 	if err != nil {
 		LogErrorf("getCachedContent() failed with %s\n", err)
@@ -151,13 +149,13 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := struct {
-		IDHash  string
+		IDStr   string
 		Title   string
 		Format  int
 		Content string
 		Tags    []string
 	}{
-		IDHash:  noteIDHashStr,
+		IDStr:   noteIDHashStr,
 		Title:   note.Title,
 		Format:  note.Format,
 		Content: string(content),

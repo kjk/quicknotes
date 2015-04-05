@@ -207,11 +207,16 @@ var AppUser = React.createClass({
   },
 
   editNote: function(note) {
-    console.log("AppUser.editNote: " + note);
-    var noteCopy = utils.deepCloneObject(note);
-    this.setState({
-      noteBeingEdited: noteCopy
-    });
+    var userHandle = this.props.notesUserHandle;
+    var uri = "/api/getnote.json?id=" + note.IDStr;
+    console.log("AppUser.editNote: " + note.IDStr + " uri: " + uri);
+
+    // TODO: show an error message on error
+    $.get(uri, function(noteJson) {
+      this.setState({
+        noteBeingEdited: noteJson
+      });
+    }.bind(this));
   },
 
   render: function() {
