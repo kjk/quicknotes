@@ -23,11 +23,13 @@ var FullComposer = React.createClass({
         </div>
       );
     }
-    var noteContent = note.Snippet;
+    var content = note.Content;
+    //var title = note.Title;
+    //var tags = note.Tags;
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-top">
-          <textarea id="full-composer-textarea">{noteContent}</textarea>
+          <textarea id="full-composer-textarea">{content}</textarea>
           <div id="full-composer-preview"></div>
         </div>
         <div id="full-composer-bottom">
