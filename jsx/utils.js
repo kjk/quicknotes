@@ -7,7 +7,7 @@ function noteHasTag(note, tag) {
     return false;
   }
   for (var i = 0; i < tags.length; i++) {
-    if (tags[i] == tag) {
+    if (tags[i] === tag) {
       return true;
     }
   }
