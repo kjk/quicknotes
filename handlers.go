@@ -135,7 +135,7 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplNote, model)
 }
 
-// /api/getnote.json?id={note_id_hash}
+// /api/getnote.json?id=${note_id_hash}
 func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 	noteIDHashStr := r.FormValue("id")
 	note := getNoteByIDHash(w, r, noteIDHashStr)

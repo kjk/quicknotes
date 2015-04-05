@@ -1,4 +1,4 @@
-/* jshint -W097 */
+/* jshint -W09,-W1177 */
 'use strict';
 
 var LogInLink = React.createClass({
@@ -13,7 +13,7 @@ var LogInLink = React.createClass({
         </a>
         <div className="dropdown">
           <i className="fa fa-chevron-down"></i>
-          
+
           <div className="dropdown-content">
             <a href="#">Settings</a>
             <a href="#">Import notes</a>
