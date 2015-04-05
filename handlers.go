@@ -135,11 +135,15 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 
 // /api/getnote.json?id=${note_id_hash}
 func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
+	dbUser := getUserFromCookie(w, r)
 	noteIDHashStr := r.FormValue("id")
 	note := getNoteByIDHash(w, r, noteIDHashStr)
 	if note == nil {
 		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
 		return
+	}
+	if !note.IsPublic && note.userID != dbUser.ID {
+		httpErrorWithJSONf(w, "/api/getnote.json access denied")
 	}
 	// TODO: return error if the note doesn't belong to logged in user
 	content, err := getCachedContent(note.ContentSha1)
@@ -521,6 +525,14 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
+// GET /api/tohtml.json
+// args:
+// - content
+// - format
+func handleAPIToHTML(w http.ResponseWriter, r *http.Request) {
+	httpErrorWithJSONf(w, "NYI")
+}
+
 // SearchResult has search results sent to client
 type SearchResult struct {
 	NoteIDStr   string
@@ -618,6 +630,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/makenotepublic.json", handleAPIMakeNotePublic)
 	http.HandleFunc("/api/starnote.json", handleAPIStarNote)
 	http.HandleFunc("/api/unstarnote.json", handleAPIUnstarNote)
+	http.HandleFunc("/api/tohtml.json", handleAPIToHTML)
 }
 
 func startWebServer() {
