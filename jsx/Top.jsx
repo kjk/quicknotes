@@ -1,4 +1,4 @@
-/* jshint -W097 */
+/* jshint -W097,-W117 */
 'use strict';
 
 var LogInLink = require('./LogInLink.jsx');
