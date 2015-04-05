@@ -165,7 +165,8 @@ func (n *Note) SetSnippet() {
 	if err != nil {
 		return
 	}
-	n.Snippet = string(getShortSnippet(snippet))
+	// TODO: make this trimming when we create snippet sha1
+	n.Snippet = strings.TrimSpace(string(getShortSnippet(snippet)))
 	//LogInfof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
 }
 
