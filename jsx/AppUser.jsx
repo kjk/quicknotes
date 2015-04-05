@@ -181,6 +181,11 @@ var AppUser = React.createClass({
 
   saveNote: function(note) {
     console.log("saveNote: " + note);
+    // TODO: save note if changed
+    this.setState({
+      noteBeingEdited: null
+    });
+
     /*s = s.trim();
     var data = {
       format: "text",
@@ -195,9 +200,17 @@ var AppUser = React.createClass({
   },
 
   cancelNoteEdit: function(note) {
-    console.log("cancelNoteEdit" + note.IDStr);
+    console.log("cancelNoteEdit: " + note.IDStr);
     this.setState({
       noteBeingEdited: null
+    });
+  },
+
+  editNote: function(note) {
+    console.log("AppUser.editNote: " + note);
+    var noteCopy = utils.deepCloneObject(note);
+    this.setState({
+      noteBeingEdited: noteCopy
     });
   },
 
@@ -225,11 +238,13 @@ var AppUser = React.createClass({
               delUndelNoteCb={this.delUndelNote}
               makeNotePublicPrivateCb={this.makeNotePublicPrivate}
               startUnstarNoteCb={this.startUnstarNote}
+              editCb={this.editNote}
             />
             <Composer createNewTextNoteCb={this.createNewTextNote}/>
-            <FullComposer note={this.state.noteBeingEdited}
+            <FullComposer
+              note={this.state.noteBeingEdited}
               saveNoteCb={this.saveNote}
-              cancelNoteEditCb={this.canceNoteEdit}/>
+              cancelNoteEditCb={this.cancelNoteEdit}/>
         </div>
     );
   }
