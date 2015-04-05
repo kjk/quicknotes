@@ -149,17 +149,20 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := struct {
-		IDStr   string
-		Title   string
-		Format  int
-		Content string
-		Tags    []string
+		IDStr    string
+		Title    string
+		Format   int
+		Content  string
+		Tags     []string
+		IsPublic bool
 	}{
 		IDStr:   noteIDHashStr,
 		Title:   note.Title,
 		Format:  note.Format,
 		Content: string(content),
 		Tags:    note.Tags,
+
+		IsPublic: note.IsPublic,
 	}
 	httpOkWithJSON(w, v)
 }

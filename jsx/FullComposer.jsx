@@ -31,18 +31,12 @@ var FullComposer = React.createClass({
 
   componentDidMount: function() {
     var el = React.findDOMNode(this.refs.editArea);
-    // TODO: hacky, if there is no note, we render but collapsed
-    if (el) {
-      el.focus();
-    }
+    el.focus();
   },
 
   componentDidUpdate: function() {
     var el = React.findDOMNode(this.refs.editArea);
-    // TODO: hacky, if there is no note, we render but collapsed
-    if (el) {
-      el.focus();
-    }
+    el.focus();
   },
 
   textChanged: function(e) {
@@ -53,12 +47,6 @@ var FullComposer = React.createClass({
 
   render: function() {
     var note = this.props.note;
-    if (!this.props.note) {
-      return (
-        <div id="full-composer-wrapper" className="collapsed">
-        </div>
-      );
-    }
     var content = note.Content;
     var title = note.Title;
     var tags = tagsToText(note.Tags);
