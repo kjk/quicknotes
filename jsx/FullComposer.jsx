@@ -5,6 +5,13 @@ var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
 var utils = require('./utils.js');
 var format = require('./format.js');
 
+function arrEmpty(a) {
+  if (!a || a.length === 0) {
+    return true;
+  }
+  return false;
+}
+
 function tagsToText(tags) {
   if (!tags) {
     return "";
@@ -19,6 +26,18 @@ function tagsToText(tags) {
   return s;
 }
 
+function textToTags(s) {
+  var tags = [];
+  var parts = s.split("#");
+  parts.forEach(function(part) {
+    part = part.trim();
+    if (part.length > 0) {
+      tags.push(part);
+    }
+  });
+  return tags;
+}
+
 var FullComposer = React.createClass({
   getInitialState: function() {
     return {
@@ -30,7 +49,6 @@ var FullComposer = React.createClass({
   noteChanged: function() {
     var n1 = this.props.note;
     var n2 = this.state.note;
-    // TODO: trim title/content, compare tags, format etc.
     if (n1.IsPublic != n2.IsPublic) {
       return true;
     }
@@ -39,6 +57,25 @@ var FullComposer = React.createClass({
     }
     if (n1.Content != n2.Content) {
       return true;
+    }
+    if (n1.Format != n2.Format) {
+      return true;
+    }
+    if (!arrEmpty(n1.Tags) || !arrEmpty(n2.Tags)) {
+      if (arrEmpty(n1.Tags) || arrEmpty(n2.Tags)) {
+        return true;
+      }
+      var tags1 = n1.Tags.sort();
+      var tags2 = n2.Tags.sort();
+      var len = tags1.length;
+      if (len != tags2.length) {
+        return true;
+      }
+      for (var i=0; i < n; i++) {
+        if (tags1[i] != tags2[i]) {
+          return true;
+        }
+      }
     }
     return false;
   },
@@ -93,27 +130,52 @@ var FullComposer = React.createClass({
       s = e.target.value;
       e.preventDefault();
     }
+    s = s.trim();
     this.updatePreview(s);
   },
 
+  handleTitleChanged: function(e) {
+    e.preventDefault();
+    var s = e.target.value.trim();
+    var note = utils.deepCloneObject(this.state.note);
+    note.Title = s;
+    this.setState({
+      note: note
+    });
+  },
+
+  handleTagsChanged: function(e) {
+    e.preventDefault();
+    var s = e.target.value;
+    console.log("new tags: " + s);
+    var note = utils.deepCloneObject(this.state.note);
+    note.Tags = textToTags(s);
+    console.log("new tags arr: " + note.Tags);
+    this.setState({
+      note: note
+    });
+  },
+
   render: function() {
+    var initialTags = tagsToText(this.props.note.Tags);
+
     var note = this.state.note;
     var content = note.Content;
     var title = note.Title;
-    var tags = tagsToText(note.Tags);
     var isPublic = note.IsPublic;
     var previewHtml = { __html: this.state.previewHtml };
+    var saveDisabled = !this.noteChanged();
 
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-title">
           <span>Title:</span>
-          <input type="text" defaultValue={title} size="80"/>
+          <input type="text" onChange={this.handleTitleChanged} value={title} size="80"/>
         </div>
 
         <div id="full-composer-tags">
           <span>Tags:</span>
-          <input type="text" defaultValue={tags} size="80"/>
+          <input type="text" onChange={this.handleTagsChanged} defaultValue={initialTags} size="80"/>
         </div>
 
         <div id="full-composer-top">
@@ -126,7 +188,7 @@ var FullComposer = React.createClass({
           <div id="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
         </div>
         <div id="full-composer-bottom">
-          <button onClick={this.handleSave}>Save</button>
+          <button onClick={this.handleSave} disabled={saveDisabled}>Save</button>
           <button onClick={this.handleCancel}>Cancel</button>
           <input
             type="checkbox"
