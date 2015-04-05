@@ -20,12 +20,16 @@ body {
   overflow: hidden;
 }
 
+a {
+  text-decoration: none;
+}
+
 /**/
 #header {
   top: 0; left: 0; right: 0;
   height: 56px;
   background: #F8F8FA;
-  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(252,252,252,1) 100%);
+  background: linear-gradient(to bottom, #FFFEFD 0%,rgba(252,252,252,1) 100%);
 }
 
 #header:after {
@@ -42,7 +46,6 @@ body {
   line-height: 56px;
   display: block;
   float: left;
-  background: rgba(0,0,0,.02);
 }
 
 #header #search-wrapper {
@@ -57,12 +60,69 @@ body {
   font-size: 14px;
   padding: 2px 16px;
   border: 1px solid rgba(0,0,0,.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08) inset;
   border-radius: 20px;
   outline: none;
 }
 
 #header #user {
   float: right;
+}
+
+#header #user .user,
+#header .dropdown {
+  float: left;
+}
+
+
+#header #user .user {
+  height: 56px;
+  line-height: 56px;
+  display: block;
+  padding: 0 0 0 10px;
+  color: rgba(0,0,0,.8);
+  font-weight: bold;
+}
+
+#header .dropdown {
+  height: 56px;
+  line-height: 54px;
+  position: relative;
+  margin-right: 10px;
+}
+
+#header .dropdown i {
+  padding: 0 10px;
+  font-size: 11px;
+  color: rgba(0,0,0,.6);
+}
+
+#header .dropdown-content {
+  width: 100px;
+  display: none;
+  position: absolute;
+  top: 40px; right: 0;
+  background: #FCFCFC;
+  padding: 16px;
+  line-height: 20px;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 0 2px rgba(0,0,0,.1);
+  z-index: 20;
+}
+
+#header .dropdown-content a {
+  display: block;
+  clear: both;
+  padding: 6px 0;
+  color: rgba(0,0,0,.8);
+}
+
+#header .dropdown-content a:hover {
+  color: rgba(0,0,0,1);
+}
+
+#header .dropdown:hover .dropdown-content {
+  display: block;
 }
 
 
@@ -72,28 +132,42 @@ body {
   background: #444550;
   left: 0; top: 56px; bottom: 0;
   overflow-y: auto;
+  user-select: none;
 }
 
-.tag {
+#left-sidebar .tags-list {
+
+}
+
+#left-sidebar .tags-list + .tags-list {
+  padding-top: 2px;
+}
+
+#left-sidebar .tag {
   line-height: 24px;
   padding: 2px 0;
   cursor: pointer;
   color: rgba(255,255,255,.5);
+  user-select: none;
 }
 
-.tag:first-of-type {
+#left-sidebar .tag:hover {
+  background: rgba(0,0,0,.08);
+}
+
+#left-sidebar .tag:first-of-type {
   margin-top: 16px;
 }
 
-.tag:last-of-type {
+#left-sidebar .tag:last-of-type {
   margin-bottom: 16px;
 }
 
-.tag-name {
+#left-sidebar .tag-name {
   padding-left: 16px;
 }
 
-.tag-count {
+#left-sidebar .tag-count {
   text-align: right;
   float: right;
   margin-right: 16px;
@@ -101,12 +175,12 @@ body {
   color: rgba(255,255,255,.3);
 }
 
-.tag.selected {
+#left-sidebar .tag.selected {
   cursor: default;
   color: rgba(255,255,255,1);
 }
 
-.tag.selected .tag-count {
+#left-sidebar .tag.selected .tag-count {
   color: rgba(255,255,255,.6);
 }
 
@@ -125,6 +199,7 @@ body {
   background: #FFF;
   padding: 10px;
   border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.1);
 }
 
 #notes-list .note:first-of-type {
@@ -176,10 +251,20 @@ body {
 }
 
 #notes-list .note .note-content {
+  position: relative;
   font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   font-size: 13px;
   line-height: 18px;
   color: rgba(0,0,0,.8);
+}
+
+#notes-list .note .note-content:after {
+  content: "";
+  height: 16px;
+  position: absolute;
+  display: block;
+  bottom: -2px; left: 0; right: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%);
 }
 
 #notes-list .note .note-footer {
@@ -197,7 +282,7 @@ body {
 #notes-list .note .note-tag {
   font-weight: bold;
   font-size: 13px;
-  margin-right: 6px;
+  margin-right: 8px;
   cursor: pointer;
   color: rgba(0,0,0,.5);
 }
@@ -219,6 +304,7 @@ body {
   background: #FFF;
   bottom: 0; left: 220px; right: 0;
   border-top: 1px solid rgba(0,0,0,.2);
+  box-shadow: ;
 }
 
 #composer .inner {
