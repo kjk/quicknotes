@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -306,36 +307,47 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSONCompact(w, v)
 }
 
+// NewNoteFromBrowser represents format of the note sent by the browser
+type NewNoteFromBrowser struct {
+	IDStr    string
+	Title    string
+	Format   int
+	Content  string
+	Tags     []string
+	IsPublic bool
+}
+
 func newNoteFromArgs(r *http.Request) *NewNote {
-	var note NewNote
-	formatArg := strings.TrimSpace(r.FormValue("format"))
-	note.format = formatFromString(formatArg)
-	if note.format == formatInvalid {
+	var newNote NewNote
+	var note NewNoteFromBrowser
+	var noteJSON = r.FormValue("noteJSON")
+	if noteJSON != "" {
+		LogInfof("missing noteJSON falue\n")
 		return nil
 	}
-	note.content = []byte(strings.TrimSpace(r.FormValue("content")))
-	if len(note.content) == 0 {
+	err := json.Unmarshal([]byte(noteJSON), &note)
+	if err != nil {
+		LogInfof("json.Unmarshal('%s') failed with %s", noteJSON, err)
 		return nil
 	}
-	note.title = strings.TrimSpace(r.FormValue("title"))
-	if note.title == "" && note.format == formatText {
-		note.title, note.content = noteToTitleContent(note.content)
+	if !isValidFormat(note.Format) {
+		LogInfof("invalid format %d\n", note.Format)
 	}
-	tagsArg := strings.TrimSpace(r.FormValue("tags"))
-	note.tags = deserializeTags(tagsArg)
-	isPublicArg := strings.TrimSpace(r.FormValue("ispublic"))
-	note.isPublic = boolFromString(isPublicArg)
-	return &note
+	newNote.title = note.Title
+	newNote.content = []byte(note.Content)
+	newNote.format = note.Format
+	newNote.tags = note.Tags
+	newNote.isPublic = note.IsPublic
+
+	if newNote.title == "" && newNote.format == formatText {
+		newNote.title, newNote.content = noteToTitleContent(newNote.content)
+	}
+	return &newNote
 }
 
 // POST /api/createorupdatenote.json
-//  noteIdHash : if given, this is an update, if not, this is create new
-//  title      : (optional)
-//  format     : "text", "0", "markdown", "1"
-//  content    : text of the note
-//  ispublic   : "true", "1", "false", "0"
-//  tags       : tag1,tag2,tag3, can be empty
-func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
+//  noteJSON : note serialized as josn
+func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
@@ -343,7 +355,6 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "user not logged in")
 		return
 	}
-	// TODO: notIDHash not supported yet
 	note := newNoteFromArgs(r)
 	if note == nil {
 		LogErrorf("newNoteFromArgs() returned nil\n")
@@ -351,7 +362,7 @@ func handleAPICreateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	noteID, err := dbCreateNewNote(dbUser.ID, note)
+	noteID, err := dbCreateOrUpdateNote(dbUser.ID, note)
 	if err != nil {
 		LogErrorf("dbCreateNewNote() failed with %s\n", err)
 		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
@@ -624,7 +635,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/getnotescompact.json", handleAPIGetNotesCompact)
 	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
 	http.HandleFunc("/api/searchusernotes.json", handleSearchUserNotes)
-	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateNote)
+	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateOrUpdateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
 	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)
 	http.HandleFunc("/api/makenoteprivate.json", handleAPIMakeNotePrivate)
