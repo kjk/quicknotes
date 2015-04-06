@@ -121,7 +121,6 @@ var FullComposer = React.createClass({
     } else {
       // textarea
       s = e.target.value;
-      e.preventDefault();
     }
     s = s.trim();
     var note = utils.deepCloneObject(this.state.note);
