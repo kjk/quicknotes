@@ -1,22 +1,30 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var Text = 0;
-var Markdown = 1;
+/* name <-> number mapping of note content formats */
+
+var Invalid = 0;
+var Text = 1;
+var Markdown = 2;
+
+var formatNames = ["invalid", "text", "markdown"];
 
 var Formats = ["text", "markdown"];
 
 function numberToName(n) {
-  return Formats[n];
+  if (n >= formatNames.length) {
+    return "invalid";
+  }
+  return formatNames[n];
 }
 
 function nameToNumber(s) {
-  for (var i = 0; i < Formats.length; i++) {
-    if (Formats[i] == s) {
+  for (var i = 0; i < formatNames.length; i++) {
+    if (formatNames[i] == s) {
       return i;
     }
   }
-  return -1;
+  return Invalid;
 }
 
 exports.numberToName = numberToName;
