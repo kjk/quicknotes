@@ -195,11 +195,11 @@ var AppUser = React.createClass({
       noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
-      console.log("note has been saved: " + noteJson);
+      console.log("note has been saved: " + noteJSON);
       this.updateNotes();
     }.bind(this))
     .fail(function() {
-      alert( "error creating or updaing a note: " + noteJson);
+      alert( "error creating or updaing a note: " + noteJSON);
     });
   },
 
