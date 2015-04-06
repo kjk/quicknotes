@@ -321,8 +321,8 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	var newNote NewNote
 	var note NewNoteFromBrowser
 	var noteJSON = r.FormValue("noteJSON")
-	if noteJSON != "" {
-		LogInfof("missing noteJSON falue\n")
+	if noteJSON == "" {
+		LogInfof("missing noteJSON value\n")
 		return nil
 	}
 	err := json.Unmarshal([]byte(noteJSON), &note)
@@ -330,9 +330,11 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 		LogInfof("json.Unmarshal('%s') failed with %s", noteJSON, err)
 		return nil
 	}
+	//LogInfof("note: %s\n", noteJSON)
 	if !isValidFormat(note.Format) {
 		LogInfof("invalid format %d\n", note.Format)
 	}
+	newNote.idStr = note.IDStr
 	newNote.title = note.Title
 	newNote.content = []byte(note.Content)
 	newNote.format = note.Format
