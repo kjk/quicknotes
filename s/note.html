@@ -5,21 +5,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{.Note.Title}}</title>
-    <style type="text/css">
-      body {
-      }
-      html,body{
-        height:100%;
-      }
-    </style>
+    <link rel="stylesheet" href="/s/css/user.css">
+    <link rel="stylesheet" href="/s/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/s/js/lib/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/s/js/lib/codemirror/theme/solarized.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
+    <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
+    <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
+    <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
+    <script src="/s/js/lib/keymaster.js"></script>
+    <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
+    <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
 
   </head>
   <body>
-  <h1>{{.Note.Title}}</h1>
-
-  <div>
-    {{.Note.ContentHTML}}
+  <div id="note-top">
   </div>
-  <hr/>
+
+  <div id="note-content">
+    <h1>{{.Note.Title}}</h1>
+
+    <div>
+      {{.Note.ContentHTML}}
+    </div>
+    <hr/>
+  </div>
+  <script src="/s/js/bundle.js"></script>
+  <script>
+  if (window.addEventListener) {
+    window.addEventListener('DOMContentLoaded', window.appNoteStart);
+  } else {
+    window.attachEvent('onload', window.appNoteStart);
+  }
+  </script>
   </body>
 </html>

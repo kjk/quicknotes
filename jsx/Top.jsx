@@ -57,11 +57,9 @@ var Top = React.createClass({
     }, 300);
   },
 
-  render: function() {
-    return (
-      <div id="header">
-        <a id="logo" href="/">QuickNotes</a>
-
+  createSearch: function() {
+    if (this.props.notesUserHandle != "") {
+      return (
         <div id="search-wrapper" className="left">
           <input name="search" id="search"
             onKeyDown={this.handleInputKeyDown}
@@ -70,6 +68,15 @@ var Top = React.createClass({
             autoComplete="off" autoCapitalize="off"
             placeholder="Search (Ctrl-F)" />
         </div>
+      );
+    }
+  },
+
+  render: function() {
+    return (
+      <div id="header">
+        <a id="logo" href="/">QuickNotes</a>
+        {this.createSearch()}
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>
       </div>
