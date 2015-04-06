@@ -185,14 +185,14 @@ var AppUser = React.createClass({
 
   saveNote: function(note) {
     note.Content = note.Content.trim();
-    var noteJson = JSON.stringify(note);
+    var noteJSON = JSON.stringify(note);
     console.log("saveNote: " + noteJson);
     this.setState({
       noteBeingEdited: null
     });
 
     var data = {
-      noteJson: noteJson
+      noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
       console.log("note has been saved: " + noteJson);
