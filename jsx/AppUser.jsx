@@ -199,8 +199,7 @@ var AppUser = React.createClass({
     });*/
   },
 
-  cancelNoteEdit: function(note) {
-    console.log("cancelNoteEdit: " + note.IDStr);
+  cancelNoteEdit: function() {
     this.setState({
       noteBeingEdited: null
     });

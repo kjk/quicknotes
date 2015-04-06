@@ -84,14 +84,11 @@ var FullComposer = React.createClass({
   },
 
   handleSave: function(e) {
-      console.log("onSave");
-      // TODO: get properties on the note before calling save
-      this.props.saveNoteCb(this.props.note);
+      this.props.saveNoteCb(this.state.note);
   },
 
   handleCancel: function(e) {
-    console.log("onCancel");
-    this.props.cancelNoteEditCb(this.props.note);
+    this.props.cancelNoteEditCb();
   },
 
   componentDidMount: function() {
