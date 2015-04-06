@@ -60,7 +60,7 @@ var AppUser = React.createClass({
   },
 
   handleTagSelected: function(tag) {
-    console.log("selected tag: ", tag);
+    //console.log("selected tag: ", tag);
     var selectedNotes = utils.filterNotesByTag(this.state.allNotes, tag);
     this.setState({
       selectedNotes: selectedNotes,
@@ -71,9 +71,9 @@ var AppUser = React.createClass({
   updateNotes: function() {
     // TODO: url-escape uri?
     var userHandle = this.props.notesUserHandle;
-    console.log("updateNotes: userHandle=", userHandle);
+    //console.log("updateNotes: userHandle=", userHandle);
     var uri = "/api/getnotes.json?user=" + userHandle;
-    console.log("updateNotes: uri=", uri);
+    //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       var allNotes = json.Notes;
       if (!allNotes) {
@@ -264,7 +264,7 @@ var AppUser = React.createClass({
 });
 
 function userStart() {
-  console.log("gNotesUserHandle: ", gNotesUserHandle);
+  //console.log("gNotesUserHandle: ", gNotesUserHandle);
   React.render(
     <AppUser notesUserHandle={gNotesUserHandle}/>,
     document.getElementById('root')
