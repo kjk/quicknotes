@@ -29,7 +29,7 @@ var Top = React.createClass({
 
   startSearch: function(userHandle, searchTerm) {
     gCurrSearchTerm = searchTerm;
-    if (searchTerm == "") {
+    if (searchTerm === "") {
       return;
     }
     var uri = "/api/searchusernotes.json?user=" + encodeURIComponent(userHandle) + "&term=" + encodeURIComponent(searchTerm);
