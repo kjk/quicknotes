@@ -136,7 +136,7 @@ func getSecureCookie(w http.ResponseWriter, r *http.Request) *SecureCookieValue 
 		deleteSecureCookie(w)
 		return nil
 	}
-	fmt.Printf("Got cookie %#v\n", ret)
+	//LogVerbosef("Got cookie %#v\n", ret)
 	return &ret
 }
 
