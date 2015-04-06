@@ -74,7 +74,7 @@ var FullComposer = React.createClass({
       if (len != tags2.length) {
         return true;
       }
-      for (var i=0; i < n; i++) {
+      for (var i=0; i < len; i++) {
         if (tags1[i] != tags2[i]) {
           return true;
         }
