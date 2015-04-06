@@ -126,10 +126,19 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
+	loggedInUserHandle := ""
+	dbUser := getUserFromCookie(w, r)
+	if dbUser != nil {
+		loggedInUserHandle = dbUser.Handle
+	}
+
 	model := struct {
-		Note *Note
+		Note               *Note
+		LoggedInUserHandle string
 	}{
-		Note: note,
+		Note:               note,
+		LoggedInUserHandle: loggedInUserHandle,
 	}
 	execTemplate(w, tmplNote, model)
 }

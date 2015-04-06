@@ -299,6 +299,17 @@ a {
 
 
 /**/
+#note-content {
+  top: 56px;
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+  background-color: lightgray;
+  position: absolute;
+}
+
+
+/**/
 #composer {
   height: 64px;
   background: #FFF;

@@ -15,9 +15,7 @@
     <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
     <script src="/s/js/lib/keymaster.js"></script>
     <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
-    <script>
-      var gNotesUserHandle = "{{ .UserHandle }}";
-    </script>
+    <script>var gNotesUserHandle = "{{ .UserHandle }}";</script>
   </head>
 
   <body>
@@ -25,9 +23,9 @@
     <script src="/s/js/bundle.js"></script>
     <script>
     if (window.addEventListener) {
-      window.addEventListener('DOMContentLoaded', userStart);
+      window.addEventListener('DOMContentLoaded', window.appUserStart);
     } else {
-      window.attachEvent('onload', userStart);
+      window.attachEvent('onload', window.appUserStart);
     }
     </script>
   </body>
