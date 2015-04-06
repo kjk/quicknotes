@@ -99,6 +99,15 @@ function deepCloneObject(o) {
   return JSON.parse(JSON.stringify(o));
 }
 
+function runOnLoad(f) {
+  if (window.addEventListener) {
+    window.addEventListener('DOMContentLoaded', f);
+  } else {
+    window.attachEvent('onload', f);
+  }
+}
+
+window.runOnLoad = runOnLoad;
 exports.filterNotesByTag = filterNotesByTag;
 exports.dictInc = dictInc;
 exports.focusSearch = focusSearch;
