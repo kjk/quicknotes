@@ -9,11 +9,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/kjk/u"
-	"github.com/speps/go-hashids"
 )
 
 var (
@@ -33,33 +31,7 @@ var (
 		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
 		TokenRequestURI:               "https://api.twitter.com/oauth/access_token",
 	}
-	hashIDMu sync.Mutex
-	hashID   *hashids.HashID
 )
-
-func initHashID() {
-	hd := hashids.NewData()
-	hd.Salt = "bo-&)()(*&tamalola"
-	hd.MinLength = 4
-	hashID = hashids.NewWithData(hd)
-}
-
-func hashInt(n int) string {
-	nums := []int{n}
-	hashIDMu.Lock()
-	res, err := hashID.Encode(nums)
-	hashIDMu.Unlock()
-	u.PanicIfErr(err)
-	return res
-}
-
-func dehashInt(s string) int {
-	hashIDMu.Lock()
-	nums := hashID.Decode(s)
-	hashIDMu.Unlock()
-	u.PanicIf(len(nums) != 1, "len(nums) is not 1")
-	return nums[0]
-}
 
 func initAppMust() {
 	initCookieMust()

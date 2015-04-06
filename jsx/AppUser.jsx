@@ -101,16 +101,20 @@ var AppUser = React.createClass({
   },
 
   createNewTextNote: function(s) {
-    s = s.trim();
+    var note = {
+      Content: s.trim(),
+      Format: format.Text
+    };
+    var noteJSON = JSON.stringify(note);
     var data = {
-      format: "text",
-      content: s
+      noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
+      console.log("created a new note: " + noteJSON);
       this.updateNotes();
     }.bind(this))
     .fail(function() {
-      alert( "error creating new note" );
+      alert( "error creating new note: " + noteJSON );
     });
   },
 
@@ -180,23 +184,23 @@ var AppUser = React.createClass({
   },
 
   saveNote: function(note) {
-    console.log("saveNote: " + note);
-    // TODO: save note if changed
+    note.Content = note.Content.trim();
+    var noteJson = JSON.stringify(note);
+    console.log("saveNote: " + noteJson);
     this.setState({
       noteBeingEdited: null
     });
 
-    /*s = s.trim();
     var data = {
-      format: "text",
-      content: s
+      noteJson: noteJson
     };
     $.post( "/api/createorupdatenote.json", data, function() {
+      console.log("note has been saved: " + noteJson);
       this.updateNotes();
     }.bind(this))
     .fail(function() {
-      alert( "error creating new note" );
-    });*/
+      alert( "error creating or updaing a note: " + noteJson);
+    });
   },
 
   cancelNoteEdit: function() {

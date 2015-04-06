@@ -18,7 +18,7 @@ import (
 	"github.com/kjk/u"
 )
 
-// TODO: use prepared statements more
+// TODO: use prepared statements where possible
 
 const (
 	tagsSepByte                 = 30          // record separator
@@ -28,6 +28,7 @@ const (
 
 const (
 	formatInvalid  = 0
+	formatFirst    = 1
 	formatText     = 1
 	formatMarkdown = 2
 	formatHTML     = 3
@@ -56,27 +57,8 @@ func getSqlConnectionRoot() string {
 	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
 }
 
-// returns formatInvalid if invalid format
-func formatFromString(s string) int {
-	s = strings.ToLower(s)
-	switch s {
-	case "text", "1":
-		return formatText
-	case "markdown", "2":
-		return formatMarkdown
-	case "html", "3":
-		return formatHTML
-	default:
-		return formatInvalid
-	}
-}
-
-func boolFromString(s string) bool {
-	s = strings.TrimSpace(s)
-	if s == "1" || s == "true" {
-		return true
-	}
-	return false
+func isValidFormat(format int) bool {
+	return format >= formatFirst && format <= formatLast
 }
 
 // CachedContentInfo is content with time when it was cached
@@ -128,13 +110,16 @@ type Note struct {
 
 // NewNote describes a new note to be inserted into a database
 type NewNote struct {
-	title     string
-	format    int
-	content   []byte
-	tags      []string
-	createdAt time.Time
-	isDeleted bool
-	isPublic  bool
+	idStr       string
+	title       string
+	format      int
+	content     []byte
+	tags        []string
+	createdAt   time.Time
+	isDeleted   bool
+	isPublic    bool
+	contentSha1 []byte
+	snippetSha1 []byte
 }
 
 // CachedUserInfo has cached user info
@@ -439,16 +424,7 @@ func loadContent(sha1 []byte) ([]byte, error) {
 	return d, nil
 }
 
-// create a new note. if note.createdAt is non-zero value, this is an import
-// of from somewhere else, so we want to preserve that
 func dbCreateNewNote(userID int, note *NewNote) (int, error) {
-	u.PanicIf(len(note.content) == 0)
-	contentSha1, snippetSha1, err := saveContent(note.content)
-	if err != nil {
-		LogErrorf("saveContent() failed with %s\n", err)
-		return 0, err
-	}
-	ensureValidFormat(note.format)
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -479,7 +455,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	}
 	serilizedTags := serializeTags(note.tags)
 	q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, contentSha1, snippetSha1, serilizedTags, note.createdAt)
+	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
 	if err != nil {
 		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
@@ -497,8 +473,110 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	}
 	err = tx.Commit()
 	tx = nil
-	clearCachedUserInfo(userID)
 	return int(noteID), err
+}
+
+func dbUpdateNote(userID int, note *NewNote) (int, error) {
+	noteID := dehashInt(note.idStr)
+	existingNote, err := dbGetNoteByID(noteID)
+	if err != nil {
+		return 0, err
+	}
+	if existingNote.userID != userID {
+		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
+	}
+	db := getDbMust()
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		if tx != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if note.createdAt.IsZero() {
+		note.createdAt = time.Now()
+	}
+
+	needNewVersion := false
+	if !bytes.Equal(note.contentSha1, existingNote.ContentSha1) {
+		needNewVersion = true
+	}
+	if note.format != existingNote.Format {
+		needNewVersion = true
+	}
+	if note.title != existingNote.Title {
+		needNewVersion = true
+	}
+	if !strArrEqual(note.tags, existingNote.Tags) {
+		needNewVersion = true
+	}
+
+	if needNewVersion {
+		LogInfof("inserting new version of note %d\n", noteID)
+		serilizedTags := serializeTags(note.tags)
+		q := `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+		res, err := tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
+		if err != nil {
+			LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+			return 0, err
+		}
+		versionID, err := res.LastInsertId()
+		if err != nil {
+			LogErrorf("res.LastInsertId() of versionId failed with %s\n", err)
+			return 0, err
+		}
+		q = `UPDATE notes SET curr_version_id=?, versions_count = versions_count + 1 WHERE id=?`
+		_, err = tx.Exec(q, versionID, noteID)
+		if err != nil {
+			LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+			return 0, err
+		}
+	}
+
+	// TODO: could combine with the above update in some cases
+	if note.isPublic != existingNote.IsPublic {
+		LogInfof("changing is_public status of note %d to %v\n", noteID, note.isPublic)
+		q := `UPDATE notes SET is_public=? WHERE id=?`
+		_, err = tx.Exec(q, note.isPublic, noteID)
+		if err != nil {
+			LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+			return 0, err
+		}
+	}
+
+	err = tx.Commit()
+	tx = nil
+	return int(noteID), err
+}
+
+// create a new note. if note.createdAt is non-zero value, this is an import
+// of from somewhere else, so we want to preserve that
+func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
+	var err error
+	if len(note.content) == 0 {
+		return 0, errors.New("empty note content")
+	}
+	note.contentSha1, note.snippetSha1, err = saveContent(note.content)
+	if err != nil {
+		LogErrorf("saveContent() failed with %s\n", err)
+		return 0, err
+	}
+	if !isValidFormat(note.format) {
+		return 0, fmt.Errorf("invalid format %d", note.format)
+	}
+
+	var noteID int
+	if note.idStr == "" {
+		noteID, err = dbCreateNewNote(userID, note)
+	} else {
+		noteID, err = dbUpdateNote(userID, note)
+	}
+
+	clearCachedUserInfo(userID)
+	return noteID, err
 }
 
 /*
@@ -787,8 +865,8 @@ func dbGetAllUsers() ([]*DbUser, error) {
 	return res, nil
 }
 
-// given userLogin like "twitter:kjk", return unique userHandle e.g. kjk,
-// kjk_twitter, kjk_twitter1 etc.
+// given userLogin like "twitter:kjk", return unique userHandle
+// e.g. kjk, kjk1, kjk2
 // TODO: this needs to be protected with a mutex
 func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
 	parts := strings.SplitN(userLogin, ":", 2)
