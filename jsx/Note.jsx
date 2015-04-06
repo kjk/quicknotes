@@ -65,12 +65,10 @@ var Note = React.createClass({
   },
 
   handleDelUndel: function(e) {
-    e.preventDefault();
     this.props.delUndelNoteCb(this.props.note);
   },
 
   handleMakePublicPrivate: function(e) {
-    e.preventDefault();
     var note = this.props.note;
     console.log("handleMakePublicPrivate, note.IsPublic: ", note.IsPublic);
     this.props.makeNotePublicPrivateCb(note);
@@ -93,7 +91,6 @@ var Note = React.createClass({
 
   handleEdit: function(e) {
     console.log("Note.handleEdit");
-    e.preventDefault();
     this.props.editCb(this.props.note);
   },
 
@@ -147,7 +144,6 @@ var Note = React.createClass({
   },
 
   handleStarUnstarNote: function(e) {
-    e.preventDefault();
     var note = this.props.note;
     console.log("handleStarUnstarNote, note.IsStarred: ", note.IsStarred);
     this.props.startUnstarNoteCb(note);
