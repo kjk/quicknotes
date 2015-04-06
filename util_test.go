@@ -38,3 +38,26 @@ func TestNameFromEmail(t *testing.T) {
 		}
 	}
 }
+
+func checkArrEqual(t *testing.T, a1, a2 []string) {
+	areEqual := strArrEqual(a1, a2)
+	if !areEqual {
+		t.Errorf("expected %v and %v to be equal", a1, a2)
+	}
+}
+
+func checkArrNotEqual(t *testing.T, a1, a2 []string) {
+	areEqual := strArrEqual(a1, a2)
+	if areEqual {
+		t.Errorf("expected %v and %v to not be equal", a1, a2)
+	}
+}
+
+func TestStrArrEqual(t *testing.T) {
+	checkArrEqual(t, []string{}, []string{})
+	checkArrEqual(t, []string{"foo"}, []string{"foo"})
+	checkArrNotEqual(t, []string{"foo"}, []string{"bar"})
+	checkArrNotEqual(t, []string{"foo"}, []string{"Foo"})
+	checkArrEqual(t, []string{"foo", "bar"}, []string{"bar", "foo"})
+	checkArrNotEqual(t, []string{"bar"}, []string{"bar", "foo"})
+}

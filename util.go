@@ -9,6 +9,15 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
+
+	"github.com/kjk/u"
+	"github.com/speps/go-hashids"
+)
+
+var (
+	hashIDMu sync.Mutex
+	hashID   *hashids.HashID
 )
 
 func fatalIfErr(err error, what string) {
@@ -107,4 +116,54 @@ func trimSpaceLineRight(s string) string {
 func nameFromEmail(email string) string {
 	parts := strings.Split(email, "@")
 	return parts[0]
+}
+
+func initHashID() {
+	hd := hashids.NewData()
+	hd.Salt = "bo-&)()(*&tamalola"
+	hd.MinLength = 4
+	hashID = hashids.NewWithData(hd)
+}
+
+func hashInt(n int) string {
+	nums := []int{n}
+	hashIDMu.Lock()
+	res, err := hashID.Encode(nums)
+	hashIDMu.Unlock()
+	u.PanicIfErr(err)
+	return res
+}
+
+// TODO: return an error if fails
+func dehashInt(s string) int {
+	hashIDMu.Lock()
+	nums := hashID.Decode(s)
+	hashIDMu.Unlock()
+	u.PanicIf(len(nums) != 1, "len(nums) is not 1")
+	return nums[0]
+}
+
+func strArrEqual(a1, a2 []string) bool {
+	if len(a1) != len(a2) {
+		return false
+	}
+	if len(a1) == 0 {
+		return true
+	}
+	m := map[string]int{}
+	for _, t := range a1 {
+		m[t]++
+	}
+	for _, t := range a2 {
+		m[t]++
+	}
+	// the value for the key can either be 2 if the key is in both
+	// arrays or 1 if only in one, which indicates arrays are not
+	// the same
+	for _, n := range m {
+		if n != 2 {
+			return false
+		}
+	}
+	return true
 }
