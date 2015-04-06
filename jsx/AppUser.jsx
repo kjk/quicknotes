@@ -267,7 +267,7 @@ var AppUser = React.createClass({
   }
 });
 
-function userStart() {
+function appUserStart() {
   //console.log("gNotesUserHandle: ", gNotesUserHandle);
   React.render(
     <AppUser notesUserHandle={gNotesUserHandle}/>,
@@ -275,6 +275,6 @@ function userStart() {
   );
 }
 
-window.userStart = userStart;
+window.appUserStart = appUserStart;
 
 module.exports = AppUser;
