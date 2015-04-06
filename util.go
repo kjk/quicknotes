@@ -81,6 +81,19 @@ func getReferer(r *http.Request) string {
 	return r.Header.Get("Referer")
 }
 
+func dumpFormValueNames(r *http.Request) {
+	r.ParseForm()
+	r.ParseMultipartForm(128 * 1024)
+	for k := range r.Form {
+		fmt.Printf("r.Form: '%s'\n", k)
+	}
+	if form := r.MultipartForm; form != nil {
+		for k := range form.Value {
+			fmt.Printf("r.MultipartForm: '%s'\n", k)
+		}
+	}
+}
+
 // heuristic: auto-detects title from the note body. Title is first line if
 // relatively short and followed by empty line
 func noteToTitleContent(d []byte) (string, []byte) {

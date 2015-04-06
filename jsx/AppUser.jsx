@@ -186,7 +186,7 @@ var AppUser = React.createClass({
   saveNote: function(note) {
     note.Content = note.Content.trim();
     var noteJSON = JSON.stringify(note);
-    console.log("saveNote: " + noteJson);
+    console.log("saveNote: " + noteJSON);
     this.setState({
       noteBeingEdited: null
     });
