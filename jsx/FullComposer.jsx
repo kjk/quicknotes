@@ -93,6 +93,7 @@ var FullComposer = React.createClass({
 
   componentDidMount: function() {
     var el = React.findDOMNode(this.refs.editArea);
+    // TODO: this doesn't work
     el.focus();
     this.updatePreview(this.props.note.Content);
   },

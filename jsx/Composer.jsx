@@ -18,13 +18,19 @@ var Composer = React.createClass({
     //console.log("handleKeyPress: code:", e.charCode, " ctrl: ", e.ctrlKey);
   },
 
+  handleOnFocus: function(e) {
+    this.props.startNewNoteCb();
+    e.preventDefault();
+  },
+
   render: function() {
     return (
       <div id="composer">
         <div className="inner">
           <textarea
             id="Composer"
-            placeholder="enter new note"
+            onFocus={this.handleOnFocus}
+            placeholder="Enter new note (Ctrl-E)"
             onKeyPress={this.handleKeyPress}
           />
         </div>
