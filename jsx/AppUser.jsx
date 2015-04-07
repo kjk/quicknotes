@@ -2,6 +2,7 @@
 'use strict';
 
 var utils = require('./utils.js');
+var format = require('./format.js');
 var NotesList = require('./NotesList.jsx');
 var Top = require('./Top.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
@@ -93,11 +94,13 @@ var AppUser = React.createClass({
 
   componentDidMount: function() {
     key('ctrl+f', utils.focusSearch);
+    key('ctrl+e', utils.focusNewNote);
     this.updateNotes();
   },
 
   componentWillUnmount: function() {
     key.unbind('ctrl+f', utils.focusSearch);
+    key.unbind('ctrl+e', utils.focusNewNote);
   },
 
   createNewTextNote: function(s) {
@@ -190,6 +193,7 @@ var AppUser = React.createClass({
     this.setState({
       noteBeingEdited: null
     });
+    utils.clearNewNote();
 
     var data = {
       noteJSON: noteJSON
@@ -207,6 +211,7 @@ var AppUser = React.createClass({
     this.setState({
       noteBeingEdited: null
     });
+    utils.clearNewNote();
   },
 
   editNote: function(note) {
@@ -231,6 +236,20 @@ var AppUser = React.createClass({
           cancelNoteEditCb={this.cancelNoteEdit}/>
       )
     }
+  },
+
+  handleStartNewNote: function() {
+    if (this.state.noteBeingEdited != null) {
+      console.log("handleStartNewNote: a note is already being edited");
+      return;
+    }
+    var note = {
+      Content: "",
+      Format: format.Text
+    }
+    this.setState({
+      noteBeingEdited: note
+    });
   },
 
   render: function() {
@@ -260,7 +279,9 @@ var AppUser = React.createClass({
               startUnstarNoteCb={this.startUnstarNote}
               editCb={this.editNote}
             />
-            <Composer createNewTextNoteCb={this.createNewTextNote}/>
+          <Composer
+            startNewNoteCb={this.handleStartNewNote}
+            createNewTextNoteCb={this.createNewTextNote}/>
             {fullComposer}
         </div>
     );

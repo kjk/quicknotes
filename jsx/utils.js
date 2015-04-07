@@ -94,6 +94,15 @@ function focusSearch() {
   $("#search").focus();
 }
 
+function focusNewNote() {
+  $("#Composer").focus();
+}
+
+// TODO: should do it the react way
+function clearNewNote() {
+  // TODO: this doesn't work
+  $("Composer").val(null);
+}
 // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
 function deepCloneObject(o) {
   return JSON.parse(JSON.stringify(o));
@@ -111,6 +120,8 @@ window.runOnLoad = runOnLoad;
 exports.filterNotesByTag = filterNotesByTag;
 exports.dictInc = dictInc;
 exports.focusSearch = focusSearch;
+exports.focusNewNote = focusNewNote;
+exports.clearNewNote = clearNewNote;
 exports.tagNameToDisplayName = tagNameToDisplayName;
 exports.isSpecialTag = isSpecialTag;
 exports.deepCloneObject = deepCloneObject;
