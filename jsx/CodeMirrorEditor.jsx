@@ -1,7 +1,7 @@
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
 // A slightly different implementation:
 // https://github.com/ForbesLindesay/react-code-mirror/blob/master/index.js
-
+// https://github.com/joelburget/react-live-editor/blob/master/code-mirror-editor.jsx
 var IS_MOBILE = (
   navigator.userAgent.match(/Android/i) ||
     navigator.userAgent.match(/webOS/i) ||
