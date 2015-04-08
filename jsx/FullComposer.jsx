@@ -189,19 +189,19 @@ var FullComposer = React.createClass({
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-title">
-          <span>Title:</span>
           <input
             style={{flexGrow: 3}}
             type="text"
+            placeholder="Title"
             onChange={this.handleTitleChanged}
             value={note.Title} size="128"/>
         </div>
 
         <div id="full-composer-tags">
-          <span>Tags:</span>
           <input
             style={{flexGrow: 3}}
             type="text"
+            placeholder="Add tag..."
             onChange={this.handleTagsChanged}
             defaultValue={initialTags}
             size="128"/>
