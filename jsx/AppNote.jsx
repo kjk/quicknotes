@@ -1,7 +1,7 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var Top = require("./Top.jsx");
+var Top = require('./Top.jsx');
 
 function appNoteStart() {
   console.log("appNoteStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
