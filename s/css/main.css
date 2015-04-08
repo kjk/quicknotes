@@ -27,31 +27,23 @@ a {
 /**/
 #header {
   top: 0; left: 0; right: 0;
-  height: 56px;
-  background: #F8F8FA;
-  background: linear-gradient(to bottom, #FFFEFD 0%,rgba(252,252,252,1) 100%);
-}
-
-#header:after {
-  content: "";
-  position: absolute;
-  display: block;
-  bottom: 0; left: 0; right: 0;
-  border-bottom: 1px solid rgba(0,0,0,.2);
+  height: 45px;
+  z-index: 4;
 }
 
 #header #logo {
-  width: 220px;
-  height: 56px;
-  line-height: 56px;
+  width: 219px;
+  height: 45px;
+  line-height: 45px;
   display: block;
   float: left;
+  text-indent: -999999px;
 }
 
 #header #search-wrapper {
   float: left;
   position: relative;
-  top: 12px; left: 16px;
+  top: 8px; left: 16px;
 }
 
 #header #search-wrapper input {
@@ -59,8 +51,6 @@ a {
   height: 22px;
   font-size: 14px;
   padding: 2px 16px;
-  border: 1px solid rgba(0,0,0,.2);
-  box-shadow: 0 1px 2px rgba(0,0,0,.08) inset;
   border-radius: 20px;
   outline: none;
 }
@@ -76,17 +66,16 @@ a {
 
 
 #header #user .user {
-  height: 56px;
-  line-height: 56px;
+  height: 45px;
+  line-height: 45px;
   display: block;
   padding: 0 0 0 10px;
-  color: rgba(0,0,0,.8);
   font-weight: bold;
 }
 
 #header .dropdown {
-  height: 56px;
-  line-height: 54px;
+  height: 45px;
+  line-height: 44px;
   position: relative;
   margin-right: 10px;
 }
@@ -94,7 +83,6 @@ a {
 #header .dropdown i {
   padding: 0 10px;
   font-size: 11px;
-  color: rgba(0,0,0,.6);
 }
 
 #header .dropdown-content {
@@ -102,11 +90,9 @@ a {
   display: none;
   position: absolute;
   top: 40px; right: 0;
-  background: #FCFCFC;
   padding: 16px;
   line-height: 20px;
   border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 0 2px rgba(0,0,0,.1);
   z-index: 20;
 }
 
@@ -114,12 +100,9 @@ a {
   display: block;
   clear: both;
   padding: 6px 0;
-  color: rgba(0,0,0,.8);
 }
 
-#header .dropdown-content a:hover {
-  color: rgba(0,0,0,1);
-}
+#header .dropdown-content a:hover {}
 
 #header .dropdown:hover .dropdown-content {
   display: block;
@@ -128,16 +111,13 @@ a {
 
 /**/
 #left-sidebar {
-  width: 220px;
-  background: #444550;
-  left: 0; top: 56px; bottom: 0;
+  width: 219px;
+  left: 0; top: 46px; bottom: 0;
   overflow-y: auto;
   user-select: none;
 }
 
-#left-sidebar .tags-list {
-
-}
+#left-sidebar .tags-list {}
 
 #left-sidebar .tags-list + .tags-list {
   padding-top: 2px;
@@ -147,13 +127,10 @@ a {
   line-height: 24px;
   padding: 2px 0;
   cursor: pointer;
-  color: rgba(255,255,255,.5);
   user-select: none;
 }
 
-#left-sidebar .tag:hover {
-  background: rgba(0,0,0,.08);
-}
+#left-sidebar .tag:hover {}
 
 #left-sidebar .tag:first-of-type {
   margin-top: 16px;
@@ -172,42 +149,24 @@ a {
   float: right;
   margin-right: 16px;
   font-size: 11px;
-  color: rgba(255,255,255,.3);
 }
 
 #left-sidebar .tag.selected {
   cursor: default;
-  color: rgba(255,255,255,1);
 }
 
-#left-sidebar .tag.selected .tag-count {
-  color: rgba(255,255,255,.6);
-}
+#left-sidebar .tag.selected .tag-count {}
 
 
 
 /**/
 #notes-list {
-  background: #E3E3E3;
-  left: 220px; top: 56px; bottom: 64px; right: 0;
+  left: 220px; top: 46px; bottom: 64px; right: 0;
   overflow-y: auto;
 }
 
 #notes-list .note {
   position: relative;
-  margin: 8px 16px;
-  background: #FFF;
-  padding: 10px;
-  border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0,0,0,.1);
-}
-
-#notes-list .note:first-of-type {
-  margin-top: 16px;
-}
-
-#notes-list .note:last-of-type {
-  margin-bottom: 16px;
 }
 
 #notes-list .note pre {
@@ -232,25 +191,30 @@ a {
   top: 0; right: 0;
 }
 
-#notes-list .note .note-actions a {
+#notes-list .note .note-actions .note-action {
   width: 26px;
   height: 26px;
   line-height: 26px;
-  display: inline-block;
   text-align: center;
   overflow: hidden;
   margin-left: 6px;
+}
+
+#notes-list .note-action {
+  display: inline-block;
   color: rgba(0,0,0,.4);
 }
-#notes-list .note .note-actions a:hover {
+
+#notes-list .note-action:hover {
   color: rgba(0,0,0,.8);
 }
 
-#notes-list .note .note-actions .note-starred {
-  color: #FFEB3B;
+#notes-list .note-action + .note-title {
+  margin-left: 6px;
 }
 
 #notes-list .note .note-content {
+  padding-top: 4px;
   position: relative;
   font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   font-size: 13px;
@@ -258,19 +222,10 @@ a {
   color: rgba(0,0,0,.8);
 }
 
-#notes-list .note .note-content:after {
-  content: "";
-  height: 16px;
-  position: absolute;
-  display: block;
-  bottom: -2px; left: 0; right: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%);
-}
-
 #notes-list .note .note-footer {
   height: 18px;
   border-top: 1px solid rgba(0,0,0,.05);
-  margin-top: 10px;
+  margin-top: 16px;
   padding-top: 10px;
   line-height: 18px;
 }
@@ -280,21 +235,16 @@ a {
 }
 
 #notes-list .note .note-tag {
-  font-weight: bold;
   font-size: 13px;
   margin-right: 8px;
   cursor: pointer;
-  color: rgba(0,0,0,.5);
 }
 
-#notes-list .note .note-tag:hover {
-  color: rgba(0,0,0,.8);
-}
+#notes-list .note .note-tag:hover {}
 
 #notes-list .note .note-size {
   float: right;
   font-size: 11px;
-  color: rgba(0,0,0,.4);
 }
 
 
@@ -312,10 +262,7 @@ a {
 /**/
 #composer {
   height: 64px;
-  background: #FFF;
   bottom: 0; left: 220px; right: 0;
-  border-top: 1px solid rgba(0,0,0,.2);
-  box-shadow: ;
 }
 
 #composer .inner {
@@ -323,19 +270,27 @@ a {
   top: 12px; right: 16px; bottom: 12px; left: 16px;
 }
 
+#composer input {
+  width: 100%;
+  position: relative;
+  height: 34px;
+  top: 2px;
+  font-size: 14px;
+  text-indent: 10px;
+}
+
 #composer textarea {
   width: 100%;
   height: 38px;
   padding: 0;
   font-size: 14px;
-  border: 1px solid rgba(0,0,0,.2);
   resize: none;
 }
 
 /**/
 #full-composer-wrapper {
   position: absolute;
-  top: 56px; left: 220px; right: 0; bottom: 0;
+  top: 46px; left: 220px; right: 0; bottom: 0;
   background: #FFF;
   z-index: 10;
 
@@ -392,4 +347,189 @@ a {
   background-color: lightblue;
   border: 0;
   overflow: scroll;
+}
+
+
+/* Light Theme
+----------------------------------------------- */
+.theme-light #header {
+  background: #FFF;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  /*box-shadow: 0 1px 1px rgba(0,0,0,.05);*/
+}
+
+.theme-light #header #logo {
+  border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #header #search-wrapper input {
+  border: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #header #user .user {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #header .dropdown i {
+  color: rgba(0,0,0,.6);
+}
+
+.theme-light #header .dropdown-content {
+  background: #FFF;
+  box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 0 2px rgba(0,0,0,.1), 0 1px 6px rgba(0,0,0,.2);
+}
+
+.theme-light #header .dropdown-content a {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #header .dropdown-content a:hover {
+  color: rgba(0,0,0,1);
+}
+
+.theme-light #left-sidebar {
+  background: #FFF;
+  border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #left-sidebar .tag {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #left-sidebar .tag:hover {
+  background: rgba(0,0,0,.05);
+}
+
+.theme-light #left-sidebar .tag-count {
+  color: rgba(0,0,0,.5);
+}
+
+.theme-light #left-sidebar .tag.selected {
+  color: rgba(0,0,0,1);
+  font-weight: bold;
+  background: rgba(0,0,0,.02);
+}
+
+.theme-light #left-sidebar .tag.selected .tag-count {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #notes-list {
+  background: rgba(0,0,0,.03);
+}
+
+.theme-light #notes-list .note .note-starred {
+  color: #03A9F4;
+}
+
+.theme-light #notes-list .note {
+  background: #FFF;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+
+.theme-light #notes-list .note .note-tag {
+  color: rgba(0,0,0,.5);
+}
+
+.theme-light #notes-list .note .note-tag:hover {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #notes-list .note .note-size {
+  color: rgba(0,0,0,.4);
+}
+
+.theme-light #composer {
+  background: rgba(252,252,252,1);
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #composer input {
+  border: 1px solid rgba(0,0,0,.1);
+}
+
+
+
+/* Dark Theme
+----------------------------------------------- */
+.theme-dark #header {
+  background: #F8F8FA;
+  background: linear-gradient(to bottom, #FFFEFD 0%,rgba(252,252,252,1) 100%);
+  border-bottom: 1px solid rgba(0,0,0,.2);
+}
+
+.theme-dark #left-sidebar {
+  background: #444550;
+  border-right: 1px solid rgba(0,0,0,.2);
+}
+
+.theme-dark #left-sidebar .tag {
+  color: rgba(255,255,255,.5);
+}
+
+.theme-dark #left-sidebar .tag:hover {
+  background: rgba(0,0,0,.08);
+}
+
+.theme-dark #left-sidebar .tag-count {
+  color: rgba(255,255,255,.3);
+}
+
+.theme-dark #left-sidebar .tag.selected {
+  color: rgba(255,255,255,1);
+}
+
+.theme-dark #left-sidebar .tag.selected .tag-count {
+  color: rgba(255,255,255,.6);
+}
+
+.theme-dark #notes-list {
+  background: #E3E3E3;
+}
+
+.theme-dark #composer {
+  background: rgba(252,252,252,1);
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-dark #composer input {
+  border: 1px solid rgba(0,0,0,.2);
+}
+
+
+
+
+
+/* Spacing : Default
+----------------------------------------------- */
+[data-spacing="default"] #notes-list .note {
+  margin: 14px 16px;
+  padding: 16px 18px;
+}
+
+[data-spacing="default"] #notes-list .note:first-of-type {
+  margin-top: 16px;
+}
+
+[data-spacing="default"] #notes-list .note:last-of-type {
+  margin-bottom: 16px;
+}
+
+/* Spacing : Minimal
+----------------------------------------------- */
+[data-spacing="minimal"] #notes-list .note {
+  padding: 16px 18px;
+  margin-bottom: 1px;
+}
+
+/* Spacing : Barebones
+----------------------------------------------- */
+[data-spacing="barebones"] #notes-list .note {
+  padding: 16px 18px;
+  margin-bottom: 1px;
+}
+
+[data-spacing="barebones"] #notes-list .note-content {
+  display: none;
 }
