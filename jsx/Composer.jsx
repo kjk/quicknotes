@@ -27,8 +27,9 @@ var Composer = React.createClass({
     return (
       <div id="composer">
         <div className="inner">
-          <textarea
+          <input
             id="Composer"
+            type="text"
             onFocus={this.handleOnFocus}
             placeholder="Enter new note (Ctrl-E)"
             onKeyPress={this.handleKeyPress}
