@@ -97,15 +97,33 @@ var AppUser = React.createClass({
     }.bind(this));
   },
 
+  standardKeyFilter: function(event) {
+    var tagName = (event.target || event.srcElement).tagName;
+    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+  },
+
+  // by default keypresses are not
+  keyFilter: function(event) {
+    console.log("keyFilter: " + event);
+    if (event.keyCode == 27) { // esc
+      return true;
+    }
+    return this.standardKeyFilter(event);
+  },
+
   componentDidMount: function() {
+
+    key.filter = this.keyFilter;
     key('ctrl+f', utils.focusSearch);
     key('ctrl+e', utils.focusNewNote);
+    key('esc', this.cancelNoteEdit);
     this.updateNotes();
   },
 
   componentWillUnmount: function() {
     key.unbind('ctrl+f', utils.focusSearch);
     key.unbind('ctrl+e', utils.focusNewNote);
+    key.unbind('esc', this.cancelNoteEdit);
   },
 
   createNewTextNote: function(s) {
@@ -213,6 +231,10 @@ var AppUser = React.createClass({
   },
 
   cancelNoteEdit: function() {
+    console.log("cancelNoteEdit");
+    if (!this.state.noteBeingEdited) {
+      return;
+    }
     this.setState({
       noteBeingEdited: null
     });
