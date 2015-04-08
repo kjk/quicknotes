@@ -8,6 +8,8 @@ var Top = require('./Top.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
 var Composer = require('./Composer.jsx');
 var FullComposer = require('./FullComposer.jsx');
+var Router = require('./Router.js');
+var _ = require('./underscore.js');
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -54,7 +56,8 @@ var AppUser = React.createClass({
     return {
       allNotes: [],
       selectedNotes: [],
-      selectedTag: "__all",
+      // TODO: should be an array this.props.initialTags
+      selectedTag: this.props.initialTag,
       loggedInUserHandle: "",
       noteBeingEdited: null
     };
@@ -63,6 +66,7 @@ var AppUser = React.createClass({
   handleTagSelected: function(tag) {
     //console.log("selected tag: ", tag);
     var selectedNotes = utils.filterNotesByTag(this.state.allNotes, tag);
+    // TODO: update url with /t:${tag}
     this.setState({
       selectedNotes: selectedNotes,
       selectedTag: tag
@@ -81,6 +85,7 @@ var AppUser = React.createClass({
         allNotes = [];
       }
       var tags = tagsFromNotes(allNotes);
+      // TODO: if selectedTag is not valid, reset to __all
       var selectedTag = this.state.selectedTag;
       var selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
       this.setState({
@@ -288,10 +293,26 @@ var AppUser = React.createClass({
   }
 });
 
+
+// s is in format "/t:foo/t:bar", returns ["foo", "bar"]
+function tagsFromRoute(s) {
+  var parts = s.split("/t:");
+  var res = _.filter(parts, function(s) { return s != ""; });
+  if (res.length == 0) {
+    return ["__all"];
+  }
+  return res;
+}
+
 function appUserStart() {
   //console.log("gNotesUserHandle: ", gNotesUserHandle);
+  var initialTags = tagsFromRoute(Router.getHash());
+  var initialTag = initialTags[0];
+  console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
+
   React.render(
-    <AppUser notesUserHandle={gNotesUserHandle}/>,
+    <AppUser notesUserHandle={gNotesUserHandle}
+      initialTag={initialTag}/>,
     document.getElementById('root')
   );
 }
