@@ -1,15 +1,17 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var _ = require('./underscore.js');
 var utils = require('./utils.js');
 var format = require('./format.js');
-var NotesList = require('./NotesList.jsx');
-var Top = require('./Top.jsx');
-var LeftSidebar = require('./LeftSidebar.jsx');
+
 var Composer = require('./Composer.jsx');
 var FullComposer = require('./FullComposer.jsx');
+var LeftSidebar = require('./LeftSidebar.jsx');
+var NotesList = require('./NotesList.jsx');
 var Router = require('./Router.js');
-var _ = require('./underscore.js');
+var SearchResults = require('./SearchResults.jsx');
+var Top = require('./Top.jsx');
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -51,6 +53,10 @@ function tagsFromNotes(notes) {
   return tags;
 }
 
+var gSearchDelayTimerID = null; // TODO: make it variable on AppUser
+// if search is in progress, this is the search term
+var gCurrSearchTerm = ''; // TODO: make it variable on AppUser
+
 var AppUser = React.createClass({
   getInitialState: function() {
     var initialNotesJSON = this.props.initialNotesJSON;
@@ -64,7 +70,8 @@ var AppUser = React.createClass({
       // TODO: should be an array this.props.initialTags
       selectedTag: this.props.initialTag,
       loggedInUserHandle: "",
-      noteBeingEdited: null
+      noteBeingEdited: null,
+      searchResults: null
     };
   },
 
@@ -113,7 +120,6 @@ var AppUser = React.createClass({
 
   // by default keypresses are not
   keyFilter: function(event) {
-    console.log("keyFilter: " + event);
     if (event.keyCode == 27) { // esc
       return true;
     }
@@ -252,7 +258,6 @@ var AppUser = React.createClass({
   },
 
   cancelNoteEdit: function() {
-    console.log("cancelNoteEdit");
     if (!this.state.noteBeingEdited) {
       return;
     }
@@ -282,7 +287,16 @@ var AppUser = React.createClass({
           note={this.state.noteBeingEdited}
           saveNoteCb={this.saveNote}
           cancelNoteEditCb={this.cancelNoteEdit}/>
-      )
+      );
+    }
+  },
+
+  createSearchResults: function() {
+    if (this.state.searchResults) {
+      return <SearchResults
+        searchResults={this.state.searchResults}
+        searchResultSelectedCb={this.handleSearchResultSelected}
+       />;
     }
   },
 
@@ -300,17 +314,66 @@ var AppUser = React.createClass({
     });
   },
 
+  startSearch: function(userHandle, searchTerm) {
+    gCurrSearchTerm = searchTerm;
+    if (searchTerm === "") {
+      return;
+    }
+    var uri = "/api/searchusernotes.json?user=" + encodeURIComponent(userHandle) + "&term=" + encodeURIComponent(searchTerm);
+    $.get(uri, function(json) {
+      console.log("finished search for " + json.Term);
+      if (json.Term != gCurrSearchTerm) {
+        console.log("discarding search results because not for " + gCurrSearchTerm);
+        return;
+      }
+      this.setState({
+        searchResults: json
+      });
+    }.bind(this));
+  },
+
+  handleSearchTermChanged: function(searchTerm) {
+    gCurrSearchTerm = searchTerm;
+    if (searchTerm === "") {
+      // user cancelled the search
+      clearTimeout(gSearchDelayTimerID);
+      this.setState({
+        searchResults: null
+      });
+      return;
+    }
+    // start search query with a delay to not hammer the server too much
+    if (gSearchDelayTimerID) {
+      clearTimeout(gSearchDelayTimerID);
+    }
+    var self = this;
+    gSearchDelayTimerID = setTimeout(function() {
+      console.log("starting search for " + searchTerm);
+      self.startSearch(self.props.notesUserHandle, searchTerm);
+    }, 300);
+  },
+
+  handleSearchResultSelected: function(noteIDStr) {
+    console.log("search note selected: " + noteIDStr);
+    // TODO: probably should display in-line
+    var url = "/n/" + noteIDStr;
+    var win = window.open(url, '_blank');
+    win.focus();
+    // TODO: clear search field and focus it
+    this.handleSearchTermChanged(""); // hide search results
+  },
+
   render: function() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
 
     var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
-    var fullComposer = this.createFullComposer();
     return (
         <div>
             <Top isLoggedIn={isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
               notesUserHandle={this.props.notesUserHandle}
+              searchTermChangedCb={this.handleSearchTermChanged}
             />
             <LeftSidebar tags={this.state.tags}
               isLoggedIn={isLoggedIn}
@@ -331,7 +394,8 @@ var AppUser = React.createClass({
           <Composer
             startNewNoteCb={this.handleStartNewNote}
             createNewTextNoteCb={this.createNewTextNote}/>
-            {fullComposer}
+          {this.createFullComposer()}
+          {this.createSearchResults()}
         </div>
     );
   }
@@ -341,8 +405,8 @@ var AppUser = React.createClass({
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s) {
   var parts = s.split("/t:");
-  var res = _.filter(parts, function(s) { return s != ""; });
-  if (res.length == 0) {
+  var res = _.filter(parts, function(s) { return s !== ""; });
+  if (res.length === 0) {
     return ["__all"];
   }
   return res;
