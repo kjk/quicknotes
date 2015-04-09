@@ -121,7 +121,6 @@ var AppUser = React.createClass({
   },
 
   componentDidMount: function() {
-
     key.filter = this.keyFilter;
     key('ctrl+f', utils.focusSearch);
     key('ctrl+e', utils.focusNewNote);
@@ -174,6 +173,19 @@ var AppUser = React.createClass({
         alert( "error deleting a note");
       });
     }
+  },
+
+  permanentDeleteNote: function(note) {
+    console.log("permanentDeleteNote");
+    var data = {
+      noteIdHash: note.IDStr
+    };
+    $.post( "/api/permanentdeletenote.json", data, function() {
+      this.updateNotes();
+    }.bind(this))
+    .fail(function() {
+      alert( "error deleting a note");
+    });
   },
 
   makeNotePublicPrivate: function(note) {
@@ -275,14 +287,14 @@ var AppUser = React.createClass({
   },
 
   handleStartNewNote: function() {
-    if (this.state.noteBeingEdited != null) {
+    if (this.state.noteBeingEdited !== null) {
       console.log("handleStartNewNote: a note is already being edited");
       return;
     }
     var note = {
       Content: "",
       Format: format.Text
-    }
+    };
     this.setState({
       noteBeingEdited: note
     });
@@ -310,6 +322,7 @@ var AppUser = React.createClass({
               notes={this.state.selectedNotes}
               myNotes={myNotes}
               compact={compact}
+              permanentDeleteNoteCb={this.permanentDeleteNote}
               delUndelNoteCb={this.delUndelNote}
               makeNotePublicPrivateCb={this.makeNotePublicPrivate}
               startUnstarNoteCb={this.startUnstarNote}

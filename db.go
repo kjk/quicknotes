@@ -579,18 +579,19 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	return noteID, err
 }
 
-/*
-func dbPurgeNote(userID, noteID int) error {
-	db := getDbMust()
-	// TODO: delete all versions as well?
-	q := `
-DELETE FROM notes
-WHERE n.id=?`
-	_, err := db.Exec(q, noteID)
-	clearCachedUserInfo(userID)
-	return err
+func dbPermanentDeleteNote(userID, noteID int) error {
+	return errors.New("NYI")
+	/*
+	   	db := getDbMust()
+	   	// TODO: delete all versions as well?
+	   	q := `
+	   DELETE FROM notes
+	   WHERE n.id=?`
+	   	_, err := db.Exec(q, noteID)
+	   	clearCachedUserInfo(userID)
+	   	return err
+	*/
 }
-*/
 
 func dbSetNoteDeleteState(userID, noteID int, isDeleted bool) error {
 	db := getDbMust()

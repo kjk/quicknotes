@@ -72,6 +72,7 @@ var NotesList = React.createClass({
             note={note}
             key={note.IDStr}
             myNotes={self.props.myNotes}
+            permanentDeleteNoteCb={self.props.permanentDeleteNoteCb}
             delUndelNoteCb={self.props.delUndelNoteCb}
             makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
             startUnstarNoteCb={self.props.startUnstarNoteCb}
