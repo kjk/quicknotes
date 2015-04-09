@@ -63,6 +63,24 @@ func httpOkWithJSONCompact(w http.ResponseWriter, v interface{}) {
 	httpOkBytesWithContentType(w, "application/json", b)
 }
 
+func httpOkWithJsonpCompact(w http.ResponseWriter, v interface{}, jsonp string) {
+	if jsonp == "" {
+		httpOkWithJSONCompact(w, v)
+	} else {
+		b, err := json.Marshal(v)
+		if err != nil {
+			// should never happen
+			LogErrorf("json.MarshalIndent() failed with %q\n", err)
+		}
+		res := []byte(jsonp)
+		res = append(res, '(')
+		res = append(res, b...)
+		res = append(res, ')')
+		httpOkBytesWithContentType(w, "application/json", b)
+
+	}
+}
+
 func httpErrorWithJSONf(w http.ResponseWriter, format string, arg ...interface{}) {
 	msg := fmt.Sprintf(format, arg...)
 	model := struct {
