@@ -53,8 +53,13 @@ function tagsFromNotes(notes) {
 
 var AppUser = React.createClass({
   getInitialState: function() {
+    var initialNotesJSON = this.props.initialNotesJSON;
+    var allNotes = [];
+    if (initialNotesJSON && initialNotesJSON.Notes) {
+      allNotes = initialNotesJSON.Notes;
+    }
     return {
-      allNotes: [],
+      allNotes: allNotes,
       selectedNotes: [],
       // TODO: should be an array this.props.initialTags
       selectedTag: this.props.initialTag,
@@ -73,6 +78,23 @@ var AppUser = React.createClass({
     });
   },
 
+  setNotes: function(json) {
+    var allNotes = json.Notes;
+    if (!allNotes) {
+      allNotes = [];
+    }
+    var tags = tagsFromNotes(allNotes);
+    // TODO: if selectedTag is not valid, reset to __all
+    var selectedTag = this.state.selectedTag;
+    var selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
+    this.setState({
+      allNotes: allNotes,
+      selectedNotes: selectedNotes,
+      tags: tags,
+      loggedInUserHandle: json.LoggedInUserHandle
+    });
+  },
+
   updateNotes: function() {
     // TODO: url-escape uri?
     var userHandle = this.props.notesUserHandle;
@@ -80,20 +102,7 @@ var AppUser = React.createClass({
     var uri = "/api/getnotes.json?user=" + userHandle;
     //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
-      var allNotes = json.Notes;
-      if (!allNotes) {
-        allNotes = [];
-      }
-      var tags = tagsFromNotes(allNotes);
-      // TODO: if selectedTag is not valid, reset to __all
-      var selectedTag = this.state.selectedTag;
-      var selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
-      this.setState({
-        allNotes: allNotes,
-        selectedNotes: selectedNotes,
-        tags: tags,
-        loggedInUserHandle: json.LoggedInUserHandle
-      });
+      this.setNotes(json);
     }.bind(this));
   },
 
@@ -334,6 +343,7 @@ function appUserStart() {
 
   React.render(
     <AppUser notesUserHandle={gNotesUserHandle}
+      initialNotesJSON={gInitialNotesJSON}
       initialTag={initialTag}/>,
     document.getElementById('root')
   );

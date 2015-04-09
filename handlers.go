@@ -281,8 +281,8 @@ func noteToCompact(n *Note) []interface{} {
 //  - jsonp : jsonp wrapper, optional
 func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
-	LogInfof("userHandle: '%s'\n", userHandle)
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
+	LogInfof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return

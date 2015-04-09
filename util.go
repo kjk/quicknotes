@@ -76,7 +76,7 @@ func httpOkWithJsonpCompact(w http.ResponseWriter, v interface{}, jsonp string) 
 		res = append(res, '(')
 		res = append(res, b...)
 		res = append(res, ')')
-		httpOkBytesWithContentType(w, "application/json", b)
+		httpOkBytesWithContentType(w, "application/json", res)
 
 	}
 }
