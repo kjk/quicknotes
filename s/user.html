@@ -20,7 +20,6 @@
       var gInitialNotesJSON = null;
       function setInitialNotes(json) {
         gInitialNotesJSON = json;
-        console.log("setInitialNotes() called with " + json.Notes.length + " notes")
       }
     </script>
     <script src="/api/getnotes.json?jsonp=setInitialNotes&user={{ .UserHandle }}">
