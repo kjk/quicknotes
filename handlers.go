@@ -275,14 +275,14 @@ func noteToCompact(n *Note) []interface{} {
 	return res
 }
 
-// /api/getnotescompact.json?user=${userHandle}&start=${start}&len=${len}
-// More ideas:
-// - send dates as number of seconds
-// - send tags as numbers
-// - single array instead of array of arrays
+// /api/getnotescompact.json
+// Arguments:
+//  - user : userHandle
+//  - jsonp : jsonp wrapper, optional
 func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	LogInfof("userHandle: '%s'\n", userHandle)
+	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -313,7 +313,7 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
-	httpOkWithJSONCompact(w, v)
+	httpOkWithJsonpCompact(w, v, jsonp)
 }
 
 // NewNoteFromBrowser represents format of the note sent by the browser
