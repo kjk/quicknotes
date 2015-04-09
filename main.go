@@ -164,6 +164,7 @@ func main() {
 
 	if flgIsLocal {
 		startWebpackWatch()
+		startRecompileMust()
 	}
 
 	startWebServer()
