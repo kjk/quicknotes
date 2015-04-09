@@ -185,7 +185,8 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	timeStart := time.Now()
 	userHandle := strings.TrimSpace(r.FormValue("user"))
-	LogInfof("userHandle: '%s'\n", userHandle)
+	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
+	LogInfof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -226,7 +227,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
-	httpOkWithJSONCompact(w, v)
+	httpOkWithJsonpCompact(w, v, jsonp)
 }
 
 const (
