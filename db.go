@@ -579,18 +579,38 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	return noteID, err
 }
 
+// TODO: also get content_sha1 for each version (requires index on content_sha1
+// to be fast) and if this content_sha1 is only referenced by one version,
+// delete from google storage
 func dbPermanentDeleteNote(userID, noteID int) error {
-	return errors.New("NYI")
-	/*
-	   	db := getDbMust()
-	   	// TODO: delete all versions as well?
-	   	q := `
+	defer clearCachedUserInfo(userID)
+	db := getDbMust()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if tx != nil {
+			tx.Rollback()
+		}
+	}()
+	q := `
 	   DELETE FROM notes
-	   WHERE n.id=?`
-	   	_, err := db.Exec(q, noteID)
-	   	clearCachedUserInfo(userID)
-	   	return err
-	*/
+	   WHERE id=?`
+	_, err = db.Exec(q, noteID)
+	if err != nil {
+		return err
+	}
+	q = `
+		DELETE FROM versions
+		WHERE note_id=?
+	`
+	_, err = db.Exec(q, noteID)
+	if err != nil {
+		return err
+	}
+	tx = nil
+	return nil
 }
 
 func dbSetNoteDeleteState(userID, noteID int, isDeleted bool) error {
