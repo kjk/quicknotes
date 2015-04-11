@@ -15,6 +15,11 @@
 			"Rev": "3131beb69b81ff119923bdefbf029318f1f53794"
 		},
 		{
+			"ImportPath": "github.com/go-fsnotify/fsnotify",
+			"Comment": "v1.2.0-1-g6549b98",
+			"Rev": "6549b98005f3e4026ad9f50ef7d5011f40ba1397"
+		},
+		{
 			"ImportPath": "github.com/go-sql-driver/mysql",
 			"Comment": "v1.2-28-gcebeb35",
 			"Rev": "a197e5d40516f2e9f74dcee085a5f2d4604e94df"
@@ -38,6 +43,10 @@
 		{
 			"ImportPath": "github.com/kjk/u",
 			"Rev": "a6fc06e80ad8a518e699bbc24068991fddc78a37"
+		},
+		{
+			"ImportPath": "github.com/mgutz/ansi",
+			"Rev": "22ddafb24adc4786c83841aa3021349818c898e4"
 		},
 		{
 			"ImportPath": "github.com/microcosm-cc/bluemonday",
@@ -78,11 +87,15 @@
 		},
 		{
 			"ImportPath": "google.golang.org/api/googleapi",
-			"Rev": "538bea96a868ee06164f134e414aa42ae2d98ac5"
+			"Rev": "476b2622dfcab4015fdd58e58f75d3f0a589a027"
+		},
+		{
+			"ImportPath": "google.golang.org/api/oauth2/v2",
+			"Rev": "476b2622dfcab4015fdd58e58f75d3f0a589a027"
 		},
 		{
 			"ImportPath": "google.golang.org/api/storage/v1",
-			"Rev": "538bea96a868ee06164f134e414aa42ae2d98ac5"
+			"Rev": "476b2622dfcab4015fdd58e58f75d3f0a589a027"
 		},
 		{
 			"ImportPath": "google.golang.org/cloud",

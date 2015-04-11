@@ -4,12 +4,10 @@
 var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
 var utils = require('./utils.js');
 var format = require('./format.js');
+var _ = require('./underscore.js');
 
 function arrEmpty(a) {
-  if (!a || a.length === 0) {
-    return true;
-  }
-  return false;
+  return !a || (a.length === 0);
 }
 
 function tagsToText(tags) {
@@ -101,11 +99,10 @@ var FullComposer = React.createClass({
   updatePreview: function(s) {
     var note = this.state.note;
     if (note.Format == format.Text) {
-      // TODO: escape html chars in s
-      s = "<pre>" + s + "</pre>";
+      s = "<pre>" + _.escape(s) + "</pre>";
     } else if (note.Format == format.Markdown) {
       // TODO: call api to convert to html
-      s = "<pre>" + s + "</pre>";
+      s = "<pre>" + _.escape(s) + "</pre>";
     }
     if (s !== this.state.previewHtml) {
       this.setState({
@@ -185,7 +182,6 @@ var FullComposer = React.createClass({
     var formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
 
     // TODO: if editing code, change CodeMirror mode property to match code being edited
-    // TODO: hook up ESC so that it dismisses editing ui
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-title">

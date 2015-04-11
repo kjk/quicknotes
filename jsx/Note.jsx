@@ -23,21 +23,18 @@ var Note = React.createClass({
   },
 
   createTags: function(tags) {
-    if (!tags) {
+    if (tags) {
+      var tagEls = tags.map(function (tag) {
+          tag = "#" + tag;
+          return (
+            <span key={tag} className="note-tag">{tag}</span>
+          );
+      });
+
       return (
-        <span></span>
+        <div className="note-tags">{tagEls}</div>
       );
     }
-    var tagEls = tags.map(function (tag) {
-        tag = "#" + tag;
-        return (
-          <span key={tag} className="note-tag">{tag}</span>
-        );
-    });
-
-    return (
-      <div className="note-tags">{tagEls}</div>
-    );
   },
 
   mouseEnter: function(e) {
@@ -68,25 +65,39 @@ var Note = React.createClass({
     this.props.delUndelNoteCb(this.props.note);
   },
 
+  handlePermanentDelete: function() {
+    this.props.permanentDeleteNoteCb(this.props.note);
+  },
+
   handleMakePublicPrivate: function(e) {
     var note = this.props.note;
     console.log("handleMakePublicPrivate, note.IsPublic: ", note.IsPublic);
     this.props.makeNotePublicPrivateCb(note);
   },
 
-  createDelUndel: function(note) {
+  createTrashUntrash: function(note) {
     if (note.IsDeleted) {
       return (
-        <a href="#" className="note-action" title="Undo trash" onClick={this.handleDelUndel}>
+        <a href="#" className="note-action" title="Undelete" onClick={this.handleDelUndel}>
           <i className="fa fa-undo"></i>
         </a>
       );
     }
     return (
-      <a href="#" className="note-action" title="Trash note" onClick={this.handleDelUndel}>
+      <a href="#" className="note-action" title="Move to Trash" onClick={this.handleDelUndel}>
         <i className="fa fa-trash-o"></i>
       </a>
     );
+  },
+
+  createPermanentDelete: function(note) {
+    if (note.IsDeleted) {
+      return (
+        <a href="#" className="note-action" title="Delete permanently" onClick={this.handlePermanentDelete}>
+          <i className="fa fa-trash-o"></i>
+        </a>
+      );
+    }
   },
 
   handleEdit: function(e) {
@@ -100,10 +111,6 @@ var Note = React.createClass({
         <a href="#" className="note-action" title="Edit note" onClick={this.handleEdit}>
           <i className="fa fa-pencil"></i>
         </a>
-      );
-    } else {
-      return (
-        <span></span>
       );
     }
   },
@@ -151,7 +158,7 @@ var Note = React.createClass({
 
   createStarUnstar: function(note) {
     if (!this.props.myNotes || note.IsDeleted) {
-      return (<span></span>);
+      return;
     }
 
     if (note.IsStarred) {
@@ -172,17 +179,15 @@ var Note = React.createClass({
   createActionsIfMyNotes: function(note) {
     if (this.state.showActions) {
       return (
-      <div className="note-actions">
-        {this.createDelUndel(note)}
-        {this.createMakePublicPrivate(note)}
-        {this.createEdit(note)}
-        {this.createViewLink(note)}
-      </div>
+        <div className="note-actions">
+          {this.createTrashUntrash(note)}
+          {this.createPermanentDelete(note)}
+          {this.createMakePublicPrivate(note)}
+          {this.createEdit(note)}
+          {this.createViewLink(note)}
+        </div>
       );
     }
-    return (
-      <div className="note-actions"></div>
-    );
   },
 
   createActionsIfNotMyNotes: function(note) {
