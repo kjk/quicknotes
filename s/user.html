@@ -15,7 +15,15 @@
     <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
     <script src="/s/js/lib/keymaster.js"></script>
     <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
-    <script>var gNotesUserHandle = "{{ .UserHandle }}";</script>
+    <script>
+      var gNotesUserHandle = "{{ .UserHandle }}";
+      var gInitialNotesJSON = null;
+      function setInitialNotes(json) {
+        gInitialNotesJSON = json;
+      }
+    </script>
+    <script src="/api/getnotes.json?jsonp=setInitialNotes&user={{ .UserHandle }}">
+    </script>
   </head>
   <body class="theme-light" data-spacing="minimal">
     <div id="root"></div>

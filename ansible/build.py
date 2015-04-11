@@ -4,17 +4,25 @@ import os, sys, shutil,zipfile, subprocess
 
 pj = os.path.join
 
-my_dir = os.path.realpath(os.path.dirname(__file__))
-#tmp_dir = os.path.join(my_dir, "tmp")
+script_dir = os.path.realpath(os.path.dirname(__file__))
 
 gopath = os.environ["GOPATH"]
-src_dir = pj(gopath, "src", "github.com", "kjk", "quicknotes")
+src_dir = os.path.dirname(script_dir)
 
-assert os.path.exists(src_dir), "%s doesn't exit" % src_dir
+assert os.path.exists(src_dir), "%s doesn't exist" % src_dir
+assert os.path.exists(pj(src_dir, "main.go")), "%s doesn't exist" % pj(src_dir, "main.go")
 
 def abort(s):
     print(s)
     sys.exit(1)
+
+def ensure_has_sassc():
+    try:
+        subprocess.check_output(["sassc", "-h"])
+    except:
+        print("sassc doesn't seem to be installed")
+        print("on mac use: brew install sassc")
+        sys.exit(1)
 
 def git_ensure_clean():
     out = subprocess.check_output(["git", "status", "--porcelain"])
@@ -49,9 +57,30 @@ def zip_files(zip_path):
     add_dir_files(zf, "s")
     zf.close()
 
+def is_main_sass_file(f):
+    return f.endswith("_main.sass") or f.endswith("_main.scss")
+
+def sass_name_to_css(f):
+    if f.endswith("_main.sass") or f.endswith("_main.scss"):
+        return f[:-len("_main.sass")] + ".css"
+    assert False, "%s is not a valid main sass file" % f
+
+def compile_sass():
+    out_dir = pj(src_dir, "s", "css")
+    assert os.path.exists(out_dir), "%s dir doesn't exist" % out_dir
+    prev_dir = os.getcwd()
+    os.chdir(pj(src_dir, "css"))
+    files = [f for f in os.listdir(".") if is_main_sass_file(f)]
+    for f in files:
+        dst_file = pj(out_dir, sass_name_to_css(f))
+        #print("sass compiling %s => %s" % (f, dst_file))
+        subprocess.check_output(["sassc", f, dst_file])
+    os.chdir(prev_dir)
+
 if __name__ == "__main__":
-    #shutil.rmtree(tmp_dir, ignore_errors=True)
     os.chdir(src_dir)
+    ensure_has_sassc()
+    compile_sass()
     git_ensure_clean()
     subprocess.check_output(["./scripts/webpack-prod.sh"])
     subprocess.check_output(["./scripts/build_linux.sh"])

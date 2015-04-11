@@ -5,10 +5,6 @@
 
 var Note = require('./Note.jsx');
 
-// TODO: implement infinite scroll by adding more notes on scroll
-// Note: rendering too many notes in a single render cycle causes noticeable
-// pause at startup and when filtering notes via tags. Empirically, 50 is
-// instantaneous. Around 100 there's a bit of a lag. At 800 it becomes bad.
 var maxInitialNotes = 50;
 function truncateNotes(notes) {
   if (maxInitialNotes != -1 && notes.length >= maxInitialNotes) {
@@ -72,6 +68,7 @@ var NotesList = React.createClass({
             note={note}
             key={note.IDStr}
             myNotes={self.props.myNotes}
+            permanentDeleteNoteCb={self.props.permanentDeleteNoteCb}
             delUndelNoteCb={self.props.delUndelNoteCb}
             makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
             startUnstarNoteCb={self.props.startUnstarNoteCb}

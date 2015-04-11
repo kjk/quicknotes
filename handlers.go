@@ -185,7 +185,8 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	timeStart := time.Now()
 	userHandle := strings.TrimSpace(r.FormValue("user"))
-	LogInfof("userHandle: '%s'\n", userHandle)
+	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
+	LogInfof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -226,7 +227,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
-	httpOkWithJSONCompact(w, v)
+	httpOkWithJsonpCompact(w, v, jsonp)
 }
 
 const (
@@ -275,14 +276,14 @@ func noteToCompact(n *Note) []interface{} {
 	return res
 }
 
-// /api/getnotescompact.json?user=${userHandle}&start=${start}&len=${len}
-// More ideas:
-// - send dates as number of seconds
-// - send tags as numbers
-// - single array instead of array of arrays
+// /api/getnotescompact.json
+// Arguments:
+//  - user : userHandle
+//  - jsonp : jsonp wrapper, optional
 func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
-	LogInfof("userHandle: '%s'\n", userHandle)
+	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
+	LogInfof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -313,7 +314,7 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
-	httpOkWithJSONCompact(w, v)
+	httpOkWithJsonpCompact(w, v, jsonp)
 }
 
 // NewNoteFromBrowser represents format of the note sent by the browser
@@ -433,7 +434,30 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, v)
 }
 
-// GET /api/undeletenote.json
+// POST /api/permanentdeletenote.json
+// args:
+// - noteIdHash
+func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
+	LogInfof("url: '%s'\n", r.URL)
+	dbUser, noteID := getUserNoteFromArgs(w, r)
+	if dbUser == nil {
+		return
+	}
+	err := dbPermanentDeleteNote(dbUser.ID, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, "failed to permanently delete note with '%s'", err)
+		return
+	}
+	LogInfof("permanently deleted note %d\n", noteID)
+	v := struct {
+		Msg string
+	}{
+		Msg: "note has been permanently deleted",
+	}
+	httpOkWithJSON(w, v)
+}
+
+// POST /api/undeletenote.json
 // args:
 // - noteIdHash
 func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
@@ -648,6 +672,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/searchusernotes.json", handleSearchUserNotes)
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateOrUpdateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
+	http.HandleFunc("/api/permanentdeletenote.json", handleAPIPermanentDeleteNote)
 	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)
 	http.HandleFunc("/api/makenoteprivate.json", handleAPIMakeNotePrivate)
 	http.HandleFunc("/api/makenotepublic.json", handleAPIMakeNotePublic)

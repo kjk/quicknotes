@@ -288,15 +288,36 @@ a {
 }
 
 /**/
-#full-composer-wrapper {
+#search-results {
   position: absolute;
   top: 46px; left: 220px; right: 0; bottom: 0;
   background: #FFF;
   z-index: 10;
 
   display: flex;
-  flex-wrap: nowrap;
-  flex-direction: column;
+  flex-wrap: wrap;
+  flex-direction: row;
+  overflow: scroll;
+}
+
+.search-result {
+  border: 1px solid blue;
+  width: 100%;
+  margin-bottom: 4px
+}
+
+.search-result:hover {
+  background-color: lightyellow;
+}
+
+/**/
+#full-composer-wrapper {
+  position: absolute;
+  top: 56px; left: 220px; right: 0; bottom: 0;
+  background: #FFF;
+  z-index: 10;
+
+  overflow: scroll;
 }
 
 #full-composer-top {
