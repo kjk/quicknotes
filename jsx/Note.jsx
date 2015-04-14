@@ -133,12 +133,12 @@ var Note = React.createClass({
 
   createSize: function(note) {
     return (
-      <span className="note-size">{note.HumanSize}</span>
+      <span className="note-size">{ni.HumanSize(note)}</span>
     );
   },
 
   createMakePublicPrivate: function(note) {
-    if (note.IsPublic) {
+    if (ni.IsPublic(note)) {
       return (
         <a href="#" className="note-action" title="Make private" onClick={this.handleMakePublicPrivate}>
           <i className="fa fa-unlock"></i>
