@@ -228,7 +228,7 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := noteToCompact(note)
-	v[noteContentIdx] = content
+	v[noteContentIdx] = string(content)
 	httpOkWithJSON(w, v)
 }
 
