@@ -4,8 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>QuickNotes</title>
+    <title>QuickNotes notes import</title>
+
     <link rel="stylesheet" href="/s/css/main.css">
+    <link rel="stylesheet" href="/s/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
+
     <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
     <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
     <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
@@ -14,34 +18,38 @@
 
   </head>
   <body>
-  <p>Welcome to QuickNotes!</p>
-  {{if .UserHandle}}
-    <p>
-      You're logged in as {{.UserHandle}}. See <a href="/u/{{.UserHandle}}">your notes</a>.
-      <a href="/logout?redirect=/">Log out</a>.
-    </p>
-    <form action="/importsimplenote" method="GET">
-      <div>You can import your notes from simplenote.com:</div>
-      <div>
-        <label for="email">SimpleNote email:</label>
-        <input type="text" id="email" name="email" />
-      </div>
-      <div>
-        <label for="password">SimpleNote pasword:</label>
-        <input type="password" id="password" name="password" />
-      </div>
-      <div>
-        <input type="submit" name="submit" value="Import from SimpleNote" />
-      </div>
-    </form>
-  {{else}}
-    <p>You're not logged in. Log in with:</p>
-    <ul>
-      <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
-      <li><a href="/logingithub?redirect=%2F">GitHub</a></li>
-      <li><a href="/logingoogle?redirect=%2F">Google</a></li>
-    </ul>
-  {{end}}
+
+  <div id="header-top">
+  </div>
+
+  <div id="note-content">
+    {{if .LoggedInUserHandle}}
+      <form action="/importsimplenote" method="GET">
+        <div>You can import your notes from simplenote.com:</div>
+        <div>
+          <label for="email">SimpleNote email:</label>
+          <input type="text" id="email" name="email" />
+        </div>
+        <div>
+          <label for="password">SimpleNote pasword:</label>
+          <input type="password" id="password" name="password" />
+        </div>
+        <div>
+          <input type="submit" name="submit" value="Import from SimpleNote" />
+        </div>
+      </form>
+    {{else}}
+      <p>You're not logged in. Log in with:</p>
+      <ul>
+        <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
+        <li><a href="/logingithub?redirect=%2F">GitHub</a></li>
+        <li><a href="/logingoogle?redirect=%2F">Google</a></li>
+      </ul>
+    {{end}}
+  </div>
+
+  <script src="/s/js/bundle.js"></script>
+  <script>window.runOnLoad(window.appImportStart);</script>
 
   </body>
 </html>
