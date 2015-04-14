@@ -16,7 +16,7 @@ var LogInLink = React.createClass({
 
           <div className="dropdown-content">
             <a href="#">Settings</a>
-            <a href="#">Import notes</a>
+            <a href="/import">Import notes</a>
             <a href={url}>Log Out</a>
           </div>
         </div>
