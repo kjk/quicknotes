@@ -46,10 +46,10 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	model := struct {
-		UserHandle string
+		LoggedInUserHandle string
 	}{}
 	if dbUser != nil {
-		model.UserHandle = dbUser.Handle
+		model.LoggedInUserHandle = dbUser.Handle
 	}
 	execTemplate(w, tmplIndex, model)
 }
