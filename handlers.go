@@ -161,93 +161,6 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplNote, model)
 }
 
-// /api/getnote.json?id=${note_id_hash}
-func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
-	dbUser := getUserFromCookie(w, r)
-	noteIDHashStr := r.FormValue("id")
-	note := getNoteByIDHash(w, r, noteIDHashStr)
-	if note == nil {
-		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
-		return
-	}
-	if !note.IsPublic && note.userID != dbUser.ID {
-		httpErrorWithJSONf(w, "/api/getnote.json access denied")
-	}
-	// TODO: return error if the note doesn't belong to logged in user
-	content, err := getCachedContent(note.ContentSha1)
-	if err != nil {
-		LogErrorf("getCachedContent() failed with %s\n", err)
-		httpErrorWithJSONf(w, "/api/getnote.json: getCachedContent() failed with %s", err)
-		return
-	}
-	v := struct {
-		IDStr    string
-		Title    string
-		Format   int
-		Content  string
-		Tags     []string
-		IsPublic bool
-	}{
-		IDStr:   noteIDHashStr,
-		Title:   note.Title,
-		Format:  note.Format,
-		Content: string(content),
-		Tags:    note.Tags,
-
-		IsPublic: note.IsPublic,
-	}
-	httpOkWithJSON(w, v)
-}
-
-// /api/getnotes.json?user=${userHandle}&start=${start}&len=${len}
-func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
-	timeStart := time.Now()
-	userHandle := strings.TrimSpace(r.FormValue("user"))
-	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
-	LogInfof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
-	if userHandle == "" {
-		http.NotFound(w, r)
-		return
-	}
-	// TODO: get start, len
-	/*
-		start := strings.TrimSpace(r.FormValue("start"))
-		nStart, err := strconv.Atoi(start)
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}*/
-
-	i, err := getCachedUserInfoByHandle(userHandle)
-	if err != nil || i == nil {
-		httpServerError(w, r)
-		return
-	}
-	loggedInUserHandle := ""
-	dbUser := getUserFromCookie(w, r)
-	if dbUser != nil {
-		loggedInUserHandle = dbUser.Handle
-	}
-
-	showPrivate := userHandle == loggedInUserHandle
-	var notes []*Note
-	for _, note := range i.notes {
-		if note.IsPublic || showPrivate {
-			notes = append(notes, note)
-		}
-	}
-
-	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v, time: %s\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate, time.Since(timeStart))
-	v := struct {
-		LoggedInUserHandle string
-		Notes              []*Note
-	}{
-		LoggedInUserHandle: loggedInUserHandle,
-		Notes:              notes,
-	}
-	httpOkWithJsonpCompact(w, v, jsonp)
-}
-
 const (
 	noteHashIDIdx = iota
 	noteTitleIdx
@@ -259,6 +172,7 @@ const (
 	noteSnippetIdx
 	noteFormatIdx
 	noteCurrentVersionIDIdx
+	noteContentIdx
 	noteFieldsCount
 )
 
@@ -292,6 +206,30 @@ func noteToCompact(n *Note) []interface{} {
 	res[noteFormatIdx] = n.Format
 	res[noteCurrentVersionIDIdx] = n.CurrVersionID
 	return res
+}
+
+// /api/getnotecompact.json?id=${note_id_hash}
+func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
+	dbUser := getUserFromCookie(w, r)
+	noteIDHashStr := r.FormValue("id")
+	note := getNoteByIDHash(w, r, noteIDHashStr)
+	if note == nil {
+		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
+		return
+	}
+	if !note.IsPublic && note.userID != dbUser.ID {
+		httpErrorWithJSONf(w, "/api/getnote.json access denied")
+	}
+	// TODO: return error if the note doesn't belong to logged in user
+	content, err := getCachedContent(note.ContentSha1)
+	if err != nil {
+		LogErrorf("getCachedContent() failed with %s\n", err)
+		httpErrorWithJSONf(w, "/api/getnote.json: getCachedContent() failed with %s", err)
+		return
+	}
+	v := noteToCompact(note)
+	v[noteContentIdx] = content
+	httpOkWithJSON(w, v)
 }
 
 // /api/getnotescompact.json
@@ -685,9 +623,8 @@ func registerHTTPHandlers() {
 	//http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/importsimplenote", handleImportSimpleNote)
-	http.HandleFunc("/api/getnotes.json", handleAPIGetNotes)
 	http.HandleFunc("/api/getnotescompact.json", handleAPIGetNotesCompact)
-	http.HandleFunc("/api/getnote.json", handleAPIGetNote)
+	http.HandleFunc("/api/getnotecompact.json", handleAPIGetNoteCompact)
 	http.HandleFunc("/api/searchusernotes.json", handleSearchUserNotes)
 	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateOrUpdateNote)
 	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)

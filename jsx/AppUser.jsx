@@ -238,7 +238,7 @@ var AppUser = React.createClass({
   },
 
   saveNote: function(note) {
-    note.Content = note.Content.trim();
+    ni.SetContent(note, ni.Content(note).trim());
     var noteJSON = JSON.stringify(note);
     console.log("saveNote: " + noteJSON);
     this.setState({
@@ -270,7 +270,7 @@ var AppUser = React.createClass({
 
   editNote: function(note) {
     var userHandle = this.props.notesUserHandle;
-    var uri = "/api/getnote.json?id=" + ni.IDStr(note);
+    var uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
     console.log("AppUser.editNote: " + ni.IDStr(note) + " uri: " + uri);
 
     // TODO: show an error message on error
