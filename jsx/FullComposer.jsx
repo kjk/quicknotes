@@ -4,6 +4,7 @@
 var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
 var utils = require('./utils.js');
 var format = require('./format.js');
+var ni = require('./noteinfo.js');
 var _ = require('./underscore.js');
 
 function arrEmpty(a) {
@@ -98,9 +99,9 @@ var FullComposer = React.createClass({
 
   updatePreview: function(s) {
     var note = this.state.note;
-    if (note.Format == format.Text) {
+    if (ni.Format(note) == format.Text) {
       s = "<pre>" + _.escape(s) + "</pre>";
-    } else if (note.Format == format.Markdown) {
+    } else if (ni.Format(note) == format.Markdown) {
       // TODO: call api to convert to html
       s = "<pre>" + _.escape(s) + "</pre>";
     }
@@ -131,7 +132,7 @@ var FullComposer = React.createClass({
 
   handlePublicChanged: function(e) {
     var note = utils.deepCloneObject(this.state.note);
-    note.IsPublic = e.target.checked;
+    ni.SetPublicState(note, e.target.checked);
     this.setState({
       note: note
     });
@@ -140,7 +141,7 @@ var FullComposer = React.createClass({
   handleTitleChanged: function(e) {
     var s = e.target.value.trim();
     var note = utils.deepCloneObject(this.state.note);
-    note.Title = s;
+    ni.SetTitle(note, s);
     this.setState({
       note: note
     });
@@ -149,7 +150,7 @@ var FullComposer = React.createClass({
   handleTagsChanged: function(e) {
     var tagsStr = e.target.value;
     var note = utils.deepCloneObject(this.state.note);
-    note.Tags = textToTags(tagsStr);
+    ni.SetTags(note, textToTags(tagsStr));
     this.setState({
       note: note
     });
@@ -158,7 +159,7 @@ var FullComposer = React.createClass({
   handleFormatChanged: function(e) {
     var formatName = e.target.value;
     var note = utils.deepCloneObject(this.state.note);
-    note.Format = format.nameToNumber(formatName);
+    ni.SetFormat(note, format.nameToNumber(formatName));
     this.setState({
       note: note
     });
@@ -174,11 +175,12 @@ var FullComposer = React.createClass({
   },
 
   render: function() {
-    var initialTags = tagsToText(this.props.note.Tags);
+    var initialNote = this.props.note;
+    var initialTags = tagsToText(ni.Tags(initialNote));
     var note = this.state.note;
     var previewHtml = { __html: this.state.previewHtml };
     var saveDisabled = !this.noteChanged();
-    var formatTxt = format.numberToName(note.Format);
+    var formatTxt = format.numberToName(ni.Format(note));
     var formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
 
     // TODO: if editing code, change CodeMirror mode property to match code being edited
@@ -219,7 +221,7 @@ var FullComposer = React.createClass({
           <input
             type="checkbox"
             onChange={this.handlePublicChanged}
-            checked={note.IsPublic}>public</input>
+            checked={ni.IsPublic(note)}>public</input>
           &nbsp;&nbsp;format:&nbsp;
           {formatSelect}
         </div>
