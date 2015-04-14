@@ -94,7 +94,7 @@ var FullComposer = React.createClass({
     var el = React.findDOMNode(this.refs.editArea);
     // TODO: this doesn't work
     el.focus();
-    this.updatePreview(this.props.note.Content);
+    this.updatePreview(ni.Content(this.props.note));
   },
 
   updatePreview: function(s) {
@@ -123,7 +123,7 @@ var FullComposer = React.createClass({
     }
     s = s.trim();
     var note = utils.deepCloneObject(this.state.note);
-    note.Content = s;
+    ni.SetContent(note, s);
     this.setState({
       note: note
     });
@@ -192,7 +192,7 @@ var FullComposer = React.createClass({
             style={{flexGrow: 3}}
             type="text"
             onChange={this.handleTitleChanged}
-            value={note.Title} size="128"/>
+            value={ni.Title(note)} size="128"/>
         </div>
 
         <div id="full-composer-tags">
@@ -209,8 +209,8 @@ var FullComposer = React.createClass({
           <CodeMirrorEditor
             mode="text"
             className="full-composer-editor"
-            codeText={note.Content}
-            value={note.Content}
+            codeText={ni.Content(note)}
+            value={ni.Content(note)}
             onChange={this.textChanged}
             ref="editArea" />
           <div id="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
