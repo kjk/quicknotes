@@ -4,6 +4,7 @@
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 
 var Note = require('./Note.jsx');
+var ni = require('./noteinfo.js');
 
 var maxInitialNotes = 50;
 function truncateNotes(notes) {
@@ -66,7 +67,7 @@ var NotesList = React.createClass({
           return <Note
             compact={self.props.compact}
             note={note}
-            key={note.IDStr}
+            key={ni.IDStr(note)}
             myNotes={self.props.myNotes}
             permanentDeleteNoteCb={self.props.permanentDeleteNoteCb}
             delUndelNoteCb={self.props.delUndelNoteCb}
