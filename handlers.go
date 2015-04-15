@@ -167,12 +167,12 @@ const (
 	noteSizeIdx
 	noteFlagsIdx
 	noteCreatedAtIdx
-	//noteUpdatedAtIdx
 	noteTagsIdx
 	noteSnippetIdx
 	noteFormatIdx
 	noteCurrentVersionIDIdx
 	noteContentIdx
+	//noteUpdatedAtIdx
 	noteFieldsCount
 )
 
@@ -191,6 +191,10 @@ func encodeNoteFlags(n *Note) int {
 	res += 4 * boolToInt(n.IsPublic)
 	res += 8 * boolToInt(n.IsPartial)
 	return res
+}
+
+func isBitSet(flags int, nBit uint) bool {
+	return flags&(1<<nBit) != 0
 }
 
 func noteToCompact(n *Note) []interface{} {

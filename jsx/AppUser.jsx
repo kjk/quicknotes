@@ -141,24 +141,6 @@ var AppUser = React.createClass({
     key.unbind('esc', this.cancelNoteEdit);
   },
 
-  createNewTextNote: function(s) {
-    var note = {
-      Content: s.trim(),
-      Format: format.Text
-    };
-    var noteJSON = JSON.stringify(note);
-    var data = {
-      noteJSON: noteJSON
-    };
-    $.post( "/api/createorupdatenote.json", data, function() {
-      console.log("created a new note: " + noteJSON);
-      this.updateNotes();
-    }.bind(this))
-    .fail(function() {
-      alert( "error creating new note: " + noteJSON );
-    });
-  },
-
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
   delUndelNote: function(note) {
@@ -237,9 +219,28 @@ var AppUser = React.createClass({
     }
   },
 
-  saveNote: function(note) {
-    ni.SetContent(note, ni.Content(note).trim());
+  createNewTextNote: function(s) {
+    var note = {
+      Content: s.trim(),
+      Format: format.Text
+    };
     var noteJSON = JSON.stringify(note);
+    var data = {
+      noteJSON: noteJSON
+    };
+    $.post( "/api/createorupdatenote.json", data, function() {
+      console.log("created a new note: " + noteJSON);
+      this.updateNotes();
+    }.bind(this))
+    .fail(function() {
+      alert( "error creating new note: " + noteJSON );
+    });
+  },
+
+  saveNote: function(note) {
+    var newNote = ni.toNewNote(note);
+    newNote.Content = newNote.Content.trim();
+    var noteJSON = JSON.stringify(newNote);
     console.log("saveNote: " + noteJSON);
     this.setState({
       noteBeingEdited: null

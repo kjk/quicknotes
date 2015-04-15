@@ -188,6 +188,27 @@ function setContent(note, content) {
   note[noteContentIdx] = content;
 }
 
+/* convert compact note to
+type NewNoteFromBrowser struct {
+	IDStr    string
+	Title    string
+	Format   int
+	Content  string
+	Tags     []string
+	IsPublic bool
+}
+*/
+function toNewNote(note) {
+  var n = {};
+  n.IDStr = getIDStr(note);
+  n.Title = getTitle(note);
+  n.Format = getFormat(note);
+  n.Content = getContent(note);
+  n.Tags = getTags(note);
+  n.IsPublic = getIsPublic(note);
+  return n;
+}
+
 exports.IDStr = getIDStr;
 exports.Title = getTitle;
 exports.Size = getSize;
@@ -208,3 +229,4 @@ exports.SetTags = setTags;
 exports.SetFormat = setFormat;
 exports.SetContent = setContent;
 exports.notesEq = notesEq;
+exports.toNewNote = toNewNote;
