@@ -13,10 +13,10 @@ var noteFormatIdx = 7;
 var noteCurrentVersionIDIdx = 8;
 var noteContentIdx = 9;
 
-var flagStarred = 0;
-var flagDeleted = 1;
-var flagPublic = 2;
-var flagPartial = 3;
+var flagStarredBit = 0;
+var flagDeletedBit = 1;
+var flagPublicBit = 2;
+var flagPartialBit = 3;
 
 // note properties that can be compared for equality with ==
 var simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
@@ -70,15 +70,15 @@ function setBit(n, nBit) {
 }
 
 function clearBit(n, nBit) {
-  return n & (1 << nBit);
+  return n & ~(1 << nBit);
 }
 
-function setFlag(note, nBit) {
+function setFlagBit(note, nBit) {
   var flags = note[noteFlagsIdx];
   note[noteFlagsIdx] = setBit(flags, nBit);
 }
 
-function clearFlag(note, nBit) {
+function clearFlagBit(note, nBit) {
   var flags = note[noteFlagsIdx];
   note[noteFlagsIdx] = clearBit(flags, nBit);
 }
@@ -129,47 +129,43 @@ function isFlagSet(note, nBit) {
 }
 
 function getIsStarred(note) {
-  return isFlagSet(note, flagStarred);
+  return isFlagSet(note, flagStarredBit);
 }
 
 function getIsDeleted(note) {
-  return isFlagSet(note, flagDeleted);
+  return isFlagSet(note, flagDeletedBit);
 }
 
 function getIsPublic(note) {
-  return isFlagSet(note, flagPublic);
+  return isFlagSet(note, flagPublicBit);
 }
 
 function getIsPartial(note) {
-  return isFlagSet(note, flagPartial);
-}
-
-function setFlag(note, nBit) {
-  note[noteFlagsIdx] = setBit(note[noteFlagsIdx], nBit)
+  return isFlagSet(note, flagPartialBit);
 }
 
 function setIsStarred(note) {
-  setFlag(note, flagStarred);
+  setFlagBit(note, flagStarredBit);
 }
 
 function setIsDeleted(note) {
-  setFlag(note, flagDeleted);
+  setFlagBit(note, flagDeletedBit);
 }
 
 function setIsPublic(note) {
-  setFlag(note, flagPublic);
+  setFlagBit(note, flagPublicBit);
 }
 
 function setFlagState(note, f, nBit) {
   if (f) {
-    setBit(note, nBit);
+    setFlagBit(note, nBit);
   } else {
-    clearBit(note, nBit);
+    clearFlagBit(note, nBit);
   }
 }
 
 function setPublicState(note, isPublic) {
-  setFlagState(note, isPublic, flagPublic);
+  setFlagState(note, isPublic, flagPublicBit);
 }
 
 function setTitle(note, title) {
