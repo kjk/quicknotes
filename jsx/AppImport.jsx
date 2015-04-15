@@ -3,15 +3,15 @@
 
 var Top = require('./Top.jsx');
 
-function appNoteStart() {
-  console.log("appNoteStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
+function appImportStart() {
+  console.log("appImportStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
   var isLoggedIn = gLoggedInUserHandle !== "";
   React.render(
     <Top isLoggedIn={isLoggedIn}
       loggedInUserHandle={gLoggedInUserHandle}
       notesUserHandle="" />,
-    document.getElementById('note-top')
+    document.getElementById('header-top')
   );
 }
 
-window.appNoteStart = appNoteStart;
+window.appImportStart = appImportStart;
