@@ -7,10 +7,6 @@ var format = require('./format.js');
 var ni = require('./noteinfo.js');
 var _ = require('./underscore.js');
 
-function arrEmpty(a) {
-  return !a || (a.length === 0);
-}
-
 function tagsToText(tags) {
   if (!tags) {
     return "";
@@ -48,42 +44,11 @@ var FullComposer = React.createClass({
   noteChanged: function() {
     var n1 = this.props.note;
     var n2 = this.state.note;
-    if (n1.IsPublic != n2.IsPublic) {
-      return true;
-    }
-    if (n1.Title != n2.Title) {
-      return true;
-    }
-    // Note: maybe should compare after trim() ?
-    var c1 = n1.Content;
-    var c2 = n2.Content;
-    if (c1 != c2) {
-      return true;
-    }
-    if (n1.Format != n2.Format) {
-      return true;
-    }
-    if (!arrEmpty(n1.Tags) || !arrEmpty(n2.Tags)) {
-      if (arrEmpty(n1.Tags) || arrEmpty(n2.Tags)) {
-        return true;
-      }
-      var tags1 = n1.Tags.sort();
-      var tags2 = n2.Tags.sort();
-      var len = tags1.length;
-      if (len != tags2.length) {
-        return true;
-      }
-      for (var i=0; i < len; i++) {
-        if (tags1[i] != tags2[i]) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return !ni.notesEq(n1, n2);
   },
 
   handleSave: function(e) {
-      this.props.saveNoteCb(this.state.note);
+    this.props.saveNoteCb(this.state.note);
   },
 
   handleCancel: function(e) {
