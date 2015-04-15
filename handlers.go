@@ -291,6 +291,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 		LogInfof("missing noteJSON value\n")
 		return nil
 	}
+	fmt.Printf("json: '%s'\n", noteJSON)
 	err := json.Unmarshal([]byte(noteJSON), &note)
 	if err != nil {
 		LogInfof("json.Unmarshal('%s') failed with %s", noteJSON, err)
@@ -314,7 +315,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 }
 
 // POST /api/createorupdatenote.json
-//  noteJSON : note serialized as josn
+//  noteJSON : note serialized as json in array format
 func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: '%s'\n", r.URL)
 	dbUser := getUserFromCookie(w, r)

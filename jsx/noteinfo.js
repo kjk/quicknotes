@@ -18,6 +18,49 @@ var flagDeleted = 1;
 var flagPublic = 2;
 var flagPartial = 3;
 
+// note properties that can be compared for equality with ==
+var simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
+
+function arrEmpty(a) {
+  return !a || (a.length === 0);
+}
+
+function strArrEq(a1, a2) {
+  if (arrEmpty(a1) && arrEmpty(a2)) {
+    // both empty
+    return true;
+  }
+  if (arrEmpty(a1) || arrEmpty(a2)) {
+    // only one empty
+    return false;
+  }
+
+  // TODO: don't sort in-place, maybe use a dict way of comparing equality
+  var a1 = a1.sort();
+  var a2 = a2.sort();
+  var n = a1.length;
+  if (n != a2.length) {
+    return false;
+  }
+  for (var i=0; i < n; i++) {
+    if (a1[i] != a2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function notesEq(n1, n2) {
+  // Note: maybe should compare content after trim() ?
+  for (var i = 0; i< simpleProps.length; i++) {
+    var prop = simpleProps[i];
+    if (n1[prop] != n2[prop]) {
+      return false;
+    }
+  }
+  return strArrEq(n1[noteTagsIdx], n2[noteTagsIdx]);
+}
+
 function isBitSet(n, nBit) {
   return (n & (1 << nBit)) != 0;
 }
@@ -164,3 +207,4 @@ exports.SetTitle = setTitle;
 exports.SetTags = setTags;
 exports.SetFormat = setFormat;
 exports.SetContent = setContent;
+exports.notesEq = notesEq;
