@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>QuickNotes</title>
+    <title>QuickNotes notes import</title>
 
     <link rel="stylesheet" href="/s/css/main.css">
     <link rel="stylesheet" href="/s/css/font-awesome.min.css">
@@ -23,13 +23,23 @@
   </div>
 
   <div id="note-content">
-
     {{if .LoggedInUserHandle}}
-      <p>
-        You're logged in as {{.LoggedInUserHandle}}. See <a href="/u/{{.LoggedInUserHandle}}">your notes</a>.
-      </p>
+      <form action="/importsimplenote" method="GET">
+        <div>You can import your notes from simplenote.com:</div>
+        <div>
+          <label for="email">SimpleNote email:</label>
+          <input type="text" id="email" name="email" />
+        </div>
+        <div>
+          <label for="password">SimpleNote pasword:</label>
+          <input type="password" id="password" name="password" />
+        </div>
+        <div>
+          <input type="submit" name="submit" value="Import from SimpleNote" />
+        </div>
+      </form>
     {{else}}
-      <div>You're not logged in. Log in with:</div>
+      <p>You're not logged in. Log in with:</p>
       <ul>
         <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
         <li><a href="/logingithub?redirect=%2F">GitHub</a></li>
@@ -39,7 +49,7 @@
   </div>
 
   <script src="/s/js/bundle.js"></script>
-  <script>window.runOnLoad(window.appIndexStart);</script>
+  <script>window.runOnLoad(window.appImportStart);</script>
 
   </body>
 </html>
