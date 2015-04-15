@@ -4,6 +4,7 @@
 var _ = require('./underscore.js');
 var utils = require('./utils.js');
 var format = require('./format.js');
+var ni = require('./noteinfo.js');
 
 var Composer = require('./Composer.jsx');
 var FullComposer = require('./FullComposer.jsx');
@@ -27,24 +28,24 @@ function tagsFromNotes(notes) {
 
   notes.map(function (note) {
     // a deleted note won't show up under other tags or under "all" or "public"
-    if (note.IsDeleted) {
+    if (ni.IsDeleted(note)) {
       tags.__deleted += 1;
       return;
     }
 
     tags.__all += 1;
-    if (note.IsStarred) {
+    if (ni.IsStarred(note)) {
       tags.__starred += 1;
     }
 
-    if (note.IsPublic) {
+    if (ni.IsPublic(note)) {
       tags.__public += 1;
     } else {
       tags.__private += 1;
     }
 
-    if (note.Tags) {
-      note.Tags.map(function (tag) {
+    if (ni.Tags(note)) {
+      ni.Tags(note).map(function (tag) {
         utils.dictInc(tags, tag);
       });
     }
@@ -106,7 +107,7 @@ var AppUser = React.createClass({
     // TODO: url-escape uri?
     var userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
-    var uri = "/api/getnotes.json?user=" + userHandle;
+    var uri = "/api/getnotescompact.json?user=" + userHandle;
     //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       this.setNotes(json);
@@ -140,31 +141,13 @@ var AppUser = React.createClass({
     key.unbind('esc', this.cancelNoteEdit);
   },
 
-  createNewTextNote: function(s) {
-    var note = {
-      Content: s.trim(),
-      Format: format.Text
-    };
-    var noteJSON = JSON.stringify(note);
-    var data = {
-      noteJSON: noteJSON
-    };
-    $.post( "/api/createorupdatenote.json", data, function() {
-      console.log("created a new note: " + noteJSON);
-      this.updateNotes();
-    }.bind(this))
-    .fail(function() {
-      alert( "error creating new note: " + noteJSON );
-    });
-  },
-
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
   delUndelNote: function(note) {
     var data = {
-      noteIdHash: note.IDStr
+      noteIdHash: ni.IDStr(note)
     };
-    if (note.IsDeleted) {
+    if (ni.IsDeleted(note)) {
       $.post( "/api/undeletenote.json", data, function() {
         this.updateNotes();
       }.bind(this))
@@ -184,7 +167,7 @@ var AppUser = React.createClass({
   permanentDeleteNote: function(note) {
     console.log("permanentDeleteNote");
     var data = {
-      noteIdHash: note.IDStr
+      noteIdHash: ni.IDStr(note)
     };
     $.post( "/api/permanentdeletenote.json", data, function() {
       this.updateNotes();
@@ -196,9 +179,9 @@ var AppUser = React.createClass({
 
   makeNotePublicPrivate: function(note) {
     var data = {
-      noteIdHash: note.IDStr
+      noteIdHash: ni.IDStr(note)
     };
-    if (note.IsPublic) {
+    if (ni.IsPublic(note)) {
       $.post( "/api/makenoteprivate.json", data, function() {
         this.updateNotes();
       }.bind(this))
@@ -217,9 +200,9 @@ var AppUser = React.createClass({
 
   startUnstarNote: function(note) {
     var data = {
-      noteIdHash: note.IDStr
+      noteIdHash: ni.IDStr(note)
     };
-    if (note.IsStarred) {
+    if (ni.IsStarred(note)) {
       $.post( "/api/unstarnote.json", data, function() {
         this.updateNotes();
       }.bind(this))
@@ -236,9 +219,28 @@ var AppUser = React.createClass({
     }
   },
 
-  saveNote: function(note) {
-    note.Content = note.Content.trim();
+  createNewTextNote: function(s) {
+    var note = {
+      Content: s.trim(),
+      Format: format.Text
+    };
     var noteJSON = JSON.stringify(note);
+    var data = {
+      noteJSON: noteJSON
+    };
+    $.post( "/api/createorupdatenote.json", data, function() {
+      console.log("created a new note: " + noteJSON);
+      this.updateNotes();
+    }.bind(this))
+    .fail(function() {
+      alert( "error creating new note: " + noteJSON );
+    });
+  },
+
+  saveNote: function(note) {
+    var newNote = ni.toNewNote(note);
+    newNote.Content = newNote.Content.trim();
+    var noteJSON = JSON.stringify(newNote);
     console.log("saveNote: " + noteJSON);
     this.setState({
       noteBeingEdited: null
@@ -269,8 +271,8 @@ var AppUser = React.createClass({
 
   editNote: function(note) {
     var userHandle = this.props.notesUserHandle;
-    var uri = "/api/getnote.json?id=" + note.IDStr;
-    console.log("AppUser.editNote: " + note.IDStr + " uri: " + uri);
+    var uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
+    console.log("AppUser.editNote: " + ni.IDStr(note) + " uri: " + uri);
 
     // TODO: show an error message on error
     $.get(uri, function(noteJson) {
