@@ -4,9 +4,8 @@
 var utils = require('./utils.js');
 var format = require('./format.js');
 
-var maxResults = 100;
-
-// TODO: make search results more compact by sending an array of arrays
+var TypeTitle = 1;
+var TypeLine = 2;
 
 /*
 Format of search results:
@@ -15,11 +14,19 @@ Format of search results:
   Results: [
     {
       NoteIDStr: "1XRy",
-      PreviewHTML: "result"
+      Items: [
+        {
+          Type: 1,
+          LineNo: 5,
+          HTML: 'foo<span class="s-r">bar</span>',
+        }
+      ]
     }
   ]
 }
 */
+
+
 
 var SearchResults = React.createClass({
 
@@ -34,16 +41,35 @@ var SearchResults = React.createClass({
     </div>;
   },
 
-  createResult: function(o) {
+  createResultItem: function(i) {
+      // TODO: different format for title match
+      // TODO: show line number
+      var k = "" + i.Type + "-" + i.LineNo;
+      var html = { __html: i.HTML };
+      return (
+        <div
+          key={k}
+          className="search-result-item"
+          dangerouslySetInnerHTML={html}
+          ></div>
+      );
+  },
+
+  createResultNote: function(o) {
     var noteID = o.NoteIDStr;
     var cb = this.handleClick.bind(this, noteID);
+    var items = o.Items;
+    var self = this;
+    var results = items.map(function(i) {
+      return self.createResultItem(i);
+    });
     return (
-      <pre
+      <div
         key={noteID}
-        className="search-result"
+        className="search-result-note"
         onClick={cb}>
-        {o.PreviewHTML}
-      </pre>
+        {results}
+      </div>
     );
   },
 
@@ -54,10 +80,9 @@ var SearchResults = React.createClass({
       return this.createNoResults(searchResults.Term);
     }
 
-    results = results.slice(0, maxResults);
     var self = this;
     var resultsHTML = results.map(function(o) {
-      return self.createResult(o);
+      return self.createResultNote(o);
     });
 
     return (

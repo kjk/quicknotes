@@ -158,22 +158,53 @@ func sprintNoteID(n *Note, shown *bool) string {
 	return fmt.Sprintf("\nNote id: %s\n", n.IDStr)
 }
 
-// TODO: actually return html
-func noteMatchToHTML(term string, match *Match) string {
+func newTitleSearchResultItem(s string) SearchResultItem {
+	return SearchResultItem{
+		Type:   TypeTitle,
+		LineNo: -1,
+		HTML:   s,
+	}
+}
+
+func newLineSearchResultItem(s string, lineNo int) SearchResultItem {
+	return SearchResultItem{
+		Type:   TypeLine,
+		LineNo: lineNo,
+		HTML:   s,
+	}
+}
+
+func decorateHTML(s string, termLen int, matchPositions []int) string {
+	if len(matchPositions) == 0 {
+		return s
+	}
+	res := ""
+	prevEnd := 0
+	for _, pos := range matchPositions {
+		res += s[prevEnd:pos]
+		res += `<span class="s-h">`
+		prevEnd = pos + termLen
+		res += s[pos:prevEnd]
+		res += `</span>`
+	}
+	res += s[prevEnd:len(s)]
+	return res
+}
+
+func noteMatchToSearchResults(term string, match *Match) []SearchResultItem {
+	var res []SearchResultItem
 	n := match.note
-	var res string
 	if len(match.titleMatchPos) > 0 {
-		s := n.Title
-		res += fmt.Sprintf("Title: %s<br>\n", s)
+		s := decorateHTML(n.Title, len(term), match.titleMatchPos)
+		res = append(res, newTitleSearchResultItem(s))
 	}
 	if len(match.bodyMatchPos) > 0 {
 		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
 		lineMatches = collapseSameLines(lineMatches)
-		// TODO: limit number of matched lines to some reasonable number (e.g. 8)
 		for _, lm := range lineMatches {
-			s := lm.line
+			s := decorateHTML(lm.line, len(term), lm.matches)
 			s = trimSpaceLineRight(s)
-			res += fmt.Sprintf("%d: %s<br>\n", lm.lineNo+1, s)
+			res = append(res, newLineSearchResultItem(s, lm.lineNo+1))
 		}
 	}
 	return res
