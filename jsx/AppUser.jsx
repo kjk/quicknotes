@@ -131,14 +131,14 @@ var AppUser = React.createClass({
     key.filter = this.keyFilter;
     key('ctrl+f', utils.focusSearch);
     key('ctrl+e', utils.focusNewNote);
-    key('esc', this.cancelNoteEdit);
+    key('esc', this.escPressed);
     this.updateNotes();
   },
 
   componentWillUnmount: function() {
     key.unbind('ctrl+f', utils.focusSearch);
     key.unbind('ctrl+e', utils.focusNewNote);
-    key.unbind('esc', this.cancelNoteEdit);
+    key.unbind('esc', this.escPressed);
   },
 
   // TODO: after delete/undelete should show a message at the top
@@ -267,6 +267,17 @@ var AppUser = React.createClass({
       noteBeingEdited: null
     });
     utils.clearNewNote();
+  },
+
+  escPressed: function() {
+    console.log("ESC pressed");
+    if (this.state.noteBeingEdited) {
+      this.setState({
+        noteBeingEdited: null
+      });
+      utils.clearNewNote();
+      return;
+    }
   },
 
   editNote: function(note) {
