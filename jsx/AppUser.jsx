@@ -104,10 +104,9 @@ var AppUser = React.createClass({
   },
 
   updateNotes: function() {
-    // TODO: url-escape uri?
-    var userHandle = this.props.notesUserHandle;
+      var userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
-    var uri = "/api/getnotescompact.json?user=" + userHandle;
+    var uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
     //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       this.setNotes(json);
@@ -119,9 +118,10 @@ var AppUser = React.createClass({
     return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
   },
 
-  // by default keypresses are not
+  // by default all keypresses are filtered
   keyFilter: function(event) {
-    if (event.keyCode == 27) { // esc
+    if (event.keyCode == 27) {
+      // allow ESC always
       return true;
     }
     return this.standardKeyFilter(event);
