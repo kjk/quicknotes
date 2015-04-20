@@ -779,6 +779,42 @@ a {
   margin-bottom: 16px;
 }
 
+/* Spacing : Grid
+----------------------------------------------- */
+[data-spacing="grid"] #notes-list .wrapper {
+  padding: 16px;
+  -moz-column-count: 3;
+  -webkit-column-count: 3;
+  column-count: 3;
+  -moz-column-gap: 1em;
+  -webkit-column-gap: 1em;
+  column-gap: 1em;
+}
+
+[data-spacing="grid"] #notes-list .note {
+  display: inline-block;
+  width: 90%;
+  margin: 0 0 16px;
+  padding: 16px 18px;
+}
+
+[data-spacing="grid"] #notes-list .note-title {
+  width: 70%;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-spacing="grid"] #notes-list .note-action.note-star {
+  position: relative;
+  top: -8px;
+}
+
+[data-spacing="grid"] #notes-list .note .note-actions {
+  background: #FFF;
+}
+
 /* Spacing : Minimal
 ----------------------------------------------- */
 [data-spacing="minimal"] #notes-list .note {
@@ -789,10 +825,11 @@ a {
 /* Spacing : Barebones
 ----------------------------------------------- */
 [data-spacing="barebones"] #notes-list .note {
-  padding: 16px 18px;
+  padding: 16px 18px 10px 18px;
   margin-bottom: 1px;
 }
 
-[data-spacing="barebones"] #notes-list .note-content {
+[data-spacing="barebones"] #notes-list .note-content,
+[data-spacing="barebones"] #notes-list .note-footer {
   display: none;
 }
