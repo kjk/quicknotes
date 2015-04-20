@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Notes of {{ .UserHandle }}</title>
-    <link rel="stylesheet" href="/s/css/main.css">
-    <link rel="stylesheet" href="/s/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/s/js/lib/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="/s/js/lib/codemirror/theme/solarized.css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
-    <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
-    <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
-    <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
-    <script src="/s/js/lib/keymaster.js"></script>
-    <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
-    <script>
-      var gNotesUserHandle = "{{ .UserHandle }}";
-      var gInitialNotesJSON = null;
-      function setInitialNotes(json) {
-        gInitialNotesJSON = json;
-      }
-    </script>
-    <script src="/api/getnotescompact.json?jsonp=setInitialNotes&user={{ .UserHandle }}">
-    </script>
-  </head>
-  <body class="theme-light" data-spacing="minimal">
-    <div id="root"></div>
-    <script src="/s/js/bundle.js"></script>
-    <script>window.runOnLoad(window.appUserStart);</script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes of {{ .UserHandle }}</title>
+  <link rel="stylesheet" href="/s/css/main.css">
+  <link rel="stylesheet" href="/s/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/s/js/lib/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="/s/js/lib/codemirror/theme/solarized.css">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
+  <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
+  <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
+  <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
+  <script src="/s/js/lib/keymaster.js"></script>
+  <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
+  <script>
+    var gNotesUserHandle = "{{ .UserHandle }}";
+    var gInitialNotesJSON = null;
+    function setInitialNotes(json) {
+      gInitialNotesJSON = json;
+    }
+  </script>
+  <script src="/api/getnotescompact.json?jsonp=setInitialNotes&user={{ .UserHandle }}">
+  </script>
+</head>
+<body class="theme-light" data-spacing="minimal">
+  <div id="root"></div>
+  <script src="/s/js/bundle.js"></script>
+  <script>window.runOnLoad(window.appUserStart);</script>
+</body>
 </html>

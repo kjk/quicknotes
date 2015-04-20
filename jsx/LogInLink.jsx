@@ -15,8 +15,11 @@ var LogInLink = React.createClass({
           <i className="fa fa-chevron-down"></i>
 
           <div className="dropdown-content">
+            <a href={userUrl}>Notes</a>
+            <span className="divider"></span>
             <a href="#">Settings</a>
             <a href="/import">Import notes</a>
+            <span className="divider"></span>
             <a href={url}>Log Out</a>
           </div>
         </div>
@@ -28,10 +31,18 @@ var LogInLink = React.createClass({
     var twitterUrl = encodeURI("/logintwitter?redirect=" + window.location);
     return (
       <div id="user">
-        <span>
-          You're not logged in
+        <span className="user">
+          Log in
         </span>
-        <span>Log in: <a href={twitterUrl}>with twitter</a></span>
+        <div className="dropdown">
+          <i className="fa fa-chevron-down"></i>
+
+          <div className="dropdown-content">
+            <a href={twitterUrl}>with Twitter</a>
+            <a href="/logingoogle?redirect=%2F">with Google</a>
+            <a href="/logingithub?redirect=%2F">with GitHub</a>
+          </div>
+        </div>
       </div>
     );
   },

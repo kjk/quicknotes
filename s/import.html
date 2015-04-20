@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>QuickNotes notes import</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuickNotes notes import</title>
 
-    <link rel="stylesheet" href="/s/css/main.css">
-    <link rel="stylesheet" href="/s/css/font-awesome.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/s/css/main.css">
+  <link rel="stylesheet" href="/s/css/font-awesome.min.css">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
 
-    <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
-    <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
-    <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
-    <script src="/s/js/lib/keymaster.js"></script>
-    <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
+  <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
+  <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
+  <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
+  <script src="/s/js/lib/keymaster.js"></script>
+  <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
 
-  </head>
-  <body>
+</head>
+<body class="theme-light">
 
-  <div id="header-top">
-  </div>
+  <div id="header-top"></div>
 
-  <div id="note-content">
+  <div id="page-content">
     {{if .LoggedInUserHandle}}
+    <div class="box">
+      <h3>You can import your notes from simplenote.com</h3>
       <form action="/importsimplenote" method="GET">
-        <div>You can import your notes from simplenote.com:</div>
-        <div>
-          <label for="email">SimpleNote email:</label>
+        <div class="row">
+          <label for="email">Email</label>
           <input type="text" id="email" name="email" />
         </div>
-        <div>
-          <label for="password">SimpleNote pasword:</label>
+        <div class="row">
+          <label for="password">Password</label>
           <input type="password" id="password" name="password" />
         </div>
-        <div>
+        <div class="row">
           <input type="submit" name="submit" value="Import from SimpleNote" />
         </div>
       </form>
+    </div>
     {{else}}
       <p>You're not logged in. Log in with:</p>
       <ul>
@@ -48,8 +49,8 @@
     {{end}}
   </div>
 
-  <script src="/s/js/bundle.js"></script>
-  <script>window.runOnLoad(window.appImportStart);</script>
+<script src="/s/js/bundle.js"></script>
+<script>window.runOnLoad(window.appImportStart);</script>
 
-  </body>
+</body>
 </html>

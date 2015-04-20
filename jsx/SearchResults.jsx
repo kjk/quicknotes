@@ -36,9 +36,13 @@ var SearchResults = React.createClass({
   },
 
   createNoResults: function(term) {
-    return <div id="search-results">
-      No results for {term}
-    </div>;
+    return (
+      <div id="search-results">
+        <div className="box">
+          <p>No results for {term}</p>
+        </div>
+      </div>
+    );
   },
 
   createResultItem: function(i) {
@@ -87,7 +91,9 @@ var SearchResults = React.createClass({
 
     return (
       <div id="search-results">
-        {resultsHTML}
+        <div className="search-results-list">
+          {resultsHTML}
+        </div>
       </div>
     );
   }
