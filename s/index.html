@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>QuickNotes</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuickNotes</title>
 
-    <link rel="stylesheet" href="/s/css/main.css">
-    <link rel="stylesheet" href="/s/css/font-awesome.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/s/css/main.css">
+  <link rel="stylesheet" href="/s/css/font-awesome.min.css">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
 
-    <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
-    <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
-    <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
-    <script src="/s/js/lib/keymaster.js"></script>
-    <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
+  <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
+  <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
+  <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
+  <script src="/s/js/lib/keymaster.js"></script>
+  <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
 
-  </head>
-  <body>
+</head>
+<body class="theme-light">
 
-  <div id="header-top">
-  </div>
-
-  <div id="note-content">
+  <div id="page-content">
 
     {{if .LoggedInUserHandle}}
-      <p>
-        You're logged in as {{.LoggedInUserHandle}}. See <a href="/u/{{.LoggedInUserHandle}}">your notes</a>.
-      </p>
+    <div class="box">
+      <h2 class="logo colored">QuickNotes</h2>
+      <h3>You are logged in as {{.LoggedInUserHandle}}</h3>
+      <p><a href="/u/{{.LoggedInUserHandle}}">View your notes <i class="fa fa-chevron-right"></i></a></p>
+    </div>
     {{else}}
-      <div>You're not logged in. Log in with:</div>
-      <ul>
-        <li><a href="/logintwitter?redirect=%2F">Twitter</a></li>
-        <li><a href="/logingithub?redirect=%2F">GitHub</a></li>
-        <li><a href="/logingoogle?redirect=%2F">Google</a></li>
+    <div class="box">
+      <h2 class="logo colored">QuickNotes</h2>
+      <h3>Sign in, or create an account</h3>
+      <ul class="log-in">
+        <li><a class="twitter" href="/logintwitter?redirect=%2F">Sign in with Twitter</a></li>
+        <li><a class="google" href="/logingoogle?redirect=%2F">Sign in with Google</a></li>
+        <li><a class="github" href="/logingithub?redirect=%2F">Sign in with GitHub</a></li>
       </ul>
     {{end}}
   </div>
@@ -41,5 +42,5 @@
   <script src="/s/js/bundle.js"></script>
   <script>window.runOnLoad(window.appIndexStart);</script>
 
-  </body>
+</body>
 </html>
