@@ -203,7 +203,7 @@ var FullComposer = React.createClass({
             size="128"/>
         </div>
 
-        <div id="full-composer-top">
+        <div id="full-composer-content">
           <CodeMirrorEditor
             mode="text"
             className="full-composer-editor"
