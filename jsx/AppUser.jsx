@@ -4,6 +4,7 @@
 var _ = require('./underscore.js');
 var utils = require('./utils.js');
 var format = require('./format.js');
+var ni = require('./noteinfo.js');
 
 var Composer = require('./Composer.jsx');
 var FullComposer = require('./FullComposer.jsx');
@@ -27,24 +28,24 @@ function tagsFromNotes(notes) {
 
   notes.map(function (note) {
     // a deleted note won't show up under other tags or under "all" or "public"
-    if (note.IsDeleted) {
+    if (ni.IsDeleted(note)) {
       tags.__deleted += 1;
       return;
     }
 
     tags.__all += 1;
-    if (note.IsStarred) {
+    if (ni.IsStarred(note)) {
       tags.__starred += 1;
     }
 
-    if (note.IsPublic) {
+    if (ni.IsPublic(note)) {
       tags.__public += 1;
     } else {
       tags.__private += 1;
     }
 
-    if (note.Tags) {
-      note.Tags.map(function (tag) {
+    if (ni.Tags(note)) {
+      ni.Tags(note).map(function (tag) {
         utils.dictInc(tags, tag);
       });
     }
@@ -103,10 +104,9 @@ var AppUser = React.createClass({
   },
 
   updateNotes: function() {
-    // TODO: url-escape uri?
-    var userHandle = this.props.notesUserHandle;
+      var userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
-    var uri = "/api/getnotes.json?user=" + userHandle;
+    var uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
     //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       this.setNotes(json);
@@ -118,9 +118,10 @@ var AppUser = React.createClass({
     return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
   },
 
-  // by default keypresses are not
+  // by default all keypresses are filtered
   keyFilter: function(event) {
-    if (event.keyCode == 27) { // esc
+    if (event.keyCode == 27) {
+      // allow ESC always
       return true;
     }
     return this.standardKeyFilter(event);
@@ -130,14 +131,92 @@ var AppUser = React.createClass({
     key.filter = this.keyFilter;
     key('ctrl+f', utils.focusSearch);
     key('ctrl+e', utils.focusNewNote);
-    key('esc', this.cancelNoteEdit);
+    key('esc', this.escPressed);
     this.updateNotes();
   },
 
   componentWillUnmount: function() {
     key.unbind('ctrl+f', utils.focusSearch);
     key.unbind('ctrl+e', utils.focusNewNote);
-    key.unbind('esc', this.cancelNoteEdit);
+    key.unbind('esc', this.escPressed);
+  },
+
+  // TODO: after delete/undelete should show a message at the top
+  // with 'undo' link
+  delUndelNote: function(note) {
+    var data = {
+      noteIdHash: ni.IDStr(note)
+    };
+    if (ni.IsDeleted(note)) {
+      $.post( "/api/undeletenote.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error undeleting a note");
+      });
+    } else {
+      $.post( "/api/deletenote.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error deleting a note");
+      });
+    }
+  },
+
+  permanentDeleteNote: function(note) {
+    console.log("permanentDeleteNote");
+    var data = {
+      noteIdHash: ni.IDStr(note)
+    };
+    $.post( "/api/permanentdeletenote.json", data, function() {
+      this.updateNotes();
+    }.bind(this))
+    .fail(function() {
+      alert( "error deleting a note");
+    });
+  },
+
+  makeNotePublicPrivate: function(note) {
+    var data = {
+      noteIdHash: ni.IDStr(note)
+    };
+    if (ni.IsPublic(note)) {
+      $.post( "/api/makenoteprivate.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error making note private");
+      });
+    } else {
+      $.post( "/api/makenotepublic.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error making note private");
+      });
+    }
+  },
+
+  startUnstarNote: function(note) {
+    var data = {
+      noteIdHash: ni.IDStr(note)
+    };
+    if (ni.IsStarred(note)) {
+      $.post( "/api/unstarnote.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error unstarring note");
+      });
+    } else {
+      $.post( "/api/starnote.json", data, function() {
+        this.updateNotes();
+      }.bind(this))
+      .fail(function() {
+        alert( "error starring note");
+      });
+    }
   },
 
   createNewTextNote: function(s) {
@@ -158,87 +237,10 @@ var AppUser = React.createClass({
     });
   },
 
-  // TODO: after delete/undelete should show a message at the top
-  // with 'undo' link
-  delUndelNote: function(note) {
-    var data = {
-      noteIdHash: note.IDStr
-    };
-    if (note.IsDeleted) {
-      $.post( "/api/undeletenote.json", data, function() {
-        this.updateNotes();
-      }.bind(this))
-      .fail(function() {
-        alert( "error undeleting a note");
-      });
-    } else {
-      $.post( "/api/deletenote.json", data, function() {
-        this.updateNotes();
-      }.bind(this))
-      .fail(function() {
-        alert( "error deleting a note");
-      });
-    }
-  },
-
-  permanentDeleteNote: function(note) {
-    console.log("permanentDeleteNote");
-    var data = {
-      noteIdHash: note.IDStr
-    };
-    $.post( "/api/permanentdeletenote.json", data, function() {
-      this.updateNotes();
-    }.bind(this))
-    .fail(function() {
-      alert( "error deleting a note");
-    });
-  },
-
-  makeNotePublicPrivate: function(note) {
-    var data = {
-      noteIdHash: note.IDStr
-    };
-    if (note.IsPublic) {
-      $.post( "/api/makenoteprivate.json", data, function() {
-        this.updateNotes();
-      }.bind(this))
-      .fail(function() {
-        alert( "error making note private");
-      });
-    } else {
-      $.post( "/api/makenotepublic.json", data, function() {
-        this.updateNotes();
-      }.bind(this))
-      .fail(function() {
-        alert( "error making note private");
-      });
-    }
-  },
-
-  startUnstarNote: function(note) {
-    var data = {
-      noteIdHash: note.IDStr
-    };
-    if (note.IsStarred) {
-      $.post( "/api/unstarnote.json", data, function() {
-        this.updateNotes();
-      }.bind(this))
-      .fail(function() {
-        alert( "error unstarring note");
-      });
-    } else {
-      $.post( "/api/starnote.json", data, function() {
-        this.updateNotes();
-      }.bind(this))
-      .fail(function() {
-        alert( "error starring note");
-      });
-    }
-  },
-
   saveNote: function(note) {
-    note.Content = note.Content.trim();
-    var noteJSON = JSON.stringify(note);
+    var newNote = ni.toNewNote(note);
+    newNote.Content = newNote.Content.trim();
+    var noteJSON = JSON.stringify(newNote);
     console.log("saveNote: " + noteJSON);
     this.setState({
       noteBeingEdited: null
@@ -267,10 +269,21 @@ var AppUser = React.createClass({
     utils.clearNewNote();
   },
 
+  escPressed: function() {
+    console.log("ESC pressed");
+    if (this.state.noteBeingEdited) {
+      this.setState({
+        noteBeingEdited: null
+      });
+      utils.clearNewNote();
+      return;
+    }
+  },
+
   editNote: function(note) {
     var userHandle = this.props.notesUserHandle;
-    var uri = "/api/getnote.json?id=" + note.IDStr;
-    console.log("AppUser.editNote: " + note.IDStr + " uri: " + uri);
+    var uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
+    console.log("AppUser.editNote: " + ni.IDStr(note) + " uri: " + uri);
 
     // TODO: show an error message on error
     $.get(uri, function(noteJson) {

@@ -1,8 +1,10 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var ni = require('./noteinfo.js');
+
 function noteHasTag(note, tag) {
-  var tags = note.Tags;
+  var tags = ni.Tags(note);
   if (!tags) {
     return false;
   }
@@ -22,16 +24,16 @@ function getSpecialNotes(notes) {
   var starredNotes = [];
   for (var i = 0; i < notes.length; i++) {
     var note = notes[i];
-    if (note.IsDeleted) {
+    if (ni.IsDeleted(note)) {
       deletedNotes.push(note);
     } else {
       notDeletedNotes.push(note);
-      if (note.IsPublic) {
+      if (ni.IsPublic(note)) {
         publicNotes.push(note);
       } else {
         privateNotes.push(note);
       }
-      if (note.IsStarred) {
+      if (ni.IsStarred(note)) {
         starredNotes.push(note);
       }
     }
