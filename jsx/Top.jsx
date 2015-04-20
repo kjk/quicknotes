@@ -38,6 +38,7 @@ var Top = React.createClass({
     return (
       <div id="header">
         <a id="logo" href="/">QuickNotes</a>
+        <a id="new-note" onClick={this.props.startNewNoteCb}><i className="icn-plus"></i></a>
         {this.createSearchInput()}
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>
