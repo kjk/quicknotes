@@ -63,19 +63,21 @@ var NotesList = React.createClass({
     var self = this;
     return (
       <div id="notes-list" onScroll={this.handleScroll}>
-        {this.state.notes.map(function(note) {
-          return <Note
-            compact={self.props.compact}
-            note={note}
-            key={ni.IDStr(note)}
-            myNotes={self.props.myNotes}
-            permanentDeleteNoteCb={self.props.permanentDeleteNoteCb}
-            delUndelNoteCb={self.props.delUndelNoteCb}
-            makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
-            startUnstarNoteCb={self.props.startUnstarNoteCb}
-            editCb={self.props.editCb}
-          />;
-        })}
+        <div className="wrapper">
+          {this.state.notes.map(function(note) {
+            return <Note
+              compact={self.props.compact}
+              note={note}
+              key={ni.IDStr(note)}
+              myNotes={self.props.myNotes}
+              permanentDeleteNoteCb={self.props.permanentDeleteNoteCb}
+              delUndelNoteCb={self.props.delUndelNoteCb}
+              makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
+              startUnstarNoteCb={self.props.startUnstarNoteCb}
+              editCb={self.props.editCb}
+            />;
+          })}
+        </div>
       </div>
     );
   }
