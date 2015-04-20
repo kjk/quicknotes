@@ -335,14 +335,19 @@ a {
   overflow: scroll;
 }
 
-.search-result {
+.search-result-note {
   border: 1px solid blue;
   width: 100%;
   margin-bottom: 4px
 }
 
-.search-result:hover {
-  background-color: lightyellow;
+.search-result-note:hover {
+  background-color: lightblue;
+}
+
+
+.s-h {
+  background-color: yellow;
 }
 
 
