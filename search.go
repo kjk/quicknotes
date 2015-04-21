@@ -197,6 +197,8 @@ func noteMatchToSearchResults(term string, match *Match) []SearchResultItem {
 	if len(match.titleMatchPos) > 0 {
 		s := decorateHTML(n.Title, len(term), match.titleMatchPos)
 		res = append(res, newTitleSearchResultItem(s))
+	} else {
+		res = append(res, newTitleSearchResultItem(n.Title))
 	}
 	if len(match.bodyMatchPos) > 0 {
 		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
