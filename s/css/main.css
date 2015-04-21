@@ -834,3 +834,32 @@ a {
 [data-spacing="barebones"] #notes-list .note-footer {
   display: none;
 }
+
+
+/* Media Queries
+----------------------------------------------- */
+@media (max-width: 320px) {
+  #left-sidebar, #header #search-wrapper, #header #logo, #composer {
+    display: none;
+  }
+  #notes-list {
+    left: 0; bottom: 0;
+  }
+  #notes-list .note .note-actions {
+    background: #FFF;
+  }
+  #notes-list .note-title {
+    width: 70%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ell
+  }
+  #notes-list .note-action.note-star {
+    position: relative;
+    top: -8px;
+  }
+
+@media (max-width: 768px) {
+
+}
