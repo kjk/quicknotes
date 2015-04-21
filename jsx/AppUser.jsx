@@ -376,6 +376,17 @@ var AppUser = React.createClass({
     this.handleSearchTermChanged(""); // hide search results
   },
 
+  createComposer: function() {
+    var showComposer = true;
+    if (showComposer) {
+      return (
+        <Composer
+          startNewNoteCb={this.handleStartNewNote}
+          createNewTextNoteCb={this.createNewTextNote}/>
+      );
+    }
+  },
+
   render: function() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
@@ -405,9 +416,8 @@ var AppUser = React.createClass({
               startUnstarNoteCb={this.startUnstarNote}
               editCb={this.editNote}
             />
-          <Composer
-            startNewNoteCb={this.handleStartNewNote}
-            createNewTextNoteCb={this.createNewTextNote}/>
+
+          {this.createComposer()}
           {this.createFullComposer()}
           {this.createSearchResults()}
         </div>
