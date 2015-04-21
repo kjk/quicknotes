@@ -42,7 +42,7 @@ var Top = React.createClass({
   createNewNote: function() {
     if (this.props.isLoggedIn) {
       return (
-        <a id="new-note" href="#" onClick={this.handleCreateNewNote}>
+        <a id="new-note" title="Create new note" href="#" onClick={this.handleCreateNewNote}>
           <i className="icn-plus"></i>
         </a>
       );
