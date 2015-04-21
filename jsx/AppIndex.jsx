@@ -10,8 +10,13 @@ function appIndexStart() {
     <Top isLoggedIn={isLoggedIn}
       loggedInUserHandle={gLoggedInUserHandle}
       notesUserHandle="" />,
-    document.getElementById('header-top')
+    document.getElementById('header')
   );
 }
 
-window.appIndexStart = appIndexStart;
+function doNothing() {
+
+}
+
+//window.appIndexStart = appIndexStar;
+window.appIndexStart = doNothing;
