@@ -97,6 +97,10 @@ a {
   left: 0.75em;
 }
 
+#header #new-note:hover {
+  background-color: lightblue;
+}
+
 #header #search-wrapper {
   width: 30%;
   position: relative;
