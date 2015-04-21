@@ -194,7 +194,7 @@ a {
 
 .box {
   width: 300px;
-  margin: -56px auto 0 auto;
+  margin: 56px auto 0 auto;
   padding: 30px 30px 20px 30px;
   position: relative;
   top: 50%;
