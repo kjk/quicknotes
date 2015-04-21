@@ -46,17 +46,20 @@ var SearchResults = React.createClass({
   },
 
   createResultItem: function(i) {
-      // TODO: different format for title match
-      // TODO: show line number
-      var k = "" + i.Type + "-" + i.LineNo;
-      var html = { __html: i.HTML };
-      return (
-        <div
-          key={k}
-          className="search-result-item"
-          dangerouslySetInnerHTML={html}
-          ></div>
-      );
+    // Maybe: show line number
+    var k = "" + i.Type + "-" + i.LineNo;
+    var html = { __html: i.HTML };
+    var cls = "search-result-item";
+    if (i.Type == TypeTitle) {
+      cls = "search-result-title-item";
+    }
+    return (
+      <div
+        key={k}
+        className={cls}
+        dangerouslySetInnerHTML={html}
+        ></div>
+    );
   },
 
   createResultNote: function(o) {
