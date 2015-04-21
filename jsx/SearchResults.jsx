@@ -7,6 +7,9 @@ var format = require('./format.js');
 var TypeTitle = 1;
 var TypeLine = 2;
 
+// if true, show line number at the beginning of search results
+var showLineNumbers = true;
+
 /*
 Format of search results:
 {
@@ -25,8 +28,6 @@ Format of search results:
   ]
 }
 */
-
-
 
 var SearchResults = React.createClass({
 
@@ -53,12 +54,21 @@ var SearchResults = React.createClass({
     if (i.Type == TypeTitle) {
       cls = "search-result-title-item";
     }
+    var lineNo = i.LineNo + ":";
+    if (i.LineNo == -1) {
+      lineNo = "";
+    }
+    if (!showLineNumbers) {
+      lineNo = "";
+    }
     return (
       <div
         key={k}
         className={cls}
-        dangerouslySetInnerHTML={html}
-        ></div>
+        >
+        <span className="line-no">{lineNo}</span>
+        <span dangerouslySetInnerHTML={html}></span>
+      </div>
     );
   },
 
