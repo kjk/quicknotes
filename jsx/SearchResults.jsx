@@ -46,9 +46,10 @@ var SearchResults = React.createClass({
     );
   },
 
-  createResultItem: function(i) {
+  createResultItem: function(noteID, i) {
     // Maybe: show line number
-    var k = "" + i.Type + "-" + i.LineNo;
+    var k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
+    console.log(k + i.HTML);
     var html = { __html: i.HTML };
     var cls = "search-result-item";
     if (i.Type == TypeTitle) {
@@ -77,15 +78,15 @@ var SearchResults = React.createClass({
     var cb = this.handleClick.bind(this, noteID);
     var items = o.Items;
     var self = this;
-    var results = items.map(function(i) {
-      return self.createResultItem(i);
+    var children = items.map(function(i) {
+      return self.createResultItem(noteID, i);
     });
     return (
       <div
         key={noteID}
         className="search-result-note"
         onClick={cb}>
-        {results}
+        {children}
       </div>
     );
   },
