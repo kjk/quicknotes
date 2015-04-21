@@ -385,6 +385,7 @@ var AppUser = React.createClass({
         <div>
             <Top isLoggedIn={isLoggedIn}
               loggedInUserHandle={this.state.loggedInUserHandle}
+              startNewNoteCb={this.handleStartNewNote}
               notesUserHandle={this.props.notesUserHandle}
               searchTermChangedCb={this.handleSearchTermChanged}
             />

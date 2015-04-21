@@ -34,11 +34,26 @@ var Top = React.createClass({
     }
   },
 
+  handleCreateNewNote: function(e) {
+    e.preventDefault();
+    this.props.startNewNoteCb();
+  },
+
+  createNewNote: function() {
+    if (this.props.isLoggedIn) {
+      return (
+        <a id="new-note" href="#" onClick={this.handleCreateNewNote}>
+          <i className="icn-plus"></i>
+        </a>
+      );
+    }
+  },
+
   render: function() {
     return (
       <div id="header">
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
-        <a id="new-note" onClick={this.props.startNewNoteCb}><i className="icn-plus"></i></a>
+        {this.createNewNote()}
         {this.createSearchInput()}
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>
