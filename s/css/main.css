@@ -61,7 +61,7 @@ a {
 }
 
 #header .logo {
-  background-size: 132px 23px;
+  background-size: 115px 20px;
 }
 
 #header #new-note {
@@ -194,10 +194,11 @@ a {
 
 .box {
   width: 300px;
-  margin: -56px auto 0 auto;
+  margin-top: -56px;
+  margin-left: -180px;
   padding: 30px 30px 20px 30px;
-  position: relative;
-  top: 50%;
+  position: absolute;
+  top: 50%; left: 50%;
   transform: translateY(-50%);
 }
 
