@@ -3,12 +3,26 @@
   hosts: quicknotes-initial
   sudo: True
   tasks:
+    - name: create a group
+      group: name=quicknotes state=present
+    - name: create a user
+      user: name=quicknotes group=quicknotes groups="sudo" shell=/bin/bash
+    - name: make user a sudoer
+      lineinfile: dest=/etc/sudoers state=present regexp='^%quicknotes' line='%quicknotes ALL=(ALL) NOPASSWD:ALL'
+    - name: create user's .ssh directory
+      file: path=/home/quicknotes/.ssh state=directory owner=quicknotes group=quicknotes mode=0755
+    - name: copy ssh key
+      copy: src=quicknotes_rsa.pub dest=/home/quicknotes/.ssh/authorized_keys
+    - name: configure authorized_keys
+      file: path=/home/quicknotes/.ssh/authorized_keys mode=0644 owner=quicknotes group=quicknotes
     - name: install nginx
       apt: name=nginx state=latest update_cache=yes
     - name: install unzip
       apt: name=unzip state=latest update_cache=yes
     - name: install tar
       apt: name=tar state=latest update_cache=yes
+    - name: install git
+      apt: name=git state=latest update_cache=yes
     - name: create directory for nginx logs
       file: >
         path=/var/log/nginx/quicknotes/ state=directory mode=0755

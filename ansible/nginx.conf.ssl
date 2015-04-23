@@ -4,15 +4,31 @@
 # redirect www.quicknotes.io => quicknotes.io
 server {
     listen          80;
+    listen          443 ssl;
     server_name     www.quicknotes.io;
+
+    ssl_certificate       /etc/nginx/ssl/quicknotes.crt;
+    ssl_certificate_key   /etc/nginx/ssl/quicknotes.key;
 
     return 301 $scheme://quicknotes.io$request_uri;
 }
 
+# redirect http to https. We use self-signed cert but that's ok because we
+# use cloudflare. This will force people talking to cloudflare via ssl.
 server {
     listen          80;
+    server_name     quicknotes.io;
+    return 301 https://quicknotes.io$request_uri;
+}
+
+server {
+    listen          443 ssl;
 
     server_name     quicknotes.io ssh.quicknotes.io;
+
+    ssl on;
+    ssl_certificate       /etc/nginx/ssl/quicknotes.crt;
+    ssl_certificate_key   /etc/nginx/ssl/quicknotes.key;
 
     access_log      /var/log/nginx/quicknotes/access.log;
     error_log       /var/log/nginx/quicknotes/error.log;
