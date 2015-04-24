@@ -51,7 +51,7 @@ func init() {
 }
 
 func getSqlConnectionRoot() string {
-	if flgIsLocal {
+	if flgIsLocal && !flgProdDb {
 		return "root@tcp(localhost:3306)/"
 	}
 	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"

@@ -18,6 +18,7 @@ var (
 	httpAddr = ":5111"
 
 	flgIsLocal              bool // local means using local mysql database, production means google's cloud
+	flgProdDb               bool // if true, use gce db when running localy
 	flgDelDatabase          bool
 	flgRecreateDatabase     bool
 	flgImportJSONUserHandle string
@@ -65,6 +66,7 @@ func getLocalStoreDir() string {
 
 func parseFlags() {
 	flag.BoolVar(&flgIsLocal, "local", false, "running locally?")
+	flag.BoolVar(&flgProdDb, "proddb", false, "use production database when running locally")
 	flag.BoolVar(&flgDelDatabase, "deldb", false, "completely delete the database? dangerous!")
 	flag.BoolVar(&flgRecreateDatabase, "recreatedb", false, "recreate database")
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
@@ -122,7 +124,7 @@ func main() {
 	verifyDirs()
 	OpenLogFiles()
 	IncLogVerbosity()
-	LogInfof("local: %v, sql connection: %s, data dir: %s\n", flgIsLocal, getSqlConnectionRoot(), getDataDir())
+	LogInfof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSqlConnectionRoot(), getDataDir())
 	initAppMust()
 
 	if flgListUsers {

@@ -26,11 +26,13 @@ function tagsFromNotes(notes) {
     return {};
   }
 
-  notes.map(function (note) {
+  for (var i = 0; i < notes.length; i++) {
+    var note = notes[i];
+
     // a deleted note won't show up under other tags or under "all" or "public"
     if (ni.IsDeleted(note)) {
       tags.__deleted += 1;
-      return;
+      continue;
     }
 
     tags.__all += 1;
@@ -44,12 +46,14 @@ function tagsFromNotes(notes) {
       tags.__private += 1;
     }
 
-    if (ni.Tags(note)) {
-      ni.Tags(note).map(function (tag) {
+    var noteTags = ni.Tags(note);
+    if (noteTags !== null) {
+      for (var j = 0; j < noteTags.length; j++) {
+        var tag = noteTags[j];
         utils.dictInc(tags, tag);
-      });
+      }
     }
-  });
+  }
 
   return tags;
 }
