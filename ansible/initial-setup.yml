@@ -30,11 +30,11 @@
       file: >
         path=/etc/nginx/ssl/ state=directory mode=0755
     - name: copy nginx certificate
-      copy: src=nginx.crt dest=/etc/nginx/ssl/quicknotes.crt
+      copy: src=www.quicknotes.io.chained.crt dest=/etc/nginx/ssl/www.quicknotes.io.chained.crt
     - name: copy nginx key
-      copy: src=nginx.key dest=/etc/nginx/ssl/quicknotes.key
+      copy: src=www.quicknotes.io.key dest=/etc/nginx/ssl/www.quicknotes.io.key
     - name: copy nginx config file
-      copy: src=nginx.conf dest=/etc/nginx/sites-available/quicknotes
+      copy: src=nginx.conf.ssl dest=/etc/nginx/sites-available/quicknotes
     - name: enable website
       file: >
         dest=/etc/nginx/sites-enabled/quicknotes
