@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -34,8 +36,23 @@ func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
 	http.Error(w, msg, http.StatusInternalServerError)
 }
 
-func httpOkBytesWithContentType(w http.ResponseWriter, contentType string, content []byte) {
+func acceptsGzip(r *http.Request) bool {
+	return r != nil && strings.Contains(r.Header.Get("Accept-Encoding"), "gzip")
+}
+
+func httpOkBytesWithContentType(w http.ResponseWriter, r *http.Request, contentType string, content []byte) {
 	w.Header().Set("Content-Type", contentType)
+	w.Header().Add("Vary", "Accept-Encoding")
+	if acceptsGzip(r) {
+		w.Header().Set("Content-Encoding", "gzip")
+		// Maybe: if len(content) above certain size, write as we go (on the other
+		// hand, if we keep uncompressed data in memory...)
+		var buf bytes.Buffer
+		gz := gzip.NewWriter(&buf)
+		gz.Write(content)
+		gz.Close()
+		content = buf.Bytes()
+	}
 	w.Header().Set("Content-Length", strconv.Itoa(len(content)))
 	w.Write(content)
 }
@@ -45,27 +62,27 @@ func httpOkWithText(w http.ResponseWriter, s string) {
 	io.WriteString(w, s)
 }
 
-func httpOkWithJSON(w http.ResponseWriter, v interface{}) {
+func httpOkWithJSON(w http.ResponseWriter, r *http.Request, v interface{}) {
 	b, err := json.MarshalIndent(v, "", "\t")
 	if err != nil {
 		// should never happen
 		LogErrorf("json.MarshalIndent() failed with %q\n", err)
 	}
-	httpOkBytesWithContentType(w, "application/json", b)
+	httpOkBytesWithContentType(w, r, "application/json", b)
 }
 
-func httpOkWithJSONCompact(w http.ResponseWriter, v interface{}) {
+func httpOkWithJSONCompact(w http.ResponseWriter, r *http.Request, v interface{}) {
 	b, err := json.Marshal(v)
 	if err != nil {
 		// should never happen
 		LogErrorf("json.MarshalIndent() failed with %q\n", err)
 	}
-	httpOkBytesWithContentType(w, "application/json", b)
+	httpOkBytesWithContentType(w, r, "application/json", b)
 }
 
-func httpOkWithJsonpCompact(w http.ResponseWriter, v interface{}, jsonp string) {
+func httpOkWithJsonpCompact(w http.ResponseWriter, r *http.Request, v interface{}, jsonp string) {
 	if jsonp == "" {
-		httpOkWithJSONCompact(w, v)
+		httpOkWithJSONCompact(w, r, v)
 	} else {
 		b, err := json.Marshal(v)
 		if err != nil {
@@ -76,8 +93,7 @@ func httpOkWithJsonpCompact(w http.ResponseWriter, v interface{}, jsonp string) 
 		res = append(res, '(')
 		res = append(res, b...)
 		res = append(res, ')')
-		httpOkBytesWithContentType(w, "application/json", res)
-
+		httpOkBytesWithContentType(w, r, "application/json", res)
 	}
 }
 
@@ -88,7 +104,7 @@ func httpErrorWithJSONf(w http.ResponseWriter, format string, arg ...interface{}
 	}{
 		Error: msg,
 	}
-	httpOkWithJSON(w, model)
+	httpOkWithJSON(w, nil, model)
 }
 
 func httpServerError(w http.ResponseWriter, r *http.Request) {
