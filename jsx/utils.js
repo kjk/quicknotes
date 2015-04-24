@@ -9,7 +9,7 @@ function noteHasTag(note, tag) {
     return false;
   }
   for (var i = 0; i < tags.length; i++) {
-    if (tags[i] === tag) {
+    if (tags[i] == tag) {
       return true;
     }
   }
@@ -76,6 +76,9 @@ function filterNotesByTag(notes, tag) {
   var res = [];
   for (var i = 0; i < notes.length; i++) {
     var note = notes[i];
+    if (ni.IsDeleted(note)) {
+      continue;
+    }
     if (noteHasTag(note, tag)) {
       res.push(note);
     }
@@ -127,3 +130,4 @@ exports.clearNewNote = clearNewNote;
 exports.tagNameToDisplayName = tagNameToDisplayName;
 exports.isSpecialTag = isSpecialTag;
 exports.deepCloneObject = deepCloneObject;
+exports.noteHasTag = noteHasTag;
