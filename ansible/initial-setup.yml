@@ -9,6 +9,14 @@
       user: name=quicknotes group=quicknotes groups="sudo" shell=/bin/bash
     - name: make user a sudoer
       lineinfile: dest=/etc/sudoers state=present regexp='^%quicknotes' line='%quicknotes ALL=(ALL) NOPASSWD:ALL'
+    - name: increase hard file limit
+      lineinfile: dest=/etc/security/limits.conf state=present line="quicknotes hard nofile 375836"
+    - name: increase soft file limit
+      lineinfile: dest=/etc/security/limits.conf state=present line="quicknotes soft nofile 375836"
+    - name: increse file limit
+      lineinfile: dest=/etc/pam.d/common-session state=present line="session required pam_limits.so"
+    - name: increse file limit 2
+      lineinfile: dest=/etc/pam.d/common-session-noninteractive state=present line="session required pam_limits.so"
     - name: create user's .ssh directory
       file: path=/home/quicknotes/.ssh state=directory owner=quicknotes group=quicknotes mode=0755
     - name: copy ssh key
