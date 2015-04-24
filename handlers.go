@@ -232,7 +232,7 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 	}
 	v := noteToCompact(note)
 	v[noteContentIdx] = string(content)
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, r, v)
 }
 
 // /api/getnotescompact.json
@@ -273,7 +273,7 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
-	httpOkWithJsonpCompact(w, v, jsonp)
+	httpOkWithJsonpCompact(w, r, v, jsonp)
 }
 
 // NewNoteFromBrowser represents format of the note sent by the browser
@@ -345,7 +345,7 @@ func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 	}{
 		IDStr: hashInt(noteID),
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
@@ -391,7 +391,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "note has been deleted",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // POST /api/permanentdeletenote.json
@@ -414,7 +414,7 @@ func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "note has been permanently deleted",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // POST /api/undeletenote.json
@@ -437,7 +437,7 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "note has been undeleted",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // GET /api/makenoteprivate.json
@@ -460,7 +460,7 @@ func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "made note private",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // GET /api/makenotepublic.json
@@ -483,7 +483,7 @@ func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "made note public",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // GET /api/starnote.json
@@ -506,7 +506,7 @@ func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "starred note",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // GET /api/unstarnote.json
@@ -529,7 +529,7 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 	}{
 		Msg: "unstarred note",
 	}
-	httpOkWithJSON(w, v)
+	httpOkWithJSON(w, nil, v)
 }
 
 // GET /api/tohtml.json

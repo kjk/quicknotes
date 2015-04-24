@@ -94,5 +94,5 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 		Term:    searchTerm,
 		Results: res,
 	}
-	httpOkWithJSONCompact(w, v)
+	httpOkWithJSONCompact(w, r, v)
 }
