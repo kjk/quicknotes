@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/google/go-github/github"
@@ -68,13 +71,47 @@ var (
 		},
 	}
 
-	secretsMutex sync.Mutex
-	tempSecrets  = map[string]string{}
+	muLogin        sync.Mutex
+	tempSecrets    = map[string]string{}
+	loginRedirects = map[string]*LoginRedirect{}
 )
+
+// LoginRedirect has info about redirect during login
+type LoginRedirect struct {
+	url       string
+	createdAt time.Time
+}
 
 // SecureCookieValue is value of the cookie
 type SecureCookieValue struct {
 	UserID int
+}
+
+func genLoginRedirectWithSecret(url string) string {
+	muLogin.Lock()
+	defer muLogin.Unlock()
+	for i := 0; i < 1000; i++ {
+		n := rand.Intn(100000)
+		s := fmt.Sprintf("%s-%d", oauthSecretString, n)
+		if loginRedirects[s] == nil {
+			lr := &LoginRedirect{
+				url:       url,
+				createdAt: time.Now(),
+			}
+			loginRedirects[s] = lr
+			return s
+		}
+	}
+	log.Fatalf("genLoginRedirectWithSecret: failed to generate random secret")
+	return ""
+}
+
+func getAndDeleteLoginRedirect(s string) *LoginRedirect {
+	muLogin.Lock()
+	defer muLogin.Unlock()
+	res := loginRedirects[s]
+	delete(loginRedirects, s)
+	return res
 }
 
 func initCookieMust() {
@@ -154,14 +191,14 @@ func getUserFromCookie(w http.ResponseWriter, r *http.Request) *DbUser {
 }
 
 func putTempCredentials(cred *oauth.Credentials) {
-	secretsMutex.Lock()
-	defer secretsMutex.Unlock()
+	muLogin.Lock()
+	defer muLogin.Unlock()
 	tempSecrets[cred.Token] = cred.Secret
 }
 
 func getTempCredentials(token string) *oauth.Credentials {
-	secretsMutex.Lock()
-	defer secretsMutex.Unlock()
+	muLogin.Lock()
+	defer muLogin.Unlock()
 	if secret, ok := tempSecrets[token]; ok {
 		return &oauth.Credentials{Token: token, Secret: secret}
 	}
@@ -169,8 +206,8 @@ func getTempCredentials(token string) *oauth.Credentials {
 }
 
 func deleteTempCredentials(token string) {
-	secretsMutex.Lock()
-	defer secretsMutex.Unlock()
+	muLogin.Lock()
+	defer muLogin.Unlock()
 	delete(tempSecrets, token)
 }
 
@@ -260,9 +297,8 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	q := url.Values{
 		"redirect": {redirect},
 	}.Encode()
-	cb := "http://" + r.Host + "/logintwittercb?" + q
-
-	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cb, nil)
+	cbURL := r.URL.Scheme + "://" + r.Host + "/logintwittercb?" + q
+	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cbURL, nil)
 	if err != nil {
 		httpErrorf(w, "oauthTwitterClient.RequestTemporaryCredentials() failed with '%s'", err)
 		return
@@ -343,6 +379,7 @@ func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 		httpErrorf(w, "Missing redirect value for /logingithub")
 		return
 	}
+
 	uri := oauthGitHubConf.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
@@ -414,7 +451,7 @@ func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: Google doesn't allow anything after the url, so we can't pass
 	// redirect argument. Needs to
-	cb := "http://" + r.Host + "/logingooglecb"
+	cb := "https://" + r.Host + "/logingooglecb"
 	//cb = "http://quicknotes.io/logingooglecb"
 	//cb = "http://127.0.0.1:5111/logingooglecb"
 	oauth := oauthGoogleConf
