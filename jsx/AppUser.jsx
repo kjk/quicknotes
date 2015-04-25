@@ -66,15 +66,24 @@ var AppUser = React.createClass({
   getInitialState: function() {
     var initialNotesJSON = this.props.initialNotesJSON;
     var allNotes = [];
+    var selectedNotes = [];
+    var selectedTag = this.props.initialTag;
+    var loggedInUserHandle = "";
+    var tags = [];
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
+      selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
+      loggedInUserHandle = initialNotesJSON.LoggedInUserHandle;
+      tags = tagsFromNotes(allNotes);
+
     }
     return {
       allNotes: allNotes,
-      selectedNotes: [],
+      selectedNotes: selectedNotes,
       // TODO: should be an array this.props.initialTags
-      selectedTag: this.props.initialTag,
-      loggedInUserHandle: "",
+      selectedTag: selectedTag,
+      tags: tags,
+      loggedInUserHandle: loggedInUserHandle,
       noteBeingEdited: null,
       searchResults: null
     };
@@ -108,7 +117,7 @@ var AppUser = React.createClass({
   },
 
   updateNotes: function() {
-      var userHandle = this.props.notesUserHandle;
+    var userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
     var uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
     //console.log("updateNotes: uri=", uri);
@@ -136,7 +145,6 @@ var AppUser = React.createClass({
     key('ctrl+f', utils.focusSearch);
     key('ctrl+e', utils.focusNewNote);
     key('esc', this.escPressed);
-    this.updateNotes();
   },
 
   componentWillUnmount: function() {
@@ -169,7 +177,6 @@ var AppUser = React.createClass({
   },
 
   permanentDeleteNote: function(note) {
-    console.log("permanentDeleteNote");
     var data = {
       noteIdHash: ni.IDStr(note)
     };
@@ -233,7 +240,6 @@ var AppUser = React.createClass({
       noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
-      console.log("created a new note: " + noteJSON);
       this.updateNotes();
     }.bind(this))
     .fail(function() {
@@ -245,7 +251,6 @@ var AppUser = React.createClass({
     var newNote = ni.toNewNote(note);
     newNote.Content = newNote.Content.trim();
     var noteJSON = JSON.stringify(newNote);
-    console.log("saveNote: " + noteJSON);
     this.setState({
       noteBeingEdited: null
     });
@@ -255,7 +260,6 @@ var AppUser = React.createClass({
       noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
-      console.log("note has been saved: " + noteJSON);
       this.updateNotes();
     }.bind(this))
     .fail(function() {
@@ -394,7 +398,6 @@ var AppUser = React.createClass({
   render: function() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
-
     var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
     return (
         <div>
@@ -444,7 +447,8 @@ function appUserStart() {
   //console.log("gNotesUserHandle: ", gNotesUserHandle);
   var initialTags = tagsFromRoute(Router.getHash());
   var initialTag = initialTags[0];
-  console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
+  //console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
+  //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
 
   React.render(
     <AppUser notesUserHandle={gNotesUserHandle}
