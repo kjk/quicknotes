@@ -297,7 +297,12 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	q := url.Values{
 		"redirect": {redirect},
 	}.Encode()
-	cbURL := r.URL.Scheme + "://" + r.Host + "/logintwittercb?" + q
+	fmt.Printf("handleLoginTwitter: url: %#v\n", r.URL)
+	scheme := r.URL.Scheme
+	if scheme == "" {
+		scheme = "http"
+	}
+	cbURL := scheme + "://" + r.Host + "/logintwittercb?" + q
 	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cbURL, nil)
 	if err != nil {
 		httpErrorf(w, "oauthTwitterClient.RequestTemporaryCredentials() failed with '%s'", err)
