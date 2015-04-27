@@ -178,17 +178,22 @@ var FullComposer = React.createClass({
             value={ni.Content(note)}
             onChange={this.textChanged}
             ref="editArea" />
-          <div id="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
+          <div className="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
         </div>
-        <div id="full-composer-bottom">
-          <button onClick={this.handleSave} disabled={saveDisabled}>Save</button>
-          <button onClick={this.handleCancel}>Cancel</button>
-          <input
-            type="checkbox"
-            onChange={this.handlePublicChanged}
-            checked={ni.IsPublic(note)}>public</input>
-          &nbsp;&nbsp;format:&nbsp;
-          {formatSelect}
+        <div id="full-composer-actions">
+          <div className="inner">
+            <button onClick={this.handleSave} disabled={saveDisabled}>Save</button>
+            <button onClick={this.handleCancel}>Cancel</button>
+            <input
+              type="checkbox" id="public-toggle" name="public-toggle"
+              onChange={this.handlePublicChanged}
+              checked={ni.IsPublic(note)}></input>
+            <label for="public-toggle">public</label>
+            <div className="right">
+              <span>Format</span>
+              {formatSelect}
+            </div>
+          </div>
         </div>
       </div>
     );
