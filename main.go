@@ -157,6 +157,10 @@ func main() {
 		return
 	}
 
+	if flgIsLocal {
+		ensureHasSassc()
+	}
+
 	getDbMust()
 
 	if flgSearchTerm != "" {

@@ -105,7 +105,6 @@ func recompileWorker() {
 }
 
 func startRecompileMust() {
-	ensureHasSassc()
 	sassCompileAll()
 	var err error
 	fileWatcher, err = fsnotify.NewWatcher()
