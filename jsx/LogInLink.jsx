@@ -1,7 +1,15 @@
-/* jshint -W09,-W1177 */
+/* jshint -W097,-W117 */
 'use strict';
 
+var actions = require('./actions.js');
+
 var LogInLink = React.createClass({
+
+  handleSettings: function(e) {
+    e.preventDefault();
+    console.log("handleSettings");
+    actions.notifyShowSettings();
+  },
 
   createLoggedIn: function() {
     var url = encodeURI("/logout?redirect=" + window.location);
@@ -17,7 +25,7 @@ var LogInLink = React.createClass({
           <div className="dropdown-content">
             <a href={userUrl}>Notes</a>
             <span className="divider"></span>
-            <a href="#">Settings</a>
+            <a href="#" onClick={this.handleSettings}>Settings</a>
             <a href="/import">Import notes</a>
             <span className="divider"></span>
             <a href={url}>Log Out</a>
