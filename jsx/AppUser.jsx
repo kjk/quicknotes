@@ -6,7 +6,6 @@ var utils = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
 
-var Composer = require('./Composer.jsx');
 var FullComposer = require('./FullComposer.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
 var NotesList = require('./NotesList.jsx');
@@ -384,17 +383,6 @@ var AppUser = React.createClass({
     this.handleSearchTermChanged(""); // hide search results
   },
 
-  createComposer: function() {
-    var showComposer = true;
-    if (showComposer) {
-      return (
-        <Composer
-          startNewNoteCb={this.handleStartNewNote}
-          createNewTextNoteCb={this.createNewTextNote}/>
-      );
-    }
-  },
-
   render: function() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
@@ -424,7 +412,6 @@ var AppUser = React.createClass({
               editCb={this.editNote}
             />
 
-          {this.createComposer()}
           {this.createFullComposer()}
           {this.createSearchResults()}
         </div>
