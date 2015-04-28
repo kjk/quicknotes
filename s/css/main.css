@@ -204,6 +204,28 @@ a {
   display: block;
 }
 
+/**/
+#settings {
+  position: relative;
+  background-color: lightblue;
+  width: 640px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 80px;
+  border: 2px solid blue;
+  z-index: 99;
+}
+
+.settings-div {
+  margin-bottom: 4px;
+}
+.settings-buttons {
+  margin-top: 8px;
+}
 
 /**/
 #page-content {
