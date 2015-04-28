@@ -29,11 +29,22 @@ var Settings = React.createClass({
   },
 
   handleThemeChanged: function(e) {
-    console.log("handleThemeChanged");
+    var theme = e.target.value;
+    console.log("handleThemeChanged: ", theme);
+    this.setState({
+      theme: theme
+    });
+    $("body").removeClass();
+    $("body").addClass("theme-" + theme);
   },
 
   handleLayoutChanged: function(e) {
-    console.log("handleLayoutChanged");
+    var layout = e.target.value;
+    console.log("handleLayoutChanged: ", layout);
+    this.setState({
+      layout: layout
+    });
+    $("body").attr("data-spacing", layout);
   },
 
   renderThemesSelect: function(themes, selected) {
