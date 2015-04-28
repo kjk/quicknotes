@@ -12,6 +12,10 @@ var NotesList = require('./NotesList.jsx');
 var Router = require('./Router.js');
 var SearchResults = require('./SearchResults.jsx');
 var Top = require('./Top.jsx');
+var Settings = require('./Settings.jsx');
+
+// TODO: temporary
+var showSettings = false;
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -383,38 +387,45 @@ var AppUser = React.createClass({
     this.handleSearchTermChanged(""); // hide search results
   },
 
+  renderSettings: function() {
+    if (showSettings) {
+      return <Settings />;
+    }
+  },
+
   render: function() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
     var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
-    return (
-        <div>
-            <Top isLoggedIn={isLoggedIn}
-              loggedInUserHandle={this.state.loggedInUserHandle}
-              startNewNoteCb={this.handleStartNewNote}
-              notesUserHandle={this.props.notesUserHandle}
-              searchTermChangedCb={this.handleSearchTermChanged}
-            />
-            <LeftSidebar tags={this.state.tags}
-              isLoggedIn={isLoggedIn}
-              myNotes={myNotes}
-              onTagSelected={this.handleTagSelected}
-              selectedTag={this.state.selectedTag}
-            />
-            <NotesList
-              notes={this.state.selectedNotes}
-              myNotes={myNotes}
-              compact={compact}
-              permanentDeleteNoteCb={this.permanentDeleteNote}
-              delUndelNoteCb={this.delUndelNote}
-              makeNotePublicPrivateCb={this.makeNotePublicPrivate}
-              startUnstarNoteCb={this.startUnstarNote}
-              editCb={this.editNote}
-            />
 
-          {this.createFullComposer()}
-          {this.createSearchResults()}
-        </div>
+    return (
+      <div>
+        <Top isLoggedIn={isLoggedIn}
+          loggedInUserHandle={this.state.loggedInUserHandle}
+          startNewNoteCb={this.handleStartNewNote}
+          notesUserHandle={this.props.notesUserHandle}
+          searchTermChangedCb={this.handleSearchTermChanged}
+        />
+        <LeftSidebar tags={this.state.tags}
+          isLoggedIn={isLoggedIn}
+          myNotes={myNotes}
+          onTagSelected={this.handleTagSelected}
+          selectedTag={this.state.selectedTag}
+        />
+        <NotesList
+          notes={this.state.selectedNotes}
+          myNotes={myNotes}
+          compact={compact}
+          permanentDeleteNoteCb={this.permanentDeleteNote}
+          delUndelNoteCb={this.delUndelNote}
+          makeNotePublicPrivateCb={this.makeNotePublicPrivate}
+          startUnstarNoteCb={this.startUnstarNote}
+          editCb={this.editNote}
+        />
+        {this.renderSettings()}
+        {this.createFullComposer()}
+        {this.createSearchResults()}
+      </div>
     );
   }
 });
