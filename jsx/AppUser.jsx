@@ -5,6 +5,7 @@ var _ = require('./underscore.js');
 var utils = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
+var actions = require('./actions.js');
 
 var FullComposer = require('./FullComposer.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
@@ -13,9 +14,6 @@ var Router = require('./Router.js');
 var SearchResults = require('./SearchResults.jsx');
 var Top = require('./Top.jsx');
 var Settings = require('./Settings.jsx');
-
-// TODO: temporary
-var showSettings = false;
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -88,7 +86,8 @@ var AppUser = React.createClass({
       tags: tags,
       loggedInUserHandle: loggedInUserHandle,
       noteBeingEdited: null,
-      searchResults: null
+      searchResults: null,
+      showingSettings: false
     };
   },
 
@@ -143,17 +142,36 @@ var AppUser = React.createClass({
     return this.standardKeyFilter(event);
   },
 
+  showSettings: function() {
+    console.log("showSettings");
+    this.setState({
+      showingSettings: true
+    });
+  },
+
+  hideSettings: function() {
+    console.log("hideSettings");
+    this.setState({
+      showingSettings: false
+    });
+  },
+
   componentDidMount: function() {
     key.filter = this.keyFilter;
     key('ctrl+f', utils.focusSearch);
     key('ctrl+e', utils.focusNewNote);
     key('esc', this.escPressed);
+
+    actions.subscribeToShowSettings(this.showSettings);
+    actions.subscribeToHideSettings(this.hideSettings);
   },
 
   componentWillUnmount: function() {
     key.unbind('ctrl+f', utils.focusSearch);
     key.unbind('ctrl+e', utils.focusNewNote);
     key.unbind('esc', this.escPressed);
+
+    // TODO: usubscribe     actions.subscribeToShowSettings(thsi.showSettings);
   },
 
   // TODO: after delete/undelete should show a message at the top
@@ -388,7 +406,8 @@ var AppUser = React.createClass({
   },
 
   renderSettings: function() {
-    if (showSettings) {
+    console.log("renderSettings: ", this.state.showingSettings);
+    if (this.state.showingSettings) {
       return <Settings />;
     }
   },
