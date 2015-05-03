@@ -57,6 +57,6 @@ CREATE TABLE tag_names (
   INDEX (tag)
 );
 
-CREATE TABLE migrations (
+CREATE TABLE dbmigrations (
 	version int NOT NULL
 );

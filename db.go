@@ -57,6 +57,10 @@ func getSqlConnectionRoot() string {
 	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
 }
 
+func getSqlConnection() string {
+	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
+}
+
 func isValidFormat(format int) bool {
 	return format >= formatFirst && format <= formatLast
 }
@@ -310,10 +314,6 @@ func ensureValidFormat(format int) {
 		return
 	}
 	LogFatalf("invalid format: %d\n", format)
-}
-
-func getSqlConnection() string {
-	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
 }
 
 func execMust(db *sql.DB, q string, args ...interface{}) {
