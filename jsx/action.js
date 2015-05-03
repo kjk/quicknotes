@@ -1,6 +1,8 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+/* reusable part */
+
 // Loosely inspired by flux ideas.
 // One part of the code can trigger an action by calling a function in this
 // module. Other parts of the code can provide callbacks to be called when
@@ -65,7 +67,7 @@ function off(actionIdx, cbId) {
   console.log("action.off: didn't find callback id", cbId, "for action", getActionName(actionIdx));
 }
 
-/* actions */
+/* actions specific to an app */
 
 // index in actionCallbacks array for a given action
 var showSettingsIdx = 0;
