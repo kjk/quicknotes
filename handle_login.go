@@ -22,9 +22,12 @@ import (
 )
 
 const (
-	cookieAuthKeyHexStr = "513521f0ef43c9446ed7bf359a5a9700ef5fa5a5eb15d0db5eae8e93856d99bd"
-	cookieEncrKeyHexStr = "4040ed16d4352320b5a7f51e26443342d55a0f46be2acfe5ba694a123230376a"
-	cookieName          = "qnckie" // "quicknotes cookie"
+	cookieAuthKeyHex = "513521f0ef43c9446ed7bf359a5a9700ef5fa5a5eb15d0db5eae8e93856d99bd"
+	cookieEncrKeyHex = "4040ed16d4352320b5a7f51e26443342d55a0f46be2acfe5ba694a123230376a"
+	cookieName       = "qnckie" // "quicknotes cookie"
+
+	// random string for oauth2 API calls to protect against CSRF
+	oauthSecretString = "5576867039"
 )
 
 var (
@@ -32,9 +35,6 @@ var (
 	cookieEncrKey []byte
 
 	secureCookie *securecookie.SecureCookie
-
-	// random string for oauth2 API calls to protect against CSRF
-	oauthSecretString = "5576867039"
 
 	githubEndpoint = oauth2.Endpoint{
 		AuthURL:  "https://github.com/login/oauth/authorize",
@@ -116,9 +116,9 @@ func getAndDeleteLoginRedirect(s string) *LoginRedirect {
 
 func initCookieMust() {
 	var err error
-	cookieAuthKey, err = hex.DecodeString(cookieAuthKeyHexStr)
+	cookieAuthKey, err = hex.DecodeString(cookieAuthKeyHex)
 	u.PanicIfErr(err)
-	cookieEncrKey, err = hex.DecodeString(cookieEncrKeyHexStr)
+	cookieEncrKey, err = hex.DecodeString(cookieEncrKeyHex)
 	u.PanicIfErr(err)
 	secureCookie = securecookie.New(cookieAuthKey, cookieEncrKey)
 	// verify auth/encr keys are correct
