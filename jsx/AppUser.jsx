@@ -5,7 +5,7 @@ var _ = require('./underscore.js');
 var utils = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
-var actions = require('./actions.js');
+var action = require('./action.js');
 
 var FullComposer = require('./FullComposer.jsx');
 var LeftSidebar = require('./LeftSidebar.jsx');
@@ -162,8 +162,8 @@ var AppUser = React.createClass({
     key('ctrl+e', utils.focusNewNote);
     key('esc', this.escPressed);
 
-    actions.subscribeToShowSettings(this.showSettings);
-    actions.subscribeToHideSettings(this.hideSettings);
+    this.cidShowSettings = action.onShowSettings(this.showSettings);
+    this.cidHideSettings = action.onHideSettings(this.hideSettings);
   },
 
   componentWillUnmount: function() {
@@ -171,7 +171,8 @@ var AppUser = React.createClass({
     key.unbind('ctrl+e', utils.focusNewNote);
     key.unbind('esc', this.escPressed);
 
-    // TODO: usubscribe     actions.subscribeToShowSettings(thsi.showSettings);
+    action.onShowSettings(this.cidShowSettings)
+    action.onHideSettings(this.cidHideSettings)
   },
 
   // TODO: after delete/undelete should show a message at the top
