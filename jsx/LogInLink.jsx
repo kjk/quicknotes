@@ -1,14 +1,14 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var actions = require('./actions.js');
+var action = require('./action.js');
 
 var LogInLink = React.createClass({
 
   handleSettings: function(e) {
     e.preventDefault();
     console.log("handleSettings");
-    actions.notifyShowSettings();
+    action.showSettings();
   },
 
   createLoggedIn: function() {

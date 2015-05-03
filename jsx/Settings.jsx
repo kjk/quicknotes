@@ -1,7 +1,7 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var actions = require('./actions.js');
+var action = require('./action.js');
 
 var allThemes = [
   "light",
@@ -67,12 +67,12 @@ var Settings = React.createClass({
 
   handleOk: function(e) {
     e.preventDefault();
-    actions.notifyHideSettings();
+    action.hideSettings();
   },
 
   handleCancel: function(e) {
     e.preventDefault();
-    actions.notifyHideSettings();
+    action.hideSettings();
   },
 
   render: function() {
