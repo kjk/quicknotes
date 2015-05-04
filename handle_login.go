@@ -5,13 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/google/go-github/github"
@@ -27,7 +24,7 @@ const (
 	cookieName       = "qnckie" // "quicknotes cookie"
 
 	// random string for oauth2 API calls to protect against CSRF
-	oauthSecretString = "5576867039"
+	oauthSecretPrefix = "5576867039-"
 )
 
 var (
@@ -71,47 +68,13 @@ var (
 		},
 	}
 
-	muLogin        sync.Mutex
-	tempSecrets    = map[string]string{}
-	loginRedirects = map[string]*LoginRedirect{}
+	muLogin     sync.Mutex
+	tempSecrets = map[string]string{}
 )
-
-// LoginRedirect has info about redirect during login
-type LoginRedirect struct {
-	url       string
-	createdAt time.Time
-}
 
 // SecureCookieValue is value of the cookie
 type SecureCookieValue struct {
 	UserID int
-}
-
-func genLoginRedirectWithSecret(url string) string {
-	muLogin.Lock()
-	defer muLogin.Unlock()
-	for i := 0; i < 1000; i++ {
-		n := rand.Intn(100000)
-		s := fmt.Sprintf("%s-%d", oauthSecretString, n)
-		if loginRedirects[s] == nil {
-			lr := &LoginRedirect{
-				url:       url,
-				createdAt: time.Now(),
-			}
-			loginRedirects[s] = lr
-			return s
-		}
-	}
-	log.Fatalf("genLoginRedirectWithSecret: failed to generate random secret")
-	return ""
-}
-
-func getAndDeleteLoginRedirect(s string) *LoginRedirect {
-	muLogin.Lock()
-	defer muLogin.Unlock()
-	res := loginRedirects[s]
-	delete(loginRedirects, s)
-	return res
 }
 
 func initCookieMust() {
@@ -211,6 +174,14 @@ func deleteTempCredentials(token string) {
 	delete(tempSecrets, token)
 }
 
+func getMyHost(r *http.Request) string {
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	return scheme + "://" + r.Host
+}
+
 // getTwitter gets a resource from the Twitter API and decodes the json response to data.
 func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data interface{}) error {
 	if params == nil {
@@ -230,7 +201,7 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 	return json.Unmarshal(bodyData, data)
 }
 
-// url: GET /logintwittercb?redirect=${redirect}
+// url: GET /logintwittercb?redir=${redirect}
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleOauthTwitterCallback() url: '%s'\n", r.URL)
 	tempCred := getTempCredentials(r.FormValue("oauth_token"))
@@ -284,32 +255,32 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
-// url: GET /logintwitter?redirect=${redirect}
+// url: GET /logintwitter?redir=${redirect}
 func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("handleLoginTwitter() url: '%s'\n", r.URL)
 
-	redirect := strings.TrimSpace(r.FormValue("redirect"))
-	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /logintwitter")
+	redir := strings.TrimSpace(r.FormValue("redir"))
+	if redir == "" {
+		httpErrorf(w, "Missing 'redir' value for /logintwitter")
 		return
 	}
 
 	q := url.Values{
-		"redirect": {redirect},
+		"redir": {redir},
 	}.Encode()
 	fmt.Printf("handleLoginTwitter: url: %#v\n", r.URL)
 	scheme := r.URL.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
-	cbURL := scheme + "://" + r.Host + "/logintwittercb?" + q
-	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cbURL, nil)
+	cb := getMyHost(r) + "/logintwittercb?" + q
+	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cb, nil)
 	if err != nil {
 		httpErrorf(w, "oauthTwitterClient.RequestTemporaryCredentials() failed with '%s'", err)
 		return
 	}
 	putTempCredentials(tempCred)
-	http.Redirect(w, r, oauthTwitterClient.AuthorizationURL(tempCred, nil), 302)
+	http.Redirect(w, r, oauthTwitterClient.AuthorizationURL(tempCred, nil), http.StatusTemporaryRedirect)
 }
 
 func tokenToJSON(token *oauth2.Token) (string, error) {
@@ -328,13 +299,18 @@ func tokenFromJSON(jsonStr string) (*oauth2.Token, error) {
 	return &token, nil
 }
 
-// logingithubcb?redirect={redirect}
+// logingithubcb
 func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
-	if state != oauthSecretString {
-		LogErrorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretString, state)
+	if !strings.HasPrefix(state, oauthSecretPrefix) {
+		LogErrorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretPrefix, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
+	}
+	redir := state[len(oauthSecretPrefix):]
+	if redir == "" {
+		LogErrorf("Missing 'redir' arg for /googleoauth2cb\n")
+		redir = "/"
 	}
 
 	code := r.FormValue("code")
@@ -374,29 +350,35 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	setSecureCookie(w, cookieVal)
 	// TODO: dbUserSetGithubOauth(user, tokenCredJson)
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
-// /logingithub?redirect=${redirect}
+// /logingithub?redir=${redirect}
 func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
-	redirect := strings.TrimSpace(r.FormValue("redirect"))
-	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /logingithub")
+	redir := strings.TrimSpace(r.FormValue("redir"))
+	if redir == "" {
+		httpErrorf(w, "Missing 'redir' value for /logingithub")
 		return
 	}
 
-	uri := oauthGitHubConf.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
+	uri := oauthGitHubConf.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
-// logingooglecb?redirect={redirect}
+// logingooglecb
 func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	LogInfof("url: %s", r.URL)
 	state := r.FormValue("state")
-	if state != oauthSecretString {
-		LogErrorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretString, state)
+	if !strings.HasPrefix(state, oauthSecretPrefix) {
+		LogErrorf("invalid oauth state, expected '%s*', got '%s'\n", oauthSecretPrefix, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
+	}
+
+	redir := state[len(oauthSecretPrefix):]
+	if redir == "" {
+		LogErrorf("Missing 'redir' arg for /logingooglecb\n")
+		redir = "/"
 	}
 
 	code := r.FormValue("code")
@@ -443,36 +425,34 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	setSecureCookie(w, cookieVal)
 	// TODO: dbUserSetGithubOauth(user, tokenCredJson)
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
-// /logingoogle?redirect=${redirect}
+// /logingoogle?redir=${redirect}
 func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
-	redirect := strings.TrimSpace(r.FormValue("redirect"))
-	if redirect == "" {
-		httpErrorf(w, "Missing redirect value for /logingoogle")
+	redir := strings.TrimSpace(r.FormValue("redir"))
+	if redir == "" {
+		httpErrorf(w, "Missing 'redir' arg for /logingoogle")
 		return
 	}
 
-	// TODO: Google doesn't allow anything after the url, so we can't pass
-	// redirect argument. Needs to
-	cb := "https://" + r.Host + "/logingooglecb"
-	//cb = "http://quicknotes.io/logingooglecb"
-	//cb = "http://127.0.0.1:5111/logingooglecb"
-	oauth := oauthGoogleConf
-	oauth.RedirectURL = cb
-
-	uri := oauth.AuthCodeURL(oauthSecretString, oauth2.AccessTypeOnline)
+	cb := getMyHost(r) + "/logingooglecb"
+	oauthGoogleCopy := oauthGoogleConf
+	oauthGoogleCopy.RedirectURL = cb
+	// oauth2 package has a way to add additional args to url (SetAuthURLParam)
+	// but google doesn't seem to send them back to callback url, so I encode
+	// redir inside secret
+	uri := oauthGoogleCopy.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
-// url: GET /logout?redirect=${redirect}
+// url: GET /logout?redir=${redirect}
 func handleLogout(w http.ResponseWriter, r *http.Request) {
-	redirect := strings.TrimSpace(r.FormValue("redirect"))
-	if redirect == "" {
-		LogErrorf("Missing redirect value for /logout\n")
-		redirect = "/"
+	redir := strings.TrimSpace(r.FormValue("redir"))
+	if redir == "" {
+		LogErrorf("Missing 'redir' arg for /logout\n")
+		redir = "/"
 	}
 	deleteSecureCookie(w)
-	http.Redirect(w, r, redirect, 302)
+	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
