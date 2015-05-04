@@ -12,7 +12,7 @@ var LogInLink = React.createClass({
   },
 
   createLoggedIn: function() {
-    var url = encodeURI("/logout?redirect=" + window.location);
+    var url = encodeURI("/logout?redir=" + window.location);
     var userUrl = "/u/" + this.props.loggedInUserHandle;
     return (
       <div id="user">
@@ -36,7 +36,7 @@ var LogInLink = React.createClass({
   },
 
   createLoggedOut: function() {
-    var twitterUrl = encodeURI("/logintwitter?redirect=" + window.location);
+    var twitterUrl = encodeURI("/logintwitter?redir=" + window.location);
     return (
       <div id="user">
         <span className="user">
@@ -47,8 +47,8 @@ var LogInLink = React.createClass({
 
           <div className="dropdown-content">
             <a href={twitterUrl}>with Twitter</a>
-            <a href="/logingoogle?redirect=%2F">with Google</a>
-            <a href="/logingithub?redirect=%2F">with GitHub</a>
+            <a href="/logingoogle?redir=%2F">with Google</a>
+            <a href="/logingithub?redir=%2F">with GitHub</a>
           </div>
         </div>
       </div>
