@@ -42,6 +42,8 @@ func acceptsGzip(r *http.Request) bool {
 
 func httpOkBytesWithContentType(w http.ResponseWriter, r *http.Request, contentType string, content []byte) {
 	w.Header().Set("Content-Type", contentType)
+	// https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+	// prevent caching non-gzipped version
 	w.Header().Add("Vary", "Accept-Encoding")
 	if acceptsGzip(r) {
 		w.Header().Set("Content-Encoding", "gzip")
