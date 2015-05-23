@@ -23,7 +23,7 @@ var LogInLink = React.createClass({
           <i className="fa fa-chevron-down"></i>
 
           <div className="dropdown-content">
-            <a href={userUrl}>Notes</a>
+            <a href={userUrl}>My notes</a>
             <span className="divider"></span>
             <a href="#" onClick={this.handleSettings}>Settings</a>
             <a href="/import">Import notes</a>
