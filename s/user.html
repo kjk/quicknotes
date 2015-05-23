@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="/s/js/lib/codemirror/theme/solarized.css">
   <link href='//fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
   <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
-  <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
   <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
   <script src="/s/js/lib/keymaster.js"></script>
   <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
@@ -25,8 +24,11 @@
   <script src="/api/getnotescompact.json?jsonp=setInitialNotes&user={{ .UserHandle }}">
   </script>
 </head>
+
 <body class="theme-light" data-spacing="default">
+
   <div id="root"></div>
+
   <script src="/s/js/bundle.js"></script>
   <script>window.runOnLoad(window.appUserStart);</script>
 </body>
