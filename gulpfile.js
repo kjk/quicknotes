@@ -16,8 +16,10 @@ var htmlreplace = require('gulp-html-replace');
 var uglify      = require('gulp-uglify');
 var react       = require('gulp-react');
 var rename      = require('gulp-rename');
+var sass        = require('gulp-sass');
 var streamify   = require('gulp-streamify');
 var source      = require('vinyl-source-stream');
+var sourcemaps  = require('gulp-sourcemaps');
 var watchify    = require('watchify');
 var reactify    = require('reactify');
 
@@ -34,13 +36,16 @@ gulp.task('js', function() {
 });
 
 gulp.task('css', function() {
-  return gulp.src('s/*.css')
+  return gulp.src('./sass/main.scss')
+  .pipe(sourcemaps.init())
+  .pipe(sass().on('error', sass.logError))
   .pipe(prefix('last 2 versions'))
-  .pipe(gulp.dest('s/css/'));
+  .pipe(sourcemaps.write('.')) // this is relative to gulp.dest()
+  .pipe(gulp.dest('./s/dist/'));
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['jsx/*', 's/*.css'], ['css', 'js']);
+  gulp.watch(['jsx/*', './sass/**/*.scss'], ['css', 'js']);
 });
 
 gulp.task('build_and_watch', ['css', 'js', 'watch']);
