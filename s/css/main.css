@@ -204,6 +204,10 @@ a {
   display: block;
 }
 
+#header #user:hover .log-in-dropdown-content {
+  display: block;
+}
+
 /**/
 #settings {
   position: relative;
@@ -327,15 +331,27 @@ a {
   top: -1px;
 }
 
-.box ul.log-in {
-  margin-top: 40px;
+.log-in-dropdown-content {
+  width: 180px;
+  display: none;
+  position: absolute;
+  top: 40px; right: 0;
+  padding: 8px 16px;
+  line-height: 20px;
+  border-radius: 2px;
+  z-index: 20;
+  background: white;
 }
 
-.box ul.log-in li {
+ul.log-in {
+  margin-top: 10px;
+}
+
+ul.log-in li {
   margin: 10px 0;
 }
 
-.box ul.log-in a {
+ul.log-in a {
   height: 44px;
   line-height: 44px;
   display: block;
