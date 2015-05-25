@@ -422,7 +422,6 @@ ul.log-in a {
 #left-sidebar .tag.selected .tag-count {}
 
 
-
 /**/
 #notes-list {
   left: 220px; top: 46px; bottom: 0; right: 0;
@@ -745,7 +744,10 @@ ul.log-in a {
   line-height: 1.4em;
 }
 
-
+/**/
+.dropdown-content {
+  text-align: left;
+}
 
 /* Light Theme
 ----------------------------------------------- */
