@@ -1,6 +1,9 @@
 @import '_reset';
 @import '_logo';
 
+$sidebar-width: 180px;
+$font-size-main: 12px;
+
 html, body {
   width: 100%;
   height: 100%;
@@ -11,7 +14,7 @@ html, body {
 
 body {
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, 'Segoe UI', Tahoma, Arial, sans-serif;
-  font-size: 14px;
+  font-size: $font-size-main;
 }
 
 #root, #header, #left-sidebar, #notes-list, #composer, #full-composer, #page-content, #full-note {
@@ -32,6 +35,7 @@ a {
   text-decoration: none;
 }
 
+
 /**/
 #header {
   top: 0; left: 0; right: 0;
@@ -39,7 +43,7 @@ a {
   z-index: 4;
 
   #logo {
-    width: 219px;
+    width: $sidebar-width;
     height: 45px;
     line-height: 45px;
     display: block;
@@ -204,6 +208,7 @@ a {
   }
 }
 
+
 /**/
 #settings {
   position: relative;
@@ -223,9 +228,11 @@ a {
 .settings-div {
   margin-bottom: 4px;
 }
+
 .settings-buttons {
   margin-top: 8px;
 }
+
 
 /**/
 #page-content {
@@ -342,9 +349,11 @@ a {
 
 ul.log-in {
   margin-top: 10px;
+
   li {
     margin: 10px 0;
   }
+
   a {
     height: 44px;
     line-height: 44px;
@@ -352,6 +361,7 @@ ul.log-in {
     color: #FFF;
     border-radius: 3px;
     font-weight: bold;
+
     &.twitter {
       background: #55ACEE;
     }
@@ -366,9 +376,10 @@ ul.log-in {
   }
 }
 
+
 /**/
 #left-sidebar {
-  width: 219px;
+  width: $sidebar-width;
   left: 0; top: 46px; bottom: 0;
   overflow-y: auto;
   user-select: none;
@@ -378,14 +389,15 @@ ul.log-in {
   }
 
   .tag {
-    line-height: 24px;
+    line-height: 14px;
     padding: 2px 0;
     cursor: pointer;
     user-select: none;
-    &:hover {}
+
     &:first-of-type {
       margin-top: 16px;
     }
+
     &:last-of-type {
       margin-bottom: 16px;
     }
@@ -401,10 +413,12 @@ ul.log-in {
     margin-right: 16px;
     font-size: 11px;
   }
+
   .tag.selected {
     cursor: default;
   }
 }
+
 
 /**/
 #notes-list {
@@ -493,6 +507,7 @@ ul.log-in {
   }
 }
 
+
 /**/
 #note-content {
   top: 56px;
@@ -532,6 +547,7 @@ ul.log-in {
   font-size: 14px;
   resize: none;
 }
+
 
 /**/
 #search-results {
@@ -716,6 +732,7 @@ ul.log-in {
   background: #E5E5E5;
 }
 
+
 /**/
 #full-note {
   top: 46px; left: 0; right: 0; bottom: 0;
@@ -726,10 +743,12 @@ ul.log-in {
   line-height: 1.4em;
 }
 
+
 /**/
 .dropdown-content {
   text-align: left;
 }
+
 
 /* Light Theme
 ----------------------------------------------- */
@@ -836,7 +855,6 @@ ul.log-in {
 }
 
 
-
 /* Dark Theme
 ----------------------------------------------- */
 .theme-dark #header {
@@ -884,9 +902,6 @@ ul.log-in {
 }
 
 
-
-
-
 /* Spacing : Default
 ----------------------------------------------- */
 [data-spacing="default"] #notes-list .note {
@@ -901,6 +916,7 @@ ul.log-in {
 [data-spacing="default"] #notes-list .note:last-of-type {
   margin-bottom: 16px;
 }
+
 
 /* Spacing : Grid
 ----------------------------------------------- */
@@ -938,12 +954,14 @@ ul.log-in {
   background: #FFF;
 }
 
+
 /* Spacing : Minimal
 ----------------------------------------------- */
 [data-spacing="minimal"] #notes-list .note {
   padding: 16px 18px;
   margin-bottom: 1px;
 }
+
 
 /* Spacing : Barebones
 ----------------------------------------------- */
