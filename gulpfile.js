@@ -30,9 +30,9 @@ gulp.task('js', function() {
     debug: true
   })
     .bundle()
-    .pipe(exorcist('s/js/bundle.js.map'))
+    .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('s/js'))
+    .pipe(gulp.dest('s/dist'))
 });
 
 gulp.task('css', function() {
