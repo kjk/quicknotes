@@ -119,13 +119,16 @@ a {
 }
 
 #header {
+  .dropdown {
+    float: left;
+  }
+
   #user {
     position: absolute;
     top: 0; right: 0;
     padding-left: 4px;
 
-    .user,
-    .dropdown {
+    .user {
       float: left;
     }
 
@@ -145,16 +148,16 @@ a {
       background: rgba(0,0,0,.03);
     }
 
-    #user:hover .user,
-    #user:hover .fa-chevron-down {
+    &:hover .user,
+    &:hover .fa-chevron-down {
       color: #2196F3 !important;
     }
 
-    #user:hover .dropdown-content {
+    &:hover .dropdown-content {
       display: block;
     }
 
-    #user:hover .log-in-dropdown-content {
+    &:hover .log-in-dropdown-content {
       display: block;
     }
 
