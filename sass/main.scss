@@ -37,105 +37,128 @@ a {
   top: 0; left: 0; right: 0;
   height: 45px;
   z-index: 4;
+
+  #logo {
+    width: 219px;
+    height: 45px;
+    line-height: 45px;
+    display: block;
+    float: left;
+    text-indent: -999999px;
+  }
+
+  #logo:hover {
+    background-color: rgba(0,0,0,.03);
+  }
+
+  .logo {
+    background-size: 115px 20px;
+  }
+
+  #new-note {
+    width: 45px; height: 45px;
+    display: block;
+    float: left;
+    position: relative;
+    padding: 0 4px;
+    text-align: center;
+    cursor: pointer;
+
+    .icn-plus {
+      position: relative;
+      display: block;
+      top: 11px;
+    }
+
+    .icn-plus:before,
+    .icn-plus:after {
+      content: '';
+      background: #aaa;
+      width: 1.5em;
+      height: .1em;
+      position: relative;
+      cursor: pointer;
+      display: inline-block;
+      left: -0.75em;
+    }
+
+    .icn-plus:before {
+      transform: rotate(-90deg);
+      left: 0.75em;
+    }
+  }
+
+  #new-note:hover {
+    background: rgba(0,0,0,.03);
+
+    .icn-plus:before,
+    .icn-plus:after {
+      background: #2196F3;
+    }
+  }
 }
 
-#header #logo {
-  width: 219px;
-  height: 45px;
-  line-height: 45px;
-  display: block;
-  float: left;
-  text-indent: -999999px;
+#header {
+  #search-wrapper {
+    width: 30%;
+    position: relative;
+    margin: 8px auto;
+    left: 100px;
+  }
+
+  #search-wrapper {
+    input {
+      width: 90%;
+      height: 22px;
+      font-size: 14px;
+      padding: 2px 16px;
+      border-radius: 20px;
+      outline: none;
+    }
+  }
 }
 
-#header #logo:hover {
-  background-color: rgba(0,0,0,.03);
-}
+#header {
+  #user {
+    position: absolute;
+    top: 0; right: 0;
+    padding-left: 4px;
 
-#header .logo {
-  background-size: 115px 20px;
-}
+    .user,
+    .dropdown {
+      float: left;
+    }
 
-#header #new-note {
-  width: 45px; height: 45px;
-  display: block;
-  float: left;
-  position: relative;
-  padding: 0 4px;
-  text-align: center;
-  cursor: pointer;
-}
+    .user {
+      height: 45px;
+      line-height: 45px;
+      display: block;
+      padding: 0 0 0 10px;
+      font-weight: bold;
+    }
 
-#header #new-note .icn-plus {
-  position: relative;
-  display: block;
-  top: 11px;
-}
+    span {
+      cursor: default;
+    }
 
-#header #new-note .icn-plus:before,
-#header #new-note .icn-plus:after {
-  content: '';
-  background: #aaa;
-  width: 1.5em;
-  height: .1em;
-  position: relative;
-  cursor: pointer;
-  display: inline-block;
-  left: -0.75em;
-}
+    #user:hover {
+      background: rgba(0,0,0,.03);
+    }
 
-#header #new-note .icn-plus:before {
-  transform: rotate(-90deg);
-  left: 0.75em;
-}
+    #user:hover .user,
+    #user:hover .fa-chevron-down {
+      color: #2196F3 !important;
+    }
 
-#header #new-note:hover {
-  background: rgba(0,0,0,.03);
-}
+    #user:hover .dropdown-content {
+      display: block;
+    }
 
-#header #new-note:hover .icn-plus:before,
-#header #new-note:hover .icn-plus:after {
-  background: #2196F3;
-}
+    #user:hover .log-in-dropdown-content {
+      display: block;
+    }
 
-
-#header #search-wrapper {
-  width: 30%;
-  position: relative;
-  margin: 8px auto;
-  left: 100px;
-}
-
-#header #search-wrapper input {
-  width: 90%;
-  height: 22px;
-  font-size: 14px;
-  padding: 2px 16px;
-  border-radius: 20px;
-  outline: none;
-}
-
-#header #user {
-  position: absolute;
-  top: 0; right: 0;
-  padding-left: 4px;
-}
-
-#header #user .user,
-#header .dropdown {
-  float: left;
-}
-
-#header #user .user {
-  height: 45px;
-  line-height: 45px;
-  display: block;
-  padding: 0 0 0 10px;
-  font-weight: bold;
-}
-
-#header #user span {
-  cursor: default;
+  }
 }
 
 #header .dropdown {
@@ -174,23 +197,6 @@ a {
   display: block;
   border-top: 1px solid transparent;
   margin: 4px 0;
-}
-
-#header #user:hover {
-  background: rgba(0,0,0,.03);
-}
-
-#header #user:hover .user,
-#header #user:hover .fa-chevron-down {
-  color: #2196F3 !important;
-}
-
-#header #user:hover .dropdown-content {
-  display: block;
-}
-
-#header #user:hover .log-in-dropdown-content {
-  display: block;
 }
 
 /**/
