@@ -188,7 +188,7 @@ var FullComposer = React.createClass({
               type="checkbox" id="public-toggle" name="public-toggle"
               onChange={this.handlePublicChanged}
               checked={ni.IsPublic(note)}></input>
-            <label for="public-toggle">public</label>
+            <label htmlFor="public-toggle">public</label>
             <div className="right">
               <span>Format</span>
               {formatSelect}
