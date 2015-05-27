@@ -126,7 +126,7 @@ var Note = React.createClass({
     var url = "/n/" + ni.IDStr(note) + title;
     return (
       <a href={url} className="note-action" title="View note" target="_blank">
-        <i className="fa fa-share"></i>
+        <i className="fa fa-external-link"></i>
       </a>
     );
   },
