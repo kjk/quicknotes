@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	typBadges       = "badges"
+	typeBadges      = "badges"
 	typeComments    = "comments"
 	typePostHistory = "posthistory"
 	typePostLinks   = "postlinks"
@@ -28,9 +28,50 @@ type Reader struct {
 	User     User
 	Post     Post
 	Comment  Comment
+	Badge    Badge
 	Tag      Tag
 	err      error
 	finished bool
+}
+
+// NewBadgesReader returns a new reader for Badges.xml file
+func NewBadgesReader(path string) (*Reader, error) {
+	return newReader(path, typeBadges)
+}
+
+// NewCommentsReader returns a new reader for Comments.xml file
+func NewCommentsReader(path string) (*Reader, error) {
+	return newReader(path, typeComments)
+}
+
+// NewPostHistoryReader returns a new reader for PostHistory.xml file
+func NewPostHistoryReader(path string) (*Reader, error) {
+	return newReader(path, typePostHistory)
+}
+
+// NewPostLinksReader returns a new reader for PostLinks.xml file
+func NewPostLinksReader(path string) (*Reader, error) {
+	return newReader(path, typePostLinks)
+}
+
+// NewPostsReader returns a new reader for Posts.xml file
+func NewPostsReader(path string) (*Reader, error) {
+	return newReader(path, typePosts)
+}
+
+// NewTagsReader returns a new reader for Comments.xml file
+func NewTagsReader(path string) (*Reader, error) {
+	return newReader(path, typeTags)
+}
+
+// NewUsersReader returns a new reader for Users.xml file
+func NewUsersReader(path string) (*Reader, error) {
+	return newReader(path, typeUsers)
+}
+
+// NewVotesReader returns a new reader for Votes.xml file
+func NewVotesReader(path string) (*Reader, error) {
+	return newReader(path, typeVotes)
 }
 
 func isCharData(t xml.Token) bool {
@@ -72,26 +113,6 @@ func getTokenIgnoreCharData(d *xml.Decoder) (xml.Token, error) {
 
 func decodeTime(s string) (time.Time, error) {
 	return time.Parse("2006-01-02T15:04:05.999999999", s)
-}
-
-// NewUsersReader returns a new reader for Users.xml file
-func NewUsersReader(path string) (*Reader, error) {
-	return newReader(path, typeUsers)
-}
-
-// NewPostsReader returns a new reader for Posts.xml file
-func NewPostsReader(path string) (*Reader, error) {
-	return newReader(path, typePosts)
-}
-
-// NewCommentsReader returns a new reader for Comments.xml file
-func NewCommentsReader(path string) (*Reader, error) {
-	return newReader(path, typeComments)
-}
-
-// NewTagsReader returns a new reader for Comments.xml file
-func NewTagsReader(path string) (*Reader, error) {
-	return newReader(path, typeTags)
 }
 
 func newReader(path string, typ string) (*Reader, error) {
@@ -184,6 +205,9 @@ func (r *Reader) Next() bool {
 		r.err = decodeCommentRow(t, &r.Comment)
 	case typeTags:
 		r.err = decodeTagRow(t, &r.Tag)
+	case typeBadges:
+		r.err = decodeBadgeRow(t, &r.Badge)
+
 	}
 	if r.err != nil {
 		return false

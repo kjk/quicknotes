@@ -105,6 +105,27 @@ func readTags(dataDir string) []Tag {
 	return res
 }
 
+func readBadges(dataDir string) []Badge {
+	dir := u.ExpandTildeInPath(dataDir)
+	fmt.Printf("readBadges: dir=%s\n", dir)
+	path := filepath.Join(dir, "Badges.xml")
+	timeStart := time.Now()
+	ur, err := NewBadgesReader(path)
+	if err != nil {
+		fmt.Printf("readBadges: NewBadgesReader() failed with %s\n", err)
+		return nil
+	}
+	var res []Badge
+	for ur.Next() {
+		res = append(res, ur.Badge)
+	}
+	if ur.Err() != nil {
+		fmt.Printf("readBadges: Next() failed with '%s'\n", ur.Err())
+	}
+	fmt.Printf("loaded %d badges in %s\n", len(res), time.Since(timeStart))
+	return res
+}
+
 func main() {
 	//dataDir := "~/data/academia.stackexchange.com"
 	dataDir := "~/data/serverfault.com"
@@ -112,6 +133,7 @@ func main() {
 
 	//readUsers(dataDir)
 	//readPosts(dataDir)
-	readComments(dataDir)
-	readTags(dataDir)
+	//readComments(dataDir)
+	//readTags(dataDir)
+	readBadges(dataDir)
 }

@@ -16,11 +16,11 @@ const (
 	PostTypeAnswer = 2
 	// PostType3 denotes a post whose type I don't understand
 	PostType3 = 3
-	// PostType4 denotes a post whose type I don't understand
-	// Is it a tag description?
-	PostType4 = 4
-	// PostType5 denotes a post whose type I don't understand
-	PostType5 = 5
+	// PostTypeExcerpt denotes an excerpt post.
+	// It could be tag description post.
+	PostTypeExcerpt = 4
+	// PostTypeWiki denotes a wiki post
+	PostTypeWiki = 5
 	// PostType6 denotes a post whose type I don't understand
 	// Is it site description?
 	PostType6 = 6
