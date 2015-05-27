@@ -60,7 +60,7 @@ func decodeUserAttr(attr xml.Attr, u *User) error {
 	case "profileimageurl":
 		u.ProfileImageURL = v
 	default:
-		err = fmt.Errorf("unknown field %s", name)
+		err = fmt.Errorf("unknown user field: '%s'", name)
 	}
 	return err
 }

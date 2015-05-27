@@ -14,17 +14,19 @@ const (
 	PostTypeQuestion = 1
 	// PostTypeAnswer denotes a post that is an answer
 	PostTypeAnswer = 2
-	// PostTypeUnknown1 denotes a post whose type I don't understand
+	// PostType3 denotes a post whose type I don't understand
+	PostType3 = 3
+	// PostType4 denotes a post whose type I don't understand
 	// Is it a tag description?
-	PostTypeUnknown1 = 4
-	// PostTypeUnknown2 denotes a post whose type I don't understand
-	PostTypeUnknown2 = 5
-	// PostTypeUnknown3 denotes a post whose type I don't understand
+	PostType4 = 4
+	// PostType5 denotes a post whose type I don't understand
+	PostType5 = 5
+	// PostType6 denotes a post whose type I don't understand
 	// Is it site description?
-	PostTypeUnknown3 = 6
-	// PostTypeUnknown4 denotes a post whose type I don't understand
+	PostType6 = 6
+	// PostType7 denotes a post whose type I don't understand
 	// Is it site description?
-	PostTypeUnknown4 = 7
+	PostType7 = 7
 )
 
 // Post describes a post
@@ -114,16 +116,13 @@ func decodePostAttr(attr xml.Attr, p *Post) error {
 	case "closeddate":
 		p.ClosedDate, err = decodeTime(v)
 	default:
-		err = fmt.Errorf("unknown field %s", name)
+		err = fmt.Errorf("unknown post field: '%s'", name)
 	}
 	return err
 }
 
 func validatePost(p *Post) {
-	switch p.PostTypeID {
-	case 1, 2, 4, 5, 6, 7:
-		// do nothing, valid types
-	default:
+	if p.PostTypeID < 1 || p.PostTypeID > 7 {
 		log.Fatalf("invalid PostTypeID: %d\n", p.PostTypeID)
 	}
 }

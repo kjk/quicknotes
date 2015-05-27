@@ -5,11 +5,19 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
+	"time"
 )
 
 const (
-	typeUser = "users"
-	typePost = "posts"
+	typBadges       = "badges"
+	typeComments    = "comments"
+	typePostHistory = "posthistory"
+	typePostLinks   = "postlinks"
+	typePosts       = "posts"
+	typeTags        = "tags"
+	typeUsers       = "users"
+	typeVotes       = "votes"
 )
 
 // Reader is for iteratively reading records from xml file
@@ -19,18 +27,71 @@ type Reader struct {
 	typ      string
 	User     User
 	Post     Post
+	Comment  Comment
+	Tag      Tag
 	err      error
 	finished bool
 }
 
-// NewUserReader returns a new reader for User.xml file
-func NewUserReader(path string) (*Reader, error) {
-	return newReader(path, typeUser)
+func isCharData(t xml.Token) bool {
+	_, ok := t.(xml.CharData)
+	return ok
 }
 
-// NewPostReader returns a new reader for Post.xml file
-func NewPostReader(path string) (*Reader, error) {
-	return newReader(path, typePost)
+func isProcInst(t xml.Token) bool {
+	_, ok := t.(xml.ProcInst)
+	return ok
+}
+
+func isStartElement(t xml.Token, name string) bool {
+	e, ok := t.(xml.StartElement)
+	if !ok {
+		return false
+	}
+	return strings.EqualFold(e.Name.Local, name)
+}
+
+func isEndElement(t xml.Token, name string) bool {
+	e, ok := t.(xml.EndElement)
+	if !ok {
+		return false
+	}
+	return strings.EqualFold(e.Name.Local, name)
+}
+
+func getTokenIgnoreCharData(d *xml.Decoder) (xml.Token, error) {
+	t, err := d.Token()
+	if err != nil {
+		return nil, err
+	}
+	if !isCharData(t) {
+		return t, nil
+	}
+	return d.Token()
+}
+
+func decodeTime(s string) (time.Time, error) {
+	return time.Parse("2006-01-02T15:04:05.999999999", s)
+}
+
+// NewUsersReader returns a new reader for Users.xml file
+func NewUsersReader(path string) (*Reader, error) {
+	return newReader(path, typeUsers)
+}
+
+// NewPostsReader returns a new reader for Posts.xml file
+func NewPostsReader(path string) (*Reader, error) {
+	return newReader(path, typePosts)
+}
+
+// NewCommentsReader returns a new reader for Comments.xml file
+func NewCommentsReader(path string) (*Reader, error) {
+	return newReader(path, typeComments)
+}
+
+// NewTagsReader returns a new reader for Comments.xml file
+func NewTagsReader(path string) (*Reader, error) {
+	return newReader(path, typeTags)
 }
 
 func newReader(path string, typ string) (*Reader, error) {
@@ -115,10 +176,14 @@ func (r *Reader) Next() bool {
 		return false
 	}
 	switch r.typ {
-	case typeUser:
+	case typeUsers:
 		r.err = decodeUserRow(t, &r.User)
-	case typePost:
+	case typePosts:
 		r.err = decodePostRow(t, &r.Post)
+	case typeComments:
+		r.err = decodeCommentRow(t, &r.Comment)
+	case typeTags:
+		r.err = decodeTagRow(t, &r.Tag)
 	}
 	if r.err != nil {
 		return false
