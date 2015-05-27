@@ -2,10 +2,8 @@ package main
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -141,101 +139,4 @@ func decodePostRow(t xml.Token, p *Post) error {
 	}
 	validatePost(p)
 	return nil
-}
-
-// PostReader is for iteratively reading Post
-type PostReader struct {
-	f        *os.File
-	d        *xml.Decoder
-	Post     Post
-	err      error
-	finished bool
-}
-
-// NewPostReader returns a new reader for Post.xml file
-func NewPostReader(path string) (*PostReader, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if f != nil {
-			f.Close()
-		}
-	}()
-
-	r := &PostReader{
-		f: f,
-		d: xml.NewDecoder(f),
-	}
-	t, err := getTokenIgnoreCharData(r.d)
-	if err != nil {
-		return nil, err
-	}
-	// skip <?xml ...>
-	if isProcInst(t) {
-		t, err = getTokenIgnoreCharData(r.d)
-		if err != nil {
-			return nil, err
-		}
-	}
-	if !isStartElement(t, "posts") {
-		fmt.Printf("PostReader: invalid first token: %#v\n", t)
-		f.Close()
-		return nil, errors.New("invalid first token")
-	}
-	r.Next()
-	if r.err != nil {
-		return nil, r.err
-	}
-	f = nil
-	return r, nil
-}
-
-// Err returns potential error
-func (r *PostReader) Err() error {
-	return r.err
-}
-
-// Next advances to next User record. Returns false on end or
-func (r *PostReader) Next() bool {
-	if r.err != nil || r.finished {
-		return false
-	}
-
-	defer func() {
-		if r.err != nil {
-			r.f.Close()
-			r.f = nil
-		}
-	}()
-
-	// skip newlines between eleemnts
-	t, err := getTokenIgnoreCharData(r.d)
-	if err != nil {
-		r.err = err
-		return false
-	}
-
-	if isEndElement(t, "row") {
-		t, r.err = getTokenIgnoreCharData(r.d)
-		if r.err != nil {
-			return false
-		}
-	}
-
-	if isEndElement(t, "posts") {
-		r.finished = true
-		return false
-	}
-
-	if !isStartElement(t, "row") {
-		r.err = fmt.Errorf("unexpected token: %#v, wanted xml.StartElement 'row'", t)
-		return false
-	}
-	r.err = decodePostRow(t, &r.Post)
-	if r.err != nil {
-		return false
-	}
-	return true
 }
