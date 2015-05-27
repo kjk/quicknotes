@@ -16,8 +16,6 @@ type Tag struct {
 	WikiPostID    int
 }
 
-//   <row Id="2" TagName="visa" Count="17" ExcerptPostId="7686" WikiPostId="7685" />
-
 func decodeTagAttr(attr xml.Attr, t *Tag) error {
 	var err error
 	name := strings.ToLower(attr.Name.Local)
