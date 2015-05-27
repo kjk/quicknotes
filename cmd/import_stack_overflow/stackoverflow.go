@@ -53,5 +53,5 @@ func getTokenIgnoreCharData(d *xml.Decoder) (xml.Token, error) {
 }
 
 func decodeTime(s string) (time.Time, error) {
-	return time.Now(), nil
+	return time.Parse("2006-01-02T15:04:05.999999999", s)
 }
