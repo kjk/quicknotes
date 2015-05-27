@@ -22,16 +22,19 @@ const (
 
 // Reader is for iteratively reading records from xml file
 type Reader struct {
-	f        *os.File
-	d        *xml.Decoder
-	typ      string
-	User     User
-	Post     Post
-	Comment  Comment
-	Badge    Badge
-	Tag      Tag
-	err      error
-	finished bool
+	f           *os.File
+	d           *xml.Decoder
+	typ         string
+	User        User
+	Post        Post
+	Comment     Comment
+	Badge       Badge
+	Tag         Tag
+	PostHistory PostHistory
+	PostLink    PostLink
+	Vote        Vote
+	err         error
+	finished    bool
 }
 
 // NewBadgesReader returns a new reader for Badges.xml file
@@ -197,17 +200,22 @@ func (r *Reader) Next() bool {
 		return false
 	}
 	switch r.typ {
-	case typeUsers:
-		r.err = decodeUserRow(t, &r.User)
-	case typePosts:
-		r.err = decodePostRow(t, &r.Post)
-	case typeComments:
-		r.err = decodeCommentRow(t, &r.Comment)
-	case typeTags:
-		r.err = decodeTagRow(t, &r.Tag)
 	case typeBadges:
 		r.err = decodeBadgeRow(t, &r.Badge)
-
+	case typeComments:
+		r.err = decodeCommentRow(t, &r.Comment)
+	case typePosts:
+		r.err = decodePostRow(t, &r.Post)
+	case typePostHistory:
+		r.err = decodePostHistoryRow(t, &r.PostHistory)
+	case typePostLinks:
+		r.err = decodePostLinkRow(t, &r.PostLink)
+	case typeTags:
+		r.err = decodeTagRow(t, &r.Tag)
+	case typeUsers:
+		r.err = decodeUserRow(t, &r.User)
+	case typeVotes:
+		r.err = decodeVoteRow(t, &r.Vote)
 	}
 	if r.err != nil {
 		return false

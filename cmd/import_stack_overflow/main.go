@@ -126,6 +126,69 @@ func readBadges(dataDir string) []Badge {
 	return res
 }
 
+func readPostHistory(dataDir string) []PostHistory {
+	dir := u.ExpandTildeInPath(dataDir)
+	fmt.Printf("readPostHistory: dir=%s\n", dir)
+	path := filepath.Join(dir, "PostHistory.xml")
+	timeStart := time.Now()
+	ur, err := NewPostHistoryReader(path)
+	if err != nil {
+		fmt.Printf("readPostHistory: NewPostHistoryReader() failed with %s\n", err)
+		return nil
+	}
+	var res []PostHistory
+	for ur.Next() {
+		res = append(res, ur.PostHistory)
+	}
+	if ur.Err() != nil {
+		fmt.Printf("readPostHistory: Next() failed with '%s'\n", ur.Err())
+	}
+	fmt.Printf("loaded %d post history entries in %s\n", len(res), time.Since(timeStart))
+	return res
+}
+
+func readPostLinks(dataDir string) []PostLink {
+	dir := u.ExpandTildeInPath(dataDir)
+	fmt.Printf("readPostLinks: dir=%s\n", dir)
+	path := filepath.Join(dir, "PostLinks.xml")
+	timeStart := time.Now()
+	ur, err := NewPostLinksReader(path)
+	if err != nil {
+		fmt.Printf("readPostLinks: NewPostHistoryReader() failed with %s\n", err)
+		return nil
+	}
+	var res []PostLink
+	for ur.Next() {
+		res = append(res, ur.PostLink)
+	}
+	if ur.Err() != nil {
+		fmt.Printf("readPostLinks: Next() failed with '%s'\n", ur.Err())
+	}
+	fmt.Printf("loaded %d post links in %s\n", len(res), time.Since(timeStart))
+	return res
+}
+
+func readVotes(dataDir string) []Vote {
+	dir := u.ExpandTildeInPath(dataDir)
+	fmt.Printf("readVotes: dir=%s\n", dir)
+	path := filepath.Join(dir, "Votes.xml")
+	timeStart := time.Now()
+	ur, err := NewVotesReader(path)
+	if err != nil {
+		fmt.Printf("readVotes: NewPostHistoryReader() failed with %s\n", err)
+		return nil
+	}
+	var res []Vote
+	for ur.Next() {
+		res = append(res, ur.Vote)
+	}
+	if ur.Err() != nil {
+		fmt.Printf("readVotes: Next() failed with '%s'\n", ur.Err())
+	}
+	fmt.Printf("loaded %d post links in %s\n", len(res), time.Since(timeStart))
+	return res
+}
+
 func main() {
 	//dataDir := "~/data/academia.stackexchange.com"
 	dataDir := "~/data/serverfault.com"
@@ -135,5 +198,8 @@ func main() {
 	//readPosts(dataDir)
 	//readComments(dataDir)
 	//readTags(dataDir)
-	readBadges(dataDir)
+	//readBadges(dataDir)
+	//readPostHistory(dataDir)
+	//readPostLinks(dataDir)
+	readVotes(dataDir)
 }
