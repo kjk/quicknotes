@@ -1,0 +1,403 @@
+// manually created by cancat of files in https://github.com/chinchang/hint.css/tree/master/src
+// from hint.scss
+
+// hint-variables.scss
+//
+// Declares some variables used within the library.
+
+// Prefix for all classes. By default, BEM naming convention is used
+$prefix: 'hint--' !default;
+
+// font size
+$fontSize: 12px;
+
+// paddings
+$verticalPadding: 8px;
+$horizontalPadding: 10px;
+
+// default tooltip height
+$tooltipHeight: $fontSize + 2 * $verticalPadding !default;
+
+// border-width for tooltip arrow
+$arrowBorderWidth: 6px !default;
+
+// horizontal arrow offset
+$arrowOffsetX: 3 * $arrowBorderWidth !default;
+
+// text-shadow darken percentage
+$textShadowDarkenAmount: 25% !default;
+
+// transition distance
+$transitionDistance: 8px !default;
+
+// Delay in showing the tooltips.
+$showDelay: 100ms !default;
+
+// Delay in hiding the tooltips.
+$hideDelay: 0ms !default;
+
+// z-index for tooltips
+$zIndex: 1000000 !default;
+
+
+// Various colors
+// Default color is blackish
+$defaultColor: hsl(0, 0%, 22%) !default;
+
+// Error color
+$errorColor: hsl(1, 40%, 50%) !default;
+
+// Warning color
+$warningColor: hsl(38, 46%, 54%) !default;
+
+// Info Color
+$infoColor: hsl(200, 50%, 45%) !default;
+
+// Success Color
+$successColor: hsl(121, 32%, 40%) !default;
+
+// hint-mixins.scss
+//
+// Place to store common mixins.
+
+// Vendor prefixer mixin.
+@mixin vendor($property, $value) {
+    -webkit-#{$property}: $value;
+    -moz-#{$property}: $value;
+    #{$property}: $value;
+}
+
+// Generates border-color rules for all 4 positions
+@mixin arrow-border-color($color, $isInsideSelector: "true") {
+    @each $position in top, bottom, left, right {
+        // if the current mixin is called from within a selector, use a '&'. Otherwise not.
+        @if $isInsideSelector == "true" {
+            &.#{$prefix}#{$position}:before {
+                border-#{$position}-color: $color;
+            }
+        }
+        @else {
+            .#{$prefix}#{$position}:before {
+                border-#{$position}-color: $color;
+            }
+        }
+    }
+}
+
+
+// mixin to set margin on tooltip using translate transform
+@mixin set-margin($property, $transitionDirection) {
+    $value: unquote("#{$property}(#{$transitionDistance * $transitionDirection})");
+    &:after, &:before {
+        @include vendor('transform', $value);
+    }
+}
+
+/**
+ * source: hint-core.scss
+ *
+ * Defines the basic styling for the tooltip.
+ * Each tooltip is made of 2 parts:
+ *  1) body (:after)
+ *  2) arrow (:before)
+ *
+ * Classes added:
+ *  1) hint
+ */
+
+.hint, [data-hint] {
+    position: relative;
+    display: inline-block;
+
+    &:before, &:after {
+        position: absolute;
+
+        // HACK: Trigger hardware accelerated rendering, otherwise transform was not
+        // working on a hidden element
+        @include vendor('transform', translate3d(0, 0, 0));
+
+        // HACK: visibility is set to hidden because IE & Opera don't support
+        // pointer-events on HTML content yet because of which hovering a hidden tooltip
+        // shows the tooltip.
+        visibility: hidden;
+        opacity: 0;
+        z-index: $zIndex;
+        // shouldn't receive pointer events, otherwise even hovering tooltip will make it appear
+        pointer-events: none;
+
+        @include vendor('transition', 0.3s ease);
+        @include vendor('transition-delay', $hideDelay);
+    }
+
+    &:hover:before, &:hover:after,
+    &:focus:before, &:focus:after {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    &:hover:before, &:hover:after {
+        // $showDelay will apply as soon as element is hovered.
+        @include vendor('transition-delay', $showDelay);
+    }
+
+    /**
+     * tooltip arrow
+     */
+    &:before {
+        content: '';
+        position: absolute;
+        background: transparent;
+        border: $arrowBorderWidth solid transparent;
+        // move z-index 1 up than :after so that it shows over box-shadow
+        z-index: $zIndex + 1;
+    }
+
+    /**
+     * tooltip body
+     */
+    &:after {
+        content: attr(data-hint); // The magic!
+        background: $defaultColor;
+        color: white;
+        padding: $verticalPadding $horizontalPadding;
+        font-size: $fontSize;
+        line-height: $fontSize; // Vertical centering.
+        white-space: nowrap; // Prevent breaking to new line.
+    }
+}
+
+/**
+ * source: hint-position.scss
+ *
+ * Defines the positoning logic for the tooltips.
+ *
+ * Classes added:
+ *  1) hint--top
+ *  2) hint--bottom
+ *  3) hint--left
+ *  4) hint--right
+ */
+
+@mixin vertical-positioned-tooltip($propertyY, $transitionDirection) {
+    &:before {
+        // get the arrow out
+        margin-#{$propertyY}: -2 * $arrowBorderWidth;
+    }
+
+    &:after {
+        // bring back the tooltip by some offset so that arrow doesn't stick at end
+        margin-left: -1 * $arrowOffsetX;
+    }
+
+    &:before, &:after {
+        #{$propertyY}: 100%;
+        left: 50%;
+    }
+
+    &:hover, &:focus {
+        @include set-margin('translateY', $transitionDirection);
+    }
+}
+
+@mixin horizontal-positioned-tooltip($propertyX, $transitionDirection) {
+    &:before {
+        // get the arrow out
+        margin-#{$propertyX}: -2 * $arrowBorderWidth;
+        // bring back to center
+        margin-bottom: -1 * $arrowBorderWidth;
+    }
+
+    &:after {
+        // bring back to center
+        margin-bottom: -1 * floor($tooltipHeight / 2);
+    }
+
+    &:before, &:after {
+        #{$propertyX}: 100%;
+        bottom: 50%;
+    }
+
+    &:hover, &:focus {
+        @include set-margin('translateX', $transitionDirection);
+    }
+}
+
+
+/**
+ * set default color for tooltip arrows
+ */
+@include arrow-border-color($defaultColor, 'false');
+
+/**
+ * top tooltip
+ */
+.#{$prefix}top {
+    @include vertical-positioned-tooltip('bottom', -1);
+}
+
+/**
+ * bottom tooltip
+ */
+.#{$prefix}bottom {
+    @include vertical-positioned-tooltip('top', 1);
+}
+
+/**
+ * right tooltip
+ */
+.#{$prefix}right {
+    @include horizontal-positioned-tooltip('left', 1);
+}
+
+/**
+ * left tooltip
+ */
+.#{$prefix}left {
+    @include horizontal-positioned-tooltip('right', -1);
+}
+
+/**
+ * source: hint-theme.scss
+ *
+ * Defines basic theme for tooltips.
+ *
+ */
+
+.hint, [data-hint] {
+    /**
+     * tooltip body
+     */
+    &:after {
+        text-shadow: 0 -1px 0px darken($defaultColor, $textShadowDarkenAmount);
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/**
+ * source: hint-color-types.scss
+ *
+ * Contains tooltips of various types based on color differences.
+ *
+ * Classes added:
+ *  1) hint--error
+ *  2) hint--warning
+ *  3) hint--info
+ *  4) hint--success
+ *
+ */
+
+
+// mixin to generate different color style tooltips
+@mixin hint-type($color) {
+    &:after {
+        background-color: $color;
+        text-shadow: 0 -1px 0px darken($color, $textShadowDarkenAmount);
+    }
+
+    // generate arrow color style
+    @include arrow-border-color($color);
+}
+
+/**
+ * Error
+ */
+.#{$prefix}error {
+    @include hint-type($errorColor);
+}
+
+/**
+ * Warning
+ */
+.#{$prefix}warning {
+    @include hint-type($warningColor)
+}
+
+/**
+ * Info
+ */
+.#{$prefix}info {
+    @include hint-type($infoColor)
+}
+
+/**
+ * Success
+ */
+.#{$prefix}success {
+    @include hint-type($successColor)
+}
+
+/**
+ * source: hint-always.scss
+ *
+ * Defines a persisted tooltip which shows always.
+ *
+ * Classes added:
+ *  1) hint--always
+ *
+ */
+
+.#{$prefix}always {
+    &:after, &:before {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    &.#{$prefix}top {
+        @include set-margin('translateY', -1);
+    }
+
+    &.#{$prefix}bottom {
+        @include set-margin('translateY', 1);
+    }
+
+    &.#{$prefix}left {
+        @include set-margin('translateX', -1);
+    }
+
+    &.#{$prefix}right {
+        @include set-margin('translateX', 1);
+    }
+}
+
+/**
+ * source: hint-rounded.scss
+ *
+ * Defines rounded corner tooltips.
+ *
+ * Classes added:
+ *  1) hint--rounded
+ *
+ */
+
+.#{$prefix}rounded {
+    &:after {
+        border-radius: 4px;
+    }
+}
+
+/**
+ * source: hint-effects.scss
+ *
+ * Defines various transition effects for the tooltips.
+ *
+ * Classes added:
+ *  1) hint--no-animate
+ *  2) hint--bounce
+ *
+ */
+
+// Remove animation from tooltips.
+.#{$prefix}no-animate {
+    &:before, &:after {
+        @include vendor('transition-duration', 0ms);
+    }
+}
+
+// Bounce effect in tooltips.
+.#{$prefix}bounce {
+    &:before, &:after {
+        -webkit-transition: opacity 0.3s ease, visibility 0.3s ease, -webkit-transform 0.3s cubic-bezier(.71,1.7,.77,1.24);
+        -moz-transition: opacity 0.3s ease, visibility 0.3s ease, -moz-transform 0.3s cubic-bezier(.71,1.7,.77,1.24);
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s cubic-bezier(.71,1.7,.77,1.24);
+    }
+}
