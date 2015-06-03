@@ -23,14 +23,13 @@
       copy: src=quicknotes_rsa.pub dest=/home/quicknotes/.ssh/authorized_keys
     - name: configure authorized_keys
       file: path=/home/quicknotes/.ssh/authorized_keys mode=0644 owner=quicknotes group=quicknotes
-    - name: install nginx
-      apt: name=nginx state=latest update_cache=yes
-    - name: install unzip
-      apt: name=unzip state=latest update_cache=yes
-    - name: install tar
-      apt: name=tar state=latest update_cache=yes
-    - name: install git
-      apt: name=git state=latest update_cache=yes
+    - name: install desired software
+      apt: name={{ item }} state=latest update_cache=yes cache_valid_time=120
+      with_items:
+        - unzip
+        - tar
+        - git
+        - nginx
     - name: create directory for nginx logs
       file: >
         path=/var/log/nginx/quicknotes/ state=directory mode=0755
