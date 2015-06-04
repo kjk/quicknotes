@@ -450,7 +450,9 @@ ul.log-in {
 
 /**/
 #notes-list {
-  left: 220px; top: 46px; bottom: 0; right: 0;
+  left: $sidebar-width+1;
+  top: 46px;
+  bottom: 0; right: 0;
   overflow-y: auto;
 
   .note {
