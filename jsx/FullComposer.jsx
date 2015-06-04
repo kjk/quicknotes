@@ -180,6 +180,7 @@ var FullComposer = React.createClass({
             ref="editArea" />
           <div className="full-composer-preview" dangerouslySetInnerHTML={{__html: previewHtml}}></div>
         </div>
+
         <div id="full-composer-actions">
           <div className="inner">
             <button className="btn btn-primary" onClick={this.handleSave} disabled={saveDisabled}>Save</button>
@@ -195,7 +196,9 @@ var FullComposer = React.createClass({
             </div>
           </div>
         </div>
+
       </div>
+
     );
   }
 });

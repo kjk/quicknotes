@@ -762,6 +762,90 @@ ul.log-in {
   background: #E5E5E5;
 }
 
+.overlay {
+  position: fixed;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  z-index: 500;
+  background-color: rgba(0,0,0,0.5); /*dim the background*/
+}
+
+/**/
+#editor-wrapper {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 75%;
+  background: lightgray;
+  color: red;
+  z-index: 999;
+}
+
+$title-and-tags-height: 30px;
+$actions-height: 34px;
+
+#editor-title-and-tags {
+  position: absolute;
+  left: 0; right: 0;
+  height: $title-and-tags-height;
+
+  background: lightblue;
+  color: black;
+}
+
+#editor-content {
+  position: abosolute;
+  left: 0; right: 0;
+  top: $title-and-tags-height;
+  bottom: $actions-height;
+
+  background: lightyellow;
+  color: black;
+}
+
+#editor-actions {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: $actions-height;
+  background: lightgreen;
+  color: black;
+
+}
+
+/*#editor-actions button {
+  background: red;
+}*/
+
+/* TODO: remove */
+#editor-actions .right {
+  float: right;
+}
+
+/* TODO: remove */
+#editor-actions .left {
+  float: left;
+}
+
+#editor-title {
+  width: 50%;
+  position: absolute;
+  left: 0;
+  padding: 4px 8px;
+  margin: 0;
+  background: white;
+  font-size: 16px;
+}
+
+#editor-tags {
+  width: 50%;
+  position: absolute;
+  right: 0;
+  padding: 4px 8px;
+  margin: 0;
+  background: white;
+  font-size: 16px;
+}
 
 /**/
 #full-note {
