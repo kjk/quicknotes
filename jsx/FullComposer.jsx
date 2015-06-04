@@ -182,8 +182,8 @@ var FullComposer = React.createClass({
         </div>
         <div id="full-composer-actions">
           <div className="inner">
-            <button onClick={this.handleSave} disabled={saveDisabled}>Save</button>
-            <button onClick={this.handleCancel}>Cancel</button>
+            <button className="btn btn-primary" onClick={this.handleSave} disabled={saveDisabled}>Save</button>
+            <button className="btn btn-primary" onClick={this.handleCancel}>Cancel</button>
             <input
               type="checkbox" id="public-toggle" name="public-toggle"
               onChange={this.handlePublicChanged}

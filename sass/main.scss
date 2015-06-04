@@ -17,6 +17,38 @@ body {
   font-size: $font-size-main;
 }
 
+.btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  border-radius: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-right: 8px;
+}
+
+.btn-primary {
+  color: #ffffff;
+  background-color: #2780e3;
+  border-color: #2780e3;
+  &:hover {
+    color: #ffffff;
+    background-color: #1967be;
+    border-color: #1862b5;
+  }
+}
+
+
 #root, #header, #left-sidebar, #notes-list, #composer, #full-composer, #page-content, #full-note {
   position: absolute;
 }
