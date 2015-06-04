@@ -143,7 +143,7 @@ var FullComposer = React.createClass({
     var initialNote = this.props.note;
     var initialTags = tagsToText(ni.Tags(initialNote));
     var note = this.state.note;
-    var previewHtml = { __html: this.state.previewHtml };
+    var previewHtml = this.state.previewHtml || "";
     var saveDisabled = !this.noteChanged();
     var formatTxt = format.numberToName(ni.Format(note));
     var formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
@@ -178,7 +178,7 @@ var FullComposer = React.createClass({
             value={ni.Content(note)}
             onChange={this.textChanged}
             ref="editArea" />
-          <div className="full-composer-preview" dangerouslySetInnerHTML={previewHtml}></div>
+          <div className="full-composer-preview" dangerouslySetInnerHTML={{__html: previewHtml}}></div>
         </div>
         <div id="full-composer-actions">
           <div className="inner">
