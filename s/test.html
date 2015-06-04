@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test page</title>
+
+  <link rel="stylesheet" href="/s/dist/main.css">
+  <link rel="stylesheet" href="/s/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/s/js/lib/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="/s/js/lib/codemirror/theme/solarized.css">
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'>
+
+  <script src="/s/js/lib/react-with-addons-0.13.1.js"></script>
+  <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
+  <script src="/s/js/lib/keymaster.js"></script>
+  <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
+</head>
+
+<body class="theme-light">
+
+  <div id="main">
+
+    <div class="overlay">
+    </div>
+
+    <div id="editor-wrapper">
+      <div id="editor-title-and-tags">
+        <input id="editor-title" type="text" size="128" placeholder="title"/>
+        <input id="editor-tags" type="text" size="128" placeholder="tags"/>
+      </div>
+      <div id="editor-content">
+        content
+      </div>
+      <div id="editor-actions">
+        <button class="btn btn-primary">Save</button>
+        <button class="btn btn-primary">Cancel</button>
+        <input type="checkbox" id="public-toggle" name="public-toggle"></input>
+        <label for="public-toggle">public</label>
+        <span>Format:</span>
+        <select value="text">
+          <option>text</option>
+          <option>markdown</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/s/dist/bundle.js"></script>
+  <script>window.runOnLoad(function () { });</script>
+</body>
+</html>
