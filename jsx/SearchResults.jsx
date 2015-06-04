@@ -50,7 +50,6 @@ var SearchResults = React.createClass({
     // Maybe: show line number
     var k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
     console.log(k + i.HTML);
-    var html = { __html: i.HTML };
     var cls = "search-result-item";
     if (i.Type == TypeTitle) {
       cls = "search-result-title-item";
@@ -68,7 +67,7 @@ var SearchResults = React.createClass({
         className={cls}
         >
         <span className="line-no">{lineNo}</span>
-        <span dangerouslySetInnerHTML={html}></span>
+        <span dangerouslySetInnerHTML={{__html: i.HTML}}></span>
       </div>
     );
   },
