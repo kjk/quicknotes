@@ -11,9 +11,12 @@ var LogInLink = React.createClass({
     action.showSettings();
   },
 
+
   createLoggedIn: function() {
     var url = encodeURI("/logout?redir=" + window.location);
     var userUrl = "/u/" + this.props.loggedInUserHandle;
+
+    // <a href="#" onClick={this.handleSettings}>Settings</a>
     return (
       <div id="user">
         <a href={userUrl} className="user">
@@ -24,7 +27,6 @@ var LogInLink = React.createClass({
           <div className="dropdown-content">
             <a href={userUrl}>My notes</a>
             <span className="divider"></span>
-            <a href="#" onClick={this.handleSettings}>Settings</a>
             <a href="/import">Import notes</a>
             <span className="divider"></span>
             <a href={url}>Sign Out</a>
