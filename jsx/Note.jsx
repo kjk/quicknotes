@@ -26,18 +26,19 @@ var Note = React.createClass({
   },
 
   createTags: function(tags) {
-    if (tags) {
-      var tagEls = tags.map(function (tag) {
-          tag = "#" + tag;
-          return (
-            <span key={tag} className="note-tag">{tag}</span>
-          );
-      });
-
-      return (
-        <div className="note-tags">{tagEls}</div>
-      );
+    if (!tags) {
+      return;
     }
+    var tagEls = tags.map(function (tag) {
+        tag = "#" + tag;
+        return (
+          <span key={tag} className="note-tag">{tag}</span>
+        );
+    });
+
+    return (
+      <span className="note-tags">{tagEls}</span>
+    );
   },
 
   mouseEnter: function(e) {
@@ -225,13 +226,10 @@ var Note = React.createClass({
         <div className="note-header">
           {this.createStarUnstar(note)}
           {this.createTitle(note)}
+          {this.createTags(ni.Tags(note))}
           {this.createActions(note)}
         </div>
         {this.createNoteSnippet(note)}
-        <div className="note-footer">
-          {this.createTags(ni.Tags(note))}
-          {this.createSize(note)}
-        </div>
       </div>
     );
   }
