@@ -13,13 +13,23 @@ import (
 )
 
 var (
-	dataDir string
-	posts   map[int]int
+	dataDir           string
+	posts             map[int]*PostChange
+	historyTypeCounts map[int]int
 )
+
+type PostChange struct {
+	postID int
+	userID int
+	typ    int
+	val    string
+	next   *PostChange
+}
 
 func init() {
 	dataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
-	posts = make(map[int]int)
+	posts = make(map[int]*PostChange)
+	historyTypeCounts = make(map[int]int)
 }
 
 func fatalIfErr(err error) {
@@ -42,8 +52,34 @@ func dumpMemStats() {
 	fmt.Printf("HeapObjects: %d\n", ms.HeapObjects)
 }
 
-func main() {
-	site := "academia"
+func isValidType(typ int) bool {
+	switch typ {
+	case stackoverflow.HistoryInitialTitle:
+	case stackoverflow.HistoryInitialBody:
+	case stackoverflow.HistoryInitialTags:
+	case stackoverflow.HistoryEditTitle:
+	case stackoverflow.HistoryEditBody:
+	case stackoverflow.HistoyrEditTags:
+	case stackoverflow.HistoryRollbackTitle:
+	case stackoverflow.HistoryRollbackBody:
+	case stackoverflow.HistoryRollbackTags:
+		return true
+	}
+	return false
+}
+
+func postHistoryToPostChange(ph *stackoverflow.PostHistory) *PostChange {
+	var pc PostChange
+	if !isValidType(ph.PostHistoryTypeID) {
+		return nil
+	}
+	pc.postID = ph.PostID
+	pc.userID = ph.UserID
+	pc.typ = ph.PostHistoryTypeID
+	return &pc
+}
+
+func getHistoryReader(site string) *stackoverflow.Reader {
 	archiveFileName := site + ".stackexchange.com.7z"
 	archiveFilePath := filepath.Join(dataDir, archiveFileName)
 	archive, err := lzmadec.NewArchive(archiveFilePath)
@@ -52,14 +88,40 @@ func main() {
 	fatalIfErr(err)
 	hr, err := stackoverflow.NewPostHistoryReader(r)
 	fatalIfErr(err)
+	return hr
+}
+
+func dumpCounts(m map[int]int) {
+	max := 0
+	for k := range m {
+		if k > max {
+			max = k
+		}
+	}
+	fmt.Print("History type counts:\n")
+	for i := 0; i <= max; i++ {
+		if count, ok := m[i]; ok {
+			fmt.Printf("type: %d, count: %d\n", i, count)
+		}
+	}
+}
+
+func main() {
+	hr := getHistoryReader("academia")
 	n := 0
 	for hr.Next() {
-		ph := &hr.PostHistory
-		posts[ph.PostID]++
 		n++
+		historyTypeCounts[hr.PostHistory.PostHistoryTypeID]++
+		pc := postHistoryToPostChange(&hr.PostHistory)
+		if pc == nil {
+			continue
+		}
+		pc.next = posts[pc.postID]
+		posts[pc.postID] = pc
 	}
-	err = hr.Err()
+	err := hr.Err()
 	fatalIfErr(err)
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
+	dumpCounts(historyTypeCounts)
 	dumpMemStats()
 }
