@@ -16,6 +16,7 @@ var (
 	dataDir           string
 	posts             map[int]*PostChange
 	historyTypeCounts map[int]int
+	userIDToName      map[int]string
 )
 
 type PostChange struct {
@@ -30,6 +31,7 @@ func init() {
 	dataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
 	posts = make(map[int]*PostChange)
 	historyTypeCounts = make(map[int]int)
+	userIDToName = make(map[int]string)
 }
 
 func fatalIfErr(err error) {
@@ -108,8 +110,14 @@ func main() {
 	n := 0
 	for hr.Next() {
 		n++
-		historyTypeCounts[hr.PostHistory.PostHistoryTypeID]++
-		pc := postHistoryToPostChange(&hr.PostHistory)
+		ph := &hr.PostHistory
+		if ph.UserDisplayName != "" {
+			if curr := userIDToName[ph.UserID]; curr == "" {
+				userIDToName[ph.UserID] = ph.UserDisplayName
+			}
+		}
+		historyTypeCounts[ph.PostHistoryTypeID]++
+		pc := postHistoryToPostChange(ph)
 		if pc == nil {
 			continue
 		}
@@ -119,6 +127,7 @@ func main() {
 	err := hr.Err()
 	fatalIfErr(err)
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
+	fmt.Printf("%d users\n", len(userIDToName))
 	//dumpCounts(historyTypeCounts)
 	dumpMemStats()
 }
