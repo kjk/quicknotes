@@ -5,7 +5,7 @@ set -o errexit
 set -o pipefail
 
 go tool vet .
-go build -o notenik
-#go build -race -o notenik
-./notenik -local -recreatedb || true
-rm notenik
+go build -o quicknotes
+#go build -race -o quicknotes
+./quicknotes -local -recreatedb || true
+rm quicknotes

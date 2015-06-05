@@ -25,6 +25,7 @@ var (
 	flgImportJSONFile       string
 	flgSearchTerm           string
 	flgListUsers            bool
+	flgImportStackOverflow  bool
 
 	localStore  *LocalStore
 	oauthClient = oauth.Client{
@@ -69,6 +70,7 @@ func parseFlags() {
 	flag.BoolVar(&flgProdDb, "proddb", false, "use production database when running locally")
 	flag.BoolVar(&flgDelDatabase, "deldb", false, "completely delete the database? dangerous!")
 	flag.BoolVar(&flgRecreateDatabase, "recreatedb", false, "recreate database")
+	flag.BoolVar(&flgImportStackOverflow, "import-stack-overflow", false, "import stack overflow data")
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
 	flag.StringVar(&flgImportJSONUserHandle, "import-user", "", "handle of the user (users.handle) for which to import notes")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
@@ -114,6 +116,11 @@ func main() {
 	IncLogVerbosity()
 	LogInfof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSqlConnectionRoot(), getDataDir())
 	initAppMust()
+
+	if flgImportStackOverflow {
+		importStackOverflow()
+		return
+	}
 
 	if flgListUsers {
 		listDbUsers()

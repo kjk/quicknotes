@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"path/filepath"
 	"runtime"
 
@@ -32,12 +31,6 @@ func init() {
 	posts = make(map[int]*PostChange)
 	historyTypeCounts = make(map[int]int)
 	userIDToName = make(map[int]string)
-}
-
-func fatalIfErr(err error) {
-	if err != nil {
-		log.Fatalf("err: %s\n", err)
-	}
 }
 
 func toBytes(n uint64) string {
@@ -82,11 +75,11 @@ func getHistoryReader(site string) *stackoverflow.Reader {
 	archiveFileName := site + ".stackexchange.com.7z"
 	archiveFilePath := filepath.Join(dataDir, archiveFileName)
 	archive, err := lzmadec.NewArchive(archiveFilePath)
-	fatalIfErr(err)
+	fatalIfErr(err, "")
 	r, err := archive.GetFileReader("PostHistory.xml")
-	fatalIfErr(err)
+	fatalIfErr(err, "")
 	hr, err := stackoverflow.NewPostHistoryReader(r)
-	fatalIfErr(err)
+	fatalIfErr(err, "")
 	return hr
 }
 
@@ -105,7 +98,7 @@ func dumpCounts(m map[int]int) {
 	}
 }
 
-func main() {
+func importStackOverflow() {
 	hr := getHistoryReader("academia")
 	n := 0
 	for hr.Next() {
@@ -125,7 +118,7 @@ func main() {
 		posts[pc.postID] = pc
 	}
 	err := hr.Err()
-	fatalIfErr(err)
+	fatalIfErr(err, "")
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
 	fmt.Printf("%d users\n", len(userIDToName))
 	//dumpCounts(historyTypeCounts)
