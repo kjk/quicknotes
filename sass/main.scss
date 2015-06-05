@@ -3,6 +3,8 @@
 
 $sidebar-width: 180px;
 $font-size-main: 12px;
+$note-header-dy: 26px;
+
 
 html, body {
   width: 100%;
@@ -447,7 +449,6 @@ ul.log-in {
   }
 }
 
-
 /**/
 #notes-list {
   left: $sidebar-width+1;
@@ -464,9 +465,9 @@ ul.log-in {
     }
 
     .note-header {
-      height: 26px;
+      height: $note-header-dy;
       position: relative;
-      line-height: 26px;
+      line-height: $note-header-dy;
       margin-bottom: 4px;
     }
 
@@ -479,9 +480,9 @@ ul.log-in {
       position: absolute;
       top: 0; right: 0;
       .note-action {
-        width: 26px;
-        height: 26px;
-        line-height: 26px;
+        width: 20px;
+        height: $note-header-dy;
+        line-height: $note-header-dy;
         text-align: center;
         overflow: hidden;
         margin-left: 6px;
