@@ -538,6 +538,20 @@ ul.log-in {
   }
 }
 
+/**/
+#content-wrapper {
+  top: 56px;
+  width: 100%;
+  padding-left: 24px;
+  padding-right: 24px;
+  background-color: white;
+  position: absolute;
+}
+
+#tagline {
+  margin-left: -24px;
+  text-align: center;
+}
 
 /**/
 #note-content {

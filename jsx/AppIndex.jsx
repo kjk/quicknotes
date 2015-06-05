@@ -61,7 +61,7 @@ var AppIndex = React.createClass({
 function appIndexStart() {
   React.render(
     <AppIndex />,
-    document.getElementById('page-content')
+    document.getElementById('root')
   );
 }
 
