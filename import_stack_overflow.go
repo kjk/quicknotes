@@ -98,12 +98,49 @@ func dumpCounts(m map[int]int) {
 	}
 }
 
+func dumpPostChanges(pc *PostChange) {
+	fmt.Printf("post: %d\n", pc.postID)
+	for pc != nil {
+		fmt.Printf("%d: '%s'\n", pc.typ, pc.val)
+		pc = pc.next
+	}
+}
+
+func getPostChangeLen(pc *PostChange) int {
+	n := 0
+	for pc != nil {
+		n++
+		pc = pc.next
+	}
+	return n
+}
+
+func findLargestHistory() *PostChange {
+	var largestChange *PostChange
+	largestLen := 0
+	for _, pc := range posts {
+		n := getPostChangeLen(pc)
+		if n > largestLen {
+			largestChange = pc
+			largestLen = n
+		}
+	}
+	return largestChange
+}
+
 func importStackOverflow() {
 	hr := getHistoryReader("academia")
 	n := 0
+	shownTags := 0
 	for hr.Next() {
 		n++
 		ph := &hr.PostHistory
+		if ph.PostHistoryTypeID == stackoverflow.HistoryInitialTags {
+			if false && shownTags < 4 {
+				fmt.Printf("tags: '%s'\n", ph.Text)
+				shownTags++
+			}
+		}
 		if ph.UserDisplayName != "" {
 			if curr := userIDToName[ph.UserID]; curr == "" {
 				userIDToName[ph.UserID] = ph.UserDisplayName
@@ -121,6 +158,8 @@ func importStackOverflow() {
 	fatalIfErr(err, "")
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
 	fmt.Printf("%d users\n", len(userIDToName))
+	//pc := findLargestHistory()
+	//dumpPostChanges(pc)
 	//dumpCounts(historyTypeCounts)
-	dumpMemStats()
+	//dumpMemStats()
 }
