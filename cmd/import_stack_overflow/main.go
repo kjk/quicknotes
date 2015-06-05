@@ -54,29 +54,26 @@ func dumpMemStats() {
 
 func isValidType(typ int) bool {
 	switch typ {
-	case stackoverflow.HistoryInitialTitle:
-	case stackoverflow.HistoryInitialBody:
-	case stackoverflow.HistoryInitialTags:
-	case stackoverflow.HistoryEditTitle:
-	case stackoverflow.HistoryEditBody:
-	case stackoverflow.HistoyrEditTags:
-	case stackoverflow.HistoryRollbackTitle:
-	case stackoverflow.HistoryRollbackBody:
-	case stackoverflow.HistoryRollbackTags:
+	case stackoverflow.HistoryInitialTitle, stackoverflow.HistoryInitialBody,
+		stackoverflow.HistoryInitialTags, stackoverflow.HistoryEditTitle,
+		stackoverflow.HistoryEditBody, stackoverflow.HistoyrEditTags,
+		stackoverflow.HistoryRollbackTitle, stackoverflow.HistoryRollbackBody,
+		stackoverflow.HistoryRollbackTags:
 		return true
 	}
 	return false
 }
 
 func postHistoryToPostChange(ph *stackoverflow.PostHistory) *PostChange {
-	var pc PostChange
 	if !isValidType(ph.PostHistoryTypeID) {
 		return nil
 	}
-	pc.postID = ph.PostID
-	pc.userID = ph.UserID
-	pc.typ = ph.PostHistoryTypeID
-	return &pc
+	return &PostChange{
+		postID: ph.PostID,
+		userID: ph.UserID,
+		typ:    ph.PostHistoryTypeID,
+		val:    ph.Text,
+	}
 }
 
 func getHistoryReader(site string) *stackoverflow.Reader {
@@ -122,6 +119,6 @@ func main() {
 	err := hr.Err()
 	fatalIfErr(err)
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
-	dumpCounts(historyTypeCounts)
+	//dumpCounts(historyTypeCounts)
 	dumpMemStats()
 }
