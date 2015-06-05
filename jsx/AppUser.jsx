@@ -164,6 +164,7 @@ var AppUser = React.createClass({
 
     this.cidShowSettings = action.onShowSettings(this.showSettings);
     this.cidHideSettings = action.onHideSettings(this.hideSettings);
+    this.cidTagSelected = action.onTagSelected(this.handleTagSelected);
   },
 
   componentWillUnmount: function() {
@@ -171,8 +172,9 @@ var AppUser = React.createClass({
     key.unbind('ctrl+e', utils.focusNewNote);
     key.unbind('esc', this.escPressed);
 
-    action.onShowSettings(this.cidShowSettings)
-    action.onHideSettings(this.cidHideSettings)
+    action.offShowSettings(this.cidShowSettings);
+    action.offHideSettings(this.cidHideSettings);
+    action.offTagSelected(this.cidTagSelected);
   },
 
   // TODO: after delete/undelete should show a message at the top

@@ -2,6 +2,7 @@
 'use strict';
 
 var ni = require('./noteinfo.js');
+var action = require('./action.js');
 
 function urlifyTitle(s) {
   s = s.slice(0,32);
@@ -25,14 +26,21 @@ var Note = React.createClass({
     }
   },
 
+  handleTagClicked: function(e) {
+    var tag = e.target.textContent.substr(1);
+    action.tagSelected(tag);
+  },
+
   createTags: function(tags) {
     if (!tags) {
       return;
     }
+    var self = this;
     var tagEls = tags.map(function (tag) {
         tag = "#" + tag;
         return (
-          <span key={tag} className="note-tag">{tag}</span>
+          <span key={tag} onClick={self.handleTagClicked}
+            className="note-tag">{tag}</span>
         );
     });
 

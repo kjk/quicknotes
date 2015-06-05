@@ -72,11 +72,13 @@ function off(actionIdx, cbId) {
 // index in actionCallbacks array for a given action
 var showSettingsIdx = 0;
 var hideSettingsIdx = 1;
+var tagSelectedIdx = 2;
 
 // must be in same order as *Idx above
 var actionNames = [
   "showSettings",
   "hideSettings",
+  "tagSelected",
 ];
 
 function showSettings(name) {
@@ -103,6 +105,20 @@ function offHideSettings(cbId) {
   off(hideSettingsIdx, cbId);
 }
 
+
+function tagSelected(tag) {
+  broadcast(tagSelectedIdx, tag);
+}
+
+function onTagSelected(cb) {
+  return on(tagSelectedIdx, cb);
+}
+
+function offTagSelected(cbId) {
+  off(tagSelectedIdx, cbId);
+}
+
+
 module.exports = {
   showSettings: showSettings,
   onShowSettings: onShowSettings,
@@ -111,4 +127,8 @@ module.exports = {
   hideSettings: hideSettings,
   onHideSettings: onHideSettings,
   offHideSettings: offHideSettings,
+
+  tagSelected: tagSelected,
+  onTagSelected: onTagSelected,
+  offTagSelected : offTagSelected,
 };
