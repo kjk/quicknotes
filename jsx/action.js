@@ -60,7 +60,7 @@ function off(actionIdx, cbId) {
     for (var i = 0; i < n; i++) {
       if (callbacks[i][1] === cbId) {
         callbacks.splice(i, 1);
-        return
+        return;
       }
     }
   }
@@ -130,5 +130,5 @@ module.exports = {
 
   tagSelected: tagSelected,
   onTagSelected: onTagSelected,
-  offTagSelected : offTagSelected,
+  offTagSelected: offTagSelected,
 };

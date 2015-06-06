@@ -26,6 +26,14 @@ type PostChange struct {
 	next   *PostChange
 }
 
+/*
+type Post struct {
+	title string
+	body  string
+	tags  []string
+}
+*/
+
 func init() {
 	dataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
 	posts = make(map[int]*PostChange)
@@ -49,10 +57,14 @@ func dumpMemStats() {
 
 func isValidType(typ int) bool {
 	switch typ {
-	case stackoverflow.HistoryInitialTitle, stackoverflow.HistoryInitialBody,
-		stackoverflow.HistoryInitialTags, stackoverflow.HistoryEditTitle,
-		stackoverflow.HistoryEditBody, stackoverflow.HistoyrEditTags,
-		stackoverflow.HistoryRollbackTitle, stackoverflow.HistoryRollbackBody,
+	case stackoverflow.HistoryInitialTitle,
+		stackoverflow.HistoryInitialBody,
+		stackoverflow.HistoryInitialTags,
+		stackoverflow.HistoryEditTitle,
+		stackoverflow.HistoryEditBody,
+		stackoverflow.HistoyrEditTags,
+		stackoverflow.HistoryRollbackTitle,
+		stackoverflow.HistoryRollbackBody,
 		stackoverflow.HistoryRollbackTags:
 		return true
 	}
