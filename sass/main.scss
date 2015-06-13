@@ -1042,6 +1042,17 @@ $actions-height: 34px;
   margin-bottom: 16px;
 }
 
+/*
+The idea is to have the title shrink if it's too big to show on a line, but
+that would probably require flexbox container since it's only one of many
+elements inside note-header div.
+
+[data-spacing="default"] #notes-list .note-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+*/
 
 /* Spacing : Grid
 ----------------------------------------------- */
