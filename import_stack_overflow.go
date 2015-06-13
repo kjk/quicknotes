@@ -147,9 +147,9 @@ func importStackOverflow() {
 	for hr.Next() {
 		n++
 		ph := &hr.PostHistory
-		if ph.PostHistoryTypeID == stackoverflow.HistoryInitialTags {
-			if false && shownTags < 4 {
-				fmt.Printf("tags: '%s'\n", ph.Text)
+		if false && ph.PostHistoryTypeID == stackoverflow.HistoryRollbackTags {
+			if true && shownTags < 4 {
+				fmt.Printf("tags: '%s', %v\n", ph.Text, ph.Tags)
 				shownTags++
 			}
 		}
