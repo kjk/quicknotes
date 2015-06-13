@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"runtime"
+	"strconv"
 
 	"github.com/dustin/go-humanize"
 	"github.com/kjk/lzmadec"
@@ -15,30 +16,35 @@ var (
 	dataDir           string
 	posts             map[int]*PostChange
 	historyTypeCounts map[int]int
-	userIDToName      map[int]string
+	userIDToInfo      map[int]*UserInfo
 )
+
+type UserInfo struct {
+	userID   int
+	dbUserID int
+	name     string
+}
 
 type PostChange struct {
 	postID int
 	userID int
 	typ    int
 	val    string
+	tags   []string
 	next   *PostChange
 }
 
-/*
 type Post struct {
 	title string
 	body  string
 	tags  []string
 }
-*/
 
 func init() {
 	dataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
 	posts = make(map[int]*PostChange)
 	historyTypeCounts = make(map[int]int)
-	userIDToName = make(map[int]string)
+	userIDToInfo = make(map[int]*UserInfo)
 }
 
 func toBytes(n uint64) string {
@@ -80,6 +86,7 @@ func postHistoryToPostChange(ph *stackoverflow.PostHistory) *PostChange {
 		userID: ph.UserID,
 		typ:    ph.PostHistoryTypeID,
 		val:    ph.Text,
+		tags:   ph.Tags,
 	}
 }
 
@@ -140,8 +147,8 @@ func findLargestHistory() *PostChange {
 	return largestChange
 }
 
-func importStackOverflow() {
-	hr := getHistoryReader("academia")
+func loadHistory(siteName string) {
+	hr := getHistoryReader(siteName)
 	n := 0
 	shownTags := 0
 	for hr.Next() {
@@ -153,10 +160,18 @@ func importStackOverflow() {
 				shownTags++
 			}
 		}
-		if ph.UserDisplayName != "" {
-			if curr := userIDToName[ph.UserID]; curr == "" {
-				userIDToName[ph.UserID] = ph.UserDisplayName
+		if curr := userIDToInfo[ph.UserID]; curr == nil {
+			userInfo := &UserInfo{
+				name: ph.UserDisplayName,
 			}
+			if userInfo.name == "" {
+				userInfo.name = fmt.Sprintf("user-%d", ph.UserID)
+			}
+			userIDToInfo[ph.UserID] = userInfo
+			login := "test:" + strconv.Itoa(ph.UserID)
+			user, err := dbGetOrCreateUser(login, userInfo.name)
+			fatalIfErr(err, "dbGetOrCreateUser()")
+			userInfo.dbUserID = user.ID
 		}
 		historyTypeCounts[ph.PostHistoryTypeID]++
 		pc := postHistoryToPostChange(ph)
@@ -169,7 +184,66 @@ func importStackOverflow() {
 	err := hr.Err()
 	fatalIfErr(err, "")
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
-	fmt.Printf("%d users\n", len(userIDToName))
+	fmt.Printf("%d users\n", len(userIDToInfo))
+}
+
+func setInitialValue(pc *PostChange, p *Post) bool {
+	if pc == nil {
+		return false
+	}
+	switch pc.typ {
+	case stackoverflow.HistoryInitialTitle:
+		p.title = pc.val
+		return true
+	case stackoverflow.HistoryInitialBody:
+		p.body = pc.val
+		return true
+	case stackoverflow.HistoryInitialTags:
+		p.tags = pc.tags
+		return true
+	default:
+		return false
+	}
+}
+
+func getInitialPost(curr *PostChange) (*PostChange, *Post) {
+	p := &Post{}
+	nInitalValues := 0
+	for {
+		isInitial := setInitialValue(curr, p)
+		if !isInitial {
+			break
+		}
+		nInitalValues++
+		curr = curr.next
+	}
+	if 0 == nInitalValues {
+		postID := -1
+		if curr != nil {
+			postID = curr.postID
+		}
+		fmt.Printf("unexpected: no initial values for post id %d\n", postID)
+		return nil, nil
+	}
+	return nil, p
+}
+
+func importPosts() {
+	for _, currPost := range posts {
+		currPost, post := getInitialPost(currPost)
+		if post == nil {
+			continue
+		}
+		for currPost != nil {
+			currPost = currPost.next
+		}
+	}
+}
+
+func importStackOverflow() {
+	loadHistory("academia")
+	importPosts()
+
 	//pc := findLargestHistory()
 	//dumpPostChanges(pc)
 	//dumpCounts(historyTypeCounts)

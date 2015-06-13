@@ -126,6 +126,22 @@ type NewNote struct {
 	snippetSha1 []byte
 }
 
+func newNoteFromNote(n *Note) (*NewNote, error) {
+	var err error
+	nn := &NewNote{
+		title:       n.Title,
+		format:      n.Format,
+		tags:        n.Tags,
+		createdAt:   n.CreatedAt,
+		isDeleted:   n.IsDeleted,
+		isPublic:    n.IsPublic,
+		contentSha1: n.ContentSha1,
+		snippetSha1: n.SnippetSha1,
+	}
+	nn.content, err = getCachedContent(nn.contentSha1)
+	return nn, err
+}
+
 // CachedUserInfo has cached user info
 type CachedUserInfo struct {
 	user  *DbUser
@@ -474,6 +490,36 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	err = tx.Commit()
 	tx = nil
 	return int(noteID), err
+}
+
+func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote)) error {
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		return err
+	}
+	if userID != note.userID {
+		return fmt.Errorf("mismatched note user. noteID: %d, userID: %d, note.userID: %d", noteID, userID, note.userID)
+	}
+	newNote, err := newNoteFromNote(note)
+	if err != nil {
+		return err
+	}
+	updateFn(newNote)
+	// TODO: wasteful, because will call dbGetNoteByID() again
+	_, err = dbUpdateNote(userID, newNote)
+	return err
+}
+
+func dbUpdateNoteTitle(userID, noteID int, newTitle string) error {
+	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) {
+		newNote.title = newTitle
+	})
+}
+
+func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
+	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) {
+		newNote.tags = newTags
+	})
 }
 
 func dbUpdateNote(userID int, note *NewNote) (int, error) {
