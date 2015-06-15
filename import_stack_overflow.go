@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/kjk/lzmadec"
@@ -32,12 +33,6 @@ type PostChange struct {
 	val    string
 	tags   []string
 	next   *PostChange
-}
-
-type Post struct {
-	title string
-	body  string
-	tags  []string
 }
 
 func init() {
@@ -187,30 +182,45 @@ func loadHistory(siteName string) {
 	fmt.Printf("%d users\n", len(userIDToInfo))
 }
 
-func setInitialValue(pc *PostChange, p *Post) bool {
+func setInitialValue(pc *PostChange, n *NewNote) bool {
 	if pc == nil {
 		return false
 	}
 	switch pc.typ {
 	case stackoverflow.HistoryInitialTitle:
-		p.title = pc.val
+		n.title = pc.val
 		return true
 	case stackoverflow.HistoryInitialBody:
-		p.body = pc.val
+		n.content = []byte(pc.val)
 		return true
 	case stackoverflow.HistoryInitialTags:
-		p.tags = pc.tags
+		n.tags = pc.tags
 		return true
 	default:
 		return false
 	}
 }
 
-func getInitialPost(curr *PostChange) (*PostChange, *Post) {
-	p := &Post{}
+func updateNoteValue(pc *PostChange, n *NewNote) {
+	switch pc.typ {
+	case stackoverflow.HistoryEditTitle,
+		stackoverflow.HistoryRollbackTitle:
+		n.title = pc.val
+	case stackoverflow.HistoryEditBody,
+		stackoverflow.HistoryRollbackBody:
+		n.content = []byte(pc.val)
+	case stackoverflow.HistoyrEditTags, stackoverflow.HistoryRollbackTags:
+		n.tags = pc.tags
+	default:
+		panic("updateValue")
+	}
+}
+
+func getInitialNote(curr *PostChange) (*PostChange, *NewNote) {
+	n := &NewNote{}
 	nInitalValues := 0
 	for {
-		isInitial := setInitialValue(curr, p)
+		isInitial := setInitialValue(curr, n)
 		if !isInitial {
 			break
 		}
@@ -225,7 +235,7 @@ func getInitialPost(curr *PostChange) (*PostChange, *Post) {
 		fmt.Printf("unexpected: no initial values for post id %d\n", postID)
 		return nil, nil
 	}
-	return nil, p
+	return nil, n
 }
 
 func typToStr(typ int) string {
@@ -236,7 +246,6 @@ func typToStr(typ int) string {
 		return "InitialBody"
 	case stackoverflow.HistoryInitialTags:
 		return "InitialTags"
-
 	case stackoverflow.HistoryEditTitle:
 		return "EditTitle"
 	case stackoverflow.HistoryEditBody:
@@ -280,22 +289,38 @@ func dumpHistory(curr *PostChange) {
 }
 
 func importPosts() {
+	n := 0
 	for _, currPost := range posts {
 		currPost = reversePostChange(currPost)
 		//dumpHistory(currPost)
-		currPost, post := getInitialPost(currPost)
-		if post == nil {
+		currPost, note := getInitialNote(currPost)
+		if note == nil {
 			continue
 		}
+		// TODO: write note for the user
 		for currPost != nil {
+			updateNoteValue(currPost, note)
+			// TODO: write note for the user
 			currPost = currPost.next
+		}
+		n++
+		if n%1000 == 0 {
+			fmt.Print(".")
 		}
 	}
 }
 
 func importStackOverflow() {
-	loadHistory("academia")
+	siteName := "academia"
+	fmt.Printf("loading site %s...", siteName)
+	timeStart := time.Now()
+	loadHistory(siteName)
+	fmt.Printf(" done in %s\n", time.Since(timeStart))
+
+	timeStart = time.Now()
+	fmt.Printf("importing posts: ")
 	importPosts()
+	fmt.Printf("\ndone in %s\n", time.Since(timeStart))
 
 	//pc := findLargestHistory()
 	//dumpPostChanges(pc)
