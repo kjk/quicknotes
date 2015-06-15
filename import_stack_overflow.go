@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -27,12 +28,13 @@ type UserInfo struct {
 }
 
 type PostChange struct {
-	postID int
-	userID int
-	typ    int
-	val    string
-	tags   []string
-	next   *PostChange
+	postID    int
+	userID    int
+	createdAt time.Time
+	typ       int
+	val       string
+	tags      []string
+	next      *PostChange
 }
 
 func init() {
@@ -77,11 +79,12 @@ func postHistoryToPostChange(ph *stackoverflow.PostHistory) *PostChange {
 		return nil
 	}
 	return &PostChange{
-		postID: ph.PostID,
-		userID: ph.UserID,
-		typ:    ph.PostHistoryTypeID,
-		val:    ph.Text,
-		tags:   ph.Tags,
+		postID:    ph.PostID,
+		userID:    ph.UserID,
+		createdAt: ph.CreationDate,
+		typ:       ph.PostHistoryTypeID,
+		val:       ph.Text,
+		tags:      ph.Tags,
 	}
 }
 
@@ -186,6 +189,7 @@ func setInitialValue(pc *PostChange, n *NewNote) bool {
 	if pc == nil {
 		return false
 	}
+	n.createdAt = pc.createdAt
 	switch pc.typ {
 	case stackoverflow.HistoryInitialTitle:
 		n.title = pc.val
@@ -202,6 +206,7 @@ func setInitialValue(pc *PostChange, n *NewNote) bool {
 }
 
 func updateNoteValue(pc *PostChange, n *NewNote) {
+	n.createdAt = pc.createdAt
 	switch pc.typ {
 	case stackoverflow.HistoryEditTitle,
 		stackoverflow.HistoryRollbackTitle:
@@ -292,22 +297,36 @@ func importPosts() (int, int) {
 	n := 0
 	nVersions := 0
 	for _, currPost := range posts {
+		userInfo := userIDToInfo[currPost.userID]
+		userID := userInfo.dbUserID
 		currPost = reversePostChange(currPost)
 		//dumpHistory(currPost)
 		currPost, note := getInitialNote(currPost)
-		nVersions++
 		if note == nil {
 			continue
 		}
-		// TODO: write note for the user
+		if len(note.content) == 0 {
+			continue
+		}
+		note.format = formatText
+		nVersions++
+		note.isPublic = rand.Intn(1000) > 100 // make 90% of notes public
+		_, err := dbCreateOrUpdateNote(userID, note)
+		fatalIfErr(err, "dbCreateOrUpdateNote()")
+
 		for currPost != nil {
 			updateNoteValue(currPost, note)
-			// TODO: write note for the user
-			nVersions++
+			if len(note.content) > 0 {
+				_, err := dbCreateOrUpdateNote(userID, note)
+				fatalIfErr(err, "dbCreateOrUpdateNote()")
+				nVersions++
+			}
 			currPost = currPost.next
+
+			// TODO: 5% probability of changing note status
 		}
 		n++
-		if n%1000 == 0 {
+		if n%300 == 0 {
 			fmt.Print(".")
 		}
 	}

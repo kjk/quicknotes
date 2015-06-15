@@ -561,7 +561,7 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	}
 
 	if needNewVersion {
-		LogInfof("inserting new version of note %d\n", noteID)
+		//LogInfof("inserting new version of note %d\n", noteID)
 		serilizedTags := serializeTags(note.tags)
 		q := `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
 		res, err := tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
@@ -617,6 +617,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	var noteID int
 	if note.idStr == "" {
 		noteID, err = dbCreateNewNote(userID, note)
+		note.idStr = hashInt(noteID)
 	} else {
 		noteID, err = dbUpdateNote(userID, note)
 	}

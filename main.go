@@ -118,6 +118,8 @@ func main() {
 	initAppMust()
 
 	if flgImportStackOverflow {
+		localStore, err = NewLocalStore(getLocalStoreDir())
+		fatalIfErr(err, "NewLocalStore()")
 		importStackOverflow()
 		return
 	}
