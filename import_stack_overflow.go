@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -293,6 +294,22 @@ func dumpHistory(curr *PostChange) {
 	}
 }
 
+func isMaybeHTML(s string) bool {
+	idx := strings.Index(s, "<")
+	if idx == -1 {
+		return false
+	}
+	return strings.Index(s[idx:], ">") != -1
+}
+
+func detectFormat(note *NewNote) {
+	if isMaybeHTML(string(note.content)) {
+		note.format = formatHTML
+	} else {
+		note.format = formatText
+	}
+}
+
 func importPosts() (int, int) {
 	n := 0
 	nVersions := 0
@@ -308,7 +325,7 @@ func importPosts() (int, int) {
 		if len(note.content) == 0 {
 			continue
 		}
-		note.format = formatText
+		detectFormat(note)
 		nVersions++
 		note.isPublic = rand.Intn(1000) > 100 // make 90% of notes public
 		_, err := dbCreateOrUpdateNote(userID, note)
@@ -316,6 +333,7 @@ func importPosts() (int, int) {
 
 		for currPost != nil {
 			updateNoteValue(currPost, note)
+			detectFormat(note)
 			if len(note.content) > 0 {
 				_, err := dbCreateOrUpdateNote(userID, note)
 				fatalIfErr(err, "dbCreateOrUpdateNote()")
