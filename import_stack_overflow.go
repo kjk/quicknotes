@@ -228,8 +228,61 @@ func getInitialPost(curr *PostChange) (*PostChange, *Post) {
 	return nil, p
 }
 
+func typToStr(typ int) string {
+	switch typ {
+	case stackoverflow.HistoryInitialTitle:
+		return "InitialTitle"
+	case stackoverflow.HistoryInitialBody:
+		return "InitialBody"
+	case stackoverflow.HistoryInitialTags:
+		return "InitialTags"
+
+	case stackoverflow.HistoryEditTitle:
+		return "EditTitle"
+	case stackoverflow.HistoryEditBody:
+		return "EditBody"
+	case stackoverflow.HistoyrEditTags:
+		return "EditTags"
+	case stackoverflow.HistoryRollbackTitle:
+		return "RollbackTitle"
+	case stackoverflow.HistoryRollbackBody:
+		return "RollbackBody"
+	case stackoverflow.HistoryRollbackTags:
+		return "RollbackTags"
+	default:
+		return fmt.Sprintf("typ: %d", typ)
+	}
+}
+
+func reversePostChange(curr *PostChange) *PostChange {
+	root := curr
+	curr = curr.next
+	root.next = nil
+	for curr != nil {
+		next := curr.next
+		curr.next = root
+		root = curr
+		curr = next
+	}
+	return root
+}
+
+func dumpPostChange(pc *PostChange) {
+	fmt.Printf("  %s\n", typToStr(pc.typ))
+}
+
+func dumpHistory(curr *PostChange) {
+	fmt.Printf("id: %d\n", curr.postID)
+	for curr != nil {
+		dumpPostChange(curr)
+		curr = curr.next
+	}
+}
+
 func importPosts() {
 	for _, currPost := range posts {
+		currPost = reversePostChange(currPost)
+		//dumpHistory(currPost)
 		currPost, post := getInitialPost(currPost)
 		if post == nil {
 			continue
