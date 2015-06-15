@@ -235,7 +235,7 @@ func getInitialNote(curr *PostChange) (*PostChange, *NewNote) {
 		fmt.Printf("unexpected: no initial values for post id %d\n", postID)
 		return nil, nil
 	}
-	return nil, n
+	return curr, n
 }
 
 func typToStr(typ int) string {
@@ -288,12 +288,14 @@ func dumpHistory(curr *PostChange) {
 	}
 }
 
-func importPosts() {
+func importPosts() (int, int) {
 	n := 0
+	nVersions := 0
 	for _, currPost := range posts {
 		currPost = reversePostChange(currPost)
 		//dumpHistory(currPost)
 		currPost, note := getInitialNote(currPost)
+		nVersions++
 		if note == nil {
 			continue
 		}
@@ -301,6 +303,7 @@ func importPosts() {
 		for currPost != nil {
 			updateNoteValue(currPost, note)
 			// TODO: write note for the user
+			nVersions++
 			currPost = currPost.next
 		}
 		n++
@@ -308,6 +311,7 @@ func importPosts() {
 			fmt.Print(".")
 		}
 	}
+	return n, nVersions
 }
 
 func importStackOverflow() {
@@ -319,8 +323,8 @@ func importStackOverflow() {
 
 	timeStart = time.Now()
 	fmt.Printf("importing posts: ")
-	importPosts()
-	fmt.Printf("\ndone in %s\n", time.Since(timeStart))
+	nNotes, nVersions := importPosts()
+	fmt.Printf("\nimported %d notes (%d versions) in %s\n", nNotes, nVersions, time.Since(timeStart))
 
 	//pc := findLargestHistory()
 	//dumpPostChanges(pc)
