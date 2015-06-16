@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/kjk/u"
@@ -274,6 +275,27 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 		Notes:              notes,
 	}
 	httpOkWithJsonpCompact(w, r, v, jsonp)
+}
+
+// /api/getrecnetnotes.json
+// Arguments:
+//  - limit : max notes, to retrieve, 25 if not given
+//  - jsonp : jsonp wrapper, optional
+// TODO: allow getting private notes, for admin uses
+func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
+	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
+	limitStr := strings.TrimSpace(r.FormValue("limit"))
+	LogInfof("jsonp: '%s', limit: '%s'\n", jsonp, limitStr)
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit == 0 {
+		limit = 25
+	}
+	recentNotes, err := getRecentPublicNotesCached(limit)
+	if err != nil {
+		httpServerError(w, r)
+		return
+	}
+	httpOkWithJsonpCompact(w, r, recentNotes, jsonp)
 }
 
 // NewNoteFromBrowser represents format of the note sent by the browser
@@ -569,6 +591,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/starnote.json", handleAPIStarNote)
 	http.HandleFunc("/api/unstarnote.json", handleAPIUnstarNote)
 	http.HandleFunc("/api/tohtml.json", handleAPIToHTML)
+	http.HandleFunc("/api/getrecentnotes.json", handleAPIGetRecentNotes)
 }
 
 func startWebServer() {
