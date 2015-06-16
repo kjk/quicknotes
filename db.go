@@ -840,6 +840,85 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
+type NoteSummary struct {
+	id        int
+	IDStr     string `json:"id_str"`
+	userID    int
+	UserIDStr string    `json:"user_id_str"`
+	UserName  string    `json:"user_name"`
+	Title     string    `json:"title"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+var (
+	recentPublicNotesCached     []NoteSummary
+	recentPublicNotesLastUpdate time.Time
+)
+
+func timeExpired(t time.Time, dur time.Duration) bool {
+	return t.IsZero() || time.Now().Sub(t) > dur
+}
+
+func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
+	var res []NoteSummary
+	mu.Lock()
+	if len(recentPublicNotesCached) >= limit && !timeExpired(recentPublicNotesLastUpdate, time.Minute) {
+		res = make([]NoteSummary, limit, limit)
+		for i := 0; i < limit; i++ {
+			res[i] = recentPublicNotesCached[i]
+		}
+	}
+	mu.Unlock()
+	if len(res) == limit {
+		return res, nil
+	}
+	db := getDbMust()
+	q := `
+		SELECT
+			n.id,
+			n.user_id,
+			n.title,
+			n.created_at
+		FROM notes n
+		WHERE n.is_public=true
+		ORDER BY n.created_at DESC
+		LIMIT %d
+	`
+	rows, err := db.Query(fmt.Sprintf(q, limit))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var ns NoteSummary
+		err = rows.Scan(&ns.id, &ns.userID, &ns.Title, &ns.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		ns.IDStr = hashInt(ns.id)
+		ns.UserIDStr = hashInt(ns.userID)
+		// TODO: resolve ns.UserName
+		ns.UserName = fmt.Sprintf("user: %d", ns.userID)
+		res = append(res, ns)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	if len(res) == 0 {
+		return res, nil
+	}
+
+	mu.Lock()
+	n := len(res)
+	recentPublicNotesCached = make([]NoteSummary, n, n)
+	for i := 0; i < n; i++ {
+		recentPublicNotesCached[i] = res[i]
+	}
+	recentPublicNotesLastUpdate = time.Now()
+	mu.Unlock()
+	return res, nil
+}
+
 func dbGetNoteByID(id int) (*Note, error) {
 	var n Note
 	var tagsSerialized string
