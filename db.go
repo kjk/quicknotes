@@ -36,11 +36,13 @@ const (
 )
 
 var (
-	sqlDb              *sql.DB
-	sqlDbMu            sync.Mutex
-	tagSepStr          = string([]byte{30})
-	userIDToCachedInfo map[int]*CachedUserInfo
-	contentCache       map[string]*CachedContentInfo
+	sqlDb               *sql.DB
+	sqlDbMu             sync.Mutex
+	tagSepStr           = string([]byte{30})
+	userIDToCachedInfo  map[int]*CachedUserInfo
+	contentCache        map[string]*CachedContentInfo
+	userIDToDbUserCache map[int]*DbUser
+
 	// general purpose mutex for short-lived ops (like lookup/insert in a map)
 	mu sync.Mutex
 )
@@ -48,6 +50,7 @@ var (
 func init() {
 	userIDToCachedInfo = make(map[int]*CachedUserInfo)
 	contentCache = make(map[string]*CachedContentInfo)
+	userIDToDbUserCache = make(map[int]*DbUser)
 }
 
 func getSqlConnectionRoot() string {
@@ -296,7 +299,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 		return i, nil
 	}
 	timeStart := time.Now()
-	user, err := dbGetUserByID(userID)
+	user, err := dbGetUserByIDCached(userID)
 	if user == nil {
 		return nil, err
 	}
@@ -897,8 +900,11 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 		}
 		ns.IDStr = hashInt(ns.id)
 		ns.UserIDStr = hashInt(ns.userID)
-		// TODO: resolve ns.UserName
-		ns.UserName = fmt.Sprintf("user: %d", ns.userID)
+		dbUser, err := dbGetUserByIDCached(ns.userID)
+		if err != nil {
+			return nil, err
+		}
+		ns.UserName = dbUser.Handle
 		res = append(res, ns)
 	}
 	if err = rows.Err(); err != nil {
@@ -975,7 +981,24 @@ func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	return &user, nil
 }
 
-// TODO: cache this in memory as dbGetUserByIDCached
+func dbGetUserByIDCached(userID int) (*DbUser, error) {
+	var res *DbUser
+	mu.Lock()
+	res = userIDToDbUserCache[userID]
+	mu.Unlock()
+	if res != nil {
+		return res, nil
+	}
+	res, err := dbGetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	mu.Lock()
+	userIDToDbUserCache[userID] = res
+	mu.Unlock()
+	return res, nil
+}
+
 func dbGetUserByID(userID int) (*DbUser, error) {
 	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
 	return dbGetUserByQuery(q, userID)
