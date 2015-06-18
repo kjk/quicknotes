@@ -33,8 +33,8 @@ var AppIndex = React.createClass({
   },
 
   componentWillUnmount: function() {
-    action.onShowSettings(this.cidShowSettings)
-    action.onHideSettings(this.cidHideSettings)
+    action.onShowSettings(this.cidShowSettings);
+    action.onHideSettings(this.cidHideSettings);
   },
 
   renderSettings: function() {
