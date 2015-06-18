@@ -54,10 +54,13 @@ func checkArrNotEqual(t *testing.T, a1, a2 []string) {
 }
 
 func TestStrArrEqual(t *testing.T) {
+	checkArrEqual(t, nil, nil)
+	checkArrEqual(t, []string{}, nil)
+	checkArrEqual(t, nil, []string{})
 	checkArrEqual(t, []string{}, []string{})
 	checkArrEqual(t, []string{"foo"}, []string{"foo"})
 	checkArrNotEqual(t, []string{"foo"}, []string{"bar"})
 	checkArrNotEqual(t, []string{"foo"}, []string{"Foo"})
-	checkArrEqual(t, []string{"foo", "bar"}, []string{"bar", "foo"})
+	checkArrEqual(t, []string{"foo", "bar", "foo"}, []string{"bar", "foo", "bar"})
 	checkArrNotEqual(t, []string{"bar"}, []string{"bar", "foo"})
 }
