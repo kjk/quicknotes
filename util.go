@@ -201,13 +201,16 @@ func strArrEqual(a1, a2 []string) bool {
 	}
 	m := map[string]int{}
 	for _, t := range a1 {
-		m[t]++
+		m[t] = 1
 	}
 	for _, t := range a2 {
-		m[t]++
+		if _, ok := m[t]; !ok {
+			return false
+		}
+		m[t] = 2
 	}
 	// the value for the key can either be 2 if the key is in both
-	// arrays or 1 if only in one, which indicates arrays are not
+	// arrays or 1 if only in a1, which indicates arrays are not
 	// the same
 	for _, n := range m {
 		if n != 2 {
