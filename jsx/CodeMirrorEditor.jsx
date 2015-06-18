@@ -46,8 +46,8 @@ var CodeMirrorEditor = React.createClass({
   },
 
   handleChange: function() {
-    if (!this.props.readOnly) {
-      this.props.onChange && this.props.onChange(this.editor.getValue());
+    if (!this.props.readOnly && this.props.onChange) {
+      this.props.onChange(this.editor.getValue());
     }
   },
 

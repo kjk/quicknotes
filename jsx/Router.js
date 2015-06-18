@@ -7,11 +7,11 @@
 var _ = require('./underscore.js');
 
 var Router = function() {
-    // Ensure that `History` can be used outside of the browser.
-    if (typeof window !== 'undefined') {
-      this.location = window.location;
-      this.history = window.history;
-    }
+  // Ensure that `History` can be used outside of the browser.
+  if (typeof window !== 'undefined') {
+    this.location = window.location;
+    this.history = window.history;
+  }
 };
 
 // Cached regex for stripping a leading hash/slash and trailing space.
@@ -59,7 +59,8 @@ _.extend(Router.prototype, {}, {
       this.location.pathname + this.getSearch()
     );
     var root = this.root.slice(0, -1);
-    if (!path.indexOf(root)) path = path.slice(root.length);
+    if (!path.indexOf(root))
+      path = path.slice(root.length);
     return path.charAt(0) === '/' ? path.slice(1) : path;
   },
 
@@ -81,15 +82,17 @@ _.extend(Router.prototype, {}, {
 
     // Figure out the initial configuration. Do we need an iframe?
     // Is pushState desired ... is it available?
-    this.options          = _.extend({root: '/'}, this.options, options);
-    this.root             = this.options.root;
+    this.options = _.extend({
+      root: '/'
+    }, this.options, options);
+    this.root = this.options.root;
     this._wantsHashChange = this.options.hashChange !== false;
-    this._hasHashChange   = 'onhashchange' in window;
-    this._useHashChange   = this._wantsHashChange && this._hasHashChange;
-    this._wantsPushState  = !!this.options.pushState;
-    this._hasPushState    = !!(this.history && this.history.pushState);
-    this._usePushState    = this._wantsPushState && this._hasPushState;
-    this.fragment         = this.getFragment();
+    this._hasHashChange = 'onhashchange' in window;
+    this._useHashChange = this._wantsHashChange && this._hasHashChange;
+    this._wantsPushState = !!this.options.pushState;
+    this._hasPushState = !!(this.history && this.history.pushState);
+    this._usePushState = this._wantsPushState && this._hasPushState;
+    this.fragment = this.getFragment();
 
     // Normalize root to always include a leading and trailing slash.
     this.root = ('/' + this.root + '/').replace(rootStripper, '/');
@@ -109,7 +112,9 @@ _.extend(Router.prototype, {}, {
       // Or if we've started out with a hash-based route, but we're currently
       // in a browser where it could be `pushState`-based instead...
       } else if (this._hasPushState && this.atRoot()) {
-        this.navigate(this.getHash(), {replace: true});
+        this.navigate(this.getHash(), {
+          replace: true
+        });
       }
     }
 
@@ -138,7 +143,10 @@ _.extend(Router.prototype, {}, {
   // route callback be fired (not usually desirable), or `replace: true`, if
   // you wish to modify the current URL without adding an entry to the history.
   navigate: function(fragment, options) {
-    if (!options || options === true) options = {trigger: !!options};
+    if (!options || options === true)
+      options = {
+        trigger: !!options
+      };
 
     // Normalize the fragment.
     fragment = this.getFragment(fragment || '');
@@ -193,7 +201,7 @@ _.extend(Router.prototype, {}, {
 
 });
 
-var router = new Router;
+var router = new Router();
 router.start();
 
 module.exports = router;

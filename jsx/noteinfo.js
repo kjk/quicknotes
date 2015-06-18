@@ -1,4 +1,4 @@
-/* jshint -W09,-W1177 */
+/* jshint -W097,-W117 */
 'use strict';
 
 var noteHashIDIdx = 0;
@@ -35,16 +35,27 @@ function strArrEq(a1, a2) {
     return false;
   }
 
-  // TODO: don't sort in-place, maybe use a dict way of comparing equality
-  var a1 = a1.sort();
-  var a2 = a2.sort();
-  var n = a1.length;
-  if (n != a2.length) {
-    return false;
+  // Note: can't short-circuit by checking the lengths because
+  // that doesn't handle duplicate keys
+
+  var d = {};
+  var i, s;
+  for (i = 0; i < a1.length; i++) {
+    s = a1[i];
+    d[s] = 1;
   }
-  for (var i=0; i < n; i++) {
-    if (a1[i] != a2[i]) {
+  for (i = 0; i < a2.length; i++) {
+    s = a2[i];
+    if (!d.hasOwnProperty(s)) {
       return false;
+    }
+    d[s] = 2;
+  }
+  for (var k in d) {
+    if (d.hasOwnProperty(k)) {
+      if (d[k] != 2) {
+        return false;
+      }
     }
   }
   return true;
@@ -52,7 +63,7 @@ function strArrEq(a1, a2) {
 
 function notesEq(n1, n2) {
   // Note: maybe should compare content after trim() ?
-  for (var i = 0; i< simpleProps.length; i++) {
+  for (var i = 0; i < simpleProps.length; i++) {
     var prop = simpleProps[i];
     if (n1[prop] != n2[prop]) {
       return false;
@@ -62,7 +73,7 @@ function notesEq(n1, n2) {
 }
 
 function isBitSet(n, nBit) {
-  return (n & (1 << nBit)) != 0;
+  return (n & (1 << nBit)) !== 0;
 }
 
 function setBit(n, nBit) {

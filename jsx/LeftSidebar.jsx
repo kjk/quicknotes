@@ -9,7 +9,7 @@ var showDeletedTag = true;
 var LeftSidebar = React.createClass({
 
   createTagsList: function(sectionName, tagNames, tags) {
-    if (tagNames.length == 0) {
+    if (tagNames.length === 0) {
       return;
     }
 
@@ -50,7 +50,7 @@ var LeftSidebar = React.createClass({
       specialTagNames.unshift("__private");
       specialTagNames.unshift("__public");
       specialTagNames.unshift("__starred");
-      specialTagNames.unshift("__all")
+      specialTagNames.unshift("__all");
     } else {
       tagNames.unshift("__all");
     }
