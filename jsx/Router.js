@@ -1,4 +1,4 @@
-/* jshint -W097,-W117 */
+/* jshint -W097,-W117,-W107 */
 
 // based on https://github.com/jashkenas/backbone/blob/master/backbone.js
 // TODO: probably strip down everything we don't use, but is good for now
@@ -66,7 +66,7 @@ _.extend(Router.prototype, {}, {
 
   // Get the cross-browser normalized URL fragment from the path or hash.
   getFragment: function(fragment) {
-    if (fragment == null) {
+    if (fragment === null) {
       if (this._usePushState || !this._wantsHashChange) {
         fragment = this.getPath();
       } else {

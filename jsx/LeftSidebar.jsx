@@ -33,7 +33,7 @@ var LeftSidebar = React.createClass({
       );
     }
     var tagNames = [];
-    var specialTagNames = []
+    var specialTagNames = [];
 
     for (var tagName in tags) {
       if (!utils.isSpecialTag(tagName)) {
