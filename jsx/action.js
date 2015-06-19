@@ -118,7 +118,6 @@ function offTagSelected(cbId) {
   off(tagSelectedIdx, cbId);
 }
 
-
 module.exports = {
   showSettings: showSettings,
   onShowSettings: onShowSettings,

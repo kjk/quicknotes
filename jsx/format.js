@@ -6,8 +6,9 @@
 var Invalid = 0;
 var Text = 1;
 var Markdown = 2;
+var Html = 3;
 
-var formatNames = ["invalid", "text", "markdown"];
+var formatNames = ["invalid", "text", "markdown", "html"];
 
 var Formats = ["text", "markdown"];
 
