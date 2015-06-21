@@ -2,7 +2,7 @@
 'use strict';
 
 var TagCount = require('./TagCount.jsx');
-var utils = require('./utils.js');
+var u = require('./utils.js');
 
 var TagsList = React.createClass({
   render: function() {
@@ -14,7 +14,7 @@ var TagsList = React.createClass({
 
     var tagEls = tagNames.map(function (tagName) {
       var count = tags[tagName];
-      var displayName = utils.tagNameToDisplayName(tagName);
+      var displayName = u.tagNameToDisplayName(tagName);
       var isSelected = (tagName == selectedTag);
       return (
         <TagCount

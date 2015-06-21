@@ -1,7 +1,6 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var utils = require('./utils.js');
 var format = require('./format.js');
 
 var TypeTitle = 1;

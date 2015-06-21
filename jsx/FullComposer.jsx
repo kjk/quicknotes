@@ -2,7 +2,7 @@
 'use strict';
 
 var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
-var utils = require('./utils.js');
+var u = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
 var _ = require('./underscore.js');
@@ -36,7 +36,7 @@ function textToTags(s) {
 var FullComposer = React.createClass({
   getInitialState: function() {
     return {
-      note: utils.deepCloneObject(this.props.note),
+      note: u.deepCloneObject(this.props.note),
       previewHtml: ""
     };
   },
@@ -87,7 +87,7 @@ var FullComposer = React.createClass({
       s = e.target.value;
     }
     s = s.trim();
-    var note = utils.deepCloneObject(this.state.note);
+    var note = u.deepCloneObject(this.state.note);
     ni.SetContent(note, s);
     this.setState({
       note: note
@@ -96,7 +96,7 @@ var FullComposer = React.createClass({
   },
 
   handlePublicChanged: function(e) {
-    var note = utils.deepCloneObject(this.state.note);
+    var note = u.deepCloneObject(this.state.note);
     ni.SetPublicState(note, e.target.checked);
     this.setState({
       note: note
@@ -105,7 +105,7 @@ var FullComposer = React.createClass({
 
   handleTitleChanged: function(e) {
     var s = e.target.value.trim();
-    var note = utils.deepCloneObject(this.state.note);
+    var note = u.deepCloneObject(this.state.note);
     ni.SetTitle(note, s);
     this.setState({
       note: note
@@ -114,7 +114,7 @@ var FullComposer = React.createClass({
 
   handleTagsChanged: function(e) {
     var tagsStr = e.target.value;
-    var note = utils.deepCloneObject(this.state.note);
+    var note = u.deepCloneObject(this.state.note);
     ni.SetTags(note, textToTags(tagsStr));
     this.setState({
       note: note
@@ -123,7 +123,7 @@ var FullComposer = React.createClass({
 
   handleFormatChanged: function(e) {
     var formatName = e.target.value;
-    var note = utils.deepCloneObject(this.state.note);
+    var note = u.deepCloneObject(this.state.note);
     ni.SetFormat(note, format.nameToNumber(formatName));
     this.setState({
       note: note
