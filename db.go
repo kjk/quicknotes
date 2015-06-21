@@ -843,14 +843,15 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
+// NoteSummary desribes a note for e.g. display on index page
 type NoteSummary struct {
 	id        int
-	IDStr     string `json:"id_str"`
+	IDStr     string
 	userID    int
-	UserIDStr string    `json:"user_id_str"`
-	UserName  string    `json:"user_name"`
-	Title     string    `json:"title"`
-	CreatedAt time.Time `json:"created_at"`
+	UserIDStr string
+	UserName  string
+	Title     string
+	CreatedAt time.Time
 }
 
 var (
@@ -880,13 +881,14 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 		SELECT
 			n.id,
 			n.user_id,
-			n.title,
+			v.title,
 			n.created_at
-		FROM notes n
-		WHERE n.is_public=true
-		ORDER BY n.created_at DESC
+		FROM notes n, versions v
+		WHERE n.is_public=true AND v.id = n.curr_version_id
+		ORDER BY n.created_at ASC
 		LIMIT %d
 	`
+	// TODO: ORDER BY is DESC
 	rows, err := db.Query(fmt.Sprintf(q, limit))
 	if err != nil {
 		return nil, err

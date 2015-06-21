@@ -121,6 +121,11 @@ function runOnLoad(f) {
   }
 }
 
+// helps to use map() in cases where the value can be null
+function arrNotNull(a) {
+  return a ? a : [];
+}
+
 window.runOnLoad = runOnLoad;
 exports.filterNotesByTag = filterNotesByTag;
 exports.dictInc = dictInc;
@@ -131,3 +136,4 @@ exports.tagNameToDisplayName = tagNameToDisplayName;
 exports.isSpecialTag = isSpecialTag;
 exports.deepCloneObject = deepCloneObject;
 exports.noteHasTag = noteHasTag;
+exports.toArr = toArr;

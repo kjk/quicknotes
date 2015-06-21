@@ -277,7 +277,7 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJsonpCompact(w, r, v, jsonp)
 }
 
-// /api/getrecnetnotes.json
+// /api/getrecentnotes.json
 // Arguments:
 //  - limit : max notes, to retrieve, 25 if not given
 //  - jsonp : jsonp wrapper, optional
@@ -292,6 +292,7 @@ func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 	}
 	recentNotes, err := getRecentPublicNotesCached(limit)
 	if err != nil {
+		LogErrorf("getRecentPublicNotesCached() failed with %s\n", err)
 		httpServerError(w, r)
 		return
 	}

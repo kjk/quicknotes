@@ -4,6 +4,34 @@
 var action = require('./action.js');
 var Top = require('./Top.jsx');
 var Settings = require('./Settings.jsx');
+var u = require('./utils.js');
+
+var RecentNotes = React.createClass({
+  getInitialState: function() {
+    return {
+      notes: gRecentNotesInitial
+    };
+  },
+
+  renderNotes: function(notes) {
+    notes = u.arrNotNull(notes);
+    return notes.map(function(note) {
+      // see NoteSummary in db.go for note definition
+      var userName = note.UserName;
+      var title = note.Title;
+      var k = note.IDStr;
+      return <div key={k}>
+        <span>{userName}</span>&nbsp;
+        <span>{title}</span>
+      </div>;
+    });
+  },
+
+  render: function() {
+    var notes = this.state.notes;
+    return <div id="recentNotes">{this.renderNotes(notes)}</div>;
+  }
+});
 
 var AppIndex = React.createClass({
 
@@ -53,6 +81,7 @@ var AppIndex = React.createClass({
           loggedInUserHandle={gLoggedInUserHandle}
           notesUserHandle="" />
         {this.renderSettings()}
+        <RecentNotes />
       </div>
     );
   }
