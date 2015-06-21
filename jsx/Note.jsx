@@ -147,6 +147,9 @@ var Note = React.createClass({
   },
 
   createMakePublicPrivate: function(note) {
+    if (ni.IsDeleted) {
+      return;
+    }
     if (ni.IsPublic(note)) {
       return (
         <a href="#" className="note-action" title="Make private" onClick={this.handleMakePublicPrivate}>
