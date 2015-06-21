@@ -2,7 +2,7 @@
 'use strict';
 
 var _ = require('./underscore.js');
-var utils = require('./utils.js');
+var u = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
 var action = require('./action.js');
@@ -51,7 +51,7 @@ function tagsFromNotes(notes) {
     if (noteTags !== null) {
       for (var j = 0; j < noteTags.length; j++) {
         var tag = noteTags[j];
-        utils.dictInc(tags, tag);
+        u.dictInc(tags, tag);
       }
     }
   }
@@ -73,7 +73,7 @@ var AppUser = React.createClass({
     var tags = [];
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
-      selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
+      selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
       loggedInUserHandle = initialNotesJSON.LoggedInUserHandle;
       tags = tagsFromNotes(allNotes);
 
@@ -93,7 +93,7 @@ var AppUser = React.createClass({
 
   handleTagSelected: function(tag) {
     //console.log("selected tag: ", tag);
-    var selectedNotes = utils.filterNotesByTag(this.state.allNotes, tag);
+    var selectedNotes = u.filterNotesByTag(this.state.allNotes, tag);
     // TODO: update url with /t:${tag}
     this.setState({
       selectedNotes: selectedNotes,
@@ -109,7 +109,7 @@ var AppUser = React.createClass({
     var tags = tagsFromNotes(allNotes);
     // TODO: if selectedTag is not valid, reset to __all
     var selectedTag = this.state.selectedTag;
-    var selectedNotes = utils.filterNotesByTag(allNotes, selectedTag);
+    var selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
     this.setState({
       allNotes: allNotes,
       selectedNotes: selectedNotes,
@@ -158,8 +158,8 @@ var AppUser = React.createClass({
 
   componentDidMount: function() {
     key.filter = this.keyFilter;
-    key('ctrl+f', utils.focusSearch);
-    key('ctrl+e', utils.focusNewNote);
+    key('ctrl+f', u.focusSearch);
+    key('ctrl+e', u.focusNewNote);
     key('esc', this.escPressed);
 
     this.cidShowSettings = action.onShowSettings(this.showSettings);
@@ -168,8 +168,8 @@ var AppUser = React.createClass({
   },
 
   componentWillUnmount: function() {
-    key.unbind('ctrl+f', utils.focusSearch);
-    key.unbind('ctrl+e', utils.focusNewNote);
+    key.unbind('ctrl+f', u.focusSearch);
+    key.unbind('ctrl+e', u.focusNewNote);
     key.unbind('esc', this.escPressed);
 
     action.offShowSettings(this.cidShowSettings);
@@ -278,7 +278,7 @@ var AppUser = React.createClass({
     this.setState({
       noteBeingEdited: null
     });
-    utils.clearNewNote();
+    u.clearNewNote();
 
     var data = {
       noteJSON: noteJSON
@@ -298,7 +298,7 @@ var AppUser = React.createClass({
     this.setState({
       noteBeingEdited: null
     });
-    utils.clearNewNote();
+    u.clearNewNote();
   },
 
   escPressed: function() {
@@ -307,7 +307,7 @@ var AppUser = React.createClass({
       this.setState({
         noteBeingEdited: null
       });
-      utils.clearNewNote();
+      u.clearNewNote();
       return;
     }
   },

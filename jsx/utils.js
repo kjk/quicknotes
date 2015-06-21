@@ -136,4 +136,4 @@ exports.tagNameToDisplayName = tagNameToDisplayName;
 exports.isSpecialTag = isSpecialTag;
 exports.deepCloneObject = deepCloneObject;
 exports.noteHasTag = noteHasTag;
-exports.toArr = toArr;
+exports.arrNotNull = arrNotNull;

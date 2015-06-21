@@ -2,7 +2,7 @@
 'use strict';
 
 var TagsList = require('./TagsList.jsx');
-var utils = require('./utils.js');
+var u = require('./utils.js');
 
 var showDeletedTag = true;
 
@@ -36,7 +36,7 @@ var LeftSidebar = React.createClass({
     var specialTagNames = [];
 
     for (var tagName in tags) {
-      if (!utils.isSpecialTag(tagName)) {
+      if (!u.isSpecialTag(tagName)) {
         tagNames.push(tagName);
       }
     }
