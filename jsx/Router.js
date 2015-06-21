@@ -66,7 +66,7 @@ _.extend(Router.prototype, {}, {
 
   // Get the cross-browser normalized URL fragment from the path or hash.
   getFragment: function(fragment) {
-    if (fragment === null) {
+    if (fragment == null) {
       if (this._usePushState || !this._wantsHashChange) {
         fragment = this.getPath();
       } else {
