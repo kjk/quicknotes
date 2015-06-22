@@ -2,9 +2,9 @@
 @import '_logo';
 
 $sidebar-width: 180px;
-$font-size-main: 12px;
+$font-size-main: 14px;
+$font-size-sidebar: 12px;
 $note-header-dy: 26px;
-
 
 html, body {
   width: 100%;
@@ -373,7 +373,7 @@ a {
 }
 
 .log-in-dropdown-content {
-  width: 180px;
+  width: 200px;
   display: none;
   position: absolute;
   top: 40px; right: 0;
@@ -419,6 +419,7 @@ ul.log-in {
 /**/
 #left-sidebar {
   width: $sidebar-width;
+  font-size: $font-size-sidebar;
   left: 0; top: 46px; bottom: 0;
   overflow-y: auto;
   user-select: none;
