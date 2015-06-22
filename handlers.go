@@ -99,13 +99,16 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	}
 	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	model := struct {
-		UserHandle   string
-		LoggedInUser *DbUser
-		Notes        []*Note
+		UserHandle         string
+		LoggedInUserHandle string
+		Notes              []*Note
 	}{
-		UserHandle:   userHandle,
-		LoggedInUser: i.user,
-		Notes:        i.notes,
+		UserHandle: userHandle,
+		Notes:      i.notes,
+	}
+	dbUser := getUserFromCookie(w, r)
+	if dbUser != nil {
+		model.LoggedInUserHandle = dbUser.Handle
 	}
 	execTemplate(w, tmplUser, model)
 }

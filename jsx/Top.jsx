@@ -20,18 +20,24 @@ var Top = React.createClass({
   },
 
   createSearchInput: function() {
-    if (this.props.notesUserHandle !== "") {
-      return (
-        <div id="search-wrapper" className="left">
-          <input name="search" id="search"
-            onKeyDown={this.handleInputKeyDown}
-            onChange={this.handleInputChange}
-            className="round-input input-not-focused"  type="text"
-            autoComplete="off" autoCapitalize="off"
-            placeholder="Search (Ctrl-F)" />
-        </div>
-      );
+    var userHandle = this.props.notesUserHandle;
+    if (userHandle === "") {
+      return;
     }
+    var placeholder = "Search notes by " + userHandle + " (Ctrl-F)";
+    if (userHandle == gLoggedInUserHandle) {
+      placeholder = "Search your notes (Ctrl-F)";
+    }
+    return (
+      <div id="search-wrapper" className="left">
+        <input name="search" id="search"
+          onKeyDown={this.handleInputKeyDown}
+          onChange={this.handleInputChange}
+          className="round-input input-not-focused"  type="text"
+          autoComplete="off" autoCapitalize="off"
+          placeholder={placeholder} />
+      </div>
+    );
   },
 
   handleCreateNewNote: function(e) {
