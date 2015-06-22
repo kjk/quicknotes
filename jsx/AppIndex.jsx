@@ -17,12 +17,13 @@ var RecentNotes = React.createClass({
     notes = u.arrNotNull(notes);
     return notes.map(function(note) {
       // see NoteSummary in db.go for note definition
-      var userName = note.UserName;
+      var userHandle = note.UserHandle;
       var title = note.Title;
       var k = note.IDStr;
+      var noteUrl = "/n/" + note.IDStr;
+      var userUrl = "/u/" + userHandle;
       return <div key={k}>
-        <span>{userName}</span>&nbsp;
-        <span>{title}</span>
+        <a href={noteUrl}>{title}</a> by <a href={userUrl}>{userHandle}</a>
       </div>;
     });
   },
