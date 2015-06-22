@@ -113,7 +113,8 @@ func setInitialValue2(ph *stackoverflow.PostHistory, p *PostCurrentState) {
 	case stackoverflow.HistoryInitialTags:
 		p.Tags = ph.Tags
 	default:
-		panic("invalid type")
+		fmt.Printf("\nrevguid: %s, type: %d, id: %d\n", ph.RevisionGUID, ph.PostHistoryTypeID, ph.PostID)
+		//panic("invalid type")
 	}
 }
 
