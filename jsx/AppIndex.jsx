@@ -81,7 +81,6 @@ var AppIndex = React.createClass({
           loggedInUserHandle={gLoggedInUserHandle}
           notesUserHandle="" />
         {this.renderSettings()}
-        <RecentNotes />
       </div>
     );
   }
@@ -91,6 +90,10 @@ function appIndexStart() {
   React.render(
     <AppIndex />,
     document.getElementById('root')
+  );
+  React.render(
+    <RecentNotes />,
+    document.getElementById('recent-notes-wrapper')
   );
 }
 
