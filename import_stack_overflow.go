@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	dataDir           string
+	importDataDir     string
 	posts             map[int]*PostChange
 	historyTypeCounts map[int]int
 	userIDToInfo      map[int]*UserInfo
@@ -39,7 +39,7 @@ type PostChange struct {
 }
 
 func init() {
-	dataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
+	importDataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
 	posts = make(map[int]*PostChange)
 	historyTypeCounts = make(map[int]int)
 	userIDToInfo = make(map[int]*UserInfo)
@@ -75,6 +75,16 @@ func isValidType(typ int) bool {
 	return false
 }
 
+func isInitialType(typ int) bool {
+	switch typ {
+	case stackoverflow.HistoryInitialTitle,
+		stackoverflow.HistoryInitialBody,
+		stackoverflow.HistoryInitialTags:
+		return true
+	}
+	return false
+}
+
 func postHistoryToPostChange(ph *stackoverflow.PostHistory) *PostChange {
 	if !isValidType(ph.PostHistoryTypeID) {
 		return nil
@@ -91,7 +101,7 @@ func postHistoryToPostChange(ph *stackoverflow.PostHistory) *PostChange {
 
 func getHistoryReader(site string) *stackoverflow.Reader {
 	archiveFileName := site + ".stackexchange.com.7z"
-	archiveFilePath := filepath.Join(dataDir, archiveFileName)
+	archiveFilePath := filepath.Join(importDataDir, archiveFileName)
 	archive, err := lzmadec.NewArchive(archiveFilePath)
 	fatalIfErr(err, "")
 	r, err := archive.GetFileReader("PostHistory.xml")
