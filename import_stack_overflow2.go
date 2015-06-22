@@ -113,7 +113,7 @@ func setInitialValue2(ph *stackoverflow.PostHistory, p *PostCurrentState) {
 	case stackoverflow.HistoryInitialTags:
 		p.Tags = ph.Tags
 	default:
-		fmt.Printf("\nrevguid: %s, type: %d, id: %d\n", ph.RevisionGUID, ph.PostHistoryTypeID, ph.PostID)
+		//fmt.Printf("\nrevguid: %s, type: %d, id: %d", ph.RevisionGUID, ph.PostHistoryTypeID, ph.PostID)
 		//panic("invalid type")
 	}
 }
@@ -147,7 +147,7 @@ Next:
 		goto Next
 	}
 
-	postID := ph.ID
+	postID := ph.PostID
 	if isInitialType(ph.PostHistoryTypeID) {
 		revGUID := ph.RevisionGUID
 		_, ok := i.posts[postID]
@@ -159,6 +159,7 @@ Next:
 			goto Next
 		}
 		post := PostCurrentState{
+			ID:        postID,
 			CreatedAt: ph.CreationDate,
 		}
 		setInitialValue2(ph, &post)
@@ -166,6 +167,9 @@ Next:
 		// for efficiency, try to construct initial note by peeking the values
 		for n := 0; n < 50 && nSeen < 3; n++ {
 			ph = i.PeekIt(n)
+			if ph == nil {
+				break
+			}
 			if ph.RevisionGUID == revGUID {
 				nSeen++
 				setInitialValue2(ph, &post)
@@ -180,7 +184,7 @@ Next:
 		}
 		idx := len(i.posts)
 		i.postsArr = append(i.postsArr, post)
-		i.posts[post.ID] = idx
+		i.posts[postID] = idx
 		i.CurrentChange.ChangeType = ChangeInitial
 		i.CurrentChange.Post = &i.postsArr[idx]
 		i.CurrentChange.CreatedAt = post.CreatedAt
@@ -191,7 +195,7 @@ Next:
 	idx, ok := i.posts[postID]
 	if !ok {
 		i.NumSkipped++
-		fmt.Printf("\nchange %s for post %d skipped because post missing", ph.RevisionGUID, postID)
+		//fmt.Printf("\nchange %s for post %d skipped because post missing", ph.RevisionGUID, postID)
 		goto Next
 	}
 	post := &i.postsArr[idx]
@@ -203,21 +207,24 @@ Next:
 		stackoverflow.HistoryRollbackTitle:
 		if post.Title == ph.Text {
 			i.NumSkipped++
-			fmt.Printf("\nchange %s for post %d skipped because new title is the same", ph.RevisionGUID, postID)
+			//fmt.Printf("\nchange %s for post %d skipped because new title is the same", ph.RevisionGUID, postID)
 			goto Next
 		}
 		post.Title = ph.Text
+		i.CurrentChange.ChangeType = ChangeTitle
 	case stackoverflow.HistoryEditBody,
 		stackoverflow.HistoryRollbackBody:
 		if post.Body == ph.Text {
 			i.NumSkipped++
-			fmt.Printf("\nchange %s for post %d skipped because new body is the same", ph.RevisionGUID, postID)
+			//fmt.Printf("\nchange %s for post %d skipped because new body is the same", ph.RevisionGUID, postID)
 			goto Next
 		}
 		post.Body = ph.Text
+		i.CurrentChange.ChangeType = ChangeBody
 	case stackoverflow.HistoyrEditTags,
 		stackoverflow.HistoryRollbackTags:
 		post.Tags = ph.Tags
+		i.CurrentChange.ChangeType = ChangeTags
 	}
 
 	i.NumChanges++
@@ -236,13 +243,15 @@ func importStackOverflow2() {
 	hr := getHistoryReader(siteName)
 	i, err := NewPostHistoryIterator(hr)
 	fatalIfErr(err, "NewPostHistoryIterator()")
+	nChanges := 0
 	for i.Next() {
-
+		nChanges++
 	}
 	if err := i.Err(); err != nil {
 		fmt.Printf("i.Err(): %s\n", i.Err())
 	}
 	fmt.Printf(" done in %s\n", time.Since(timeStart))
-	fmt.Printf("Total chnages: %d, skipped: %d (because empty: %d, because invalid user: %d)\n", i.NumChanges, i.NumSkipped, i.NumSkippedEmpty, i.NumSkippedInvalidUser)
+	fmt.Printf("Total changes: %d, skipped: %d (because empty: %d, because invalid user: %d)\n", i.NumChanges, i.NumSkipped, i.NumSkippedEmpty, i.NumSkippedInvalidUser)
+	fmt.Printf("Posts: %d, post changes: %d\n", len(i.postsArr), nChanges)
 	dumpMemStats()
 }
