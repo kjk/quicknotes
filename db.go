@@ -862,13 +862,11 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 
 // NoteSummary desribes a note for e.g. display on index page
 type NoteSummary struct {
-	id        int
-	IDStr     string
-	userID    int
-	UserIDStr string
-	UserName  string
-	Title     string
-	UpdatedAt time.Time
+	id         int
+	IDStr      string
+	UserHandle string
+	Title      string
+	UpdatedAt  time.Time
 }
 
 var (
@@ -927,17 +925,17 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 		}
 		var ns NoteSummary
 		ns.Title = note.Title
-		ns.UpdatedAt = note.CreatedAt // TODO: use UpdatedAt
+		ns.UpdatedAt = note.UpdatedAt
 		ns.IDStr = note.IDStr
-		ns.UserIDStr = hashInt(note.userID)
 		dbUser, err := dbGetUserByIDCached(note.userID)
 		if err != nil {
 			return nil, err
 		}
-		ns.UserName = dbUser.Handle
+		ns.UserHandle = dbUser.Handle
 		if ns.Title == "" {
 			ns.Title = getTitleFromBody(note)
 		}
+		ns.Title = trimTitle(ns.Title, 60)
 		res = append(res, ns)
 	}
 
@@ -952,17 +950,19 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 	return res, nil
 }
 
+func trimTitle(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return nonWhitespaceRightTrim(s[:maxLen])
+}
+
 func getTitleFromBody(note *Note) string {
 	content, err := getNoteContent(note)
 	if err != nil {
 		return ""
 	}
-	line := getFirstLine(content)
-	maxLineLen := 60
-	if len(line) > maxLineLen {
-		line = nonWhitespaceRightTrim(line[:maxLineLen])
-	}
-	return string(line)
+	return string(getFirstLine(content))
 }
 
 func isWs(c byte) bool {
@@ -974,18 +974,15 @@ func isWs(c byte) bool {
 }
 
 // trim from the right all non-whitespace chars
-func nonWhitespaceRightTrim(d []byte) []byte {
-	n := len(d) - 1
-	for ; n >= 0 && !isWs(d[n]); n-- {
+func nonWhitespaceRightTrim(s string) string {
+	n := len(s) - 1
+	for ; n >= 0 && !isWs(s[n]); n-- {
 	}
 	if n < 15 {
-		return d
+		return s
 	}
-	d = d[:n]
-	d = append(d, '.')
-	d = append(d, '.')
-	d = append(d, '.')
-	return d
+	s = s[:n]
+	return s + "..."
 }
 
 func dbGetNoteByID(id int) (*Note, error) {
