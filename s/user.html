@@ -16,6 +16,7 @@
   <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
   <script>
     var gNotesUserHandle = "{{ .UserHandle }}";
+    var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
     var gInitialNotesJSON = null;
     function setInitialNotes(json) {
       gInitialNotesJSON = json;
