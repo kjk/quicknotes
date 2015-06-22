@@ -120,7 +120,7 @@ func main() {
 	if flgImportStackOverflow {
 		localStore, err = NewLocalStore(getLocalStoreDir())
 		fatalIfErr(err, "NewLocalStore()")
-		importStackOverflow2()
+		importStackOverflow()
 		return
 	}
 

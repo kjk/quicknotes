@@ -244,8 +244,28 @@ func importStackOverflow2() {
 	i, err := NewPostHistoryIterator(hr)
 	fatalIfErr(err, "NewPostHistoryIterator()")
 	nChanges := 0
+	toPrint := 100
 	for i.Next() {
 		nChanges++
+		toPrint--
+		if toPrint < 0 {
+			continue
+		}
+		curr := &i.CurrentChange
+		p := curr.Post
+		switch curr.ChangeType {
+		case ChangeInitial:
+			fmt.Printf("---Title %d: %s\nBody:%s\n", p.ID, p.Title, p.Body)
+			if len(p.Tags) > 0 {
+				fmt.Printf("Tags: %v\n", p.Tags)
+			}
+		case ChangeTitle:
+			fmt.Printf("Title %d: %s\n", p.ID, p.Title)
+		case ChangeBody:
+			fmt.Printf("Body %d: %s\n", p.ID, p.Body)
+		case ChangeTags:
+			fmt.Printf("Tags %d: %v\n", p.ID, p.Tags)
+		}
 	}
 	if err := i.Err(); err != nil {
 		fmt.Printf("i.Err(): %s\n", i.Err())
