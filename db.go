@@ -108,7 +108,7 @@ type DbNote struct {
 // Note describes note in memory
 type Note struct {
 	DbNote
-	//UpdatedAt     time.Time
+	UpdatedAt time.Time
 	Snippet   string
 	IsPartial bool
 	HumanSize string
@@ -203,13 +203,30 @@ func getShortSnippet(d []byte) []byte {
 			sizeLeft -= len(line)
 		}
 		prevWasEmpty = len(line) == 0
-		d = d[advance:]
 		if advance == 0 {
 			lines = append(lines, d)
 			break
 		}
+		d = d[advance:]
 	}
 	return bytes.Join(lines, []byte{'\n'})
+}
+
+// returns first non-empty line
+func getFirstLine(d []byte) []byte {
+	for {
+		advance, line, err := bufio.ScanLines(d, false)
+		if err != nil {
+			return nil
+		}
+		if len(line) > 0 {
+			return line
+		}
+		if advance == 0 {
+			return nil
+		}
+		d = d[advance:]
+	}
 }
 
 // Content returns note content
@@ -851,7 +868,7 @@ type NoteSummary struct {
 	UserIDStr string
 	UserName  string
 	Title     string
-	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 var (
@@ -878,42 +895,50 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 	}
 	db := getDbMust()
 	q := `
-		SELECT
-			n.id,
-			n.user_id,
-			v.title,
-			n.created_at
-		FROM notes n, versions v
-		WHERE n.is_public=true AND v.id = n.curr_version_id
-		ORDER BY n.created_at ASC
+		SELECT DISTINCT id
+		FROM notes
+		WHERE is_public=true
+		ORDER BY id DESC
 		LIMIT %d
 	`
-	// TODO: ORDER BY is DESC
 	rows, err := db.Query(fmt.Sprintf(q, limit))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+	var ids []int
+	var noteID int
 	for rows.Next() {
-		var ns NoteSummary
-		err = rows.Scan(&ns.id, &ns.userID, &ns.Title, &ns.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-		ns.IDStr = hashInt(ns.id)
-		ns.UserIDStr = hashInt(ns.userID)
-		dbUser, err := dbGetUserByIDCached(ns.userID)
-		if err != nil {
-			return nil, err
-		}
-		ns.UserName = dbUser.Handle
-		res = append(res, ns)
+		err = rows.Scan(&noteID)
+		ids = append(ids, noteID)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-	if len(res) == 0 {
+	if len(ids) == 0 {
 		return res, nil
+	}
+
+	for _, noteID := range ids {
+		// TODO: add and use dbGetNoteByIDCached
+		note, err := dbGetNoteByID(noteID)
+		if err != nil {
+			return nil, err
+		}
+		var ns NoteSummary
+		ns.Title = note.Title
+		ns.UpdatedAt = note.CreatedAt // TODO: use UpdatedAt
+		ns.IDStr = note.IDStr
+		ns.UserIDStr = hashInt(note.userID)
+		dbUser, err := dbGetUserByIDCached(note.userID)
+		if err != nil {
+			return nil, err
+		}
+		ns.UserName = dbUser.Handle
+		if ns.Title == "" {
+			ns.Title = getTitleFromBody(note)
+		}
+		res = append(res, ns)
 	}
 
 	mu.Lock()
@@ -925,6 +950,18 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 	recentPublicNotesLastUpdate = time.Now()
 	mu.Unlock()
 	return res, nil
+}
+
+func getTitleFromBody(note *Note) string {
+	content, err := getNoteContent(note)
+	if err != nil {
+		return ""
+	}
+	line := getFirstLine(content)
+	if len(line) > 80 {
+		line = line[:80] // TODO: more intelligent cut at whitespace
+	}
+	return string(line)
 }
 
 func dbGetNoteByID(id int) (*Note, error) {
@@ -939,6 +976,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 		n.is_deleted,
 		n.is_public,
 		n.is_starred,
+		n.created_at,
 		v.created_at,
 		v.size,
 		v.format,
@@ -956,6 +994,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 		&n.IsPublic,
 		&n.IsStarred,
 		&n.CreatedAt,
+		&n.UpdatedAt,
 		&n.Size,
 		&n.Format,
 		&n.Title,
