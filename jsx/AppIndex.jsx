@@ -29,7 +29,9 @@ var RecentNotes = React.createClass({
 
   render: function() {
     var notes = this.state.notes;
-    return <div id="recentNotes">{this.renderNotes(notes)}</div>;
+    return <div id="recentNotes">
+      <div>Recent notes:</div>
+      {this.renderNotes(notes)}</div>;
   }
 });
 

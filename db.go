@@ -958,10 +958,34 @@ func getTitleFromBody(note *Note) string {
 		return ""
 	}
 	line := getFirstLine(content)
-	if len(line) > 80 {
-		line = line[:80] // TODO: more intelligent cut at whitespace
+	maxLineLen := 60
+	if len(line) > maxLineLen {
+		line = nonWhitespaceRightTrim(line[:maxLineLen])
 	}
 	return string(line)
+}
+
+func isWs(c byte) bool {
+	switch c {
+	case ' ', '\t', '\n':
+		return true
+	}
+	return false
+}
+
+// trim from the right all non-whitespace chars
+func nonWhitespaceRightTrim(d []byte) []byte {
+	n := len(d) - 1
+	for ; n >= 0 && !isWs(d[n]); n-- {
+	}
+	if n < 15 {
+		return d
+	}
+	d = d[:n]
+	d = append(d, '.')
+	d = append(d, '.')
+	d = append(d, '.')
+	return d
 }
 
 func dbGetNoteByID(id int) (*Note, error) {
