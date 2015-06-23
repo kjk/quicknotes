@@ -28,7 +28,14 @@
       <h1>{{.Note.Title}}</h1>
       {{.Note.ContentHTML}}
     </div>
+
+    <hr class="light">
+    <center class="dimmed">
+      A note by <a href=/u/{{.NoteUserHandle}}>{{.NoteUserHandle}}</a>.
+    </center>
+
   </div>
+
 
   <script src="/s/dist/bundle.js"></script>
   <script>window.runOnLoad(window.appNoteStart);</script>

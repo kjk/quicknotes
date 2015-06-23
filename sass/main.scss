@@ -530,6 +530,31 @@ ul.log-in {
 }
 
 
+.dimmed {
+  color: lightgray;
+  font-size: 12px;
+  a {
+    color: lightgray;
+    &:hover {
+      background-color: lightgray;
+      color: white;
+    }
+  }
+}
+
+hr.light {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+hr.light2 {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
 #notes-list {
   .note-action {
     display: inline-block;

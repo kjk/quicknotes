@@ -154,12 +154,24 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		loggedInUserHandle = dbUser.Handle
 	}
 
+	dbNoteUser, err := dbGetUserByID(note.userID)
+	if err != nil {
+		httpErrorf(w, "dbGetUserByID(%d) failed with %s", note.userID, err)
+		return
+	}
+	noteUserHandle := ""
+	if dbNoteUser != nil {
+		noteUserHandle = dbNoteUser.Handle
+	}
+
 	model := struct {
 		Note               *Note
 		LoggedInUserHandle string
+		NoteUserHandle     string
 	}{
 		Note:               note,
 		LoggedInUserHandle: loggedInUserHandle,
+		NoteUserHandle:     noteUserHandle,
 	}
 	execTemplate(w, tmplNote, model)
 }
