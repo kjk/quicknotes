@@ -5,10 +5,28 @@ var Overlay = require('./Overlay.jsx');
 
 var Editor = React.createClass({
 
+  getInitialState: function() {
+    var dy = window.innerHeight;
+    var middle = dy / 2;
+    return {
+      top: middle + "px"
+    };
+  },
+
   render: function() {
+    var style1 = {
+      top: this.state.top
+    };
+
+    return (
+      <div style={style1} id="editor-wrapper">
+      </div>
+    );
+  },
+
+  render2: function() {
     return (
       <div id="editor-wrapper">
-
         <div id="editor-title-and-tags">
           <input id="editor-title" type="text" size="128" placeholder="title"/>
           <input id="editor-tags" type="text" size="128" placeholder="tags"/>
