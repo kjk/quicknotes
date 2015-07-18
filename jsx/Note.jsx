@@ -5,8 +5,8 @@ var ni = require('./noteinfo.js');
 var action = require('./action.js');
 
 function urlifyTitle(s) {
-  s = s.slice(0,32);
-  return s.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-');
+  s = s.slice(0, 32);
+  return s.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
 var Note = React.createClass({
@@ -22,7 +22,7 @@ var Note = React.createClass({
     if (title !== "") {
       return (
         <span className="note-title">{title}</span>
-        );
+      );
     }
   },
 
@@ -36,12 +36,11 @@ var Note = React.createClass({
       return;
     }
     var self = this;
-    var tagEls = tags.map(function (tag) {
-        tag = "#" + tag;
-        return (
-          <span key={tag} onClick={self.handleTagClicked}
-            className="note-tag">{tag}</span>
-        );
+    var tagEls = tags.map(function(tag) {
+      tag = "#" + tag;
+      return (
+        <span className="note-tag" key={tag} onClick={self.handleTagClicked}>{tag}</span>
+      );
     });
 
     return (
@@ -90,13 +89,13 @@ var Note = React.createClass({
   createTrashUntrash: function(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a href="#" className="note-action" title="Undelete" onClick={this.handleDelUndel}>
+        <a className="note-action" href="#" onClick={this.handleDelUndel} title="Undelete">
           <i className="fa fa-undo"></i>
         </a>
       );
     }
     return (
-      <a href="#" className="note-action" title="Move to Trash" onClick={this.handleDelUndel}>
+      <a className="note-action" href="#" onClick={this.handleDelUndel} title="Move to Trash">
         <i className="fa fa-trash-o"></i>
       </a>
     );
@@ -105,7 +104,7 @@ var Note = React.createClass({
   createPermanentDelete: function(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a href="#" className="note-action" title="Delete permanently" onClick={this.handlePermanentDelete}>
+        <a className="note-action" href="#" onClick={this.handlePermanentDelete} title="Delete permanently">
           <i className="fa fa-trash-o"></i>
         </a>
       );
@@ -120,7 +119,7 @@ var Note = React.createClass({
   createEdit: function(note) {
     if (!ni.IsDeleted(note)) {
       return (
-        <a href="#" className="note-action" title="Edit note" onClick={this.handleEdit}>
+        <a className="note-action" href="#" onClick={this.handleEdit} title="Edit note">
           <i className="fa fa-pencil"></i>
         </a>
       );
@@ -134,7 +133,7 @@ var Note = React.createClass({
     }
     var url = "/n/" + ni.IDStr(note) + title;
     return (
-      <a href={url} className="note-action" title="View note" target="_blank">
+      <a className="note-action" href={url} target="_blank" title="View note">
         <i className="fa fa-external-link"></i>
       </a>
     );
@@ -152,13 +151,13 @@ var Note = React.createClass({
     }
     if (ni.IsPublic(note)) {
       return (
-        <a href="#" className="note-action" title="Make private" onClick={this.handleMakePublicPrivate}>
+        <a className="note-action" href="#" onClick={this.handleMakePublicPrivate} title="Make private">
           <i className="fa fa-unlock"></i>
         </a>
       );
     } else {
       return (
-        <a href="#" className="note-action" title="Make public" onClick={this.handleMakePublicPrivate}>
+        <a className="note-action" href="#" onClick={this.handleMakePublicPrivate} title="Make public">
           <i className="fa fa-lock"></i>
         </a>
       );
@@ -179,13 +178,13 @@ var Note = React.createClass({
     var isStarred = ni.IsStarred(note);
     if (isStarred) {
       return (
-        <a href="#" className="note-action note-star note-starred" title="Unstar" onClick={this.handleStarUnstarNote}>
+        <a className="note-action note-star note-starred" href="#" onClick={this.handleStarUnstarNote} title="Unstar">
           <i className="fa fa-star"></i>
         </a>
       );
     } else {
       return (
-        <a href="#" className="note-action note-star" title="Star" onClick={this.handleStarUnstarNote}>
+        <a className="note-action note-star" href="#" onClick={this.handleStarUnstarNote} title="Star">
           <i className="fa fa-star-o"></i>
         </a>
       );
@@ -209,9 +208,9 @@ var Note = React.createClass({
   createActionsIfNotMyNotes: function(note) {
     if (this.state.showActions) {
       return (
-      <div className="note-actions">
-        {this.createViewLink(note)}
-      </div>
+        <div className="note-actions">
+          {this.createViewLink(note)}
+        </div>
       );
     }
     return (
@@ -221,7 +220,7 @@ var Note = React.createClass({
 
   createActions: function(note) {
     if (this.props.myNotes) {
-        return this.createActionsIfMyNotes(note);
+      return this.createActionsIfMyNotes(note);
     } else {
       return this.createActionsIfNotMyNotes(note);
     }
@@ -230,10 +229,7 @@ var Note = React.createClass({
   render: function() {
     var note = this.props.note;
     return (
-      <div className="note"
-        onMouseEnter={this.mouseEnter}
-        onMouseLeave={this.mouseLeave}
-        >
+      <div className="note" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
         <div className="note-header">
           {this.createStarUnstar(note)}
           {this.createTitle(note)}
