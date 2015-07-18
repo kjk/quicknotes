@@ -9,6 +9,47 @@ function urlifyTitle(s) {
   return s.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
+
+var NoteBody = React.createClass({
+
+  expand: function() {
+    console.log("expand note");
+  },
+
+  collapse: function() {
+    console.log("collapse this note");
+  },
+
+  createCollapseOrExpand: function(note) {
+    // if a note is not partial, there's neither collapse nor exapnd
+    if (!ni.IsPartial(note)) {
+      return;
+    }
+    if (ni.IsCollapsed(note)) {
+      return (
+        <a href="#" onClick={this.expand()}>Expand</a>
+      );
+    }
+    return (
+      <a href="#" onClick={this.collapse}>Collapsed</a>
+    );
+  },
+
+  render: function() {
+    if (this.props.compact) {
+      return;
+    }
+    var note = this.props.note;
+    return (
+        <div className="note-content">
+          <pre className="snippet">{ni.Snippet(note)}</pre>
+          {this.createCollapseOrExpand(note)}
+        </div>
+    );
+  }
+
+});
+
 var Note = React.createClass({
 
   getInitialState: function() {
@@ -60,16 +101,6 @@ var Note = React.createClass({
     this.setState({
       showActions: false
     });
-  },
-
-  createNoteSnippet: function(note) {
-    if (!this.props.compact) {
-      return (
-        <div className="note-content">
-          <pre className="snippet">{ni.Snippet(note)}</pre>
-        </div>
-      );
-    }
   },
 
   handleDelUndel: function(e) {
@@ -236,7 +267,7 @@ var Note = React.createClass({
           {this.createTags(ni.Tags(note))}
           {this.createActions(note)}
         </div>
-        {this.createNoteSnippet(note)}
+        <NoteBody compact={this.props.compact} note={note} />
       </div>
     );
   }
