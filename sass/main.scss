@@ -816,9 +816,8 @@ hr.light2 {
 /**/
 #editor-wrapper {
   position: absolute;
-  left: 0; right: 0;
-  bottom: 0;
-  height: 75%;
+  left: 0; right: 0; bottom: 0;
+  top: 80px;
   background: lightgray;
   color: red;
   z-index: 90;
