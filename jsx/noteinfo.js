@@ -151,6 +151,7 @@ function getIsPublic(note) {
   return isFlagSet(note, flagPublicBit);
 }
 
+// partial is if full content is != snippet
 function getIsPartial(note) {
   return isFlagSet(note, flagPartialBit);
 }
@@ -216,6 +217,29 @@ function toNewNote(note) {
   return n;
 }
 
+/* locally manage expanded/collapsed state of notes */
+
+var expandedNotes = {};
+
+function isExpanded(note) {
+  var id = getIDStr(note);
+  return expandedNotes.hasOwnProperty(id);
+}
+
+function isCollapsed(note) {
+  return !isExpanded(note);
+}
+
+function expand(note) {
+  var id = getIDStr(note);
+  expandedNotes[id] = true;
+}
+
+function collapse(note) {
+  var id = getIDStr(note);
+  delete expandedNotes[id];
+}
+
 exports.IDStr = getIDStr;
 exports.Title = getTitle;
 exports.Size = getSize;
@@ -235,5 +259,9 @@ exports.SetTitle = setTitle;
 exports.SetTags = setTags;
 exports.SetFormat = setFormat;
 exports.SetContent = setContent;
+exports.IsExpanded = isExpanded;
+exports.IsCollapsed = isCollapsed;
+exports.Expand = expand;
+exports.Collapse = collapse;
 exports.notesEq = notesEq;
 exports.toNewNote = toNewNote;
