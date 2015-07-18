@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,7 +17,9 @@
   <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
   <script src="/s/js/lib/keymaster.js"></script>
   <script src="/s/js/lib/codemirror/lib/codemirror.js"></script>
-  <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
+  <script>
+    var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
+  </script>
 </head>
 
 <body class="theme-light">
@@ -33,11 +36,12 @@
     <center class="dimmed">
       A note by <a href="/u/{{.NoteUserHandle}}">{{.NoteUserHandle}}</a>.
     </center>
-
   </div>
 
-
   <script src="/s/dist/bundle.js"></script>
-  <script>window.runOnLoad(window.appNoteStart);</script>
+  <script>
+    window.runOnLoad(window.appNoteStart);
+  </script>
 </body>
+
 </html>
