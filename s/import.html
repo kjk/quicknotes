@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,9 +15,12 @@
   <!-- <script src="/s/js/lib/react-with-addons-0.13.0.min.js"></script> -->
   <script src="/s/js/lib/jquery-1.11.1.min.js"></script>
   <script src="/s/js/lib/keymaster.js"></script>
-  <script>var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";</script>
+  <script>
+    var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
+  </script>
 
 </head>
+
 <body class="theme-light">
 
   <div id="header-top"></div>
@@ -40,17 +44,20 @@
       </form>
     </div>
     {{else}}
-      <p>You're not logged in. Log in with:</p>
-      <ul>
-        <li><a href="/logintwitter?redir=%2F">Twitter</a></li>
-        <li><a href="/logingithub?redir=%2F">GitHub</a></li>
-        <li><a href="/logingoogle?redir=%2F">Google</a></li>
-      </ul>
+    <p>You're not logged in. Log in with:</p>
+    <ul>
+      <li><a href="/logintwitter?redir=%2F">Twitter</a></li>
+      <li><a href="/logingithub?redir=%2F">GitHub</a></li>
+      <li><a href="/logingoogle?redir=%2F">Google</a></li>
+    </ul>
     {{end}}
   </div>
 
-<script src="/s/dist/bundle.js"></script>
-<script>window.runOnLoad(window.appImportStart);</script>
+  <script src="/s/dist/bundle.js"></script>
+  <script>
+    window.runOnLoad(window.appImportStart);
+  </script>
 
 </body>
+
 </html>
