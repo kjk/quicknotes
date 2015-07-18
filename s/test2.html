@@ -21,38 +21,14 @@
 <body class="theme-light">
 
   <div id="main">
-
-    <div class="overlay">
-    </div>
-
-    <div id="editor-wrapper">
-
-      <div id="editor-title-and-tags">
-        <input id="editor-title" type="text" size="128" placeholder="title"/>
-        <input id="editor-tags" type="text" size="128" placeholder="tags"/>
-      </div>
-
-      <div id="editor-content">
-        content
-      </div>
-
-      <div id="editor-actions">
-        <button class="btn btn-primary">Save</button>
-        <button class="btn btn-primary">Cancel</button>
-        <input type="checkbox" id="public-toggle" name="public-toggle" />
-        <label for="public-toggle">public</label>
-        <span>Format:</span>
-        <select value="text">
-          <option>text</option>
-          <option>markdown</option>
-        </select>
-      </div>
-
-    </div>
-
   </div>
 
   <script src="/s/dist/bundle.js"></script>
-  <script>window.runOnLoad(function () { });</script>
+  <script>
+  function onStart() {
+    window.appEditorStart();
+  }
+  window.runOnLoad(onStart);
+  </script>
 </body>
 </html>

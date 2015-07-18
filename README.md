@@ -8,3 +8,7 @@ http://quicknotes.io
 * `npm install webpack -g`
 * `npm install webpack-dev-server -g`
 * `npm install jsx-loader -g`
+
+# start mysql locally
+
+mysql.server start
