@@ -287,7 +287,7 @@ func getNoteContentHTML(note *Note) (template.HTML, error) {
 	}
 	if note.Format == formatText {
 		// TODO: escape < etc. chars
-		s := "<pre>" + string(c) + "</pre>"
+		s := `<pre class="note-body">` + string(c) + "</pre>"
 		return template.HTML(s), nil
 	}
 	if note.Format == formatHTML {

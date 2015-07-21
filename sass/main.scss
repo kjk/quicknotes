@@ -502,6 +502,11 @@ ul.log-in {
 }
 
 /**/
+pre.note-body {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 #notes-list {
   left: $sidebar-width+1;
   top: 46px;
@@ -510,11 +515,6 @@ ul.log-in {
 
   .note {
     position: relative;
-
-    pre {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
 
     .note-header {
       height: $note-header-dy;
