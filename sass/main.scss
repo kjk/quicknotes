@@ -54,41 +54,49 @@ $col-btn-hover-border: #1862b5;
   }
 }
 
-.expand:visited {
+.expand {
   color: $col-blue;
+
+  &:visited {
+    color: $col-blue;
+  }
+
+  &:after {
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid $col-blue;
+    content: '';
+    display: inline-block;
+    height: 0;
+    left: 3px;
+    position: relative;
+    top: -2px;
+    width: 0;
+  }
 }
 
-.expand:after {
-  border-left: 3px solid transparent;
-  border-right: 3px solid transparent;
-  border-top: 4px solid $col-blue;
-  content: '';
-  display: inline-block;
-  height: 0;
-  left: 3px;
-  position: relative;
-  top: -2px;
-  width: 0;
-}
-
-.collapse:visited {
+.collapse {
   color: $col-blue;
-}
 
-.collapse:after {
-  border-bottom: 4px solid $col-blue;
-  border-left: 3px solid transparent;
-  border-right: 3px solid transparent;
-  border-top: 0;
-  content: '';
-  display: inline-block;
-  height: 0;
-  left: 3px;
-  position: relative;
-  top: -2px;
-  width: 0;
-}
+  &:visited {
+    color: $col-blue;
+  }
 
+  &:after {
+    border-bottom: 4px solid $col-blue;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 0;
+    content: '';
+    display: inline-block;
+    height: 0;
+    left: 3px;
+    position: relative;
+    top: -2px;
+    width: 0;
+  }
+
+}
 
 #root,
 #header,
@@ -930,25 +938,33 @@ $actions-height: 34px;
 }
 
 #editor-tags {
-  width: 50%;
+  background: white;
+  font-size: 16px;
   position: absolute;
+  width: 50%;
   right: 0;
   padding: 4px 8px;
   margin: 0;
-  background: white;
-  font-size: 16px;
 }
+
 
 /**/
 #full-note {
   top: 46px; left: 0; right: 0; bottom: 0;
-}
 
-#full-note .note-content-wrapper {
-  margin: 20px;
-  line-height: 1.4em;
-}
+  .note-content-wrapper {
+    margin: 20px;
 
+    h1 {
+      font-size: 1.4em;
+    }
+
+    .note-body {
+      line-height: 1.4em;
+    }
+  }
+
+}
 
 /**/
 .dropdown-content {
