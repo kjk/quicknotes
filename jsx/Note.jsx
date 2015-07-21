@@ -61,9 +61,9 @@ var NoteBody = React.createClass({
 
   renderContent: function(note) {
     if (ni.IsCollapsed(note)) {
-      return <pre className="snippet">{ni.Snippet(note)}</pre>;
+      return <pre className="note-body">{ni.Snippet(note)}</pre>;
     }
-    return <pre className="snippet">{ni.Content(note, this.onContent)}</pre>;
+    return <pre className="note-body">{ni.Content(note, this.onContent)}</pre>;
   },
 
   render: function() {
