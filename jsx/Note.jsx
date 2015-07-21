@@ -21,9 +21,16 @@ var NoteBody = React.createClass({
     var note = this.state.note;
     console.log("expand note", ni.IDStr(note));
     ni.Expand(note);
-    this.setState({
-      note: note
-    });
+    var content = ni.Content(note, this.onContent);
+    // if has content, change the state immediately.
+    // if doesn't have content, it'll be changed in onContent.
+    // if we always do it and there is no content, we'll get an ugly flash
+    // due to 2 updates in quick succession.
+    if (content) {
+      this.setState({
+        note: note
+      });
+    }
   },
 
   collapse: function() {
