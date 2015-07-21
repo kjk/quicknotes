@@ -5,6 +5,7 @@ $sidebar-width: 180px;
 $font-size-main: 14px;
 $font-size-sidebar: 12px;
 $note-header-dy: 26px;
+$col-blue:  #09f;
 
 html, body {
   width: 100%;
@@ -48,6 +49,41 @@ body {
     background-color: #1967be;
     border-color: #1862b5;
   }
+}
+
+a.expand:visited {
+  color: $col-blue;
+}
+
+.expand:after {
+  border-right: 3px solid transparent;
+  border-top: 4px solid $col-blue;
+  border-left: 3px solid transparent;
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  position: relative;
+  left: 3px;
+  top: -2px;
+}
+
+a.collapse:visited {
+  color: $col-blue;
+}
+
+.collapse:after {
+  border-right: 3px solid transparent;
+  border-bottom: 4px solid #09F;
+  border-top: 0;
+  border-left: 3px solid transparent;
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  position: relative;
+  left: 3px;
+  top: -2px;
 }
 
 

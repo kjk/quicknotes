@@ -27,11 +27,11 @@ var NoteBody = React.createClass({
     }
     if (ni.IsCollapsed(note)) {
       return (
-        <a href="#" onClick={this.expand()}>Expand</a>
+        <a href="#" className="expand" onClick={this.expand()}>Expand (collapse)</a>
       );
     }
     return (
-      <a href="#" onClick={this.collapse}>Collapsed</a>
+      <a href="#" className="collapse" onClick={this.collapse}>Collapsed</a>
     );
   },
 
