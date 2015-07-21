@@ -113,6 +113,16 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplUser, model)
 }
 
+func userCanAccessNote(dbUser *DbUser, note *Note) bool {
+	if note.IsPublic {
+		return true
+	}
+	if dbUser == nil {
+		return false
+	}
+	return dbUser.ID == note.userID
+}
+
 func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) *Note {
 	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
 	noteID := dehashInt(noteIDHashStr)
@@ -121,17 +131,13 @@ func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr strin
 	if err != nil {
 		return nil
 	}
-	if note.IsPublic {
+	dbUser := getUserFromCookie(w, r)
+	// TODO: when we have sharing via secret link we'll have to check
+	// permissions
+	if userCanAccessNote(dbUser, note) {
 		return note
 	}
-	dbUser := getUserFromCookie(w, r)
-	if dbUser == nil || dbUser.ID != note.userID {
-		// not authorized to view this note
-		// TODO: when we have sharing via secret link we'll have to check
-		// permissions
-		return nil
-	}
-	return note
+	return nil
 }
 
 // /n/{note_id_hash}-rest
@@ -236,10 +242,10 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
 		return
 	}
-	if !note.IsPublic && note.userID != dbUser.ID {
+	if !userCanAccessNote(dbUser, note) {
 		httpErrorWithJSONf(w, "/api/getnote.json access denied")
+		return
 	}
-	// TODO: return error if the note doesn't belong to logged in user
 	content, err := getCachedContent(note.ContentSha1)
 	if err != nil {
 		LogErrorf("getCachedContent() failed with %s\n", err)

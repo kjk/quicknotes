@@ -1,7 +1,7 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var _ = require('./underscore.js');
+var _ = require('./lib/underscore.js');
 var u = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');

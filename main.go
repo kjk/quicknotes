@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/kjk/u"
@@ -81,8 +82,8 @@ func parseFlags() {
 	}
 }
 
-func startGulp() {
-	cmd := exec.Command("./scripts/run_gulp_watch.sh")
+func runGulpAndWaitExit() {
+	cmd := exec.Command("gulp", "build_and_watch")
 	cmdStr := strings.Join(cmd.Args, " ")
 	fmt.Printf("starting '%s'\n", cmdStr)
 	cmd.Stdout = os.Stdout
@@ -91,6 +92,16 @@ func startGulp() {
 	if err != nil {
 		log.Fatalf("cmd.Start('%s') failed with '%s'\n", cmdStr, err)
 	}
+	cmd.Wait()
+}
+
+func runGulpAsync() {
+	go func() {
+		for {
+			runGulpAndWaitExit()
+			time.Sleep(time.Second * 5)
+		}
+	}()
 }
 
 func listDbUsers() {
@@ -162,7 +173,7 @@ func main() {
 	}
 
 	if flgIsLocal {
-		startGulp()
+		runGulpAsync()
 	}
 
 	startWebServer()
