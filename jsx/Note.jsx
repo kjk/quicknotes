@@ -9,41 +9,73 @@ function urlifyTitle(s) {
   return s.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
-
 var NoteBody = React.createClass({
 
+  getInitialState: function() {
+    return {
+      note: this.props.note
+    };
+  },
+
   expand: function() {
-    console.log("expand note");
+    var note = this.state.note;
+    console.log("expand note", ni.IDStr(note));
+    ni.Expand(note);
+    this.setState({
+      note: note
+    });
   },
 
   collapse: function() {
-    console.log("collapse this note");
+    var note = this.state.note;
+    console.log("collapse note", ni.IDStr(note));
+    ni.Collapse(note);
+    this.setState({
+      note: note
+    });
   },
 
-  createCollapseOrExpand: function(note) {
+  renderCollapseOrExpand: function(note) {
     // if a note is not partial, there's neither collapse nor exapnd
     if (!ni.IsPartial(note)) {
       return;
     }
+
     if (ni.IsCollapsed(note)) {
       return (
-        <a href="#" className="expand" onClick={this.expand()}>Expand (collapse)</a>
+        <a href="#" className="expand" onClick={this.expand}>Expand</a>
       );
     }
+
     return (
-      <a href="#" className="collapse" onClick={this.collapse}>Collapsed</a>
+      <a href="#" className="collapse" onClick={this.collapse}>Collapse</a>
     );
+  },
+
+  onContent: function(note) {
+    console.log("NoteBody.onContent");
+    this.setState({
+      note: note
+    });
+  },
+
+  renderContent: function(note) {
+    if (ni.IsCollapsed(note)) {
+      return <pre className="snippet">{ni.Snippet(note)}</pre>;
+    }
+    return <pre className="snippet">{ni.Content(note, this.onContent)}</pre>;
   },
 
   render: function() {
     if (this.props.compact) {
       return;
     }
-    var note = this.props.note;
+    var note = this.state.note;
+    //console.log("NoteBody.render() note: ", ni.IDStr(note), "collapsed:", ni.IsCollapsed(note));
     return (
         <div className="note-content">
-          <pre className="snippet">{ni.Snippet(note)}</pre>
-          {this.createCollapseOrExpand(note)}
+          {this.renderContent(note)}
+          {this.renderCollapseOrExpand(note)}
         </div>
     );
   }

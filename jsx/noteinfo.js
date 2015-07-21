@@ -126,8 +126,24 @@ function getCurrentVersionID(note) {
   return note[noteCurrentVersionIDIdx];
 }
 
-function getContent(note) {
-  return note[noteContentIdx];
+function getContent(note, cb) {
+  var noteID = getIDStr(note);
+  var res = note[noteContentIdx];
+  if (res) {
+    console.log("getContent: already has it for note", noteID);
+    return res;
+  }
+  console.log("getContent: starting to fetch content for note", noteID);
+  var uri = "/api/getnotecompact.json?id=" + encodeURIComponent(noteID);
+  //console.log("updateNotes: uri=", uri);
+  $.get(uri, function(json) {
+    console.log("getContent: json=", json);
+    var content = json[noteContentIdx];
+    console.log("getContent: content=", content);
+    setContent(note, content);
+    cb(note);
+  });
+  return "";
 }
 
 function getHumanSize(note) {
