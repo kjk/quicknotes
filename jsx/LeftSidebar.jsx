@@ -8,7 +8,7 @@ var showDeletedTag = true;
 
 var LeftSidebar = React.createClass({
 
-  createTagsList: function(sectionName, tagNames, tags) {
+  renderTagsList: function(sectionName, tagNames, tags) {
     if (tagNames.length === 0) {
       return;
     }
@@ -55,8 +55,8 @@ var LeftSidebar = React.createClass({
       tagNames.unshift("__all");
     }
 
-    var specialTagsList = this.createTagsList("SPECIAL", specialTagNames, tags);
-    var tagsList = this.createTagsList("TAGS", tagNames, tags);
+    var specialTagsList = this.renderTagsList("SPECIAL", specialTagNames, tags);
+    var tagsList = this.renderTagsList("TAGS", tagNames, tags);
     return (
       <div id="left-sidebar">
         {specialTagsList}

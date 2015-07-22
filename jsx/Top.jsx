@@ -19,7 +19,7 @@ var Top = React.createClass({
     this.props.searchTermChangedCb(e.target.value);
   },
 
-  createSearchInput: function() {
+  renderSearchInput: function() {
     var userHandle = this.props.notesUserHandle;
     if (userHandle === "") {
       return;
@@ -45,22 +45,23 @@ var Top = React.createClass({
     this.props.startNewNoteCb();
   },
 
-  createNewNote: function() {
-    if (this.props.isLoggedIn) {
-      return (
-        <a id="new-note" title="Create new note" href="#" onClick={this.handleCreateNewNote}>
-          <i className="icn-plus"></i>
-        </a>
-      );
+  renderNewNote: function() {
+    if (!this.props.isLoggedIn) {
+      return;
     }
+    return (
+      <a id="new-note" title="Create new note" href="#" onClick={this.handleCreateNewNote}>
+        <i className="icn-plus"></i>
+      </a>
+    );
   },
 
   render: function() {
     return (
       <div id="header">
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
-        {this.createNewNote()}
-        {this.createSearchInput()}
+        {this.renderNewNote()}
+        {this.renderSearchInput()}
         <LogInLink isLoggedIn={this.props.isLoggedIn}
           loggedInUserHandle={this.props.loggedInUserHandle}/>
       </div>

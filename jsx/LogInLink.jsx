@@ -12,7 +12,7 @@ var LogInLink = React.createClass({
   },
 
 
-  createLoggedIn: function() {
+  renderLoggedIn: function() {
     var url = encodeURI("/logout?redir=" + window.location);
     var userUrl = "/u/" + this.props.loggedInUserHandle;
 
@@ -36,7 +36,7 @@ var LogInLink = React.createClass({
     );
   },
 
-  createLoggedOut: function() {
+  renderLoggedOut: function() {
     var twitterUrl = encodeURI("/logintwitter?redir=" + window.location);
     return (
       <div id="user">
@@ -59,9 +59,9 @@ var LogInLink = React.createClass({
 
   render: function() {
     if (this.props.isLoggedIn) {
-      return this.createLoggedIn();
+      return this.renderLoggedIn();
     } else {
-      return this.createLoggedOut();
+      return this.renderLoggedOut();
     }
   }
 });
