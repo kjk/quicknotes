@@ -35,7 +35,7 @@ var SearchResults = React.createClass({
     this.props.searchResultSelectedCb(noteIDStr);
   },
 
-  createNoResults: function(term) {
+  renderNoResults: function(term) {
     return (
       <div id="search-results">
         <div className="box">
@@ -45,7 +45,7 @@ var SearchResults = React.createClass({
     );
   },
 
-  createResultItem: function(noteID, i) {
+  renderResultItem: function(noteID, i) {
     // Maybe: show line number
     var k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
     console.log(k + i.HTML);
@@ -71,13 +71,13 @@ var SearchResults = React.createClass({
     );
   },
 
-  createResultNote: function(o) {
+  renderResultNote: function(o) {
     var noteID = o.NoteIDStr;
     var cb = this.handleClick.bind(this, noteID);
     var items = o.Items;
     var self = this;
     var children = items.map(function(i) {
-      return self.createResultItem(noteID, i);
+      return self.renderResultItem(noteID, i);
     });
     return (
       <div
@@ -93,12 +93,12 @@ var SearchResults = React.createClass({
     var searchResults = this.props.searchResults;
     var results = searchResults.Results;
     if (!results || (results.length === 0)) {
-      return this.createNoResults(searchResults.Term);
+      return this.renderNoResults(searchResults.Term);
     }
 
     var self = this;
     var resultsHTML = results.map(function(o) {
-      return self.createResultNote(o);
+      return self.renderResultNote(o);
     });
 
     return (
