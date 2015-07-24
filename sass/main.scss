@@ -1006,7 +1006,8 @@ $actions-height: 34px;
 }
 
 .theme-light #header .dropdown-content a:hover {
-  color: rgba(0,0,0,0.45);
+  /*color: rgba(0,0,0,0.45);*/
+  color: $col-blue;
 }
 
 #header .dropdown-content .divider {
