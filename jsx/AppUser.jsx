@@ -325,7 +325,7 @@ var AppUser = React.createClass({
     }.bind(this));
   },
 
-  createFullComposer: function() {
+  renderFullComposer: function() {
     if (this.state.noteBeingEdited) {
       return (
         <FullComposer
@@ -336,7 +336,7 @@ var AppUser = React.createClass({
     }
   },
 
-  createSearchResults: function() {
+  renderSearchResults: function() {
     if (this.state.searchResults) {
       return <SearchResults
         searchResults={this.state.searchResults}
@@ -445,8 +445,8 @@ var AppUser = React.createClass({
           editCb={this.editNote}
         />
         {this.renderSettings()}
-        {this.createFullComposer()}
-        {this.createSearchResults()}
+        {this.renderFullComposer()}
+        {this.renderSearchResults()}
       </div>
     );
   }

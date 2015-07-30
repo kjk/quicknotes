@@ -97,7 +97,7 @@ var Note = React.createClass({
     };
   },
 
-  createTitle: function(note) {
+  renderTitle: function(note) {
     var title = ni.Title(note);
     if (title !== "") {
       return (
@@ -111,7 +111,7 @@ var Note = React.createClass({
     action.tagSelected(tag);
   },
 
-  createTags: function(tags) {
+  renderTags: function(tags) {
     if (!tags) {
       return;
     }
@@ -156,7 +156,7 @@ var Note = React.createClass({
     this.props.makeNotePublicPrivateCb(note);
   },
 
-  createTrashUntrash: function(note) {
+  renderTrashUntrash: function(note) {
     if (ni.IsDeleted(note)) {
       return (
         <a className="note-action" href="#" onClick={this.handleDelUndel} title="Undelete">
@@ -171,7 +171,7 @@ var Note = React.createClass({
     );
   },
 
-  createPermanentDelete: function(note) {
+  renderPermanentDelete: function(note) {
     if (ni.IsDeleted(note)) {
       return (
         <a className="note-action" href="#" onClick={this.handlePermanentDelete} title="Delete permanently">
@@ -186,7 +186,7 @@ var Note = React.createClass({
     this.props.editCb(this.props.note);
   },
 
-  createEdit: function(note) {
+  renderEdit: function(note) {
     if (!ni.IsDeleted(note)) {
       return (
         <a className="note-action" href="#" onClick={this.handleEdit} title="Edit note">
@@ -196,7 +196,7 @@ var Note = React.createClass({
     }
   },
 
-  createViewLink: function(note) {
+  renderViewLink: function(note) {
     var title = ni.Title(note);
     if (title.length > 0) {
       title = "-" + urlifyTitle(title);
@@ -209,13 +209,13 @@ var Note = React.createClass({
     );
   },
 
-  createSize: function(note) {
+  renderSize: function(note) {
     return (
       <span className="note-size">{ni.HumanSize(note)}</span>
     );
   },
 
-  createMakePublicPrivate: function(note) {
+  renderMakePublicPrivate: function(note) {
     if (ni.IsDeleted) {
       return;
     }
@@ -240,7 +240,7 @@ var Note = React.createClass({
     this.props.startUnstarNoteCb(note);
   },
 
-  createStarUnstar: function(note) {
+  renderStarUnstar: function(note) {
     if (!this.props.myNotes || ni.IsDeleted((note))) {
       return;
     }
@@ -261,25 +261,25 @@ var Note = React.createClass({
     }
   },
 
-  createActionsIfMyNotes: function(note) {
+  renderActionsIfMyNotes: function(note) {
     if (this.state.showActions) {
       return (
         <div className="note-actions">
-          {this.createTrashUntrash(note)}
-          {this.createPermanentDelete(note)}
-          {this.createMakePublicPrivate(note)}
-          {this.createEdit(note)}
-          {this.createViewLink(note)}
+          {this.renderTrashUntrash(note)}
+          {this.renderPermanentDelete(note)}
+          {this.renderMakePublicPrivate(note)}
+          {this.renderEdit(note)}
+          {this.renderViewLink(note)}
         </div>
       );
     }
   },
 
-  createActionsIfNotMyNotes: function(note) {
+  renderActionsIfNotMyNotes: function(note) {
     if (this.state.showActions) {
       return (
         <div className="note-actions">
-          {this.createViewLink(note)}
+          {this.renderViewLink(note)}
         </div>
       );
     }
@@ -288,11 +288,11 @@ var Note = React.createClass({
     );
   },
 
-  createActions: function(note) {
+  renderActions: function(note) {
     if (this.props.myNotes) {
-      return this.createActionsIfMyNotes(note);
+      return this.renderActionsIfMyNotes(note);
     } else {
-      return this.createActionsIfNotMyNotes(note);
+      return this.renderActionsIfNotMyNotes(note);
     }
   },
 
@@ -301,10 +301,10 @@ var Note = React.createClass({
     return (
       <div className="note" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
         <div className="note-header">
-          {this.createStarUnstar(note)}
-          {this.createTitle(note)}
-          {this.createTags(ni.Tags(note))}
-          {this.createActions(note)}
+          {this.renderStarUnstar(note)}
+          {this.renderTitle(note)}
+          {this.renderTags(ni.Tags(note))}
+          {this.renderActions(note)}
         </div>
         <NoteBody compact={this.props.compact} note={note} />
       </div>
