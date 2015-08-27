@@ -8,7 +8,7 @@
 // - concat js files see http://www.hongkiat.com/blog/getting-started-with-gulp-js/
 
 var browserify  = require('browserify');
-var exorcist    = require('exorcist')
+var exorcist    = require('exorcist');
 var gulp        = require('gulp');
 var prefix      = require('gulp-autoprefixer');
 var concat      = require('gulp-concat');
@@ -32,7 +32,7 @@ gulp.task('js', function() {
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('s/dist'))
+    .pipe(gulp.dest('s/dist'));
 });
 
 gulp.task('css', function() {
