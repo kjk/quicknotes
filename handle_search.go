@@ -70,7 +70,7 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 
 	timeStart := time.Now()
 	matches := searchNotes(searchTerm, notes)
-	fmt.Sprintf("searchNotes('%s') of %d notes took %s\n", searchTerm, len(matches), time.Since(timeStart))
+	fmt.Printf("searchNotes('%s') of %d notes took %s\n", searchTerm, len(matches), time.Since(timeStart))
 
 	var res []SearchResult
 	for _, match := range matches {
