@@ -3,9 +3,13 @@
 
 $sidebar-width: 180px;
 $font-size-main: 14px;
+$font-size-note: 13px;
+$line-height-note: 18px;
+$font-size-note-tag: 13px;
 $font-size-sidebar: 12px;
 $note-header-dy: 26px;
-$col-blue:  #09f;
+$col-blue: #09f;
+$col-note: rgba(0,0,0,.8);
 
 html,
 body {
@@ -553,9 +557,9 @@ pre.note-body {
       padding-top: 4px;
       position: relative;
       font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-      font-size: 13px;
-      line-height: 18px;
-      color: rgba(0,0,0,.8);
+      font-size: $font-size-note;
+      line-height: $line-height-note;
+      color: $col-note;
     }
 
     .note-footer {
@@ -571,7 +575,7 @@ pre.note-body {
     }
 
     .note-tag {
-      font-size: 13px;
+      font-size: $font-size-note-tag;
       margin-right: 8px;
       cursor: pointer;
     }
@@ -582,7 +586,6 @@ pre.note-body {
     }
   }
 }
-
 
 .dimmed {
   color: lightgray;
@@ -960,7 +963,9 @@ $actions-height: 34px;
     }
 
     .note-body {
-      line-height: 1.4em;
+      font-size: $font-size-note;
+      color: $col-note;
+      line-height: $line-height-note;
     }
   }
 
