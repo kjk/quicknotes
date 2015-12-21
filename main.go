@@ -83,7 +83,8 @@ func parseFlags() {
 }
 
 func runGulpAndWaitExit() {
-	cmd := exec.Command("gulp", "build_and_watch")
+	path := filepath.Join("node_modules", ".bin", "gulp")
+	cmd := exec.Command(path, "build_and_watch")
 	cmdStr := strings.Join(cmd.Args, " ")
 	fmt.Printf("starting '%s'\n", cmdStr)
 	cmd.Stdout = os.Stdout
