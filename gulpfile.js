@@ -11,17 +11,15 @@ var browserify  = require('browserify');
 var exorcist    = require('exorcist');
 var gulp        = require('gulp');
 var prefix      = require('gulp-autoprefixer');
-var concat      = require('gulp-concat');
-var htmlreplace = require('gulp-html-replace');
-var uglify      = require('gulp-uglify');
 var react       = require('gulp-react');
+var reactify    = require('reactify');
 var rename      = require('gulp-rename');
 var sass        = require('gulp-sass');
 var streamify   = require('gulp-streamify');
 var source      = require('vinyl-source-stream');
 var sourcemaps  = require('gulp-sourcemaps');
+var uglify      = require('gulp-uglify');
 var watchify    = require('watchify');
-var reactify    = require('reactify');
 
 gulp.task('js', function() {
   browserify({

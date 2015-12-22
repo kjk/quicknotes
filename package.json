@@ -1,27 +1,25 @@
 {
-  "name" : "dbworkbench",
+  "name" : "quicknotes",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kjk/dbworkbench"
+    "url": "https://github.com/kjk/quicknotes"
   },
   "dependencies" : {
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3"
+  },
+  "devDependencies": {
     "browserify": "12.0.1",
     "exorcist": "0.4.0",
     "gulp": "3.9.0",
     "gulp-autoprefixer": "3.1.0",
-    "gulp-concat": "2.6.0",
-    "gulp-html-replace": "1.5.5",
     "gulp-react": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sass": "2.1.1",
     "gulp-sourcemaps" : "1.6.0",
     "gulp-streamify": "1.0.1",
     "gulp-uglify": "1.5.1",
-    "node-sass": "3.3.3",
-    "react": "^0.14.3",
-    "react-dom": "^0.14.3",
-    "react-modal": "^0.6.1",
-    "react-tools": "0.13.3",
+    "node-sass": "3.4.2",
     "reactify": "1.1.1",
     "vinyl-source-stream": "1.1.0",
     "watchify": "3.6.1"
