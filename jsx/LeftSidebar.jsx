@@ -1,6 +1,9 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var TagsList = require('./TagsList.jsx');
 var u = require('./utils.js');
 

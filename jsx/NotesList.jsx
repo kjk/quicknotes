@@ -3,6 +3,9 @@
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var Note = require('./Note.jsx');
 var ni = require('./noteinfo.js');
 

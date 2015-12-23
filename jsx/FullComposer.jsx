@@ -1,11 +1,14 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
 var u = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
-var _ = require('./lib/underscore.js');
+var _ = require('underscore');
 
 function tagsToText(tags) {
   if (!tags) {

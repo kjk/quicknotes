@@ -1,7 +1,10 @@
 /* jshint -W097,-W117 */
 'use strict';
 
-var _ = require('./lib/underscore.js');
+var React = require('react');
+var ReactDOM = require('react-dom');
+
+var _ = require('underscore');
 var u = require('./utils.js');
 var format = require('./format.js');
 var ni = require('./noteinfo.js');
@@ -470,7 +473,7 @@ function appUserStart() {
   //console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
   //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
 
-  React.render(
+  ReactDOM.render(
     <AppUser notesUserHandle={gNotesUserHandle}
       initialNotesJSON={gInitialNotesJSON}
       initialTag={initialTag}/>,

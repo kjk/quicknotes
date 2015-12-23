@@ -4,7 +4,7 @@
 // TODO: probably strip down everything we don't use, but is good for now
 // TODO: this is not very react'y. There is react-router but looks very
 // complicated
-var _ = require('./lib/underscore.js');
+var _ = require('underscore');
 
 var Router = function() {
   // Ensure that `History` can be used outside of the browser.
