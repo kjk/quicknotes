@@ -1,12 +1,13 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var React = require('react');
 var Top = require('./Top.jsx');
 
 function appNoteStart() {
   console.log("appNoteStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
   var isLoggedIn = gLoggedInUserHandle !== "";
-  React.render(
+  ReactDOM.render(
     <Top isLoggedIn={isLoggedIn}
       loggedInUserHandle={gLoggedInUserHandle}
       notesUserHandle="" />,

@@ -1,3 +1,7 @@
+'use strict';
+
+var React = require('react');
+
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
 // A slightly different implementation:
 // https://github.com/ForbesLindesay/react-code-mirror/blob/master/index.js

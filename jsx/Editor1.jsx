@@ -1,6 +1,9 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var Overlay = require('./Overlay.jsx');
 
 var Editor = React.createClass({
@@ -68,7 +71,7 @@ var AppEditor = React.createClass({
 });
 
 function appEditorStart() {
-  React.render(
+  ReactDOM.render(
     <AppEditor/>,
     document.getElementById('main')
   );

@@ -1,6 +1,9 @@
 /* jshint -W097,-W117 */
 'use strict';
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var action = require('./action.js');
 var Top = require('./Top.jsx');
 var Settings = require('./Settings.jsx');
@@ -90,11 +93,11 @@ var AppIndex = React.createClass({
 });
 
 function appIndexStart() {
-  React.render(
+  ReactDOM.render(
     <AppIndex />,
     document.getElementById('root')
   );
-  React.render(
+  ReactDOM.render(
     <RecentNotes />,
     document.getElementById('recent-notes-wrapper')
   );
