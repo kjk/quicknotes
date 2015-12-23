@@ -3,6 +3,7 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var keymaster = require('keymaster')
 
 var _ = require('underscore');
 var u = require('./utils.js');
@@ -160,10 +161,10 @@ var AppUser = React.createClass({
   },
 
   componentDidMount: function() {
-    key.filter = this.keyFilter;
-    key('ctrl+f', u.focusSearch);
-    key('ctrl+e', u.focusNewNote);
-    key('esc', this.escPressed);
+    keymaster.filter = this.keyFilter;
+    keymaster('ctrl+f', u.focusSearch);
+    keymaster('ctrl+e', u.focusNewNote);
+    keymaster('esc', this.escPressed);
 
     this.cidShowSettings = action.onShowSettings(this.showSettings);
     this.cidHideSettings = action.onHideSettings(this.hideSettings);
