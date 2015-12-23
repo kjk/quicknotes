@@ -5,6 +5,7 @@
     "url": "https://github.com/kjk/quicknotes"
   },
   "dependencies" : {
+    "codemirror": "^5.10.0",
     "keymaster": "^1.6.2",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
