@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react');
+var CodeMirror = require('codemirror');
 
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
 // A slightly different implementation:
