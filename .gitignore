@@ -2,3 +2,5 @@
 quicknotes
 node_modules
 s/dist
+sass/codemirror.scss
+sass/solarized.scss

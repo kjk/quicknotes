@@ -1,7 +1,8 @@
 @import 'normalize';
 @import 'logo';
-@import (inline) "./../node_modules/codemirror/lib/codemirror.css"
-@import (inline) "./../node_modules/codemirror/theme/solarized.css"
+
+@import 'codemirror';
+@import 'solarized';
 
 $sidebar-width: 180px;
 $font-size-main: 14px;

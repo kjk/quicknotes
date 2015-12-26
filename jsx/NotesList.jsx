@@ -17,22 +17,25 @@ function truncateNotes(notes) {
   return notes;
 }
 
-var NotesList = React.createClass({
-  getInitialState: function() {
-    return {
-      notes: truncateNotes(this.props.notes)
-    };
-  },
+class NotesList extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleScroll = this.handleScroll.bind(this);
 
-  componentWillReceiveProps: function(nextProps) {
+    this.state = {
+      notes: truncateNotes(props.notes)
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
     var node = React.findDOMNode(this);
     node.scrollTop = 0;
     this.setState({
       notes: truncateNotes(nextProps.notes)
     });
-  },
+  }
 
-  handleScroll: function(e) {
+  handleScroll(e) {
     e.preventDefault();
     var nShowing = this.state.notes.length;
     var total = this.props.notes.length;
@@ -60,9 +63,9 @@ var NotesList = React.createClass({
     this.setState({
       notes: notes,
     });
-  },
+  }
 
-  render: function () {
+  render() {
     var self = this;
     return (
       <div id="notes-list" onScroll={this.handleScroll}>
@@ -84,6 +87,6 @@ var NotesList = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = NotesList;

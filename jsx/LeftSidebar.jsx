@@ -9,9 +9,8 @@ var u = require('./utils.js');
 
 var showDeletedTag = true;
 
-var LeftSidebar = React.createClass({
-
-  renderTagsList: function(sectionName, tagNames, tags) {
+class LeftSidebar extends React.Component {
+  renderTagsList(sectionName, tagNames, tags) {
     if (tagNames.length === 0) {
       return;
     }
@@ -25,9 +24,9 @@ var LeftSidebar = React.createClass({
         onTagSelected={this.props.onTagSelected}
       />
     );
-  },
+  }
 
-  render: function() {
+  render() {
     var tags = this.props.tags;
     if (!tags) {
       return (
@@ -67,6 +66,6 @@ var LeftSidebar = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = LeftSidebar;

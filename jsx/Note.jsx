@@ -12,15 +12,19 @@ function urlifyTitle(s) {
   return s.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
-var NoteBody = React.createClass({
+class NoteBody extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.collapse = this.collapse.bind(this);
+    this.expand = this.expand.bind(this);
+    this.onContent = this.onContent.bind(this);
 
-  getInitialState: function() {
-    return {
-      note: this.props.note
+    this.state = {
+      note: props.note
     };
-  },
+  }
 
-  expand: function() {
+  expand() {
     var note = this.state.note;
     console.log("expand note", ni.IDStr(note));
     ni.Expand(note);
@@ -34,18 +38,18 @@ var NoteBody = React.createClass({
         note: note
       });
     }
-  },
+  }
 
-  collapse: function() {
+  collapse() {
     var note = this.state.note;
     console.log("collapse note", ni.IDStr(note));
     ni.Collapse(note);
     this.setState({
       note: note
     });
-  },
+  }
 
-  renderCollapseOrExpand: function(note) {
+  renderCollapseOrExpand(note) {
     // if a note is not partial, there's neither collapse nor exapnd
     if (!ni.IsPartial(note)) {
       return;
@@ -60,23 +64,23 @@ var NoteBody = React.createClass({
     return (
       <a href="#" className="collapse" onClick={this.collapse}>Collapse</a>
     );
-  },
+  }
 
-  onContent: function(note) {
+  onContent(note) {
     console.log("NoteBody.onContent");
     this.setState({
       note: note
     });
-  },
+  }
 
-  renderContent: function(note) {
+  renderContent(note) {
     if (ni.IsCollapsed(note)) {
       return <pre className="note-body">{ni.Snippet(note)}</pre>;
     }
     return <pre className="note-body">{ni.Content(note, this.onContent)}</pre>;
-  },
+  }
 
-  render: function() {
+  render() {
     if (this.props.compact) {
       return;
     }
@@ -89,32 +93,40 @@ var NoteBody = React.createClass({
         </div>
     );
   }
+}
 
-});
+class Note extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleDelUndel = this.handleDelUndel.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
+    this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
+    this.handlePermanentDelete = this.handlePermanentDelete.bind(this);
+    this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
+    this.handleTagClicked = this.handleTagClicked.bind(this);
+    this.mouseEnter = this.mouseEnter.bind(this);
+    this.mouseLeave = this.mouseLeave.bind(this);
 
-var Note = React.createClass({
-
-  getInitialState: function() {
-    return {
+    this.state = {
       showActions: false
     };
-  },
+  }
 
-  renderTitle: function(note) {
+  renderTitle(note) {
     var title = ni.Title(note);
     if (title !== "") {
       return (
         <span className="note-title">{title}</span>
       );
     }
-  },
+  }
 
-  handleTagClicked: function(e) {
+  handleTagClicked(e) {
     var tag = e.target.textContent.substr(1);
     action.tagSelected(tag);
-  },
+  }
 
-  renderTags: function(tags) {
+  renderTags(tags) {
     if (!tags) {
       return;
     }
@@ -129,37 +141,37 @@ var Note = React.createClass({
     return (
       <span className="note-tags">{tagEls}</span>
     );
-  },
+  }
 
-  mouseEnter: function(e) {
+  mouseEnter(e) {
     e.preventDefault();
     this.setState({
       showActions: true
     });
-  },
+  }
 
-  mouseLeave: function(e) {
+  mouseLeave(e) {
     e.preventDefault();
     this.setState({
       showActions: false
     });
-  },
+  }
 
-  handleDelUndel: function(e) {
+  handleDelUndel(e) {
     this.props.delUndelNoteCb(this.props.note);
-  },
+  }
 
-  handlePermanentDelete: function() {
+  handlePermanentDelete() {
     this.props.permanentDeleteNoteCb(this.props.note);
-  },
+  }
 
-  handleMakePublicPrivate: function(e) {
+  handleMakePublicPrivate(e) {
     var note = this.props.note;
     console.log("handleMakePublicPrivate, note.IsPublic: ", ni.IsPublic(note));
     this.props.makeNotePublicPrivateCb(note);
-  },
+  }
 
-  renderTrashUntrash: function(note) {
+  renderTrashUntrash(note) {
     if (ni.IsDeleted(note)) {
       return (
         <a className="note-action" href="#" onClick={this.handleDelUndel} title="Undelete">
@@ -172,9 +184,9 @@ var Note = React.createClass({
         <i className="fa fa-trash-o"></i>
       </a>
     );
-  },
+  }
 
-  renderPermanentDelete: function(note) {
+  renderPermanentDelete(note) {
     if (ni.IsDeleted(note)) {
       return (
         <a className="note-action" href="#" onClick={this.handlePermanentDelete} title="Delete permanently">
@@ -182,14 +194,14 @@ var Note = React.createClass({
         </a>
       );
     }
-  },
+  }
 
-  handleEdit: function(e) {
+  handleEdit(e) {
     console.log("Note.handleEdit");
     this.props.editCb(this.props.note);
-  },
+  }
 
-  renderEdit: function(note) {
+  renderEdit(note) {
     if (!ni.IsDeleted(note)) {
       return (
         <a className="note-action" href="#" onClick={this.handleEdit} title="Edit note">
@@ -197,9 +209,9 @@ var Note = React.createClass({
         </a>
       );
     }
-  },
+  }
 
-  renderViewLink: function(note) {
+  renderViewLink(note) {
     var title = ni.Title(note);
     if (title.length > 0) {
       title = "-" + urlifyTitle(title);
@@ -210,15 +222,15 @@ var Note = React.createClass({
         <i className="fa fa-external-link"></i>
       </a>
     );
-  },
+  }
 
-  renderSize: function(note) {
+  renderSize(note) {
     return (
       <span className="note-size">{ni.HumanSize(note)}</span>
     );
-  },
+  }
 
-  renderMakePublicPrivate: function(note) {
+  renderMakePublicPrivate(note) {
     if (ni.IsDeleted) {
       return;
     }
@@ -235,15 +247,15 @@ var Note = React.createClass({
         </a>
       );
     }
-  },
+  }
 
-  handleStarUnstarNote: function(e) {
+  handleStarUnstarNote(e) {
     var note = this.props.note;
     console.log("handleStarUnstarNote, note.IsStarred: ", ni.IsStarred(note));
     this.props.startUnstarNoteCb(note);
-  },
+  }
 
-  renderStarUnstar: function(note) {
+  renderStarUnstar(note) {
     if (!this.props.myNotes || ni.IsDeleted((note))) {
       return;
     }
@@ -262,9 +274,9 @@ var Note = React.createClass({
         </a>
       );
     }
-  },
+  }
 
-  renderActionsIfMyNotes: function(note) {
+  renderActionsIfMyNotes(note) {
     if (this.state.showActions) {
       return (
         <div className="note-actions">
@@ -276,9 +288,9 @@ var Note = React.createClass({
         </div>
       );
     }
-  },
+  }
 
-  renderActionsIfNotMyNotes: function(note) {
+  renderActionsIfNotMyNotes(note) {
     if (this.state.showActions) {
       return (
         <div className="note-actions">
@@ -289,17 +301,17 @@ var Note = React.createClass({
     return (
       <div className="note-actions"></div>
     );
-  },
+  }
 
-  renderActions: function(note) {
+  renderActions(note) {
     if (this.props.myNotes) {
       return this.renderActionsIfMyNotes(note);
     } else {
       return this.renderActionsIfNotMyNotes(note);
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var note = this.props.note;
     return (
       <div className="note" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
@@ -313,6 +325,6 @@ var Note = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = Note;

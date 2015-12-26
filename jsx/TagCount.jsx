@@ -3,14 +3,18 @@
 
 var React = require('react');
 
-var TagCount = React.createClass({
+class TagCount extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.click = this.click.bind(this);
+  }
 
-  click: function(e) {
+  click(e) {
     e.preventDefault();
     this.props.onTagSelected(this.props.tagName);
-  },
+  }
 
-  render: function() {
+  render() {
     var cls = "tag";
     if (this.props.isSelected) {
       cls = "tag selected";
@@ -22,6 +26,6 @@ var TagCount = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = TagCount;

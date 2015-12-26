@@ -6,16 +6,14 @@ var ReactDOM = require('react-dom');
 
 var action = require('./action.js');
 
-var LogInLink = React.createClass({
-
-  handleSettings: function(e) {
+class LogInLink extends React.Component {
+  handleSettings(e) {
     e.preventDefault();
     console.log("handleSettings");
     action.showSettings();
-  },
+  }
 
-
-  renderLoggedIn: function() {
+  renderLoggedIn() {
     var url = encodeURI("/logout?redir=" + window.location);
     var userUrl = "/u/" + this.props.loggedInUserHandle;
 
@@ -37,9 +35,9 @@ var LogInLink = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  renderLoggedOut: function() {
+  renderLoggedOut() {
     var twitterUrl = encodeURI("/logintwitter?redir=" + window.location);
     return (
       <div id="user">
@@ -58,15 +56,15 @@ var LogInLink = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  render: function() {
+  render() {
     if (this.props.isLoggedIn) {
       return this.renderLoggedIn();
     } else {
       return this.renderLoggedOut();
     }
   }
-});
+}
 
 module.exports = LogInLink;

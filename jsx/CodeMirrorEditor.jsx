@@ -17,19 +17,13 @@ var IS_MOBILE = (
     navigator.userAgent.match(/Windows Phone/i)
 );
 
-var CodeMirrorEditor = React.createClass({
-  propTypes: {
-    lineNumbers: React.PropTypes.bool,
-    onChange: React.PropTypes.func
-  },
+class CodeMirrorEditor extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleChange = this.handleChange.bind(this);
+  }
 
-  getDefaultProps: function() {
-    return {
-      lineNumbers: false
-    };
-  },
-
-  componentDidMount: function() {
+  componentDidMount() {
     if (IS_MOBILE) return;
 
     this.editor = CodeMirror.fromTextArea(React.findDOMNode(this.refs.editor), {
@@ -42,21 +36,21 @@ var CodeMirrorEditor = React.createClass({
       readOnly: this.props.readOnly
     });
     this.editor.on('change', this.handleChange);
-  },
+  }
 
-  componentDidUpdate: function() {
+  componentDidUpdate() {
     if (this.props.readOnly) {
       this.editor.setValue(this.props.codeText);
     }
-  },
+  }
 
-  handleChange: function() {
+  handleChange() {
     if (!this.props.readOnly && this.props.onChange) {
       this.props.onChange(this.editor.getValue());
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var editor;
 
     if (IS_MOBILE) {
@@ -74,6 +68,15 @@ var CodeMirrorEditor = React.createClass({
       );
     }
   }
-});
+}
+
+CodeMirrorEditor.defaultProps = {
+  lineNumbers: false
+};
+
+CodeMirrorEditor.propTypes = {
+  lineNumbers: React.PropTypes.bool,
+  onChange: React.PropTypes.func
+};
 
 module.exports = CodeMirrorEditor;

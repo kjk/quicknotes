@@ -24,15 +24,21 @@ TODO:
  - when this is shown, the rest should be inactive i.e. make it modal
 */
 
-var Settings = React.createClass({
-  getInitialState: function() {
-    return {
+class Settings extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.handleLayoutChanged = this.handleLayoutChanged.bind(this);
+    this.handleOk = this.handleOk.bind(this);
+    this.handleThemeChanged = this.handleThemeChanged.bind(this);
+
+    this.state = {
       theme: "light",
       layout: "default"
     };
-  },
+  }
 
-  handleThemeChanged: function(e) {
+  handleThemeChanged(e) {
     var theme = e.target.value;
     console.log("handleThemeChanged: ", theme);
     this.setState({
@@ -40,46 +46,46 @@ var Settings = React.createClass({
     });
     $("body").removeClass();
     $("body").addClass("theme-" + theme);
-  },
+  }
 
-  handleLayoutChanged: function(e) {
+  handleLayoutChanged(e) {
     var layout = e.target.value;
     console.log("handleLayoutChanged: ", layout);
     this.setState({
       layout: layout
     });
     $("body").attr("data-spacing", layout);
-  },
+  }
 
-  renderThemesSelect: function(themes, selected) {
+  renderThemesSelect(themes, selected) {
     var options = themes.map(function(theme) {
       return <option key={theme}>{theme}</option>;
     });
     return (
       <select value={selected} onChange={this.handleThemeChanged}>{options}</select>
     );
-  },
+  }
 
-  renderLayoutsSelect: function(layouts, selected) {
+  renderLayoutsSelect(layouts, selected) {
     var options = layouts.map(function(layout) {
       return <option key={layout}>{layout}</option>;
     });
     return (
       <select value={selected} onChange={this.handleLayoutChanged}>{options}</select>
     );
-  },
+  }
 
-  handleOk: function(e) {
+  handleOk(e) {
     e.preventDefault();
     action.hideSettings();
-  },
+  }
 
-  handleCancel: function(e) {
+  handleCancel(e) {
     e.preventDefault();
     action.hideSettings();
-  },
+  }
 
-  render: function() {
+  render() {
     var layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
     var themes = this.renderThemesSelect(allThemes, this.state.theme);
     return (
@@ -97,6 +103,6 @@ var Settings = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = Settings;
