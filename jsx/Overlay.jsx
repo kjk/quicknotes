@@ -3,12 +3,10 @@
 
 var React = require('react');
 
-var Overlay = React.createClass({
-
-  render: function() {
+class Overlay extends React.Component {
+  render() {
     return <div className="overlay"></div>;
   }
-
-});
+}
 
 module.exports = Overlay;

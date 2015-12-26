@@ -6,8 +6,8 @@ var React = require('react');
 var TagCount = require('./TagCount.jsx');
 var u = require('./utils.js');
 
-var TagsList = React.createClass({
-  render: function() {
+class TagsList extends React.Component {
+  render() {
     var sectionName = this.props.sectionName;
     var tagNames = this.props.tagNames;
     var tags = this.props.tags;
@@ -36,6 +36,6 @@ var TagsList = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = TagsList;

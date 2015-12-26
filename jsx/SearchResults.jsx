@@ -30,14 +30,18 @@ Format of search results:
 }
 */
 
-var SearchResults = React.createClass({
+class SearchResults extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleClick = this.handleClick.bind(this);
+  }
 
-  handleClick: function(noteIDStr, e) {
+  handleClick(noteIDStr, e) {
     e.preventDefault();
     this.props.searchResultSelectedCb(noteIDStr);
-  },
+  }
 
-  renderNoResults: function(term) {
+  renderNoResults(term) {
     return (
       <div id="search-results">
         <div className="box">
@@ -45,9 +49,9 @@ var SearchResults = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  renderResultItem: function(noteID, i) {
+  renderResultItem(noteID, i) {
     // Maybe: show line number
     var k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
     console.log(k + i.HTML);
@@ -71,9 +75,9 @@ var SearchResults = React.createClass({
         <span dangerouslySetInnerHTML={{__html: i.HTML}}></span>
       </div>
     );
-  },
+  }
 
-  renderResultNote: function(o) {
+  renderResultNote(o) {
     var noteID = o.NoteIDStr;
     var cb = this.handleClick.bind(this, noteID);
     var items = o.Items;
@@ -89,9 +93,9 @@ var SearchResults = React.createClass({
         {children}
       </div>
     );
-  },
+  }
 
-  render: function() {
+  render() {
     var searchResults = this.props.searchResults;
     var results = searchResults.Results;
     if (!results || (results.length === 0)) {
@@ -111,6 +115,6 @@ var SearchResults = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = SearchResults;

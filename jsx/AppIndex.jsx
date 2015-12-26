@@ -9,14 +9,16 @@ var Top = require('./Top.jsx');
 var Settings = require('./Settings.jsx');
 var u = require('./utils.js');
 
-var RecentNotes = React.createClass({
-  getInitialState: function() {
-    return {
+class RecentNotes extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = {
       notes: gRecentNotesInitial
     };
-  },
+  }
 
-  renderNotes: function(notes) {
+  renderNotes(notes) {
     notes = u.arrNotNull(notes);
     return notes.map(function(note) {
       // see NoteSummary in db.go for note definition
@@ -29,56 +31,59 @@ var RecentNotes = React.createClass({
         <a href={noteUrl}>{title}</a> by <a href={userUrl}>{userHandle}</a>
       </div>;
     });
-  },
+  }
 
-  render: function() {
+  render() {
     var notes = this.state.notes;
     return <div id="recentNotes">
       <div>Recent notes:</div>
       {this.renderNotes(notes)}</div>;
   }
-});
+}
 
-var AppIndex = React.createClass({
+class AppIndex extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.hideSettings = this.hideSettings.bind(this);
+    this.showSettings = this.showSettings.bind(this);
 
-  getInitialState: function() {
-    return {
+    this.state = {
       showingSettings: false
     };
-  },
+  }
 
-  showSettings: function() {
+  showSettings() {
     console.log("showSettings");
     this.setState({
       showingSettings: true
     });
-  },
+  }
 
-  hideSettings: function() {
+  hideSettings() {
     console.log("hideSettings");
     this.setState({
       showingSettings: false
     });
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this.cidShowSettings = action.onShowSettings(this.showSettings);
     this.cidHideSettings = action.onHideSettings(this.hideSettings);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     action.onShowSettings(this.cidShowSettings);
     action.onHideSettings(this.cidHideSettings);
-  },
+  }
 
-  renderSettings: function() {
+  renderSettings() {
     console.log("renderSettings: ", this.state.showingSettings);
     if (this.state.showingSettings) {
       return <Settings />;
     }
-  },
+  }
 
-  render: function() {
+  render() {
     console.log("AppIndex: gLoggedInUserHandle: ", gLoggedInUserHandle);
     var isLoggedIn = gLoggedInUserHandle !== "";
     return (
@@ -90,7 +95,7 @@ var AppIndex = React.createClass({
       </div>
     );
   }
-});
+}
 
 function appIndexStart() {
   ReactDOM.render(

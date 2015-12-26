@@ -5,9 +5,15 @@ var React = require('react');
 
 var LogInLink = require('./LogInLink.jsx');
 
-var Top = React.createClass({
+class Top extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleCreateNewNote = this.handleCreateNewNote.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
+  }
 
-  handleInputKeyDown: function(e) {
+  handleInputKeyDown(e) {
     // on ESC loose focus and reset the value
     if (e.keyCode == 27) {
       e.preventDefault();
@@ -15,13 +21,13 @@ var Top = React.createClass({
       e.target.value = "";
       this.props.searchTermChangedCb("");
     }
-  },
+  }
 
-  handleInputChange: function(e) {
+  handleInputChange(e) {
     this.props.searchTermChangedCb(e.target.value);
-  },
+  }
 
-  renderSearchInput: function() {
+  renderSearchInput() {
     var userHandle = this.props.notesUserHandle;
     if (userHandle === "") {
       return;
@@ -40,14 +46,14 @@ var Top = React.createClass({
           placeholder={placeholder} />
       </div>
     );
-  },
+  }
 
-  handleCreateNewNote: function(e) {
+  handleCreateNewNote(e) {
     e.preventDefault();
     this.props.startNewNoteCb();
-  },
+  }
 
-  renderNewNote: function() {
+  renderNewNote() {
     if (!this.props.isLoggedIn) {
       return;
     }
@@ -56,9 +62,9 @@ var Top = React.createClass({
         <i className="icn-plus"></i>
       </a>
     );
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <div id="header">
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
@@ -69,6 +75,6 @@ var Top = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = Top;

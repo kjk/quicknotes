@@ -6,17 +6,18 @@ var ReactDOM = require('react-dom');
 
 var Overlay = require('./Overlay.jsx');
 
-var Editor = React.createClass({
-
-  getInitialState: function() {
+class Editor extends React.Component {
+  constructor(props, context) {
+    super(props, context);
     var dy = window.innerHeight;
     var middle = dy / 2;
-    return {
+
+    this.state = {
       top: middle + "px"
     };
-  },
+  }
 
-  render: function() {
+  render() {
     var style1 = {
       top: this.state.top
     };
@@ -25,9 +26,9 @@ var Editor = React.createClass({
       <div style={style1} id="editor-wrapper">
       </div>
     );
-  },
+  }
 
-  render2: function() {
+  render2() {
     return (
       <div id="editor-wrapper">
         <div id="editor-title-and-tags">
@@ -56,11 +57,10 @@ var Editor = React.createClass({
       </div>
     );
   }
+}
 
-});
-
-var AppEditor = React.createClass({
-  render: function() {
+class AppEditor extends React.Component {
+  render() {
     return (
       <div>
         <Overlay></Overlay>
@@ -68,7 +68,7 @@ var AppEditor = React.createClass({
       </div>
     );
   }
-});
+}
 
 function appEditorStart() {
   ReactDOM.render(

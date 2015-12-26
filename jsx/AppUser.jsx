@@ -63,16 +63,34 @@ function tagsFromNotes(notes) {
   return tags;
 }
 
-var gSearchDelayTimerID = null; // TODO: make it variable on AppUser
+var gSearchDelayTimerID = null;// TODO: make it variable on AppUser
 // if search is in progress, this is the search term
-var gCurrSearchTerm = ''; // TODO: make it variable on AppUser
+var gCurrSearchTerm = '';
 
-var AppUser = React.createClass({
-  getInitialState: function() {
-    var initialNotesJSON = this.props.initialNotesJSON;
+// TODO: make it variable on AppUser
+
+class AppUser extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.cancelNoteEdit = this.cancelNoteEdit.bind(this);
+    this.delUndelNote = this.delUndelNote.bind(this);
+    this.editNote = this.editNote.bind(this);
+    this.escPressed = this.escPressed.bind(this);
+    this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
+    this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
+    this.handleStartNewNote = this.handleStartNewNote.bind(this);
+    this.handleTagSelected = this.handleTagSelected.bind(this);
+    this.hideSettings = this.hideSettings.bind(this);
+    this.keyFilter = this.keyFilter.bind(this);
+    this.makeNotePublicPrivate = this.makeNotePublicPrivate.bind(this);
+    this.permanentDeleteNote = this.permanentDeleteNote.bind(this);
+    this.saveNote = this.saveNote.bind(this);
+    this.showSettings = this.showSettings.bind(this);
+    this.startUnstarNote = this.startUnstarNote.bind(this);
+    var initialNotesJSON = props.initialNotesJSON;
     var allNotes = [];
     var selectedNotes = [];
-    var selectedTag = this.props.initialTag;
+    var selectedTag = props.initialTag;
     var loggedInUserHandle = "";
     var tags = [];
     if (initialNotesJSON && initialNotesJSON.Notes) {
@@ -82,7 +100,8 @@ var AppUser = React.createClass({
       tags = tagsFromNotes(allNotes);
 
     }
-    return {
+
+    this.state = {
       allNotes: allNotes,
       selectedNotes: selectedNotes,
       // TODO: should be an array this.props.initialTags
@@ -93,9 +112,9 @@ var AppUser = React.createClass({
       searchResults: null,
       showingSettings: false
     };
-  },
+  }
 
-  handleTagSelected: function(tag) {
+  handleTagSelected(tag) {
     //console.log("selected tag: ", tag);
     var selectedNotes = u.filterNotesByTag(this.state.allNotes, tag);
     // TODO: update url with /t:${tag}
@@ -103,9 +122,9 @@ var AppUser = React.createClass({
       selectedNotes: selectedNotes,
       selectedTag: tag
     });
-  },
+  }
 
-  setNotes: function(json) {
+  setNotes(json) {
     var allNotes = json.Notes;
     if (!allNotes) {
       allNotes = [];
@@ -120,9 +139,9 @@ var AppUser = React.createClass({
       tags: tags,
       loggedInUserHandle: json.LoggedInUserHandle
     });
-  },
+  }
 
-  updateNotes: function() {
+  updateNotes() {
     var userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
     var uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
@@ -130,37 +149,37 @@ var AppUser = React.createClass({
     $.get(uri, function(json) {
       this.setNotes(json);
     }.bind(this));
-  },
+  }
 
-  standardKeyFilter: function(event) {
+  standardKeyFilter(event) {
     var tagName = (event.target || event.srcElement).tagName;
     return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
-  },
+  }
 
   // by default all keypresses are filtered
-  keyFilter: function(event) {
+  keyFilter(event) {
     if (event.keyCode == 27) {
       // allow ESC always
       return true;
     }
     return this.standardKeyFilter(event);
-  },
+  }
 
-  showSettings: function() {
+  showSettings() {
     console.log("showSettings");
     this.setState({
       showingSettings: true
     });
-  },
+  }
 
-  hideSettings: function() {
+  hideSettings() {
     console.log("hideSettings");
     this.setState({
       showingSettings: false
     });
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     keymaster.filter = this.keyFilter;
     keymaster('ctrl+f', u.focusSearch);
     keymaster('ctrl+e', u.focusNewNote);
@@ -169,9 +188,9 @@ var AppUser = React.createClass({
     this.cidShowSettings = action.onShowSettings(this.showSettings);
     this.cidHideSettings = action.onHideSettings(this.hideSettings);
     this.cidTagSelected = action.onTagSelected(this.handleTagSelected);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     key.unbind('ctrl+f', u.focusSearch);
     key.unbind('ctrl+e', u.focusNewNote);
     key.unbind('esc', this.escPressed);
@@ -179,11 +198,11 @@ var AppUser = React.createClass({
     action.offShowSettings(this.cidShowSettings);
     action.offHideSettings(this.cidHideSettings);
     action.offTagSelected(this.cidTagSelected);
-  },
+  }
 
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
-  delUndelNote: function(note) {
+  delUndelNote(note) {
     var data = {
       noteIdHash: ni.IDStr(note)
     };
@@ -202,9 +221,9 @@ var AppUser = React.createClass({
         alert( "error deleting a note");
       });
     }
-  },
+  }
 
-  permanentDeleteNote: function(note) {
+  permanentDeleteNote(note) {
     var data = {
       noteIdHash: ni.IDStr(note)
     };
@@ -214,9 +233,9 @@ var AppUser = React.createClass({
     .fail(function() {
       alert( "error deleting a note");
     });
-  },
+  }
 
-  makeNotePublicPrivate: function(note) {
+  makeNotePublicPrivate(note) {
     var data = {
       noteIdHash: ni.IDStr(note)
     };
@@ -235,9 +254,9 @@ var AppUser = React.createClass({
         alert( "error making note private");
       });
     }
-  },
+  }
 
-  startUnstarNote: function(note) {
+  startUnstarNote(note) {
     var data = {
       noteIdHash: ni.IDStr(note)
     };
@@ -256,9 +275,9 @@ var AppUser = React.createClass({
         alert( "error starring note");
       });
     }
-  },
+  }
 
-  createNewTextNote: function(s) {
+  createNewTextNote(s) {
     var note = {
       Content: s.trim(),
       Format: format.Text
@@ -273,9 +292,9 @@ var AppUser = React.createClass({
     .fail(function() {
       alert( "error creating new note: " + noteJSON );
     });
-  },
+  }
 
-  saveNote: function(note) {
+  saveNote(note) {
     var newNote = ni.toNewNote(note);
     newNote.Content = newNote.Content.trim();
     var noteJSON = JSON.stringify(newNote);
@@ -293,9 +312,9 @@ var AppUser = React.createClass({
     .fail(function() {
       alert( "error creating or updaing a note: " + noteJSON);
     });
-  },
+  }
 
-  cancelNoteEdit: function() {
+  cancelNoteEdit() {
     if (!this.state.noteBeingEdited) {
       return;
     }
@@ -303,9 +322,9 @@ var AppUser = React.createClass({
       noteBeingEdited: null
     });
     u.clearNewNote();
-  },
+  }
 
-  escPressed: function() {
+  escPressed() {
     console.log("ESC pressed");
     if (this.state.noteBeingEdited) {
       this.setState({
@@ -314,9 +333,9 @@ var AppUser = React.createClass({
       u.clearNewNote();
       return;
     }
-  },
+  }
 
-  editNote: function(note) {
+  editNote(note) {
     var userHandle = this.props.notesUserHandle;
     var uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
     console.log("AppUser.editNote: " + ni.IDStr(note) + " uri: " + uri);
@@ -327,9 +346,9 @@ var AppUser = React.createClass({
         noteBeingEdited: noteJson
       });
     }.bind(this));
-  },
+  }
 
-  renderFullComposer: function() {
+  renderFullComposer() {
     if (this.state.noteBeingEdited) {
       return (
         <FullComposer
@@ -338,18 +357,18 @@ var AppUser = React.createClass({
           cancelNoteEditCb={this.cancelNoteEdit}/>
       );
     }
-  },
+  }
 
-  renderSearchResults: function() {
+  renderSearchResults() {
     if (this.state.searchResults) {
       return <SearchResults
         searchResults={this.state.searchResults}
         searchResultSelectedCb={this.handleSearchResultSelected}
        />;
     }
-  },
+  }
 
-  handleStartNewNote: function() {
+  handleStartNewNote() {
     if (this.state.noteBeingEdited !== null) {
       console.log("handleStartNewNote: a note is already being edited");
       return;
@@ -361,9 +380,9 @@ var AppUser = React.createClass({
     this.setState({
       noteBeingEdited: note
     });
-  },
+  }
 
-  startSearch: function(userHandle, searchTerm) {
+  startSearch(userHandle, searchTerm) {
     gCurrSearchTerm = searchTerm;
     if (searchTerm === "") {
       return;
@@ -379,9 +398,9 @@ var AppUser = React.createClass({
         searchResults: json
       });
     }.bind(this));
-  },
+  }
 
-  handleSearchTermChanged: function(searchTerm) {
+  handleSearchTermChanged(searchTerm) {
     gCurrSearchTerm = searchTerm;
     if (searchTerm === "") {
       // user cancelled the search
@@ -400,9 +419,9 @@ var AppUser = React.createClass({
       console.log("starting search for " + searchTerm);
       self.startSearch(self.props.notesUserHandle, searchTerm);
     }, 300);
-  },
+  }
 
-  handleSearchResultSelected: function(noteIDStr) {
+  handleSearchResultSelected(noteIDStr) {
     console.log("search note selected: " + noteIDStr);
     // TODO: probably should display in-line
     var url = "/n/" + noteIDStr;
@@ -410,16 +429,16 @@ var AppUser = React.createClass({
     win.focus();
     // TODO: clear search field and focus it
     this.handleSearchTermChanged(""); // hide search results
-  },
+  }
 
-  renderSettings: function() {
+  renderSettings() {
     console.log("renderSettings: ", this.state.showingSettings);
     if (this.state.showingSettings) {
       return <Settings />;
     }
-  },
+  }
 
-  render: function() {
+  render() {
     var compact = false;
     var isLoggedIn = this.state.loggedInUserHandle !== "";
     var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
@@ -454,7 +473,7 @@ var AppUser = React.createClass({
       </div>
     );
   }
-});
+}
 
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
