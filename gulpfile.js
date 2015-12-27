@@ -47,7 +47,7 @@ gulp.task('js', function() {
     .pipe(gulp.dest('s/dist'));
 });
 
-gulp.task('css', function() {
+gulp.task('css', ['copy_css1', 'copy_css2'], function() {
   return gulp.src('./sass/main.scss')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
@@ -58,9 +58,9 @@ gulp.task('css', function() {
 
 gulp.task('watch', function() {
   gulp.watch('jsx/*', ['js']);
-  gulp.watch('./sass/**/*', ['copy_css1', 'copy_css2', 'css']);
+  gulp.watch('./sass/**/*', ['css']);
 });
 
-gulp.task('default', ['copy_css1', 'copy_css2', 'css', 'js']);
+gulp.task('default', ['css', 'js']);
 
 gulp.task('build_and_watch', ['default', 'watch']);
