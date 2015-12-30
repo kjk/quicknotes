@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Note from'./Note.jsx';
-import ni from './noteinfo.js';
+import * as ni from './noteinfo.js';
 
 const maxInitialNotes = 50;
 
@@ -24,7 +24,7 @@ export default class NotesList extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    var node = React.findDOMNode(this);
+    var node = ReactDOM.findDOMNode(this);
     node.scrollTop = 0;
     this.setState({
       notes: truncateNotes(nextProps.notes)

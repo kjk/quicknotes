@@ -72,7 +72,7 @@ const hideSettingsIdx = 1;
 const tagSelectedIdx = 2;
 
 // must be in same order as *Idx above
-const actionNames = [
+var actionNames = [
   "showSettings",
   "hideSettings",
   "tagSelected",

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import action from './action.js';
+import * as action from './action.js';
 
 const allThemes = [
   "light",

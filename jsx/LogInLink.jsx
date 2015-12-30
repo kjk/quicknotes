@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import action from './action.js';
+import * as action from './action.js';
 
 export default class LogInLink extends React.Component {
   handleSettings(e) {

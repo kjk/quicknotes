@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Overlay from './Overlay.jsx';
 
-class Editor extends React.Component {
+export default class Editor extends React.Component {
   constructor(props, context) {
     super(props, context);
     var dy = window.innerHeight;
@@ -75,4 +75,3 @@ function appEditorStart() {
 
 window.appEditorStart = appEditorStart;
 
-module.exports = Editor;

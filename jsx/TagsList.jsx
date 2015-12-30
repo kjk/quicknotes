@@ -1,6 +1,6 @@
 import React from 'react';
 import TagCount from './TagCount.jsx';
-import u from './utils.js';
+import * as u from'./utils.js';
 
 export default class TagsList extends React.Component {
   render() {

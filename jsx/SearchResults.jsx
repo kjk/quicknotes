@@ -26,7 +26,7 @@ Format of search results:
 }
 */
 
-class SearchResults extends React.Component {
+export default class SearchResults extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleClick = this.handleClick.bind(this);
@@ -113,4 +113,3 @@ class SearchResults extends React.Component {
   }
 }
 
-module.exports = SearchResults;

@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-import ni from './noteinfo.js';
-import action from './action.js';
+import * as ni from './noteinfo.js';
+import * as action from './action.js';
 
 function urlifyTitle(s) {
   s = s.slice(0, 32);
