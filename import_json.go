@@ -64,9 +64,9 @@ func importNotesFromJSON(path, userHandle string) {
 		if isBlog {
 			newNote.tags = append(newNote.tags, "blog")
 		}
-		_, err = dbCreateNewNote(dbUser.ID, &newNote)
+		_, err = dbCreateOrUpdateNote(dbUser.ID, &newNote)
 		if err != nil {
-			log.Fatalf("dbCreateNewNote() failed with '%s'", err)
+			log.Fatalf("dbCreateOrUpdateNote() failed with '%s'", err)
 		}
 		nImported++
 		fmt.Printf("imported note %d, %s\n", nImported, n.Title)

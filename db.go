@@ -472,6 +472,9 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		}
 	}()
 
+	fatalif(note.contentSha1 == nil, "note.contentSha1 is nil")
+	fatalif(note.snippetSha1 == nil, "note.snippetSha1 is nil")
+
 	// for non-imported notes use current time as note creation time
 	if note.createdAt.IsZero() {
 		note.createdAt = time.Now()

@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -26,6 +27,20 @@ func fatalIfErr(err error, what string) {
 	if err != nil {
 		log.Fatalf("%s failed with %s\n", what, err)
 	}
+}
+
+func fatalif(cond bool, format string, args ...interface{}) {
+	if cond {
+		log.Fatalf(format, args...)
+	}
+}
+
+func isWin() bool {
+	return runtime.GOOS == "windows"
+}
+
+func isMac() bool {
+	return runtime.GOOS == "darwin"
 }
 
 func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
