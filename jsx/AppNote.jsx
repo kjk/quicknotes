@@ -1,9 +1,6 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-var Top = require('./Top.jsx');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Top from './Top.jsx';
 
 function appNoteStart() {
   console.log("appNoteStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
