@@ -23,17 +23,17 @@ export default class LeftSidebar extends React.Component {
   }
 
   render() {
-    var tags = this.props.tags;
+    const tags = this.props.tags;
     if (!tags) {
       return (
         <div id="leftSidebar">
         </div>
       );
     }
-    var tagNames = [];
-    var specialTagNames = [];
+    let tagNames = [];
+    let specialTagNames = [];
 
-    for (var tagName in tags) {
+    for (let tagName in tags) {
       if (!u.isSpecialTag(tagName)) {
         tagNames.push(tagName);
       }
@@ -53,8 +53,8 @@ export default class LeftSidebar extends React.Component {
       tagNames.unshift("__all");
     }
 
-    var specialTagsList = this.renderTagsList("SPECIAL", specialTagNames, tags);
-    var tagsList = this.renderTagsList("TAGS", tagNames, tags);
+    const specialTagsList = this.renderTagsList("SPECIAL", specialTagNames, tags);
+    const tagsList = this.renderTagsList("TAGS", tagNames, tags);
     return (
       <div id="left-sidebar">
         {specialTagsList}

@@ -3,7 +3,7 @@ import Top from './Top.jsx';
 
 function appImportStart() {
   console.log("appImportStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
-  var isLoggedIn = gLoggedInUserHandle !== "";
+  const isLoggedIn = gLoggedInUserHandle !== "";
   ReactDOM.render(
     <Top isLoggedIn={isLoggedIn}
       loggedInUserHandle={gLoggedInUserHandle}
