@@ -21,10 +21,10 @@ class NoteBody extends React.Component {
   }
 
   expand() {
-    var note = this.state.note;
+    const note = this.state.note;
     console.log("expand note", ni.IDStr(note));
     ni.Expand(note);
-    var content = ni.Content(note, this.onContent);
+    const content = ni.Content(note, this.onContent);
     // if has content, change the state immediately.
     // if doesn't have content, it'll be changed in onContent.
     // if we always do it and there is no content, we'll get an ugly flash
@@ -37,7 +37,7 @@ class NoteBody extends React.Component {
   }
 
   collapse() {
-    var note = this.state.note;
+    const note = this.state.note;
     console.log("collapse note", ni.IDStr(note));
     ni.Collapse(note);
     this.setState({
@@ -80,7 +80,7 @@ class NoteBody extends React.Component {
     if (this.props.compact) {
       return;
     }
-    var note = this.state.note;
+    const note = this.state.note;
     //console.log("NoteBody.render() note: ", ni.IDStr(note), "collapsed:", ni.IsCollapsed(note));
     return (
         <div className="note-content">
@@ -109,7 +109,7 @@ export default class Note extends React.Component {
   }
 
   renderTitle(note) {
-    var title = ni.Title(note);
+    const title = ni.Title(note);
     if (title !== "") {
       return (
         <span className="note-title">{title}</span>
@@ -118,7 +118,7 @@ export default class Note extends React.Component {
   }
 
   handleTagClicked(e) {
-    var tag = e.target.textContent.substr(1);
+    const tag = e.target.textContent.substr(1);
     action.tagSelected(tag);
   }
 
@@ -126,11 +126,10 @@ export default class Note extends React.Component {
     if (!tags) {
       return;
     }
-    var self = this;
-    var tagEls = tags.map(function(tag) {
+    const tagEls = tags.map((tag) => {
       tag = "#" + tag;
       return (
-        <span className="note-tag" key={tag} onClick={self.handleTagClicked}>{tag}</span>
+        <span className="note-tag" key={tag} onClick={this.handleTagClicked}>{tag}</span>
       );
     });
 
@@ -162,7 +161,7 @@ export default class Note extends React.Component {
   }
 
   handleMakePublicPrivate(e) {
-    var note = this.props.note;
+    const note = this.props.note;
     console.log("handleMakePublicPrivate, note.IsPublic: ", ni.IsPublic(note));
     this.props.makeNotePublicPrivateCb(note);
   }
@@ -208,11 +207,11 @@ export default class Note extends React.Component {
   }
 
   renderViewLink(note) {
-    var title = ni.Title(note);
+    let title = ni.Title(note);
     if (title.length > 0) {
       title = "-" + urlifyTitle(title);
     }
-    var url = "/n/" + ni.IDStr(note) + title;
+    const url = "/n/" + ni.IDStr(note) + title;
     return (
       <a className="note-action" href={url} target="_blank" title="View note">
         <i className="fa fa-external-link"></i>
@@ -246,7 +245,7 @@ export default class Note extends React.Component {
   }
 
   handleStarUnstarNote(e) {
-    var note = this.props.note;
+    const note = this.props.note;
     console.log("handleStarUnstarNote, note.IsStarred: ", ni.IsStarred(note));
     this.props.startUnstarNoteCb(note);
   }
@@ -256,7 +255,7 @@ export default class Note extends React.Component {
       return;
     }
 
-    var isStarred = ni.IsStarred(note);
+    const isStarred = ni.IsStarred(note);
     if (isStarred) {
       return (
         <a className="note-action note-star note-starred" href="#" onClick={this.handleStarUnstarNote} title="Unstar">
@@ -308,7 +307,7 @@ export default class Note extends React.Component {
   }
 
   render() {
-    var note = this.props.note;
+    const note = this.props.note;
     return (
       <div className="note" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
         <div className="note-header">
