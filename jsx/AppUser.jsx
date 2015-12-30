@@ -1,23 +1,20 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import keymaster from 'keymaster';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var keymaster = require('keymaster')
+import _ from 'underscore';
+import u from'./utils.js';
+import format from './format.js';
+import ni from './noteinfo.js';
+import action from './action.js';
 
-var _ = require('underscore');
-var u = require('./utils.js');
-var format = require('./format.js');
-var ni = require('./noteinfo.js');
-var action = require('./action.js');
-
-var FullComposer = require('./FullComposer.jsx');
-var LeftSidebar = require('./LeftSidebar.jsx');
-var NotesList = require('./NotesList.jsx');
-var Router = require('./Router.js');
-var SearchResults = require('./SearchResults.jsx');
-var Top = require('./Top.jsx');
-var Settings = require('./Settings.jsx');
+import FullComposer from './FullComposer.jsx';
+import LeftSidebar from './LeftSidebar.jsx';
+import NotesList from './NotesList.jsx';
+import Router from './Router.js';
+import SearchResults from './SearchResults.jsx';
+import Top from './Top.jsx';
+import Settings from './Settings.jsx';
 
 function tagsFromNotes(notes) {
   var tags = {

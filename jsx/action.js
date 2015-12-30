@@ -1,6 +1,3 @@
-/* jshint -W097,-W117 */
-'use strict';
-
 /* reusable part */
 
 // Loosely inspired by flux ideas.
@@ -10,27 +7,27 @@
 
 // index is one of the above constants.
 // value at a given index is [[cbFunc, cbId], ...]
-var actionCallbacks = [];
+let actionCallbacks = [];
 
 // current global callback id to hand out in on()
 // we don't bother recycling them after off()
-var currCid = 0;
+let currCid = 0;
 
 function getActionName(idx) {
   return actionNames[idx] + " (" + idx + ")";
 }
 
 function broadcast(actionIdx) {
-  var callbacks = actionCallbacks[actionIdx];
+  const callbacks = actionCallbacks[actionIdx];
   if (!callbacks || callbacks.length === 0) {
     console.log("action.broadcast: no callback for action", getActionName(actionIdx));
     return;
   }
 
-  var args = Array.prototype.slice.call(arguments, 1);
+  const args = Array.prototype.slice.call(arguments, 1);
   callbacks.map(function(cbInfo) {
-    var cb = cbInfo[0];
-    console.log("broadcastAction: calling callback for action", getActionName(actionIdx), "with", args.length, "args");
+    const cb = cbInfo[0];
+    console.log("action.broadcast: calling callback for action", getActionName(actionIdx), "args:", args);
     if (args.length > 0) {
       cb.apply(null, args);
     } else {
@@ -43,8 +40,8 @@ function broadcast(actionIdx) {
 // returns an id that can be used to unsubscribe with off()
 function on(action, cb) {
   currCid++;
-  var callbacks = actionCallbacks[action];
-  var el = [cb, currCid];
+  const callbacks = actionCallbacks[action];
+  const el = [cb, currCid];
   if (!callbacks) {
     actionCallbacks[action] = [el];
   } else {
@@ -54,10 +51,10 @@ function on(action, cb) {
 }
 
 function off(actionIdx, cbId) {
-  var callbacks = actionCallbacks[actionIdx];
+  const callbacks = actionCallbacks[actionIdx];
   if (callbacks && callbacks.length > 0) {
-    var n = callbacks.length;
-    for (var i = 0; i < n; i++) {
+    const n = callbacks.length;
+    for (let i = 0; i < n; i++) {
       if (callbacks[i][1] === cbId) {
         callbacks.splice(i, 1);
         return;
@@ -70,64 +67,49 @@ function off(actionIdx, cbId) {
 /* actions specific to an app */
 
 // index in actionCallbacks array for a given action
-var showSettingsIdx = 0;
-var hideSettingsIdx = 1;
-var tagSelectedIdx = 2;
+const showSettingsIdx = 0;
+const hideSettingsIdx = 1;
+const tagSelectedIdx = 2;
 
 // must be in same order as *Idx above
-var actionNames = [
+const actionNames = [
   "showSettings",
   "hideSettings",
   "tagSelected",
 ];
 
-function showSettings(name) {
+export function showSettings(name) {
   broadcast(showSettingsIdx, name);
 }
 
-function onShowSettings(cb) {
+export function onShowSettings(cb) {
   return on(showSettingsIdx, cb);
 }
 
-function offShowSettings(cbId) {
+export function offShowSettings(cbId) {
   off(showSettingsIdx, cbId);
 }
 
-function hideSettings(view) {
+export function hideSettings(view) {
   broadcast(hideSettingsIdx, view);
 }
 
-function onHideSettings(cb) {
+export function onHideSettings(cb) {
   return on(hideSettingsIdx, cb);
 }
 
-function offHideSettings(cbId) {
+export function offHideSettings(cbId) {
   off(hideSettingsIdx, cbId);
 }
 
-
-function tagSelected(tag) {
+export function tagSelected(tag) {
   broadcast(tagSelectedIdx, tag);
 }
 
-function onTagSelected(cb) {
+export function onTagSelected(cb) {
   return on(tagSelectedIdx, cb);
 }
 
-function offTagSelected(cbId) {
+export function offTagSelected(cbId) {
   off(tagSelectedIdx, cbId);
 }
-
-module.exports = {
-  showSettings: showSettings,
-  onShowSettings: onShowSettings,
-  offShowSettings: offShowSettings,
-
-  hideSettings: hideSettings,
-  onHideSettings: onHideSettings,
-  offHideSettings: offHideSettings,
-
-  tagSelected: tagSelected,
-  onTagSelected: onTagSelected,
-  offTagSelected: offTagSelected,
-};

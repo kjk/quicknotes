@@ -1,13 +1,9 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var action = require('./action.js');
-var Top = require('./Top.jsx');
-var Settings = require('./Settings.jsx');
-var u = require('./utils.js');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import action from './action.js';
+import Top from './Top.jsx';
+import Settings from './Settings.jsx';
+import u from './utils.js';
 
 class RecentNotes extends React.Component {
   constructor(props, context) {
