@@ -1,12 +1,8 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import TagCount from './TagCount.jsx';
+import u from './utils.js';
 
-var React = require('react');
-
-var TagCount = require('./TagCount.jsx');
-var u = require('./utils.js');
-
-class TagsList extends React.Component {
+export default class TagsList extends React.Component {
   render() {
     var sectionName = this.props.sectionName;
     var tagNames = this.props.tagNames;
@@ -37,5 +33,3 @@ class TagsList extends React.Component {
     );
   }
 }
-
-module.exports = TagsList;

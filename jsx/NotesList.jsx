@@ -1,15 +1,11 @@
-/* jshint -W097,-W117 */
-'use strict';
-
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Note from'./Note.jsx';
+import ni from './noteinfo.js';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
+const maxInitialNotes = 50;
 
-var Note = require('./Note.jsx');
-var ni = require('./noteinfo.js');
-
-var maxInitialNotes = 50;
 function truncateNotes(notes) {
   if (maxInitialNotes != -1 && notes.length >= maxInitialNotes) {
     return notes.slice(0, maxInitialNotes);
@@ -17,7 +13,7 @@ function truncateNotes(notes) {
   return notes;
 }
 
-class NotesList extends React.Component {
+export default class NotesList extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleScroll = this.handleScroll.bind(this);
@@ -88,5 +84,3 @@ class NotesList extends React.Component {
     );
   }
 }
-
-module.exports = NotesList;

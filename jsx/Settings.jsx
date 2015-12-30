@@ -1,19 +1,15 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import $ from 'jquery';
+import action from './action.js';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var $ = require('jquery');
-
-var action = require('./action.js');
-
-var allThemes = [
+const allThemes = [
   "light",
    "dark"
 ];
 
 
-var allLayouts = [
+const allLayouts = [
   "default",
   "grid",
   "barebones"
@@ -24,7 +20,7 @@ TODO:
  - when this is shown, the rest should be inactive i.e. make it modal
 */
 
-class Settings extends React.Component {
+export default class Settings extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleCancel = this.handleCancel.bind(this);
@@ -104,5 +100,3 @@ class Settings extends React.Component {
     );
   }
 }
-
-module.exports = Settings;

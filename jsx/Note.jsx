@@ -1,11 +1,8 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var ni = require('./noteinfo.js');
-var action = require('./action.js');
+import ni from './noteinfo.js';
+import action from './action.js';
 
 function urlifyTitle(s) {
   s = s.slice(0, 32);
@@ -95,7 +92,7 @@ class NoteBody extends React.Component {
   }
 }
 
-class Note extends React.Component {
+export default class Note extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleDelUndel = this.handleDelUndel.bind(this);
@@ -326,5 +323,3 @@ class Note extends React.Component {
     );
   }
 }
-
-module.exports = Note;

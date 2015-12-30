@@ -1,10 +1,6 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var Overlay = require('./Overlay.jsx');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Overlay from './Overlay.jsx';
 
 class Editor extends React.Component {
   constructor(props, context) {

@@ -1,11 +1,7 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import LogInLink from './LogInLink.jsx';
 
-var React = require('react');
-
-var LogInLink = require('./LogInLink.jsx');
-
-class Top extends React.Component {
+export default class Top extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleCreateNewNote = this.handleCreateNewNote.bind(this);
@@ -76,5 +72,3 @@ class Top extends React.Component {
     );
   }
 }
-
-module.exports = Top;

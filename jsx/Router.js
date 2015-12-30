@@ -1,10 +1,8 @@
-/* jshint -W097,-W117,-W107 */
-
 // based on https://github.com/jashkenas/backbone/blob/master/backbone.js
 // TODO: probably strip down everything we don't use, but is good for now
 // TODO: this is not very react'y. There is react-router but looks very
 // complicated
-var _ = require('underscore');
+import _ from 'underscore';
 
 var Router = function() {
   // Ensure that `History` can be used outside of the browser.

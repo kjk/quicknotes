@@ -1,15 +1,11 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import format from './format.js';
 
-var React = require('react');
-
-var format = require('./format.js');
-
-var TypeTitle = 1;
-var TypeLine = 2;
+const TypeTitle = 1;
+const TypeLine = 2;
 
 // if true, show line number at the beginning of search results
-var showLineNumbers = true;
+const showLineNumbers = true;
 
 /*
 Format of search results:
