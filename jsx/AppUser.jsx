@@ -12,6 +12,7 @@ import * as u from'./utils.js';
 import * as format from './format.js';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
+import $ from 'jquery';
 
 function tagsFromNotes(notes) {
   let tags = {
@@ -408,7 +409,7 @@ export default class AppUser extends React.Component {
     }
     gSearchDelayTimerID = setTimeout(() => {
       console.log("starting search for " + searchTerm);
-      this.startSearch(self.props.notesUserHandle, searchTerm);
+      this.startSearch(this.props.notesUserHandle, searchTerm);
     }, 300);
   }
 
