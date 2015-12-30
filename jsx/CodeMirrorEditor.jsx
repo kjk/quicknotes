@@ -16,7 +16,7 @@ var IS_MOBILE = (
     navigator.userAgent.match(/Windows Phone/i)
 );
 
-class CodeMirrorEditor extends React.Component {
+export default class CodeMirrorEditor extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleChange = this.handleChange.bind(this);
@@ -78,4 +78,3 @@ CodeMirrorEditor.propTypes = {
   onChange: React.PropTypes.func
 };
 
-module.exports = CodeMirrorEditor;
