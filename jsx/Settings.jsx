@@ -35,7 +35,7 @@ export default class Settings extends React.Component {
   }
 
   handleThemeChanged(e) {
-    var theme = e.target.value;
+    const theme = e.target.value;
     console.log("handleThemeChanged: ", theme);
     this.setState({
       theme: theme

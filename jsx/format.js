@@ -3,7 +3,7 @@
 const Invalid = 0;
 export const Text = 1;
 export const Markdown = 2;
-const Html = 3;
+export const Html = 3;
 
 const formatNames = ["invalid", "text", "markdown", "html"];
 

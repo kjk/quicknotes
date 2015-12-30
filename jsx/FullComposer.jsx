@@ -148,13 +148,13 @@ export default class FullComposer extends React.Component {
   }
 
   render() {
-    var initialNote = this.props.note;
-    var initialTags = tagsToText(ni.Tags(initialNote));
-    var note = this.state.note;
-    var previewHtml = this.state.previewHtml || "";
-    var saveDisabled = !this.noteChanged();
-    var formatTxt = format.numberToName(ni.Format(note));
-    var formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
+    const initialNote = this.props.note;
+    const initialTags = tagsToText(ni.Tags(initialNote));
+    const note = this.state.note;
+    const previewHtml = this.state.previewHtml || "";
+    const saveDisabled = !this.noteChanged();
+    const formatTxt = format.numberToName(ni.Format(note));
+    const formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
 
     // TODO: if editing code, change CodeMirror mode property to match code being edited
     return (
@@ -206,7 +206,6 @@ export default class FullComposer extends React.Component {
         </div>
 
       </div>
-
     );
   }
 }

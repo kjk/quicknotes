@@ -37,8 +37,8 @@ function strArrEq(a1, a2) {
   // Note: can't short-circuit by checking the lengths because
   // that doesn't handle duplicate keys
 
-  var d = {};
-  var i, s;
+  let d = {};
+  let i, s;
   for (i = 0; i < a1.length; i++) {
     s = a1[i];
     d[s] = 1;
@@ -62,8 +62,7 @@ function strArrEq(a1, a2) {
 
 function notesEq(n1, n2) {
   // Note: maybe should compare content after trim() ?
-  for (var i = 0; i < simpleProps.length; i++) {
-    var prop = simpleProps[i];
+  for (let prop of simpleProps) {
     if (n1[prop] != n2[prop]) {
       return false;
     }
@@ -126,8 +125,8 @@ function getCurrentVersionID(note) {
 }
 
 function getContent(note, cb) {
-  var noteID = getIDStr(note);
-  var res = note[noteContentIdx];
+  const noteID = getIDStr(note);
+  const res = note[noteContentIdx];
   if (res) {
     console.log("getContent: already has it for note", noteID);
     return res;
@@ -234,10 +233,10 @@ function toNewNote(note) {
 
 /* locally manage expanded/collapsed state of notes */
 
-var expandedNotes = {};
+let expandedNotes = {};
 
 function isExpanded(note) {
-  var id = getIDStr(note);
+  const id = getIDStr(note);
   return expandedNotes.hasOwnProperty(id);
 }
 
@@ -246,12 +245,12 @@ function isCollapsed(note) {
 }
 
 function expand(note) {
-  var id = getIDStr(note);
+  const id = getIDStr(note);
   expandedNotes[id] = true;
 }
 
 function collapse(note) {
-  var id = getIDStr(note);
+  const id = getIDStr(note);
   delete expandedNotes[id];
 }
 
