@@ -55,9 +55,9 @@ func handleImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		noteID, err := dbCreateNewNote(dbUser.ID, &newNote)
+		noteID, err := dbCreateOrUpdateNote(dbUser.ID, &newNote)
 		if err != nil {
-			LogErrorf("dbCreateNewNote() failed with %s\n", err)
+			LogErrorf("dbCreateOrUpdateNote() failed with %s\n", err)
 		}
 		msg := fmt.Sprintf("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
 		if newNote.isDeleted {

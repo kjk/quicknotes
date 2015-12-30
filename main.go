@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -79,6 +78,9 @@ func parseFlags() {
 	flag.Parse()
 	if flgIsLocal {
 		onlyLocalStorage = true
+	}
+	if isMac() {
+		httpAddr = "127.0.0.1:5111"
 	}
 }
 
