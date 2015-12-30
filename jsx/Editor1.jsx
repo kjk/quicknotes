@@ -18,10 +18,7 @@ export default class Editor extends React.Component {
       top: this.state.top
     };
 
-    return (
-      <div style={style1} id="editor-wrapper">
-      </div>
-    );
+    return <div style={style1} id="editor-wrapper"></div>;
   }
 
   render2() {

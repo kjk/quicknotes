@@ -18,11 +18,11 @@ class RecentNotes extends React.Component {
     notes = u.arrNotNull(notes);
     return notes.map((note) => {
       // see NoteSummary in db.go for note definition
-      var userHandle = note.UserHandle;
-      var title = note.Title;
-      var k = note.IDStr;
-      var noteUrl = "/n/" + note.IDStr;
-      var userUrl = "/u/" + userHandle;
+      const userHandle = note.UserHandle;
+      const title = note.Title;
+      const k = note.IDStr;
+      const noteUrl = "/n/" + note.IDStr;
+      const userUrl = "/u/" + userHandle;
       return <div key={k}>
         <a href={noteUrl}>{title}</a> by <a href={userUrl}>{userHandle}</a>
       </div>;
