@@ -16,7 +16,7 @@ class RecentNotes extends React.Component {
 
   renderNotes(notes) {
     notes = u.arrNotNull(notes);
-    return notes.map(function(note) {
+    return notes.map((note) => {
       // see NoteSummary in db.go for note definition
       var userHandle = note.UserHandle;
       var title = note.Title;
@@ -30,7 +30,7 @@ class RecentNotes extends React.Component {
   }
 
   render() {
-    var notes = this.state.notes;
+    const notes = this.state.notes;
     return <div id="recentNotes">
       <div>Recent notes:</div>
       {this.renderNotes(notes)}</div>;
@@ -81,7 +81,7 @@ class AppIndex extends React.Component {
 
   render() {
     console.log("AppIndex: gLoggedInUserHandle: ", gLoggedInUserHandle);
-    var isLoggedIn = gLoggedInUserHandle !== "";
+    const isLoggedIn = gLoggedInUserHandle !== "";
     return (
       <div>
         <Top isLoggedIn={isLoggedIn}

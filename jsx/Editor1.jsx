@@ -5,8 +5,8 @@ import Overlay from './Overlay.jsx';
 export default class Editor extends React.Component {
   constructor(props, context) {
     super(props, context);
-    var dy = window.innerHeight;
-    var middle = dy / 2;
+    const dy = window.innerHeight;
+    const middle = dy / 2;
 
     this.state = {
       top: middle + "px"
@@ -14,7 +14,7 @@ export default class Editor extends React.Component {
   }
 
   render() {
-    var style1 = {
+    const style1 = {
       top: this.state.top
     };
 

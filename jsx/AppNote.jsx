@@ -4,7 +4,7 @@ import Top from './Top.jsx';
 
 function appNoteStart() {
   console.log("appNoteStart: gLoggedInUserHandle: ", gLoggedInUserHandle);
-  var isLoggedIn = gLoggedInUserHandle !== "";
+  const isLoggedIn = gLoggedInUserHandle !== "";
   ReactDOM.render(
     <Top isLoggedIn={isLoggedIn}
       loggedInUserHandle={gLoggedInUserHandle}

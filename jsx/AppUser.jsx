@@ -8,14 +8,13 @@ import SearchResults from './SearchResults.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
 import keymaster from 'keymaster';
-import _ from 'underscore';
 import * as u from'./utils.js';
 import * as format from './format.js';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
 
 function tagsFromNotes(notes) {
-  var tags = {
+  let tags = {
     __all: 0,
     __deleted: 0,
     __public: 0,
@@ -44,7 +43,7 @@ function tagsFromNotes(notes) {
       tags.__private += 1;
     }
 
-    var noteTags = ni.Tags(note);
+    const noteTags = ni.Tags(note);
     if (noteTags !== null) {
       for (let tag of noteTags) {
         u.dictInc(tags, tag);

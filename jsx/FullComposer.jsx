@@ -10,7 +10,7 @@ function tagsToText(tags) {
   if (!tags) {
     return "";
   }
-  var s = "";
+  let s = "";
   tags.forEach(function(tag) {
     if (s !== "") {
       s += " ";
@@ -21,8 +21,8 @@ function tagsToText(tags) {
 }
 
 function textToTags(s) {
-  var tags = [];
-  var parts = s.split("#");
+  let tags = [];
+  const parts = s.split("#");
   parts.forEach(function(part) {
     part = part.trim();
     if (part.length > 0) {
@@ -32,7 +32,7 @@ function textToTags(s) {
   return tags;
 }
 
-class FullComposer extends React.Component {
+export default class FullComposer extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.handleCancel = this.handleCancel.bind(this);
@@ -50,8 +50,8 @@ class FullComposer extends React.Component {
   }
 
   noteChanged() {
-    var n1 = this.props.note;
-    var n2 = this.state.note;
+    const n1 = this.props.note;
+    const n2 = this.state.note;
     return !ni.notesEq(n1, n2);
   }
 
@@ -64,14 +64,14 @@ class FullComposer extends React.Component {
   }
 
   componentDidMount() {
-    var el = ReactDOM.findDOMNode(this.refs.editArea);
+    const el = ReactDOM.findDOMNode(this.refs.editArea);
     // TODO: this doesn't work
     el.focus();
     this.updatePreview(ni.Content(this.props.note));
   }
 
   updatePreview(s) {
-    var note = this.state.note;
+    const note = this.state.note;
     if (ni.Format(note) == format.Text) {
       s = "<pre>" + _.escape(s) + "</pre>";
     } else if (ni.Format(note) == format.Markdown) {
@@ -86,7 +86,7 @@ class FullComposer extends React.Component {
   }
 
   textChanged(e) {
-    var s;
+    let s;
     if (true) {
       // CodeMirror
       s = e;
@@ -95,7 +95,7 @@ class FullComposer extends React.Component {
       s = e.target.value;
     }
     s = s.trim();
-    var note = u.deepCloneObject(this.state.note);
+    const note = u.deepCloneObject(this.state.note);
     ni.SetContent(note, s);
     this.setState({
       note: note
@@ -104,7 +104,7 @@ class FullComposer extends React.Component {
   }
 
   handlePublicChanged(e) {
-    var note = u.deepCloneObject(this.state.note);
+    const note = u.deepCloneObject(this.state.note);
     ni.SetPublicState(note, e.target.checked);
     this.setState({
       note: note
@@ -112,8 +112,8 @@ class FullComposer extends React.Component {
   }
 
   handleTitleChanged(e) {
-    var s = e.target.value.trim();
-    var note = u.deepCloneObject(this.state.note);
+    const s = e.target.value.trim();
+    const note = u.deepCloneObject(this.state.note);
     ni.SetTitle(note, s);
     this.setState({
       note: note
@@ -121,8 +121,8 @@ class FullComposer extends React.Component {
   }
 
   handleTagsChanged(e) {
-    var tagsStr = e.target.value;
-    var note = u.deepCloneObject(this.state.note);
+    const tagsStr = e.target.value;
+    const note = u.deepCloneObject(this.state.note);
     ni.SetTags(note, textToTags(tagsStr));
     this.setState({
       note: note
@@ -130,8 +130,8 @@ class FullComposer extends React.Component {
   }
 
   handleFormatChanged(e) {
-    var formatName = e.target.value;
-    var note = u.deepCloneObject(this.state.note);
+    const formatName = e.target.value;
+    const note = u.deepCloneObject(this.state.note);
     ni.SetFormat(note, format.nameToNumber(formatName));
     this.setState({
       note: note
@@ -139,7 +139,7 @@ class FullComposer extends React.Component {
   }
 
   renderFormatSelect(formats, selected) {
-    var options = formats.map(function(format) {
+    const options = formats.map(function(format) {
       return <option key={format}>{format}</option>;
     });
     return (
@@ -211,4 +211,3 @@ class FullComposer extends React.Component {
   }
 }
 
-module.exports = FullComposer;

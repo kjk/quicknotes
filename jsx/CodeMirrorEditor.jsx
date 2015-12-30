@@ -6,7 +6,7 @@ import CodeMirror from 'codemirror';
 // A slightly different implementation:
 // https://github.com/ForbesLindesay/react-code-mirror/blob/master/index.js
 // https://github.com/joelburget/react-live-editor/blob/master/code-mirror-editor.jsx
-var IS_MOBILE = (
+const IS_MOBILE = (
   navigator.userAgent.match(/Android/i) ||
     navigator.userAgent.match(/webOS/i) ||
     navigator.userAgent.match(/iPhone/i) ||
@@ -50,7 +50,7 @@ export default class CodeMirrorEditor extends React.Component {
   }
 
   render() {
-    var editor;
+    let editor;
 
     if (IS_MOBILE) {
       return (
