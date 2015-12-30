@@ -26,6 +26,16 @@ Format of search results:
 }
 */
 
+const NoResults = (props) => {
+  return (
+    <div id="search-results">
+      <div className="box">
+        <p>No results for {props.term}</p>
+      </div>
+    </div>
+  );
+};
+
 export default class SearchResults extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -37,25 +47,12 @@ export default class SearchResults extends React.Component {
     this.props.searchResultSelectedCb(noteIDStr);
   }
 
-  renderNoResults(term) {
-    return (
-      <div id="search-results">
-        <div className="box">
-          <p>No results for {term}</p>
-        </div>
-      </div>
-    );
-  }
-
   renderResultItem(noteID, i) {
     // Maybe: show line number
-    var k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
+    const k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
     console.log(k + i.HTML);
-    var cls = "search-result-item";
-    if (i.Type == TypeTitle) {
-      cls = "search-result-title-item";
-    }
-    var lineNo = i.LineNo + ":";
+    const cls = i.Type == TypeTitle ? "search-result-title-item" : "search-result-item";
+    let lineNo = i.LineNo + ":";
     if (i.LineNo == -1) {
       lineNo = "";
     }
@@ -74,12 +71,10 @@ export default class SearchResults extends React.Component {
   }
 
   renderResultNote(o) {
-    var noteID = o.NoteIDStr;
-    var cb = this.handleClick.bind(this, noteID);
-    var items = o.Items;
-    var self = this;
-    var children = items.map(function(i) {
-      return self.renderResultItem(noteID, i);
+    const noteID = o.NoteIDStr;
+    const cb = this.handleClick.bind(this, noteID);
+    const children = o.Items.map((i) => {
+      return this.renderResultItem(noteID, i);
     });
     return (
       <div
@@ -92,15 +87,15 @@ export default class SearchResults extends React.Component {
   }
 
   render() {
-    var searchResults = this.props.searchResults;
-    var results = searchResults.Results;
+    const searchResults = this.props.searchResults;
+    const term = searchResults.Term;
+    const results = searchResults.Results;
     if (!results || (results.length === 0)) {
-      return this.renderNoResults(searchResults.Term);
+      return <NoResults term={term} />;
     }
 
-    var self = this;
-    var resultsHTML = results.map(function(o) {
-      return self.renderResultNote(o);
+    const resultsHTML = results.map((o) => {
+      return this.renderResultNote(o);
     });
 
     return (
