@@ -71,7 +71,7 @@ export function filterNotesByTag(notes, tag) {
   }
 
   let res = [];
-  for (let note in notes) {
+  for (let note of notes) {
     if (ni.IsDeleted(note)) {
       continue;
     }
