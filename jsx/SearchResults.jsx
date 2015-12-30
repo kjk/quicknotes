@@ -47,10 +47,10 @@ export default class SearchResults extends React.Component {
     this.props.searchResultSelectedCb(noteIDStr);
   }
 
-  renderResultItem(noteID, i) {
+  renderResultItem(noteID, i, n) {
     // Maybe: show line number
-    const k = "" + noteID + "-" + i.Type + "-" + i.LineNo;
-    console.log(k + i.HTML);
+    const k = noteID + "-" + i.Type + "-" + i.LineNo + "-" + n;
+    //console.log(k);
     const cls = i.Type == TypeTitle ? "search-result-title-item" : "search-result-item";
     let lineNo = i.LineNo + ":";
     if (i.LineNo == -1) {
@@ -73,8 +73,10 @@ export default class SearchResults extends React.Component {
   renderResultNote(o) {
     const noteID = o.NoteIDStr;
     const cb = this.handleClick.bind(this, noteID);
+    let n = 0;
     const children = o.Items.map((i) => {
-      return this.renderResultItem(noteID, i);
+      n++;
+      return this.renderResultItem(noteID, i, n);
     });
     return (
       <div
