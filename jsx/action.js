@@ -7,51 +7,47 @@
 
 // index is one of the above constants.
 // value at a given index is [[cbFunc, cbId], ...]
-let actionCallbacks = [];
+let actionCallbacks = {};
 
 // current global callback id to hand out in on()
 // we don't bother recycling them after off()
 let currCid = 0;
 
-function getActionName(idx) {
-  return actionNames[idx] + " (" + idx + ")";
-}
-
-function broadcast(actionIdx) {
-  const callbacks = actionCallbacks[actionIdx];
+function broadcast(actionCmd) {
+  const callbacks = actionCallbacks[actionCmd];
   if (!callbacks || callbacks.length === 0) {
-    console.log("action.broadcast: no callback for action", getActionName(actionIdx));
+    console.log("action.broadcast: no callback for action", actionCmd);
     return;
   }
 
   const args = Array.prototype.slice.call(arguments, 1);
-  callbacks.map(function(cbInfo) {
+  for (let cbInfo of callbacks) {
     const cb = cbInfo[0];
-    console.log("action.broadcast: calling callback for action", getActionName(actionIdx), "args:", args);
+    console.log("action.broadcast: calling callback for action", actionCmd, "args:", args);
     if (args.length > 0) {
       cb.apply(null, args);
     } else {
       cb();
     }
-  });
+  }
 }
 
 // subscribe to be notified about an action.
 // returns an id that can be used to unsubscribe with off()
-function on(action, cb) {
+export function on(actionCmd, cb) {
   currCid++;
-  const callbacks = actionCallbacks[action];
+  const callbacks = actionCallbacks[actionCmd];
   const el = [cb, currCid];
   if (!callbacks) {
-    actionCallbacks[action] = [el];
+    actionCallbacks[actionCmd] = [el];
   } else {
     callbacks.push(el);
   }
   return currCid;
 }
 
-function off(actionIdx, cbId) {
-  const callbacks = actionCallbacks[actionIdx];
+export function off(actionCmd, cbId) {
+  const callbacks = actionCallbacks[actionCmd];
   if (callbacks && callbacks.length > 0) {
     const n = callbacks.length;
     for (let i = 0; i < n; i++) {
@@ -61,55 +57,48 @@ function off(actionIdx, cbId) {
       }
     }
   }
-  console.log("action.off: didn't find callback id", cbId, "for action", getActionName(actionIdx));
+  console.log("action.off: didn't find callback id", cbId, "for action", actionCmd);
 }
 
 /* actions specific to an app */
 
 // index in actionCallbacks array for a given action
-const showSettingsIdx = 0;
-const hideSettingsIdx = 1;
-const tagSelectedIdx = 2;
-
-// must be in same order as *Idx above
-var actionNames = [
-  "showSettings",
-  "hideSettings",
-  "tagSelected",
-];
+const showSettingsCmd = "showSettings";
+const hideSettingsCmd = "hideSettings";
+const tagSelectedCmd = "tagSelected";
 
 export function showSettings(name) {
-  broadcast(showSettingsIdx, name);
+  broadcast(showSettingsCmd, name);
 }
 
 export function onShowSettings(cb) {
-  return on(showSettingsIdx, cb);
+  return on(showSettingsCmd, cb);
 }
 
 export function offShowSettings(cbId) {
-  off(showSettingsIdx, cbId);
+  off(showSettingsCmd, cbId);
 }
 
 export function hideSettings(view) {
-  broadcast(hideSettingsIdx, view);
+  broadcast(hideSettingsCmd, view);
 }
 
 export function onHideSettings(cb) {
-  return on(hideSettingsIdx, cb);
+  return on(hideSettingsCmd, cb);
 }
 
 export function offHideSettings(cbId) {
-  off(hideSettingsIdx, cbId);
+  off(hideSettingsCmd, cbId);
 }
 
 export function tagSelected(tag) {
-  broadcast(tagSelectedIdx, tag);
+  broadcast(tagSelectedCmd, tag);
 }
 
 export function onTagSelected(cb) {
-  return on(tagSelectedIdx, cb);
+  return on(tagSelectedCmd, cb);
 }
 
 export function offTagSelected(cbId) {
-  off(tagSelectedIdx, cbId);
+  off(tagSelectedCmd, cbId);
 }
