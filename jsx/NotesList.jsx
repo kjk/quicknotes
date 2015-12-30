@@ -24,7 +24,7 @@ export default class NotesList extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    var node = ReactDOM.findDOMNode(this);
+    let node = ReactDOM.findDOMNode(this);
     node.scrollTop = 0;
     this.setState({
       notes: truncateNotes(nextProps.notes)
@@ -33,26 +33,26 @@ export default class NotesList extends React.Component {
 
   handleScroll(e) {
     e.preventDefault();
-    var nShowing = this.state.notes.length;
-    var total = this.props.notes.length;
+    const nShowing = this.state.notes.length;
+    const total = this.props.notes.length;
     if (nShowing >= total) {
       return;
     }
-    var node = e.target;
-    var top = node.scrollTop;
-    var dy = node.scrollHeight;
+    const node = e.target;
+    const top = node.scrollTop;
+    const dy = node.scrollHeight;
     // a heuristic, maybe push it down
-    var addMore = top > dy/2;
+    const addMore = top > dy/2;
     if (!addMore) {
       return;
     }
     //console.log("top: " + top + " height: " + dy);
-    var last = nShowing + 10;
+    let last = nShowing + 10;
     if (last > total) {
       last = total;
     }
-    var notes = this.state.notes;
-    for (var i = nShowing; i < last; i++) {
+    let notes = this.state.notes;
+    for (let i = nShowing; i < last; i++) {
       notes.push(this.props.notes[i]);
     }
     //console.log("new number of notes: " + notes.length);
@@ -62,21 +62,20 @@ export default class NotesList extends React.Component {
   }
 
   render() {
-    var self = this;
     return (
       <div id="notes-list" onScroll={this.handleScroll}>
         <div className="wrapper">
-          {this.state.notes.map(function(note) {
+          {this.state.notes.map((note) => {
             return <Note
-              compact={self.props.compact}
+              compact={this.props.compact}
               note={note}
               key={ni.IDStr(note)}
-              myNotes={self.props.myNotes}
-              permanentDeleteNoteCb={self.props.permanentDeleteNoteCb}
-              delUndelNoteCb={self.props.delUndelNoteCb}
-              makeNotePublicPrivateCb={self.props.makeNotePublicPrivateCb}
-              startUnstarNoteCb={self.props.startUnstarNoteCb}
-              editCb={self.props.editCb}
+              myNotes={this.props.myNotes}
+              permanentDeleteNoteCb={this.props.permanentDeleteNoteCb}
+              delUndelNoteCb={this.props.delUndelNoteCb}
+              makeNotePublicPrivateCb={this.props.makeNotePublicPrivateCb}
+              startUnstarNoteCb={this.props.startUnstarNoteCb}
+              editCb={this.props.editCb}
             />;
           })}
         </div>

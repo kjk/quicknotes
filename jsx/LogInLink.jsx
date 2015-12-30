@@ -55,7 +55,7 @@ export default class LogInLink extends React.Component {
 
   render() {
     if (this.props.isLoggedIn) {
-      return <LinkLoggedIn loggedInUserHandle={this.loggedInUserHandle} />;
+      return <LinkLoggedIn loggedInUserHandle={this.props.loggedInUserHandle} />;
     } else {
       return <LinkLoggedOut />;
     }
