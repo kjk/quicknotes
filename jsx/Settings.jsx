@@ -45,7 +45,7 @@ export default class Settings extends React.Component {
   }
 
   handleLayoutChanged(e) {
-    var layout = e.target.value;
+    const layout = e.target.value;
     console.log("handleLayoutChanged: ", layout);
     this.setState({
       layout: layout
@@ -54,7 +54,7 @@ export default class Settings extends React.Component {
   }
 
   renderThemesSelect(themes, selected) {
-    var options = themes.map(function(theme) {
+    const options = themes.map(function(theme) {
       return <option key={theme}>{theme}</option>;
     });
     return (
@@ -63,7 +63,7 @@ export default class Settings extends React.Component {
   }
 
   renderLayoutsSelect(layouts, selected) {
-    var options = layouts.map(function(layout) {
+    const options = layouts.map(function(layout) {
       return <option key={layout}>{layout}</option>;
     });
     return (
@@ -82,8 +82,8 @@ export default class Settings extends React.Component {
   }
 
   render() {
-    var layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
-    var themes = this.renderThemesSelect(allThemes, this.state.theme);
+    const layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
+    const themes = this.renderThemesSelect(allThemes, this.state.theme);
     return (
       <div id="settings">
         <div className="settings-div">

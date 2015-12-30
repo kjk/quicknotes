@@ -1,12 +1,13 @@
 import * as ni from './noteinfo.js';
+import $ from 'jquery';
 
 export function noteHasTag(note, tag) {
-  var tags = ni.Tags(note);
+  const tags = ni.Tags(note);
   if (!tags) {
     return false;
   }
-  for (var i = 0; i < tags.length; i++) {
-    if (tags[i] == tag) {
+  for (let tag2 of tags) {
+    if (tag2 == tag) {
       return true;
     }
   }
@@ -14,13 +15,12 @@ export function noteHasTag(note, tag) {
 }
 
 function getSpecialNotes(notes) {
-  var deletedNotes = [];
-  var notDeletedNotes = [];
-  var publicNotes = [];
-  var privateNotes = [];
-  var starredNotes = [];
-  for (var i = 0; i < notes.length; i++) {
-    var note = notes[i];
+  let deletedNotes = [];
+  let notDeletedNotes = [];
+  let publicNotes = [];
+  let privateNotes = [];
+  let starredNotes = [];
+  for (let note of notes) {
     if (ni.IsDeleted(note)) {
       deletedNotes.push(note);
     } else {
@@ -57,7 +57,7 @@ export function isSpecialTag(tag) {
 }
 
 export function tagNameToDisplayName(tagName) {
-  var translated = specialTagNames[tagName];
+  const translated = specialTagNames[tagName];
   if (!translated) {
     return tagName;
   }
@@ -66,13 +66,12 @@ export function tagNameToDisplayName(tagName) {
 
 export function filterNotesByTag(notes, tag) {
   if (isSpecialTag(tag)) {
-    var specialNotes = getSpecialNotes(notes);
+    const specialNotes = getSpecialNotes(notes);
     return specialNotes[tag];
   }
 
-  var res = [];
-  for (var i = 0; i < notes.length; i++) {
-    var note = notes[i];
+  let res = [];
+  for (let note in notes) {
     if (ni.IsDeleted(note)) {
       continue;
     }

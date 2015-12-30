@@ -24,11 +24,11 @@ export default class Top extends React.Component {
   }
 
   renderSearchInput() {
-    var userHandle = this.props.notesUserHandle;
+    const userHandle = this.props.notesUserHandle;
     if (userHandle === "") {
       return;
     }
-    var placeholder = "Search notes by " + userHandle + " (Ctrl-F)";
+    let placeholder = "Search notes by " + userHandle + " (Ctrl-F)";
     if (userHandle == gLoggedInUserHandle) {
       placeholder = "Search your notes (Ctrl-F)";
     }
@@ -50,14 +50,13 @@ export default class Top extends React.Component {
   }
 
   renderNewNote() {
-    if (!this.props.isLoggedIn) {
-      return;
+    if (this.props.isLoggedIn) {
+      return (
+        <a id="new-note" title="Create new note" href="#" onClick={this.handleCreateNewNote}>
+          <i className="icn-plus"></i>
+        </a>
+      );
     }
-    return (
-      <a id="new-note" title="Create new note" href="#" onClick={this.handleCreateNewNote}>
-        <i className="icn-plus"></i>
-      </a>
-    );
   }
 
   render() {
