@@ -4,16 +4,16 @@ import * as u from'./utils.js';
 
 export default class TagsList extends React.Component {
   render() {
-    var sectionName = this.props.sectionName;
-    var tagNames = this.props.tagNames;
-    var tags = this.props.tags;
-    var selectedTag=this.props.selectedTag;
-    var onTagSelected=this.props.onTagSelected;
+    //var sectionName = this.props.sectionName;
+    const tagNames = this.props.tagNames;
+    const tags = this.props.tags;
+    const selectedTag=this.props.selectedTag;
+    const onTagSelected=this.props.onTagSelected;
 
-    var tagEls = tagNames.map(function (tagName) {
-      var count = tags[tagName];
-      var displayName = u.tagNameToDisplayName(tagName);
-      var isSelected = (tagName == selectedTag);
+    const tagEls = tagNames.map(function (tagName) {
+      const count = tags[tagName];
+      const displayName = u.tagNameToDisplayName(tagName);
+      const isSelected = (tagName == selectedTag);
       return (
         <TagCount
           onTagSelected={onTagSelected}
