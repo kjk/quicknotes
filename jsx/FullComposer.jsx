@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
-import u from './utils.js';
-import format from './format.js';
-import ni from './noteinfo.js';
+import * as u from './utils.js';
+import * as format from './format.js';
+import * as ni from './noteinfo.js';
 import _ from 'underscore';
 
 function tagsToText(tags) {
@@ -64,7 +64,7 @@ class FullComposer extends React.Component {
   }
 
   componentDidMount() {
-    var el = React.findDOMNode(this.refs.editArea);
+    var el = ReactDOM.findDOMNode(this.refs.editArea);
     // TODO: this doesn't work
     el.focus();
     this.updatePreview(ni.Content(this.props.note));

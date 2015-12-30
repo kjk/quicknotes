@@ -1,25 +1,22 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-/* name <-> number mapping of note content formats */
+// name <-> number mapping of note content formats
 
 const Invalid = 0;
-const Text = 1;
-const Markdown = 2;
+export const Text = 1;
+export const Markdown = 2;
 const Html = 3;
 
 const formatNames = ["invalid", "text", "markdown", "html"];
 
-const Formats = ["text", "markdown"];
+export const Formats = ["text", "markdown"];
 
-function numberToName(n) {
+export function numberToName(n) {
   if (n >= formatNames.length) {
     return "invalid";
   }
   return formatNames[n];
 }
 
-function nameToNumber(s) {
+export function nameToNumber(s) {
   for (var i = 0; i < formatNames.length; i++) {
     if (formatNames[i] == s) {
       return i;
@@ -27,9 +24,3 @@ function nameToNumber(s) {
   }
   return Invalid;
 }
-
-exports.numberToName = numberToName;
-exports.nameToNumber = nameToNumber;
-exports.Text = Text;
-exports.Markdown = Markdown;
-exports.Formats = Formats;

@@ -1,13 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import keymaster from 'keymaster';
-
-import _ from 'underscore';
-import u from'./utils.js';
-import format from './format.js';
-import ni from './noteinfo.js';
-import action from './action.js';
-
 import FullComposer from './FullComposer.jsx';
 import LeftSidebar from './LeftSidebar.jsx';
 import NotesList from './NotesList.jsx';
@@ -15,6 +7,12 @@ import Router from './Router.js';
 import SearchResults from './SearchResults.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
+import keymaster from 'keymaster';
+import _ from 'underscore';
+import * as u from'./utils.js';
+import * as format from './format.js';
+import * as ni from './noteinfo.js';
+import * as action from './action.js';
 
 function tagsFromNotes(notes) {
   var tags = {
@@ -60,13 +58,13 @@ function tagsFromNotes(notes) {
   return tags;
 }
 
-var gSearchDelayTimerID = null;// TODO: make it variable on AppUser
+let gSearchDelayTimerID = null;// TODO: make it variable on AppUser
 // if search is in progress, this is the search term
-var gCurrSearchTerm = '';
+let gCurrSearchTerm = '';
 
 // TODO: make it variable on AppUser
 
-class AppUser extends React.Component {
+export default class AppUser extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.cancelNoteEdit = this.cancelNoteEdit.bind(this);
@@ -499,5 +497,3 @@ function appUserStart() {
 }
 
 window.appUserStart = appUserStart;
-
-module.exports = AppUser;

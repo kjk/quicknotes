@@ -1,6 +1,6 @@
-import ni from './noteinfo.js';
+import * as ni from './noteinfo.js';
 
-function noteHasTag(note, tag) {
+export function noteHasTag(note, tag) {
   var tags = ni.Tags(note);
   if (!tags) {
     return false;
@@ -44,7 +44,7 @@ function getSpecialNotes(notes) {
   };
 }
 
-var specialTagNames = {
+const specialTagNames = {
   __all: "all",
   __public: "public",
   __private: "private",
@@ -52,11 +52,11 @@ var specialTagNames = {
   __starred: "starred"
 };
 
-function isSpecialTag(tag) {
+export function isSpecialTag(tag) {
   return specialTagNames[tag];
 }
 
-function tagNameToDisplayName(tagName) {
+export function tagNameToDisplayName(tagName) {
   var translated = specialTagNames[tagName];
   if (!translated) {
     return tagName;
@@ -64,7 +64,7 @@ function tagNameToDisplayName(tagName) {
   return translated;
 }
 
-function filterNotesByTag(notes, tag) {
+export function filterNotesByTag(notes, tag) {
   if (isSpecialTag(tag)) {
     var specialNotes = getSpecialNotes(notes);
     return specialNotes[tag];
@@ -83,7 +83,7 @@ function filterNotesByTag(notes, tag) {
   return res;
 }
 
-function dictInc(d, key) {
+export function dictInc(d, key) {
   if (d[key]) {
     d[key] += 1;
   } else {
@@ -92,21 +92,21 @@ function dictInc(d, key) {
 }
 
 // focus "search" input area at the top of the page
-function focusSearch() {
+export function focusSearch() {
   $("#search").focus();
 }
 
-function focusNewNote() {
+export function focusNewNote() {
   $("#Composer").focus();
 }
 
 // TODO: should do it the react way
-function clearNewNote() {
+export function clearNewNote() {
   // TODO: this doesn't work
   $("Composer").val(null);
 }
 // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
-function deepCloneObject(o) {
+export function deepCloneObject(o) {
   return JSON.parse(JSON.stringify(o));
 }
 
@@ -119,18 +119,8 @@ function runOnLoad(f) {
 }
 
 // helps to use map() in cases where the value can be null
-function arrNotNull(a) {
+export function arrNotNull(a) {
   return a ? a : [];
 }
 
 window.runOnLoad = runOnLoad;
-exports.filterNotesByTag = filterNotesByTag;
-exports.dictInc = dictInc;
-exports.focusSearch = focusSearch;
-exports.focusNewNote = focusNewNote;
-exports.clearNewNote = clearNewNote;
-exports.tagNameToDisplayName = tagNameToDisplayName;
-exports.isSpecialTag = isSpecialTag;
-exports.deepCloneObject = deepCloneObject;
-exports.noteHasTag = noteHasTag;
-exports.arrNotNull = arrNotNull;

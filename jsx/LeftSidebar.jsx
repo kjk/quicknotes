@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TagsList from './TagsList.jsx';
-import u from './utils.js';
+import * as u from'./utils.js';
 
 const showDeletedTag = true;
 

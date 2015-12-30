@@ -1,0 +1,25 @@
+{
+  "ecmaFeatures": {
+    "arrowFunctions": true,
+    "blockBindings": true,
+    "classes": true,
+    "destructuring": true,
+    "forOf": true,
+    "modules": true,
+    "restParams": true,
+    "spread": true,
+    "templateStrings": true,
+    "jsx": true
+  },
+  "rules": {
+    "semi": 2
+  },
+  "plugins": [
+    "eslint-plugin-react"
+  ],
+  "env": {
+    "browser": true,
+    "jquery": true,
+    "es6": true
+  }
+}

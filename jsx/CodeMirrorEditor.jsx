@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import CodeMirror from 'codemirror';
 
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
@@ -24,7 +25,7 @@ class CodeMirrorEditor extends React.Component {
   componentDidMount() {
     if (IS_MOBILE) return;
 
-    this.editor = CodeMirror.fromTextArea(React.findDOMNode(this.refs.editor), {
+    this.editor = CodeMirror.fromTextArea(ReactDOM.findDOMNode(this.refs.editor), {
       mode: this.props.mode,
       lineNumbers: this.props.lineNumbers,
       lineWrapping: true,

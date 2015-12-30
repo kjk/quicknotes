@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import action from './action.js';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
-import u from './utils.js';
+import * as action from './action.js';
+import * as u from './utils.js';
 
 class RecentNotes extends React.Component {
   constructor(props, context) {
