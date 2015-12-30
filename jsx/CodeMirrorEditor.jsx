@@ -1,7 +1,5 @@
-'use strict';
-
-var React = require('react');
-var CodeMirror = require('codemirror');
+import React from 'react';
+import CodeMirror from 'codemirror';
 
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
 // A slightly different implementation:

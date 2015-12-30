@@ -1,12 +1,8 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import action from './action.js';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var action = require('./action.js');
-
-class LogInLink extends React.Component {
+export default class LogInLink extends React.Component {
   handleSettings(e) {
     e.preventDefault();
     console.log("handleSettings");
@@ -66,5 +62,3 @@ class LogInLink extends React.Component {
     }
   }
 }
-
-module.exports = LogInLink;

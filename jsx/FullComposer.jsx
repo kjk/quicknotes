@@ -1,14 +1,10 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var CodeMirrorEditor = require('./CodeMirrorEditor.jsx');
-var u = require('./utils.js');
-var format = require('./format.js');
-var ni = require('./noteinfo.js');
-var _ = require('underscore');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import CodeMirrorEditor from './CodeMirrorEditor.jsx';
+import u from './utils.js';
+import format from './format.js';
+import ni from './noteinfo.js';
+import _ from 'underscore';
 
 function tagsToText(tags) {
   if (!tags) {

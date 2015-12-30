@@ -1,25 +1,22 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-var noteHashIDIdx = 0;
-var noteTitleIdx = 1;
-var noteSizeIdx = 2;
-var noteFlagsIdx = 3;
-var noteCreatedAtIdx = 4;
+const noteHashIDIdx = 0;
+const noteTitleIdx = 1;
+const noteSizeIdx = 2;
+const noteFlagsIdx = 3;
+const noteCreatedAtIdx = 4;
 //noteUpdatedAtIdx
-var noteTagsIdx = 5;
-var noteSnippetIdx = 6;
-var noteFormatIdx = 7;
-var noteCurrentVersionIDIdx = 8;
-var noteContentIdx = 9;
+const noteTagsIdx = 5;
+const noteSnippetIdx = 6;
+const noteFormatIdx = 7;
+const noteCurrentVersionIDIdx = 8;
+const noteContentIdx = 9;
 
-var flagStarredBit = 0;
-var flagDeletedBit = 1;
-var flagPublicBit = 2;
-var flagPartialBit = 3;
+const flagStarredBit = 0;
+const flagDeletedBit = 1;
+const flagPublicBit = 2;
+const flagPartialBit = 3;
 
 // note properties that can be compared for equality with ==
-var simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
+const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
 
 function arrEmpty(a) {
   return !a || (a.length === 0);

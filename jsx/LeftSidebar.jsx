@@ -1,15 +1,11 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import TagsList from './TagsList.jsx';
+import u from './utils.js';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
+const showDeletedTag = true;
 
-var TagsList = require('./TagsList.jsx');
-var u = require('./utils.js');
-
-var showDeletedTag = true;
-
-class LeftSidebar extends React.Component {
+export default class LeftSidebar extends React.Component {
   renderTagsList(sectionName, tagNames, tags) {
     if (tagNames.length === 0) {
       return;
@@ -67,5 +63,3 @@ class LeftSidebar extends React.Component {
     );
   }
 }
-
-module.exports = LeftSidebar;

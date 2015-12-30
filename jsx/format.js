@@ -3,14 +3,14 @@
 
 /* name <-> number mapping of note content formats */
 
-var Invalid = 0;
-var Text = 1;
-var Markdown = 2;
-var Html = 3;
+const Invalid = 0;
+const Text = 1;
+const Markdown = 2;
+const Html = 3;
 
-var formatNames = ["invalid", "text", "markdown", "html"];
+const formatNames = ["invalid", "text", "markdown", "html"];
 
-var Formats = ["text", "markdown"];
+const Formats = ["text", "markdown"];
 
 function numberToName(n) {
   if (n >= formatNames.length) {

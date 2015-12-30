@@ -1,9 +1,6 @@
-/* jshint -W097,-W117 */
-'use strict';
+import React from 'react';
 
-var React = require('react');
-
-class TagCount extends React.Component {
+export default class TagCount extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.click = this.click.bind(this);
@@ -15,10 +12,7 @@ class TagCount extends React.Component {
   }
 
   render() {
-    var cls = "tag";
-    if (this.props.isSelected) {
-      cls = "tag selected";
-    }
+    const cls = this.props.isSelected ? "tag selected" : "tag";
     return (
       <div className={cls} onClick={this.click}>
         <span className="tag-name">{this.props.displayName}</span>
@@ -27,5 +21,3 @@ class TagCount extends React.Component {
     );
   }
 }
-
-module.exports = TagCount;

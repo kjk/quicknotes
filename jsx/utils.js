@@ -1,7 +1,4 @@
-/* jshint -W097,-W117 */
-'use strict';
-
-var ni = require('./noteinfo.js');
+import ni from './noteinfo.js';
 
 function noteHasTag(note, tag) {
   var tags = ni.Tags(note);
