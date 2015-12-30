@@ -26,9 +26,7 @@ function tagsFromNotes(notes) {
     return {};
   }
 
-  for (var i = 0; i < notes.length; i++) {
-    var note = notes[i];
-
+  for (let note of notes) {
     // a deleted note won't show up under other tags or under "all" or "public"
     if (ni.IsDeleted(note)) {
       tags.__deleted += 1;
@@ -48,8 +46,7 @@ function tagsFromNotes(notes) {
 
     var noteTags = ni.Tags(note);
     if (noteTags !== null) {
-      for (var j = 0; j < noteTags.length; j++) {
-        var tag = noteTags[j];
+      for (let tag of noteTags) {
         u.dictInc(tags, tag);
       }
     }
@@ -82,12 +79,13 @@ export default class AppUser extends React.Component {
     this.saveNote = this.saveNote.bind(this);
     this.showSettings = this.showSettings.bind(this);
     this.startUnstarNote = this.startUnstarNote.bind(this);
-    var initialNotesJSON = props.initialNotesJSON;
-    var allNotes = [];
-    var selectedNotes = [];
-    var selectedTag = props.initialTag;
-    var loggedInUserHandle = "";
-    var tags = [];
+
+    const initialNotesJSON = props.initialNotesJSON;
+    let allNotes = [];
+    let selectedNotes = [];
+    let selectedTag = props.initialTag;
+    let loggedInUserHandle = "";
+    let tags = [];
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
       selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
@@ -111,7 +109,7 @@ export default class AppUser extends React.Component {
 
   handleTagSelected(tag) {
     //console.log("selected tag: ", tag);
-    var selectedNotes = u.filterNotesByTag(this.state.allNotes, tag);
+    const selectedNotes = u.filterNotesByTag(this.state.allNotes, tag);
     // TODO: update url with /t:${tag}
     this.setState({
       selectedNotes: selectedNotes,
@@ -120,14 +118,11 @@ export default class AppUser extends React.Component {
   }
 
   setNotes(json) {
-    var allNotes = json.Notes;
-    if (!allNotes) {
-      allNotes = [];
-    }
-    var tags = tagsFromNotes(allNotes);
+    const allNotes = json.Notes || [];
+    const tags = tagsFromNotes(allNotes);
     // TODO: if selectedTag is not valid, reset to __all
-    var selectedTag = this.state.selectedTag;
-    var selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
+    //var selectedTag = this.state.selectedTag;
+    const selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
     this.setState({
       allNotes: allNotes,
       selectedNotes: selectedNotes,
@@ -137,9 +132,9 @@ export default class AppUser extends React.Component {
   }
 
   updateNotes() {
-    var userHandle = this.props.notesUserHandle;
+    const userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
-    var uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
+    const uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
     //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       this.setNotes(json);
@@ -147,7 +142,7 @@ export default class AppUser extends React.Component {
   }
 
   standardKeyFilter(event) {
-    var tagName = (event.target || event.srcElement).tagName;
+    const tagName = (event.target || event.srcElement).tagName;
     return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
   }
 
@@ -198,7 +193,7 @@ export default class AppUser extends React.Component {
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
   delUndelNote(note) {
-    var data = {
+    const data = {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsDeleted(note)) {
@@ -219,7 +214,7 @@ export default class AppUser extends React.Component {
   }
 
   permanentDeleteNote(note) {
-    var data = {
+    const data = {
       noteIdHash: ni.IDStr(note)
     };
     $.post( "/api/permanentdeletenote.json", data, function() {
@@ -231,7 +226,7 @@ export default class AppUser extends React.Component {
   }
 
   makeNotePublicPrivate(note) {
-    var data = {
+    const data = {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsPublic(note)) {
@@ -252,7 +247,7 @@ export default class AppUser extends React.Component {
   }
 
   startUnstarNote(note) {
-    var data = {
+    const data = {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsStarred(note)) {
@@ -273,12 +268,12 @@ export default class AppUser extends React.Component {
   }
 
   createNewTextNote(s) {
-    var note = {
+    const note = {
       Content: s.trim(),
       Format: format.Text
     };
-    var noteJSON = JSON.stringify(note);
-    var data = {
+    const noteJSON = JSON.stringify(note);
+    const data = {
       noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
@@ -290,15 +285,15 @@ export default class AppUser extends React.Component {
   }
 
   saveNote(note) {
-    var newNote = ni.toNewNote(note);
+    const newNote = ni.toNewNote(note);
     newNote.Content = newNote.Content.trim();
-    var noteJSON = JSON.stringify(newNote);
+    const noteJSON = JSON.stringify(newNote);
     this.setState({
       noteBeingEdited: null
     });
     u.clearNewNote();
 
-    var data = {
+    const data = {
       noteJSON: noteJSON
     };
     $.post( "/api/createorupdatenote.json", data, function() {
@@ -331,8 +326,8 @@ export default class AppUser extends React.Component {
   }
 
   editNote(note) {
-    var userHandle = this.props.notesUserHandle;
-    var uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
+    const userHandle = this.props.notesUserHandle;
+    const uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
     console.log("AppUser.editNote: " + ni.IDStr(note) + " uri: " + uri);
 
     // TODO: show an error message on error
@@ -349,17 +344,20 @@ export default class AppUser extends React.Component {
         <FullComposer
           note={this.state.noteBeingEdited}
           saveNoteCb={this.saveNote}
-          cancelNoteEditCb={this.cancelNoteEdit}/>
+          cancelNoteEditCb={this.cancelNoteEdit}
+        />
       );
     }
   }
 
   renderSearchResults() {
     if (this.state.searchResults) {
-      return <SearchResults
-        searchResults={this.state.searchResults}
-        searchResultSelectedCb={this.handleSearchResultSelected}
-       />;
+      return (
+        <SearchResults
+          searchResults={this.state.searchResults}
+          searchResultSelectedCb={this.handleSearchResultSelected}
+        />
+      );
     }
   }
 
@@ -368,7 +366,7 @@ export default class AppUser extends React.Component {
       console.log("handleStartNewNote: a note is already being edited");
       return;
     }
-    var note = {
+    const note = {
       Content: "",
       Format: format.Text
     };
@@ -409,18 +407,17 @@ export default class AppUser extends React.Component {
     if (gSearchDelayTimerID) {
       clearTimeout(gSearchDelayTimerID);
     }
-    var self = this;
-    gSearchDelayTimerID = setTimeout(function() {
+    gSearchDelayTimerID = setTimeout(() => {
       console.log("starting search for " + searchTerm);
-      self.startSearch(self.props.notesUserHandle, searchTerm);
+      this.startSearch(self.props.notesUserHandle, searchTerm);
     }, 300);
   }
 
   handleSearchResultSelected(noteIDStr) {
     console.log("search note selected: " + noteIDStr);
     // TODO: probably should display in-line
-    var url = "/n/" + noteIDStr;
-    var win = window.open(url, '_blank');
+    const url = "/n/" + noteIDStr;
+    const win = window.open(url, '_blank');
     win.focus();
     // TODO: clear search field and focus it
     this.handleSearchTermChanged(""); // hide search results
@@ -434,9 +431,9 @@ export default class AppUser extends React.Component {
   }
 
   render() {
-    var compact = false;
-    var isLoggedIn = this.state.loggedInUserHandle !== "";
-    var myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
+    const compact = false;
+    const isLoggedIn = this.state.loggedInUserHandle !== "";
+    const myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
 
     return (
       <div>
@@ -473,8 +470,8 @@ export default class AppUser extends React.Component {
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s) {
-  var parts = s.split("/t:");
-  var res = _.filter(parts, function(s) { return s !== ""; });
+  const parts = s.split("/t:");
+  const res = parts.filter((s) => s !== "");
   if (res.length === 0) {
     return ["__all"];
   }
@@ -483,8 +480,8 @@ function tagsFromRoute(s) {
 
 function appUserStart() {
   //console.log("gNotesUserHandle: ", gNotesUserHandle);
-  var initialTags = tagsFromRoute(Router.getHash());
-  var initialTag = initialTags[0];
+  const initialTags = tagsFromRoute(Router.getHash());
+  const initialTag = initialTags[0];
   //console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
   //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
 

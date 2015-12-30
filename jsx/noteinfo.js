@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 const noteHashIDIdx = 0;
 const noteTitleIdx = 1;
 const noteSizeIdx = 2;
