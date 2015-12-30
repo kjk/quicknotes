@@ -10,7 +10,7 @@ export default class TagsList extends React.Component {
     const selectedTag=this.props.selectedTag;
     const onTagSelected=this.props.onTagSelected;
 
-    const tagEls = tagNames.map(function (tagName) {
+    const tagEls = tagNames.map((tagName) => {
       const count = tags[tagName];
       const displayName = u.tagNameToDisplayName(tagName);
       const isSelected = (tagName == selectedTag);
