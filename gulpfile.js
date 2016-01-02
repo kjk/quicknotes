@@ -11,15 +11,11 @@ var browserify = require('browserify');
 var exorcist = require('exorcist');
 var gulp = require('gulp');
 var prefix = require('gulp-autoprefixer');
-var react = require('gulp-react');
 var rename = require('gulp-rename');
 var sass = require('gulp-sass');
-var streamify = require('gulp-streamify');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var buffer = require('vinyl-buffer')
 var source = require('vinyl-source-stream');
-var watchify = require('watchify');
 
 gulp.task('copy_css1', function() {
   return gulp.src("./node_modules/codemirror/lib/codemirror.css")
