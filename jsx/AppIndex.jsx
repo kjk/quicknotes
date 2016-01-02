@@ -63,13 +63,12 @@ class AppIndex extends React.Component {
   }
 
   componentDidMount() {
-    this.cidShowSettings = action.onShowSettings(this.showSettings);
-    this.cidHideSettings = action.onHideSettings(this.hideSettings);
+    action.onShowSettings(this.showSettings, this);
+    action.onHideSettings(this.hideSettings, this);
   }
 
   componentWillUnmount() {
-    action.onShowSettings(this.cidShowSettings);
-    action.onHideSettings(this.cidHideSettings);
+    action.offAllForOwner(this);
   }
 
   renderSettings() {

@@ -175,9 +175,9 @@ export default class AppUser extends React.Component {
     keymaster('ctrl+e', u.focusNewNote);
     keymaster('esc', this.escPressed);
 
-    this.cidShowSettings = action.onShowSettings(this.showSettings);
-    this.cidHideSettings = action.onHideSettings(this.hideSettings);
-    this.cidTagSelected = action.onTagSelected(this.handleTagSelected);
+    action.onShowSettings(this.showSettings, this);
+    action.onHideSettings(this.hideSettings, this);
+    action.onTagSelected(this.handleTagSelected, this);
   }
 
   componentWillUnmount() {
@@ -185,9 +185,7 @@ export default class AppUser extends React.Component {
     key.unbind('ctrl+e', u.focusNewNote);
     key.unbind('esc', this.escPressed);
 
-    action.offShowSettings(this.cidShowSettings);
-    action.offHideSettings(this.cidHideSettings);
-    action.offTagSelected(this.cidTagSelected);
+    action.offAllForOwner(this);
   }
 
   // TODO: after delete/undelete should show a message at the top
