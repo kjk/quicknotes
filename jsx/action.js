@@ -34,10 +34,10 @@ function broadcast(actionCmd) {
 
 // subscribe to be notified about an action.
 // returns an id that can be used to unsubscribe with off()
-export function on(actionCmd, cb) {
+export function on(actionCmd, cb, owner) {
   currCid++;
   const callbacks = actionCallbacks[actionCmd];
-  const el = [cb, currCid];
+  const el = [cb, currCid, owner];
   if (!callbacks) {
     actionCallbacks[actionCmd] = [el];
   } else {
@@ -46,18 +46,25 @@ export function on(actionCmd, cb) {
   return currCid;
 }
 
-export function off(actionCmd, cbId) {
+export function off(actionCmd, cbIdOrOwner) {
   const callbacks = actionCallbacks[actionCmd];
   if (callbacks && callbacks.length > 0) {
     const n = callbacks.length;
     for (let i = 0; i < n; i++) {
-      if (callbacks[i][1] === cbId) {
+      const cb = callbacks[i];
+      if (cb[1] === cbId || cb[2] === cbIdOrOwner) {
         callbacks.splice(i, 1);
         return;
       }
     }
   }
-  console.log("action.off: didn't find callback id", cbId, "for action", actionCmd);
+  //console.log("action.off: didn't find callback id", cbId, "for action", actionCmd);
+}
+
+export function offAllForOwner(owner) {
+  for (let i = 0; i < lastIdx; i++) {
+    off(i, owner);
+  }
 }
 
 /* actions specific to an app */
@@ -71,34 +78,22 @@ export function showSettings(name) {
   broadcast(showSettingsCmd, name);
 }
 
-export function onShowSettings(cb) {
-  return on(showSettingsCmd, cb);
-}
-
-export function offShowSettings(cbId) {
-  off(showSettingsCmd, cbId);
+export function onShowSettings(cb, owner) {
+  return on(showSettingsCmd, cb, owner);
 }
 
 export function hideSettings(view) {
   broadcast(hideSettingsCmd, view);
 }
 
-export function onHideSettings(cb) {
-  return on(hideSettingsCmd, cb);
-}
-
-export function offHideSettings(cbId) {
-  off(hideSettingsCmd, cbId);
+export function onHideSettings(cb, owner) {
+  return on(hideSettingsCmd, cb, owner);
 }
 
 export function tagSelected(tag) {
   broadcast(tagSelectedCmd, tag);
 }
 
-export function onTagSelected(cb) {
-  return on(tagSelectedCmd, cb);
-}
-
-export function offTagSelected(cbId) {
-  off(tagSelectedCmd, cbId);
+export function onTagSelected(cb, owner) {
+  return on(tagSelectedCmd, cb, owner);
 }
