@@ -16,14 +16,14 @@ let currCid = 0;
 function broadcast(actionCmd) {
   const callbacks = actionCallbacks[actionCmd];
   if (!callbacks || callbacks.length === 0) {
-    console.log("action.broadcast: no callback for action", actionCmd);
+    console.log('action.broadcast: no callback for action', actionCmd);
     return;
   }
 
   const args = Array.prototype.slice.call(arguments, 1);
   for (let cbInfo of callbacks) {
     const cb = cbInfo[0];
-    console.log("action.broadcast: calling callback for action", actionCmd, "args:", args);
+    console.log('action.broadcast: calling callback for action', actionCmd, 'args:', args);
     if (args.length > 0) {
       cb.apply(null, args);
     } else {
@@ -70,9 +70,9 @@ export function offAllForOwner(owner) {
 /* actions specific to an app */
 
 // index in actionCallbacks array for a given action
-const showSettingsCmd = "showSettings";
-const hideSettingsCmd = "hideSettings";
-const tagSelectedCmd = "tagSelected";
+const showSettingsCmd = 'showSettings';
+const hideSettingsCmd = 'hideSettings';
+const tagSelectedCmd = 'tagSelected';
 
 export function showSettings(name) {
   broadcast(showSettingsCmd, name);

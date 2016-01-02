@@ -9,7 +9,7 @@ export default class Editor extends React.Component {
     const middle = dy / 2;
 
     this.state = {
-      top: middle + "px"
+      top: middle + 'px'
     };
   }
 
@@ -18,37 +18,53 @@ export default class Editor extends React.Component {
       top: this.state.top
     };
 
-    return <div style={style1} id="editor-wrapper"></div>;
+    return <div style={ style1 } id="editor-wrapper"></div>;
   }
 
   render2() {
     return (
       <div id="editor-wrapper">
         <div id="editor-title-and-tags">
-          <input id="editor-title" type="text" size="128" placeholder="title"/>
-          <input id="editor-tags" type="text" size="128" placeholder="tags"/>
+          <input id="editor-title"
+            type="text"
+            size="128"
+            placeholder="title" />
+          <input id="editor-tags"
+            type="text"
+            size="128"
+            placeholder="tags" />
         </div>
-
         <div id="editor-content">
           content
         </div>
-
         <div id="editor-actions">
-          <button className="btn btn-primary">Save</button>
-          <button className="btn btn-primary">Cancel</button>
+          <button className="btn btn-primary">
+            Save
+          </button>
+          <button className="btn btn-primary">
+            Cancel
+          </button>
           <span>Format:</span>
           <select value="text">
-            <option>text</option>
-            <option>markdown</option>
+            <option>
+              text
+            </option>
+            <option>
+              markdown
+            </option>
           </select>
           <span>Type:</span>
           <select value="text">
-            <option>private</option>
-            <option>public</option>
+            <option>
+              private
+            </option>
+            <option>
+              public
+            </option>
           </select>
         </div>
       </div>
-    );
+      );
   }
 }
 
@@ -59,7 +75,7 @@ class AppEditor extends React.Component {
         <Overlay></Overlay>
         <Editor></Editor>
       </div>
-    );
+      );
   }
 }
 

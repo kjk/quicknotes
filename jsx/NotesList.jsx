@@ -1,7 +1,7 @@
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Note from'./Note.jsx';
+import Note from './Note.jsx';
 import * as ni from './noteinfo.js';
 
 const maxInitialNotes = 50;
@@ -42,7 +42,7 @@ export default class NotesList extends React.Component {
     const top = node.scrollTop;
     const dy = node.scrollHeight;
     // a heuristic, maybe push it down
-    const addMore = top > dy/2;
+    const addMore = top > dy / 2;
     if (!addMore) {
       return;
     }
@@ -63,23 +63,21 @@ export default class NotesList extends React.Component {
 
   render() {
     return (
-      <div id="notes-list" onScroll={this.handleScroll}>
+      <div id="notes-list" onScroll={ this.handleScroll }>
         <div className="wrapper">
-          {this.state.notes.map((note) => {
-            return <Note
-              compact={this.props.compact}
-              note={note}
-              key={ni.IDStr(note)}
-              myNotes={this.props.myNotes}
-              permanentDeleteNoteCb={this.props.permanentDeleteNoteCb}
-              delUndelNoteCb={this.props.delUndelNoteCb}
-              makeNotePublicPrivateCb={this.props.makeNotePublicPrivateCb}
-              startUnstarNoteCb={this.props.startUnstarNoteCb}
-              editCb={this.props.editCb}
-            />;
-          })}
+          { this.state.notes.map((note) => {
+              return <Note compact={ this.props.compact }
+                       note={ note }
+                       key={ ni.IDStr(note) }
+                       myNotes={ this.props.myNotes }
+                       permanentDeleteNoteCb={ this.props.permanentDeleteNoteCb }
+                       delUndelNoteCb={ this.props.delUndelNoteCb }
+                       makeNotePublicPrivateCb={ this.props.makeNotePublicPrivateCb }
+                       startUnstarNoteCb={ this.props.startUnstarNoteCb }
+                       editCb={ this.props.editCb } />;
+            }) }
         </div>
       </div>
-    );
+      );
   }
 }

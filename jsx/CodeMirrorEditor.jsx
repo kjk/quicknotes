@@ -7,13 +7,13 @@ import CodeMirror from 'codemirror';
 // https://github.com/ForbesLindesay/react-code-mirror/blob/master/index.js
 // https://github.com/joelburget/react-live-editor/blob/master/code-mirror-editor.jsx
 const IS_MOBILE = (
-  navigator.userAgent.match(/Android/i) ||
-    navigator.userAgent.match(/webOS/i) ||
-    navigator.userAgent.match(/iPhone/i) ||
-    navigator.userAgent.match(/iPad/i) ||
-    navigator.userAgent.match(/iPod/i) ||
-    navigator.userAgent.match(/BlackBerry/i) ||
-    navigator.userAgent.match(/Windows Phone/i)
+navigator.userAgent.match(/Android/i) ||
+  navigator.userAgent.match(/webOS/i) ||
+  navigator.userAgent.match(/iPhone/i) ||
+  navigator.userAgent.match(/iPad/i) ||
+  navigator.userAgent.match(/iPod/i) ||
+  navigator.userAgent.match(/BlackBerry/i) ||
+  navigator.userAgent.match(/Windows Phone/i)
 );
 
 export default class CodeMirrorEditor extends React.Component {
@@ -29,7 +29,7 @@ export default class CodeMirrorEditor extends React.Component {
       mode: this.props.mode,
       lineNumbers: this.props.lineNumbers,
       lineWrapping: true,
-      smartIndent: false,  // javascript mode does bad things with jsx indents
+      smartIndent: false, // javascript mode does bad things with jsx indents
       matchBrackets: true,
       theme: 'solarized-light',
       readOnly: this.props.readOnly
@@ -54,17 +54,14 @@ export default class CodeMirrorEditor extends React.Component {
 
     if (IS_MOBILE) {
       return (
-        <pre className={this.props.className} style={{overflow: 'scroll'}}>{this.props.codeText}</pre>
-      );
+        <pre className={ this.props.className } style={ {  overflow: 'scroll'} }>{ this.props.codeText }</pre>
+        );
     } else {
       return (
-        <div className={this.props.className}>
-          <textarea
-            ref="editor"
-            className="full-composer-text-area"
-            defaultValue={this.props.codeText} />
+        <div className={ this.props.className }>
+          <textarea ref="editor" className="full-composer-text-area" defaultValue={ this.props.codeText } />
         </div>
-      );
+        );
     }
   }
 }

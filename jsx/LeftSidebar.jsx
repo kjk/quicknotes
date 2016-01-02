@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TagsList from './TagsList.jsx';
-import * as u from'./utils.js';
+import * as u from './utils.js';
 
 const showDeletedTag = true;
 
@@ -12,14 +12,12 @@ export default class LeftSidebar extends React.Component {
     }
 
     return (
-      <TagsList
-        sectionName={sectionName}
-        tagNames={tagNames}
-        tags={tags}
-        selectedTag={this.props.selectedTag}
-        onTagSelected={this.props.onTagSelected}
-      />
-    );
+      <TagsList sectionName={ sectionName }
+        tagNames={ tagNames }
+        tags={ tags }
+        selectedTag={ this.props.selectedTag }
+        onTagSelected={ this.props.onTagSelected } />
+      );
   }
 
   render() {
@@ -28,7 +26,7 @@ export default class LeftSidebar extends React.Component {
       return (
         <div id="leftSidebar">
         </div>
-      );
+        );
     }
     let tagNames = [];
     let specialTagNames = [];
@@ -43,23 +41,23 @@ export default class LeftSidebar extends React.Component {
     if (this.props.myNotes) {
       // add special tags: all, public, deleted (in reverse order)
       if (showDeletedTag) {
-        specialTagNames.unshift("__deleted");
+        specialTagNames.unshift('__deleted');
       }
-      specialTagNames.unshift("__private");
-      specialTagNames.unshift("__public");
-      specialTagNames.unshift("__starred");
-      specialTagNames.unshift("__all");
+      specialTagNames.unshift('__private');
+      specialTagNames.unshift('__public');
+      specialTagNames.unshift('__starred');
+      specialTagNames.unshift('__all');
     } else {
-      tagNames.unshift("__all");
+      tagNames.unshift('__all');
     }
 
-    const specialTagsList = this.renderTagsList("SPECIAL", specialTagNames, tags);
-    const tagsList = this.renderTagsList("TAGS", tagNames, tags);
+    const specialTagsList = this.renderTagsList('SPECIAL', specialTagNames, tags);
+    const tagsList = this.renderTagsList('TAGS', tagNames, tags);
     return (
       <div id="left-sidebar">
-        {specialTagsList}
-        {tagsList}
+        { specialTagsList }
+        { tagsList }
       </div>
-    );
+      );
   }
 }

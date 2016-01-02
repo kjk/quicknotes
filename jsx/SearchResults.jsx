@@ -30,10 +30,13 @@ const NoResults = (props) => {
   return (
     <div id="search-results">
       <div className="box">
-        <p>No results for {props.term}</p>
+        <p>
+          No results for
+          { props.term }
+        </p>
       </div>
     </div>
-  );
+    );
 };
 
 export default class SearchResults extends React.Component {
@@ -49,25 +52,22 @@ export default class SearchResults extends React.Component {
 
   renderResultItem(noteID, i, n) {
     // Maybe: show line number
-    const k = noteID + "-" + i.Type + "-" + i.LineNo + "-" + n;
+    const k = noteID + '-' + i.Type + '-' + i.LineNo + '-' + n;
     //console.log(k);
-    const cls = i.Type == TypeTitle ? "search-result-title-item" : "search-result-item";
-    let lineNo = i.LineNo + ":";
+    const cls = i.Type == TypeTitle ? 'search-result-title-item' : 'search-result-item';
+    let lineNo = i.LineNo + ':';
     if (i.LineNo == -1) {
-      lineNo = "";
+      lineNo = '';
     }
     if (!showLineNumbers) {
-      lineNo = "";
+      lineNo = '';
     }
     return (
-      <div
-        key={k}
-        className={cls}
-        >
-        <span className="line-no">{lineNo}</span>
-        <span dangerouslySetInnerHTML={{__html: i.HTML}}></span>
+      <div key={ k } className={ cls }>
+        <span className="line-no">{ lineNo }</span>
+        <span dangerouslySetInnerHTML={ {  __html: i.HTML} }></span>
       </div>
-    );
+      );
   }
 
   renderResultNote(o) {
@@ -79,13 +79,10 @@ export default class SearchResults extends React.Component {
       return this.renderResultItem(noteID, i, n);
     });
     return (
-      <div
-        key={noteID}
-        className="search-result-note"
-        onClick={cb}>
-        {children}
+      <div key={ noteID } className="search-result-note" onClick={ cb }>
+        { children }
       </div>
-    );
+      );
   }
 
   render() {
@@ -93,7 +90,7 @@ export default class SearchResults extends React.Component {
     const term = searchResults.Term;
     const results = searchResults.Results;
     if (!results || (results.length === 0)) {
-      return <NoResults term={term} />;
+      return <NoResults term={ term } />;
     }
 
     const resultsHTML = results.map((o) => {
@@ -103,10 +100,10 @@ export default class SearchResults extends React.Component {
     return (
       <div id="search-results">
         <div className="search-results-list">
-          {resultsHTML}
+          { resultsHTML }
         </div>
       </div>
-    );
+      );
   }
 }
 
