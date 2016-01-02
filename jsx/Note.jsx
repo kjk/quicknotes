@@ -22,7 +22,7 @@ class NoteBody extends React.Component {
 
   expand() {
     const note = this.state.note;
-    console.log("expand note", ni.IDStr(note));
+    console.log('expand note', ni.IDStr(note));
     ni.Expand(note);
     const content = ni.Content(note, this.onContent);
     // if has content, change the state immediately.
@@ -38,7 +38,7 @@ class NoteBody extends React.Component {
 
   collapse() {
     const note = this.state.note;
-    console.log("collapse note", ni.IDStr(note));
+    console.log('collapse note', ni.IDStr(note));
     ni.Collapse(note);
     this.setState({
       note: note
@@ -53,17 +53,17 @@ class NoteBody extends React.Component {
 
     if (ni.IsCollapsed(note)) {
       return (
-        <a href="#" className="expand" onClick={this.expand}>Expand</a>
-      );
+        <a href="#" className="expand" onClick={ this.expand }>Expand</a>
+        );
     }
 
     return (
-      <a href="#" className="collapse" onClick={this.collapse}>Collapse</a>
-    );
+      <a href="#" className="collapse" onClick={ this.collapse }>Collapse</a>
+      );
   }
 
   onContent(note) {
-    console.log("NoteBody.onContent");
+    console.log('NoteBody.onContent');
     this.setState({
       note: note
     });
@@ -71,9 +71,9 @@ class NoteBody extends React.Component {
 
   renderContent(note) {
     if (ni.IsCollapsed(note)) {
-      return <pre className="note-body">{ni.Snippet(note)}</pre>;
+      return <pre className="note-body">{ ni.Snippet(note) }</pre>;
     }
-    return <pre className="note-body">{ni.Content(note, this.onContent)}</pre>;
+    return <pre className="note-body">{ ni.Content(note, this.onContent) }</pre>;
   }
 
   render() {
@@ -83,11 +83,11 @@ class NoteBody extends React.Component {
     const note = this.state.note;
     //console.log("NoteBody.render() note: ", ni.IDStr(note), "collapsed:", ni.IsCollapsed(note));
     return (
-        <div className="note-content">
-          {this.renderContent(note)}
-          {this.renderCollapseOrExpand(note)}
-        </div>
-    );
+      <div className="note-content">
+        { this.renderContent(note) }
+        { this.renderCollapseOrExpand(note) }
+      </div>
+      );
   }
 }
 
@@ -110,10 +110,10 @@ export default class Note extends React.Component {
 
   renderTitle(note) {
     const title = ni.Title(note);
-    if (title !== "") {
+    if (title !== '') {
       return (
-        <span className="note-title">{title}</span>
-      );
+        <span className="note-title">{ title }</span>
+        );
     }
   }
 
@@ -127,15 +127,15 @@ export default class Note extends React.Component {
       return;
     }
     const tagEls = tags.map((tag) => {
-      tag = "#" + tag;
+      tag = '#' + tag;
       return (
-        <span className="note-tag" key={tag} onClick={this.handleTagClicked}>{tag}</span>
-      );
+        <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
+        );
     });
 
     return (
-      <span className="note-tags">{tagEls}</span>
-    );
+      <span className="note-tags">{ tagEls }</span>
+      );
   }
 
   mouseEnter(e) {
@@ -162,67 +162,72 @@ export default class Note extends React.Component {
 
   handleMakePublicPrivate(e) {
     const note = this.props.note;
-    console.log("handleMakePublicPrivate, note.IsPublic: ", ni.IsPublic(note));
+    console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
     this.props.makeNotePublicPrivateCb(note);
   }
 
   renderTrashUntrash(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a className="note-action" href="#" onClick={this.handleDelUndel} title="Undelete">
-          <i className="fa fa-undo"></i>
-        </a>
-      );
+        <a className="note-action"
+          href="#"
+          onClick={ this.handleDelUndel }
+          title="Undelete"><i className="fa fa-undo"></i></a>
+        );
     }
     return (
-      <a className="note-action" href="#" onClick={this.handleDelUndel} title="Move to Trash">
-        <i className="fa fa-trash-o"></i>
-      </a>
-    );
+      <a className="note-action"
+        href="#"
+        onClick={ this.handleDelUndel }
+        title="Move to Trash"><i className="fa fa-trash-o"></i></a>
+      );
   }
 
   renderPermanentDelete(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a className="note-action" href="#" onClick={this.handlePermanentDelete} title="Delete permanently">
-          <i className="fa fa-trash-o"></i>
-        </a>
-      );
+        <a className="note-action"
+          href="#"
+          onClick={ this.handlePermanentDelete }
+          title="Delete permanently"><i className="fa fa-trash-o"></i></a>
+        );
     }
   }
 
   handleEdit(e) {
-    console.log("Note.handleEdit");
+    console.log('Note.handleEdit');
     this.props.editCb(this.props.note);
   }
 
   renderEdit(note) {
     if (!ni.IsDeleted(note)) {
       return (
-        <a className="note-action" href="#" onClick={this.handleEdit} title="Edit note">
-          <i className="fa fa-pencil"></i>
-        </a>
-      );
+        <a className="note-action"
+          href="#"
+          onClick={ this.handleEdit }
+          title="Edit note"><i className="fa fa-pencil"></i></a>
+        );
     }
   }
 
   renderViewLink(note) {
     let title = ni.Title(note);
     if (title.length > 0) {
-      title = "-" + urlifyTitle(title);
+      title = '-' + urlifyTitle(title);
     }
-    const url = "/n/" + ni.IDStr(note) + title;
+    const url = '/n/' + ni.IDStr(note) + title;
     return (
-      <a className="note-action" href={url} target="_blank" title="View note">
-        <i className="fa fa-external-link"></i>
-      </a>
-    );
+      <a className="note-action"
+        href={ url }
+        target="_blank"
+        title="View note"><i className="fa fa-external-link"></i></a>
+      );
   }
 
   renderSize(note) {
     return (
-      <span className="note-size">{ni.HumanSize(note)}</span>
-    );
+      <span className="note-size">{ ni.HumanSize(note) }</span>
+      );
   }
 
   renderMakePublicPrivate(note) {
@@ -231,22 +236,24 @@ export default class Note extends React.Component {
     }
     if (ni.IsPublic(note)) {
       return (
-        <a className="note-action" href="#" onClick={this.handleMakePublicPrivate} title="Make private">
-          <i className="fa fa-unlock"></i>
-        </a>
-      );
+        <a className="note-action"
+          href="#"
+          onClick={ this.handleMakePublicPrivate }
+          title="Make private"><i className="fa fa-unlock"></i></a>
+        );
     } else {
       return (
-        <a className="note-action" href="#" onClick={this.handleMakePublicPrivate} title="Make public">
-          <i className="fa fa-lock"></i>
-        </a>
-      );
+        <a className="note-action"
+          href="#"
+          onClick={ this.handleMakePublicPrivate }
+          title="Make public"><i className="fa fa-lock"></i></a>
+        );
     }
   }
 
   handleStarUnstarNote(e) {
     const note = this.props.note;
-    console.log("handleStarUnstarNote, note.IsStarred: ", ni.IsStarred(note));
+    console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     this.props.startUnstarNoteCb(note);
   }
 
@@ -258,16 +265,18 @@ export default class Note extends React.Component {
     const isStarred = ni.IsStarred(note);
     if (isStarred) {
       return (
-        <a className="note-action note-star note-starred" href="#" onClick={this.handleStarUnstarNote} title="Unstar">
-          <i className="fa fa-star"></i>
-        </a>
-      );
+        <a className="note-action note-star note-starred"
+          href="#"
+          onClick={ this.handleStarUnstarNote }
+          title="Unstar"><i className="fa fa-star"></i></a>
+        );
     } else {
       return (
-        <a className="note-action note-star" href="#" onClick={this.handleStarUnstarNote} title="Star">
-          <i className="fa fa-star-o"></i>
-        </a>
-      );
+        <a className="note-action note-star"
+          href="#"
+          onClick={ this.handleStarUnstarNote }
+          title="Star"><i className="fa fa-star-o"></i></a>
+        );
     }
   }
 
@@ -275,13 +284,13 @@ export default class Note extends React.Component {
     if (this.state.showActions) {
       return (
         <div className="note-actions">
-          {this.renderTrashUntrash(note)}
-          {this.renderPermanentDelete(note)}
-          {this.renderMakePublicPrivate(note)}
-          {this.renderEdit(note)}
-          {this.renderViewLink(note)}
+          { this.renderTrashUntrash(note) }
+          { this.renderPermanentDelete(note) }
+          { this.renderMakePublicPrivate(note) }
+          { this.renderEdit(note) }
+          { this.renderViewLink(note) }
         </div>
-      );
+        );
     }
   }
 
@@ -289,13 +298,13 @@ export default class Note extends React.Component {
     if (this.state.showActions) {
       return (
         <div className="note-actions">
-          {this.renderViewLink(note)}
+          { this.renderViewLink(note) }
         </div>
-      );
+        );
     }
     return (
       <div className="note-actions"></div>
-    );
+      );
   }
 
   renderActions(note) {
@@ -309,15 +318,15 @@ export default class Note extends React.Component {
   render() {
     const note = this.props.note;
     return (
-      <div className="note" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
+      <div className="note" onMouseEnter={ this.mouseEnter } onMouseLeave={ this.mouseLeave }>
         <div className="note-header">
-          {this.renderStarUnstar(note)}
-          {this.renderTitle(note)}
-          {this.renderTags(ni.Tags(note))}
-          {this.renderActions(note)}
+          { this.renderStarUnstar(note) }
+          { this.renderTitle(note) }
+          { this.renderTags(ni.Tags(note)) }
+          { this.renderActions(note) }
         </div>
-        <NoteBody compact={this.props.compact} note={note} />
+        <NoteBody compact={ this.props.compact } note={ note } />
       </div>
-    );
+      );
   }
 }

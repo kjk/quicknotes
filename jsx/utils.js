@@ -45,11 +45,11 @@ function getSpecialNotes(notes) {
 }
 
 const specialTagNames = {
-  __all: "all",
-  __public: "public",
-  __private: "private",
-  __deleted: "trash",
-  __starred: "starred"
+  __all: 'all',
+  __public: 'public',
+  __private: 'private',
+  __deleted: 'trash',
+  __starred: 'starred'
 };
 
 export function isSpecialTag(tag) {
@@ -92,17 +92,17 @@ export function dictInc(d, key) {
 
 // focus "search" input area at the top of the page
 export function focusSearch() {
-  $("#search").focus();
+  $('#search').focus();
 }
 
 export function focusNewNote() {
-  $("#Composer").focus();
+  $('#Composer').focus();
 }
 
 // TODO: should do it the react way
 export function clearNewNote() {
   // TODO: this doesn't work
-  $("Composer").val(null);
+  $('Composer').val(null);
 }
 // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
 export function deepCloneObject(o) {

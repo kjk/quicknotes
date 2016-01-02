@@ -128,25 +128,25 @@ function getContent(note, cb) {
   const noteID = getIDStr(note);
   const res = note[noteContentIdx];
   if (res) {
-    console.log("getContent: already has it for note", noteID);
+    console.log('getContent: already has it for note', noteID);
     return res;
   }
-  console.log("getContent: starting to fetch content for note", noteID);
-  var uri = "/api/getnotecompact.json?id=" + encodeURIComponent(noteID);
+  console.log('getContent: starting to fetch content for note', noteID);
+  var uri = '/api/getnotecompact.json?id=' + encodeURIComponent(noteID);
   //console.log("updateNotes: uri=", uri);
   $.get(uri, function(json) {
-    console.log("getContent: json=", json);
+    console.log('getContent: json=', json);
     var content = json[noteContentIdx];
-    console.log("getContent: content=", content);
+    console.log('getContent: content=', content);
     setContent(note, content);
     cb(note);
   });
-  return "";
+  return '';
 }
 
 function getHumanSize(note) {
   // TODO: write me
-  return "" + getSize(note) + " bytes";
+  return '' + getSize(note) + ' bytes';
 }
 
 function isFlagSet(note, nBit) {

@@ -4,15 +4,15 @@ import $ from 'jquery';
 import * as action from './action.js';
 
 const allThemes = [
-  "light",
-   "dark"
+  'light',
+  'dark'
 ];
 
 
 const allLayouts = [
-  "default",
-  "grid",
-  "barebones"
+  'default',
+  'grid',
+  'barebones'
 ];
 
 /*
@@ -29,46 +29,54 @@ export default class Settings extends React.Component {
     this.handleThemeChanged = this.handleThemeChanged.bind(this);
 
     this.state = {
-      theme: "light",
-      layout: "default"
+      theme: 'light',
+      layout: 'default'
     };
   }
 
   handleThemeChanged(e) {
     const theme = e.target.value;
-    console.log("handleThemeChanged: ", theme);
+    console.log('handleThemeChanged: ', theme);
     this.setState({
       theme: theme
     });
-    $("body").removeClass();
-    $("body").addClass("theme-" + theme);
+    $('body').removeClass();
+    $('body').addClass('theme-' + theme);
   }
 
   handleLayoutChanged(e) {
     const layout = e.target.value;
-    console.log("handleLayoutChanged: ", layout);
+    console.log('handleLayoutChanged: ', layout);
     this.setState({
       layout: layout
     });
-    $("body").attr("data-spacing", layout);
+    $('body').attr('data-spacing', layout);
   }
 
   renderThemesSelect(themes, selected) {
     const options = themes.map(function(theme) {
-      return <option key={theme}>{theme}</option>;
+      return <option key={ theme }>
+               { theme }
+             </option>;
     });
     return (
-      <select value={selected} onChange={this.handleThemeChanged}>{options}</select>
-    );
+      <select value={ selected } onChange={ this.handleThemeChanged }>
+        { options }
+      </select>
+      );
   }
 
   renderLayoutsSelect(layouts, selected) {
     const options = layouts.map(function(layout) {
-      return <option key={layout}>{layout}</option>;
+      return <option key={ layout }>
+               { layout }
+             </option>;
     });
     return (
-      <select value={selected} onChange={this.handleLayoutChanged}>{options}</select>
-    );
+      <select value={ selected } onChange={ this.handleLayoutChanged }>
+        { options }
+      </select>
+      );
   }
 
   handleOk(e) {
@@ -87,16 +95,22 @@ export default class Settings extends React.Component {
     return (
       <div id="settings">
         <div className="settings-div">
-          Layout: {layouts}
+          Layout:
+          { layouts }
         </div>
         <div className="settings-div">
-          Theme: {themes}
+          Theme:
+          { themes }
         </div>
         <div className="settings-buttons">
-          <button onClick={this.handleOk}>Ok</button>
-          <button onClick={this.handleCancel}>Cancel</button>
+          <button onClick={ this.handleOk }>
+            Ok
+          </button>
+          <button onClick={ this.handleCancel }>
+            Cancel
+          </button>
         </div>
       </div>
-    );
+      );
   }
 }

@@ -14,8 +14,8 @@ export default class Top extends React.Component {
     if (e.keyCode == 27) {
       e.preventDefault();
       e.target.blur();
-      e.target.value = "";
-      this.props.searchTermChangedCb("");
+      e.target.value = '';
+      this.props.searchTermChangedCb('');
     }
   }
 
@@ -25,23 +25,26 @@ export default class Top extends React.Component {
 
   renderSearchInput() {
     const userHandle = this.props.notesUserHandle;
-    if (userHandle === "") {
+    if (userHandle === '') {
       return;
     }
-    let placeholder = "Search notes by " + userHandle + " (Ctrl-F)";
+    let placeholder = 'Search notes by ' + userHandle + ' (Ctrl-F)';
     if (userHandle == gLoggedInUserHandle) {
-      placeholder = "Search your notes (Ctrl-F)";
+      placeholder = 'Search your notes (Ctrl-F)';
     }
     return (
       <div id="search-wrapper" className="left">
-        <input name="search" id="search"
-          onKeyDown={this.handleInputKeyDown}
-          onChange={this.handleInputChange}
-          className="round-input input-not-focused"  type="text"
-          autoComplete="off" autoCapitalize="off"
-          placeholder={placeholder} />
+        <input name="search"
+          id="search"
+          onKeyDown={ this.handleInputKeyDown }
+          onChange={ this.handleInputChange }
+          className="round-input input-not-focused"
+          type="text"
+          autoComplete="off"
+          autoCapitalize="off"
+          placeholder={ placeholder } />
       </div>
-    );
+      );
   }
 
   handleCreateNewNote(e) {
@@ -52,10 +55,11 @@ export default class Top extends React.Component {
   renderNewNote() {
     if (this.props.isLoggedIn) {
       return (
-        <a id="new-note" title="Create new note" href="#" onClick={this.handleCreateNewNote}>
-          <i className="icn-plus"></i>
-        </a>
-      );
+        <a id="new-note"
+          title="Create new note"
+          href="#"
+          onClick={ this.handleCreateNewNote }><i className="icn-plus"></i></a>
+        );
     }
   }
 
@@ -63,11 +67,10 @@ export default class Top extends React.Component {
     return (
       <div id="header">
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
-        {this.renderNewNote()}
-        {this.renderSearchInput()}
-        <LogInLink isLoggedIn={this.props.isLoggedIn}
-          loggedInUserHandle={this.props.loggedInUserHandle}/>
+        { this.renderNewNote() }
+        { this.renderSearchInput() }
+        <LogInLink isLoggedIn={ this.props.isLoggedIn } loggedInUserHandle={ this.props.loggedInUserHandle } />
       </div>
-    );
+      );
   }
 }

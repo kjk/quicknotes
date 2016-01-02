@@ -8,21 +8,21 @@ import _ from 'underscore';
 
 function tagsToText(tags) {
   if (!tags) {
-    return "";
+    return '';
   }
-  let s = "";
+  let s = '';
   tags.forEach(function(tag) {
-    if (s !== "") {
-      s += " ";
+    if (s !== '') {
+      s += ' ';
     }
-    s += "#" + tag;
+    s += '#' + tag;
   });
   return s;
 }
 
 function textToTags(s) {
   let tags = [];
-  const parts = s.split("#");
+  const parts = s.split('#');
   parts.forEach(function(part) {
     part = part.trim();
     if (part.length > 0) {
@@ -45,7 +45,7 @@ export default class FullComposer extends React.Component {
 
     this.state = {
       note: u.deepCloneObject(props.note),
-      previewHtml: ""
+      previewHtml: ''
     };
   }
 
@@ -73,10 +73,10 @@ export default class FullComposer extends React.Component {
   updatePreview(s) {
     const note = this.state.note;
     if (ni.Format(note) == format.Text) {
-      s = "<pre>" + _.escape(s) + "</pre>";
+      s = '<pre>' + _.escape(s) + '</pre>';
     } else if (ni.Format(note) == format.Markdown) {
       // TODO: call api to convert to html
-      s = "<pre>" + _.escape(s) + "</pre>";
+      s = '<pre>' + _.escape(s) + '</pre>';
     }
     if (s !== this.state.previewHtml) {
       this.setState({
@@ -140,18 +140,22 @@ export default class FullComposer extends React.Component {
 
   renderFormatSelect(formats, selected) {
     const options = formats.map(function(format) {
-      return <option key={format}>{format}</option>;
+      return <option key={ format }>
+               { format }
+             </option>;
     });
     return (
-      <select value={selected} onChange={this.handleFormatChanged}>{options}</select>
-    );
+      <select value={ selected } onChange={ this.handleFormatChanged }>
+        { options }
+      </select>
+      );
   }
 
   render() {
     const initialNote = this.props.note;
     const initialTags = tagsToText(ni.Tags(initialNote));
     const note = this.state.note;
-    const previewHtml = this.state.previewHtml || "";
+    const previewHtml = this.state.previewHtml || '';
     const saveDisabled = !this.noteChanged();
     const formatTxt = format.numberToName(ni.Format(note));
     const formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
@@ -160,53 +164,54 @@ export default class FullComposer extends React.Component {
     return (
       <div id="full-composer-wrapper">
         <div id="full-composer-title">
-          <input
-            style={{flexGrow: 3}}
+          <input style={ {  flexGrow: 3} }
             type="text"
             placeholder="Title"
-            onChange={this.handleTitleChanged}
-            value={ni.Title(note)} size="128"/>
+            onChange={ this.handleTitleChanged }
+            value={ ni.Title(note) }
+            size="128" />
         </div>
-
         <div id="full-composer-tags">
-          <input
-            style={{flexGrow: 3}}
+          <input style={ {  flexGrow: 3} }
             type="text"
             placeholder="Add tag..."
-            onChange={this.handleTagsChanged}
-            defaultValue={initialTags}
-            size="128"/>
+            onChange={ this.handleTagsChanged }
+            defaultValue={ initialTags }
+            size="128" />
         </div>
-
         <div id="full-composer-content">
-          <CodeMirrorEditor
-            mode="text"
+          <CodeMirrorEditor mode="text"
             className="full-composer-editor"
-            codeText={ni.Content(note)}
-            value={ni.Content(note)}
-            onChange={this.textChanged}
+            codeText={ ni.Content(note) }
+            value={ ni.Content(note) }
+            onChange={ this.textChanged }
             ref="editArea" />
-          <div className="full-composer-preview" dangerouslySetInnerHTML={{__html: previewHtml}}></div>
+          <div className="full-composer-preview" dangerouslySetInnerHTML={ {  __html: previewHtml} }></div>
         </div>
-
         <div id="full-composer-actions">
           <div className="inner">
-            <button className="btn btn-primary" onClick={this.handleSave} disabled={saveDisabled}>Save</button>
-            <button className="btn btn-primary" onClick={this.handleCancel}>Cancel</button>
-            <input
-              type="checkbox" id="public-toggle" name="public-toggle"
-              onChange={this.handlePublicChanged}
-              checked={ni.IsPublic(note)}></input>
-            <label htmlFor="public-toggle">public</label>
+            <button className="btn btn-primary" onClick={ this.handleSave } disabled={ saveDisabled }>
+              Save
+            </button>
+            <button className="btn btn-primary" onClick={ this.handleCancel }>
+              Cancel
+            </button>
+            <input type="checkbox"
+              id="public-toggle"
+              name="public-toggle"
+              onChange={ this.handlePublicChanged }
+              checked={ ni.IsPublic(note) }></input>
+            <label htmlFor="public-toggle">
+              public
+            </label>
             <div className="right">
               <span>Format</span>
-              {formatSelect}
+              { formatSelect }
             </div>
           </div>
         </div>
-
       </div>
-    );
+      );
   }
 }
 

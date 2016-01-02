@@ -21,19 +21,27 @@ class RecentNotes extends React.Component {
       const userHandle = note.UserHandle;
       const title = note.Title;
       const k = note.IDStr;
-      const noteUrl = "/n/" + note.IDStr;
-      const userUrl = "/u/" + userHandle;
-      return <div key={k}>
-        <a href={noteUrl}>{title}</a> by <a href={userUrl}>{userHandle}</a>
-      </div>;
+      const noteUrl = '/n/' + note.IDStr;
+      const userUrl = '/u/' + userHandle;
+      return <div key={ k }>
+               <a href={ noteUrl }>
+                 { title }
+               </a> by
+               <a href={ userUrl }>
+                 { userHandle }
+               </a>
+             </div>;
     });
   }
 
   render() {
     const notes = this.state.notes;
     return <div id="recentNotes">
-      <div>Recent notes:</div>
-      {this.renderNotes(notes)}</div>;
+             <div>
+               Recent notes:
+             </div>
+             { this.renderNotes(notes) }
+           </div>;
   }
 }
 
@@ -49,14 +57,14 @@ class AppIndex extends React.Component {
   }
 
   showSettings() {
-    console.log("showSettings");
+    console.log('showSettings');
     this.setState({
       showingSettings: true
     });
   }
 
   hideSettings() {
-    console.log("hideSettings");
+    console.log('hideSettings');
     this.setState({
       showingSettings: false
     });
@@ -71,24 +79,18 @@ class AppIndex extends React.Component {
     action.offAllForOwner(this);
   }
 
-  renderSettings() {
-    console.log("renderSettings: ", this.state.showingSettings);
-    if (this.state.showingSettings) {
-      return <Settings />;
-    }
-  }
-
   render() {
-    console.log("AppIndex: gLoggedInUserHandle: ", gLoggedInUserHandle);
-    const isLoggedIn = gLoggedInUserHandle !== "";
+    console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
+    const isLoggedIn = gLoggedInUserHandle !== '';
+    const showSettings = this.state.showingSettings;
     return (
       <div>
-        <Top isLoggedIn={isLoggedIn}
-          loggedInUserHandle={gLoggedInUserHandle}
-          notesUserHandle="" />
-        {this.renderSettings()}
+        <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
+        { showSettings ?
+          <Settings />
+          : null }
       </div>
-    );
+      );
   }
 }
 

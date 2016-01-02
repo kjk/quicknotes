@@ -8,7 +8,7 @@ import SearchResults from './SearchResults.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
 import keymaster from 'keymaster';
-import * as u from'./utils.js';
+import * as u from './utils.js';
 import * as format from './format.js';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
@@ -55,7 +55,7 @@ function tagsFromNotes(notes) {
   return tags;
 }
 
-let gSearchDelayTimerID = null;// TODO: make it variable on AppUser
+let gSearchDelayTimerID = null; // TODO: make it variable on AppUser
 // if search is in progress, this is the search term
 let gCurrSearchTerm = '';
 
@@ -84,7 +84,7 @@ export default class AppUser extends React.Component {
     let allNotes = [];
     let selectedNotes = [];
     let selectedTag = props.initialTag;
-    let loggedInUserHandle = "";
+    let loggedInUserHandle = '';
     let tags = [];
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
@@ -134,7 +134,7 @@ export default class AppUser extends React.Component {
   updateNotes() {
     const userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
-    const uri = "/api/getnotescompact.json?user=" + encodeURIComponent(userHandle);
+    const uri = '/api/getnotescompact.json?user=' + encodeURIComponent(userHandle);
     //console.log("updateNotes: uri=", uri);
     $.get(uri, function(json) {
       this.setNotes(json);
@@ -156,14 +156,14 @@ export default class AppUser extends React.Component {
   }
 
   showSettings() {
-    console.log("showSettings");
+    console.log('showSettings');
     this.setState({
       showingSettings: true
     });
   }
 
   hideSettings() {
-    console.log("hideSettings");
+    console.log('hideSettings');
     this.setState({
       showingSettings: false
     });
@@ -195,19 +195,19 @@ export default class AppUser extends React.Component {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsDeleted(note)) {
-      $.post( "/api/undeletenote.json", data, function() {
+      $.post('/api/undeletenote.json', data, function() {
         this.updateNotes();
       }.bind(this))
-      .fail(function() {
-        alert( "error undeleting a note");
-      });
+        .fail(function() {
+          alert('error undeleting a note');
+        });
     } else {
-      $.post( "/api/deletenote.json", data, function() {
+      $.post('/api/deletenote.json', data, function() {
         this.updateNotes();
       }.bind(this))
-      .fail(function() {
-        alert( "error deleting a note");
-      });
+        .fail(function() {
+          alert('error deleting a note');
+        });
     }
   }
 
@@ -215,12 +215,12 @@ export default class AppUser extends React.Component {
     const data = {
       noteIdHash: ni.IDStr(note)
     };
-    $.post( "/api/permanentdeletenote.json", data, function() {
+    $.post('/api/permanentdeletenote.json', data, function() {
       this.updateNotes();
     }.bind(this))
-    .fail(function() {
-      alert( "error deleting a note");
-    });
+      .fail(function() {
+        alert('error deleting a note');
+      });
   }
 
   makeNotePublicPrivate(note) {
@@ -228,19 +228,19 @@ export default class AppUser extends React.Component {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsPublic(note)) {
-      $.post( "/api/makenoteprivate.json", data, function() {
+      $.post('/api/makenoteprivate.json', data, function() {
         this.updateNotes();
       }.bind(this))
-      .fail(function() {
-        alert( "error making note private");
-      });
+        .fail(function() {
+          alert('error making note private');
+        });
     } else {
-      $.post( "/api/makenotepublic.json", data, function() {
+      $.post('/api/makenotepublic.json', data, function() {
         this.updateNotes();
       }.bind(this))
-      .fail(function() {
-        alert( "error making note private");
-      });
+        .fail(function() {
+          alert('error making note private');
+        });
     }
   }
 
@@ -249,19 +249,19 @@ export default class AppUser extends React.Component {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsStarred(note)) {
-      $.post( "/api/unstarnote.json", data, function() {
+      $.post('/api/unstarnote.json', data, function() {
         this.updateNotes();
       }.bind(this))
-      .fail(function() {
-        alert( "error unstarring note");
-      });
+        .fail(function() {
+          alert('error unstarring note');
+        });
     } else {
-      $.post( "/api/starnote.json", data, function() {
+      $.post('/api/starnote.json', data, function() {
         this.updateNotes();
       }.bind(this))
-      .fail(function() {
-        alert( "error starring note");
-      });
+        .fail(function() {
+          alert('error starring note');
+        });
     }
   }
 
@@ -274,12 +274,12 @@ export default class AppUser extends React.Component {
     const data = {
       noteJSON: noteJSON
     };
-    $.post( "/api/createorupdatenote.json", data, function() {
+    $.post('/api/createorupdatenote.json', data, function() {
       this.updateNotes();
     }.bind(this))
-    .fail(function() {
-      alert( "error creating new note: " + noteJSON );
-    });
+      .fail(function() {
+        alert('error creating new note: ' + noteJSON);
+      });
   }
 
   saveNote(note) {
@@ -294,12 +294,12 @@ export default class AppUser extends React.Component {
     const data = {
       noteJSON: noteJSON
     };
-    $.post( "/api/createorupdatenote.json", data, function() {
+    $.post('/api/createorupdatenote.json', data, function() {
       this.updateNotes();
     }.bind(this))
-    .fail(function() {
-      alert( "error creating or updaing a note: " + noteJSON);
-    });
+      .fail(function() {
+        alert('error creating or updaing a note: ' + noteJSON);
+      });
   }
 
   cancelNoteEdit() {
@@ -313,7 +313,7 @@ export default class AppUser extends React.Component {
   }
 
   escPressed() {
-    console.log("ESC pressed");
+    console.log('ESC pressed');
     if (this.state.noteBeingEdited) {
       this.setState({
         noteBeingEdited: null
@@ -325,8 +325,8 @@ export default class AppUser extends React.Component {
 
   editNote(note) {
     const userHandle = this.props.notesUserHandle;
-    const uri = "/api/getnotecompact.json?id=" + ni.IDStr(note);
-    console.log("AppUser.editNote: " + ni.IDStr(note) + " uri: " + uri);
+    const uri = '/api/getnotecompact.json?id=' + ni.IDStr(note);
+    console.log('AppUser.editNote: ' + ni.IDStr(note) + ' uri: ' + uri);
 
     // TODO: show an error message on error
     $.get(uri, function(noteJson) {
@@ -339,33 +339,26 @@ export default class AppUser extends React.Component {
   renderFullComposer() {
     if (this.state.noteBeingEdited) {
       return (
-        <FullComposer
-          note={this.state.noteBeingEdited}
-          saveNoteCb={this.saveNote}
-          cancelNoteEditCb={this.cancelNoteEdit}
-        />
-      );
+        <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } />
+        );
     }
   }
 
   renderSearchResults() {
     if (this.state.searchResults) {
       return (
-        <SearchResults
-          searchResults={this.state.searchResults}
-          searchResultSelectedCb={this.handleSearchResultSelected}
-        />
-      );
+        <SearchResults searchResults={ this.state.searchResults } searchResultSelectedCb={ this.handleSearchResultSelected } />
+        );
     }
   }
 
   handleStartNewNote() {
     if (this.state.noteBeingEdited !== null) {
-      console.log("handleStartNewNote: a note is already being edited");
+      console.log('handleStartNewNote: a note is already being edited');
       return;
     }
     const note = {
-      Content: "",
+      Content: '',
       Format: format.Text
     };
     this.setState({
@@ -375,14 +368,14 @@ export default class AppUser extends React.Component {
 
   startSearch(userHandle, searchTerm) {
     gCurrSearchTerm = searchTerm;
-    if (searchTerm === "") {
+    if (searchTerm === '') {
       return;
     }
-    var uri = "/api/searchusernotes.json?user=" + encodeURIComponent(userHandle) + "&term=" + encodeURIComponent(searchTerm);
+    var uri = '/api/searchusernotes.json?user=' + encodeURIComponent(userHandle) + '&term=' + encodeURIComponent(searchTerm);
     $.get(uri, function(json) {
-      console.log("finished search for " + json.Term);
+      console.log('finished search for ' + json.Term);
       if (json.Term != gCurrSearchTerm) {
-        console.log("discarding search results because not for " + gCurrSearchTerm);
+        console.log('discarding search results because not for ' + gCurrSearchTerm);
         return;
       }
       this.setState({
@@ -393,7 +386,7 @@ export default class AppUser extends React.Component {
 
   handleSearchTermChanged(searchTerm) {
     gCurrSearchTerm = searchTerm;
-    if (searchTerm === "") {
+    if (searchTerm === '') {
       // user cancelled the search
       clearTimeout(gSearchDelayTimerID);
       this.setState({
@@ -406,23 +399,23 @@ export default class AppUser extends React.Component {
       clearTimeout(gSearchDelayTimerID);
     }
     gSearchDelayTimerID = setTimeout(() => {
-      console.log("starting search for " + searchTerm);
+      console.log('starting search for ' + searchTerm);
       this.startSearch(this.props.notesUserHandle, searchTerm);
     }, 300);
   }
 
   handleSearchResultSelected(noteIDStr) {
-    console.log("search note selected: " + noteIDStr);
+    console.log('search note selected: ' + noteIDStr);
     // TODO: probably should display in-line
-    const url = "/n/" + noteIDStr;
+    const url = '/n/' + noteIDStr;
     const win = window.open(url, '_blank');
     win.focus();
     // TODO: clear search field and focus it
-    this.handleSearchTermChanged(""); // hide search results
+    this.handleSearchTermChanged(''); // hide search results
   }
 
   renderSettings() {
-    console.log("renderSettings: ", this.state.showingSettings);
+    console.log('renderSettings: ', this.state.showingSettings);
     if (this.state.showingSettings) {
       return <Settings />;
     }
@@ -430,48 +423,44 @@ export default class AppUser extends React.Component {
 
   render() {
     const compact = false;
-    const isLoggedIn = this.state.loggedInUserHandle !== "";
+    const isLoggedIn = this.state.loggedInUserHandle !== '';
     const myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
 
     return (
       <div>
-        <Top isLoggedIn={isLoggedIn}
-          loggedInUserHandle={this.state.loggedInUserHandle}
-          startNewNoteCb={this.handleStartNewNote}
-          notesUserHandle={this.props.notesUserHandle}
-          searchTermChangedCb={this.handleSearchTermChanged}
-        />
-        <LeftSidebar tags={this.state.tags}
-          isLoggedIn={isLoggedIn}
-          myNotes={myNotes}
-          onTagSelected={this.handleTagSelected}
-          selectedTag={this.state.selectedTag}
-        />
-        <NotesList
-          notes={this.state.selectedNotes}
-          myNotes={myNotes}
-          compact={compact}
-          permanentDeleteNoteCb={this.permanentDeleteNote}
-          delUndelNoteCb={this.delUndelNote}
-          makeNotePublicPrivateCb={this.makeNotePublicPrivate}
-          startUnstarNoteCb={this.startUnstarNote}
-          editCb={this.editNote}
-        />
-        {this.renderSettings()}
-        {this.renderFullComposer()}
-        {this.renderSearchResults()}
+        <Top isLoggedIn={ isLoggedIn }
+          loggedInUserHandle={ this.state.loggedInUserHandle }
+          startNewNoteCb={ this.handleStartNewNote }
+          notesUserHandle={ this.props.notesUserHandle }
+          searchTermChangedCb={ this.handleSearchTermChanged } />
+        <LeftSidebar tags={ this.state.tags }
+          isLoggedIn={ isLoggedIn }
+          myNotes={ myNotes }
+          onTagSelected={ this.handleTagSelected }
+          selectedTag={ this.state.selectedTag } />
+        <NotesList notes={ this.state.selectedNotes }
+          myNotes={ myNotes }
+          compact={ compact }
+          permanentDeleteNoteCb={ this.permanentDeleteNote }
+          delUndelNoteCb={ this.delUndelNote }
+          makeNotePublicPrivateCb={ this.makeNotePublicPrivate }
+          startUnstarNoteCb={ this.startUnstarNote }
+          editCb={ this.editNote } />
+        { this.renderSettings() }
+        { this.renderFullComposer() }
+        { this.renderSearchResults() }
       </div>
-    );
+      );
   }
 }
 
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s) {
-  const parts = s.split("/t:");
-  const res = parts.filter((s) => s !== "");
+  const parts = s.split('/t:');
+  const res = parts.filter((s) => s !== '');
   if (res.length === 0) {
-    return ["__all"];
+    return ['__all'];
   }
   return res;
 }
@@ -484,9 +473,7 @@ function appUserStart() {
   //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
 
   ReactDOM.render(
-    <AppUser notesUserHandle={gNotesUserHandle}
-      initialNotesJSON={gInitialNotesJSON}
-      initialTag={initialTag}/>,
+    <AppUser notesUserHandle={ gNotesUserHandle } initialNotesJSON={ gInitialNotesJSON } initialTag={ initialTag } />,
     document.getElementById('root')
   );
 }
