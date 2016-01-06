@@ -8,4 +8,4 @@ echo "running eslint"
 ./node_modules/.bin/eslint jsx/*.js*
 
 echo "running go vet"
-godep go vet github.com/kjk/quicknotes
+gdep go vet github.com/kjk/quicknotes
