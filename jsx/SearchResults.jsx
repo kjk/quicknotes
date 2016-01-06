@@ -47,7 +47,7 @@ export default class SearchResults extends React.Component {
 
   handleClick(noteIDStr, e) {
     e.preventDefault();
-    this.props.searchResultSelectedCb(noteIDStr);
+    this.props.onSearchResultSelected(noteIDStr);
   }
 
   renderResultItem(noteID, i, n) {
@@ -106,4 +106,3 @@ export default class SearchResults extends React.Component {
       );
   }
 }
-

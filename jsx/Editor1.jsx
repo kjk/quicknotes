@@ -72,8 +72,8 @@ class AppEditor extends React.Component {
   render() {
     return (
       <div>
-        <Overlay></Overlay>
-        <Editor></Editor>
+        <Overlay />
+        <Editor />
       </div>
       );
   }
@@ -87,4 +87,3 @@ function appEditorStart() {
 }
 
 window.appEditorStart = appEditorStart;
-

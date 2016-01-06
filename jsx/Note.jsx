@@ -11,8 +11,8 @@ function urlifyTitle(s) {
 class NoteBody extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.collapse = this.collapse.bind(this);
-    this.expand = this.expand.bind(this);
+    this.handleCollapse = this.handleCollapse.bind(this);
+    this.handleExpand = this.handleExpand.bind(this);
     this.onContent = this.onContent.bind(this);
 
     this.state = {
@@ -20,7 +20,7 @@ class NoteBody extends React.Component {
     };
   }
 
-  expand() {
+  handleExpand() {
     const note = this.state.note;
     console.log('expand note', ni.IDStr(note));
     ni.Expand(note);
@@ -36,7 +36,7 @@ class NoteBody extends React.Component {
     }
   }
 
-  collapse() {
+  handleCollapse() {
     const note = this.state.note;
     console.log('collapse note', ni.IDStr(note));
     ni.Collapse(note);
@@ -53,12 +53,12 @@ class NoteBody extends React.Component {
 
     if (ni.IsCollapsed(note)) {
       return (
-        <a href="#" className="expand" onClick={ this.expand }>Expand</a>
+        <a href="#" className="expand" onClick={ this.handleExpand }>Expand</a>
         );
     }
 
     return (
-      <a href="#" className="collapse" onClick={ this.collapse }>Collapse</a>
+      <a href="#" className="collapse" onClick={ this.handleCollapse }>Collapse</a>
       );
   }
 
@@ -100,8 +100,8 @@ export default class Note extends React.Component {
     this.handlePermanentDelete = this.handlePermanentDelete.bind(this);
     this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
     this.handleTagClicked = this.handleTagClicked.bind(this);
-    this.mouseEnter = this.mouseEnter.bind(this);
-    this.mouseLeave = this.mouseLeave.bind(this);
+    this.handleMouseEnter = this.handleMouseEnter.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
 
     this.state = {
       showActions: false
@@ -138,14 +138,14 @@ export default class Note extends React.Component {
       );
   }
 
-  mouseEnter(e) {
+  handleMouseEnter(e) {
     e.preventDefault();
     this.setState({
       showActions: true
     });
   }
 
-  mouseLeave(e) {
+  handleMouseLeave(e) {
     e.preventDefault();
     this.setState({
       showActions: false
@@ -318,7 +318,7 @@ export default class Note extends React.Component {
   render() {
     const note = this.props.note;
     return (
-      <div className="note" onMouseEnter={ this.mouseEnter } onMouseLeave={ this.mouseLeave }>
+      <div className="note" onMouseEnter={ this.handleMouseEnter } onMouseLeave={ this.handleMouseLeave }>
         <div className="note-header">
           { this.renderStarUnstar(note) }
           { this.renderTitle(note) }
