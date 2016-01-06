@@ -1,21 +1,32 @@
 // Pre-requisites: need to install all the npm modules with:
 // npm install
 
-// TODO:
-// - use gulp-uglify for prod to minifiy javascript:
-//   var uglify= require('gulp-uglify');
-//   .pipe(uglify())
-
 var babelify = require("babelify");
 var browserify = require('browserify');
+var buffer = require('vinyl-buffer');
+var envify = require('envify/custom');
 var exorcist = require('exorcist');
 var gulp = require('gulp');
+var mocha = require('gulp-mocha');
 var prefix = require('gulp-autoprefixer');
 var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
-var uglify = require('gulp-uglify');
 var source = require('vinyl-source-stream');
+var uglify = require('gulp-uglify');
+
+require('babel-register');
+
+var t_envify = ['envify', {
+  'global': true,
+  '_': 'purge',
+  NODE_ENV: 'production'
+}];
+
+// 'plugins': ['undeclared-variables-check'],
+var t_babelify = ['babelify', {
+  'presets': ['es2015', 'react']
+}];
 
 gulp.task('copy_css1', function() {
   return gulp.src("./node_modules/codemirror/lib/codemirror.css")
@@ -32,14 +43,26 @@ gulp.task('copy_css2', function() {
 gulp.task('js', function() {
   browserify({
     entries: ['jsx/App.jsx'],
+    'transform': [t_babelify],
     debug: true
   })
-    .transform('babelify', {
-      presets: ['es2015', 'react']
-    })
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
+    .pipe(gulp.dest('s/dist'));
+});
+
+gulp.task('jsprod', function() {
+  browserify({
+    entries: ['jsx/App.jsx'],
+    'transform': [t_babelify, t_envify],
+    debug: true
+  })
+    .bundle()
+    .pipe(exorcist('s/dist/bundle.min.js.map'))
+    .pipe(source('bundle.min.js'))
+    .pipe(buffer())
+    .pipe(uglify())
     .pipe(gulp.dest('s/dist'));
 });
 
@@ -57,6 +80,6 @@ gulp.task('watch', function() {
   gulp.watch('./sass/**/*', ['css']);
 });
 
-gulp.task('default', ['css', 'js']);
-
 gulp.task('build_and_watch', ['default', 'watch']);
+gulp.task('prod', ['css', 'jsprod']);
+gulp.task('default', ['css', 'js']);
