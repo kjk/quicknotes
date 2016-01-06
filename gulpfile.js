@@ -28,18 +28,6 @@ var t_babelify = ['babelify', {
   'presets': ['es2015', 'react']
 }];
 
-gulp.task('copy_css1', function() {
-  return gulp.src("./node_modules/codemirror/lib/codemirror.css")
-    .pipe(rename('codemirror.scss'))
-    .pipe(gulp.dest("./sass"));
-})
-
-gulp.task('copy_css2', function() {
-  return gulp.src("./node_modules/codemirror/theme/solarized.css")
-    .pipe(rename('solarized.scss'))
-    .pipe(gulp.dest("./sass"));
-})
-
 gulp.task('js', function() {
   browserify({
     entries: ['jsx/App.jsx'],
@@ -66,7 +54,7 @@ gulp.task('jsprod', function() {
     .pipe(gulp.dest('s/dist'));
 });
 
-gulp.task('css', ['copy_css1', 'copy_css2'], function() {
+gulp.task('css', function() {
   return gulp.src('./sass/main.scss')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
