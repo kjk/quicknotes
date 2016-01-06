@@ -15,12 +15,12 @@ export default class Top extends React.Component {
       e.preventDefault();
       e.target.blur();
       e.target.value = '';
-      this.props.searchTermChangedCb('');
+      this.props.onSearchTermChanged('');
     }
   }
 
   handleInputChange(e) {
-    this.props.searchTermChangedCb(e.target.value);
+    this.props.onSearchTermChanged(e.target.value);
   }
 
   renderSearchInput() {
@@ -49,7 +49,7 @@ export default class Top extends React.Component {
 
   handleCreateNewNote(e) {
     e.preventDefault();
-    this.props.startNewNoteCb();
+    this.props.onStartNewNote();
   }
 
   renderNewNote() {

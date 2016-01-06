@@ -41,7 +41,7 @@ export default class FullComposer extends React.Component {
     this.handleSave = this.handleSave.bind(this);
     this.handleTagsChanged = this.handleTagsChanged.bind(this);
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
-    this.textChanged = this.textChanged.bind(this);
+    this.handleTextChanged = this.handleTextChanged.bind(this);
 
     this.state = {
       note: u.deepCloneObject(props.note),
@@ -85,7 +85,7 @@ export default class FullComposer extends React.Component {
     }
   }
 
-  textChanged(e) {
+  handleTextChanged(e) {
     let s;
     if (true) {
       // CodeMirror
@@ -184,7 +184,7 @@ export default class FullComposer extends React.Component {
             className="full-composer-editor"
             codeText={ ni.Content(note) }
             value={ ni.Content(note) }
-            onChange={ this.textChanged }
+            onChange={ this.handleTextChanged }
             ref="editArea" />
           <div className="full-composer-preview" dangerouslySetInnerHTML={ {  __html: previewHtml} }></div>
         </div>
@@ -214,4 +214,3 @@ export default class FullComposer extends React.Component {
       );
   }
 }
-

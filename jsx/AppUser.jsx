@@ -347,7 +347,7 @@ export default class AppUser extends React.Component {
   renderSearchResults() {
     if (this.state.searchResults) {
       return (
-        <SearchResults searchResults={ this.state.searchResults } searchResultSelectedCb={ this.handleSearchResultSelected } />
+        <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } />
         );
     }
   }
@@ -430,9 +430,9 @@ export default class AppUser extends React.Component {
       <div>
         <Top isLoggedIn={ isLoggedIn }
           loggedInUserHandle={ this.state.loggedInUserHandle }
-          startNewNoteCb={ this.handleStartNewNote }
+          onStartNewNote={ this.handleStartNewNote }
           notesUserHandle={ this.props.notesUserHandle }
-          searchTermChangedCb={ this.handleSearchTermChanged } />
+          onSearchTermChanged={ this.handleSearchTermChanged } />
         <LeftSidebar tags={ this.state.tags }
           isLoggedIn={ isLoggedIn }
           myNotes={ myNotes }
