@@ -64,7 +64,7 @@ export default class LeftSidebar extends React.Component {
 
 LeftSidebar.propTypes = {
   onTagSelected: React.PropTypes.func.isRequired,
-  tags: React.PropTypes.array,
-  myNotes: React.PropTypes.array,
+  tags: React.PropTypes.object,
+  myNotes: React.PropTypes.bool,
   selectedTag: React.PropTypes.string
 };

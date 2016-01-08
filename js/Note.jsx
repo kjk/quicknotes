@@ -92,8 +92,8 @@ class NoteBody extends React.Component {
 }
 
 NoteBody.propTypes = {
-  note: React.PropTypes.object, // TODO: more specific
-  compact: React.PropTyps.bool
+  note: React.PropTypes.array,
+  compact: React.PropTypes.bool
 };
 
 export default class Note extends React.Component {
@@ -337,9 +337,9 @@ export default class Note extends React.Component {
 }
 
 Note.propTypes = {
-  note: React.PropTypes.object, // TODO: more specific
-  compact: React.PropTyps.bool,
-  myNotes: React.PropTypes.array,
+  note: React.PropTypes.array,
+  compact: React.PropTypes.bool,
+  myNotes: React.PropTypes.bool,
   delUndelNoteCb: React.PropTypes.func, // TODO: change name
   permanentDeleteNoteCb: React.PropTypes.func,
   makeNotePublicPrivateCb: React.PropTypes.func,

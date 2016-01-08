@@ -26,6 +26,6 @@ TagCount.propTypes = {
   onTagSelected: React.PropTypes.func.isRequired,
   count: React.PropTypes.number,
   displayName: React.PropTypes.string,
-  isSelected: React.PropTpyes.bool,
+  isSelected: React.PropTypes.bool,
   tagName: React.PropTypes.string
 };
