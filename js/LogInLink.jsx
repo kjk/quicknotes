@@ -25,6 +25,10 @@ const LinkLoggedIn = (props) => {
     );
 };
 
+LinkLoggedIn.propTypes = {
+  loggedInUserHandle: React.PropTypes.string
+};
+
 const LinkLoggedOut = (props) => {
   const twitterUrl = encodeURI('/logintwitter?redir=' + window.location);
   return (
@@ -65,3 +69,8 @@ export default class LogInLink extends React.Component {
     }
   }
 }
+
+LogInLink.propTypes = {
+  loggedInUserHandle: React.PropTypes.string,
+  isLoggedIn: React.PropTypes.bool
+};
