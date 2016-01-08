@@ -49,6 +49,12 @@ export default class FullComposer extends React.Component {
     };
   }
 
+  componentDidMount() {
+    // TODO: this doesn't work
+    this.editAreaNode.focus();
+    this.updatePreview(ni.Content(this.props.note));
+  }
+
   noteChanged() {
     const n1 = this.props.note;
     const n2 = this.state.note;
@@ -61,12 +67,6 @@ export default class FullComposer extends React.Component {
 
   handleCancel(e) {
     this.props.cancelNoteEditCb();
-  }
-
-  componentDidMount() {
-    // TODO: this doesn't work
-    this.editAreaNode.focus();
-    this.updatePreview(ni.Content(this.props.note));
   }
 
   updatePreview(s) {

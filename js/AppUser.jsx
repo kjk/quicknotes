@@ -107,6 +107,25 @@ export default class AppUser extends React.Component {
     };
   }
 
+  componentDidMount() {
+    keymaster.filter = this.keyFilter;
+    keymaster('ctrl+f', u.focusSearch);
+    keymaster('ctrl+e', u.focusNewNote);
+    keymaster('esc', this.escPressed);
+
+    action.onShowSettings(this.showSettings, this);
+    action.onHideSettings(this.hideSettings, this);
+    action.onTagSelected(this.handleTagSelected, this);
+  }
+
+  componentWillUnmount() {
+    key.unbind('ctrl+f', u.focusSearch);
+    key.unbind('ctrl+e', u.focusNewNote);
+    key.unbind('esc', this.escPressed);
+
+    action.offAllForOwner(this);
+  }
+
   handleTagSelected(tag) {
     //console.log("selected tag: ", tag);
     const selectedNotes = u.filterNotesByTag(this.state.allNotes, tag);
@@ -167,25 +186,6 @@ export default class AppUser extends React.Component {
     this.setState({
       showingSettings: false
     });
-  }
-
-  componentDidMount() {
-    keymaster.filter = this.keyFilter;
-    keymaster('ctrl+f', u.focusSearch);
-    keymaster('ctrl+e', u.focusNewNote);
-    keymaster('esc', this.escPressed);
-
-    action.onShowSettings(this.showSettings, this);
-    action.onHideSettings(this.hideSettings, this);
-    action.onTagSelected(this.handleTagSelected, this);
-  }
-
-  componentWillUnmount() {
-    key.unbind('ctrl+f', u.focusSearch);
-    key.unbind('ctrl+e', u.focusNewNote);
-    key.unbind('esc', this.escPressed);
-
-    action.offAllForOwner(this);
   }
 
   // TODO: after delete/undelete should show a message at the top
@@ -336,22 +336,6 @@ export default class AppUser extends React.Component {
     }.bind(this));
   }
 
-  renderFullComposer() {
-    if (this.state.noteBeingEdited) {
-      return (
-        <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } />
-        );
-    }
-  }
-
-  renderSearchResults() {
-    if (this.state.searchResults) {
-      return (
-        <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } />
-        );
-    }
-  }
-
   handleStartNewNote() {
     if (this.state.noteBeingEdited !== null) {
       console.log('handleStartNewNote: a note is already being edited');
@@ -412,6 +396,22 @@ export default class AppUser extends React.Component {
     win.focus();
     // TODO: clear search field and focus it
     this.handleSearchTermChanged(''); // hide search results
+  }
+
+  renderFullComposer() {
+    if (this.state.noteBeingEdited) {
+      return (
+        <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } />
+        );
+    }
+  }
+
+  renderSearchResults() {
+    if (this.state.searchResults) {
+      return (
+        <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } />
+        );
+    }
   }
 
   renderSettings() {

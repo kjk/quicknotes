@@ -29,11 +29,11 @@
     "react/prefer-es6-class": 1,
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
+    "react/sort-comp": 1,
     "react/jsx-handler-names": 1
     //rules we might enfornce in the future
     //"react/no-multi-comp": 1,
     //"react/prop-types": 1,
-    //"react/sort-comp": 1,
   },
   "plugins": [
     "eslint-plugin-react"
