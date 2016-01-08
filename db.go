@@ -57,7 +57,7 @@ func getSqlConnectionRoot() string {
 	if flgIsLocal && !flgProdDb {
 		return "root@tcp(localhost:3306)/"
 	}
-	return "root:u3WK2VP9@tcp(173.194.251.111:3306)/"
+	return "root:8Nmjt97WJFhR@tcp(173.194.251.111:3306)/"
 }
 
 func getSqlConnection() string {
@@ -1180,7 +1180,7 @@ func getDbMust() *sql.DB {
 			LogVerbosef("db.Ping() failed because no database exists\n")
 			db = createDatabaseMust()
 		} else {
-			LogFatalf("db.Ping() failed with %s", err)
+			LogFatalf("db.Ping() failed with %s\n", err)
 		}
 	} else {
 		upgradeDbMust(db)
