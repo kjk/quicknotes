@@ -457,7 +457,7 @@ export default class AppUser extends React.Component {
 AppUser.propTypes = {
   notesUserHandle: React.PropTypes.string,
   initialTag: React.PropTypes.string,
-  initialNotesJSON: React.PropTypes.string
+  initialNotesJSON: React.PropTypes.object
 };
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
