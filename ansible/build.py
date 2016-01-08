@@ -56,7 +56,6 @@ if __name__ == "__main__":
     os.chdir(src_dir)
     git_ensure_clean()
     compile_assets()
-    subprocess.check_output(["./scripts/webpack-prod.sh"])
     subprocess.check_output(["./scripts/build_linux.sh"])
     sha1 = git_trunk_sha1()
     zip_name = sha1 + ".zip"
