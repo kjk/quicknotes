@@ -16,14 +16,6 @@ def abort(s):
     print(s)
     sys.exit(1)
 
-def ensure_has_sassc():
-    try:
-        subprocess.check_output(["sassc", "-h"])
-    except:
-        print("sassc doesn't seem to be installed")
-        print("on mac use: brew install sassc")
-        sys.exit(1)
-
 def git_ensure_clean():
     out = subprocess.check_output(["git", "status", "--porcelain"])
     if len(out) != 0:
@@ -57,31 +49,13 @@ def zip_files(zip_path):
     add_dir_files(zf, "s")
     zf.close()
 
-def is_main_sass_file(f):
-    return f.endswith("_main.sass") or f.endswith("_main.scss")
-
-def sass_name_to_css(f):
-    if f.endswith("_main.sass") or f.endswith("_main.scss"):
-        return f[:-len("_main.sass")] + ".css"
-    assert False, "%s is not a valid main sass file" % f
-
-def compile_sass():
-    out_dir = pj(src_dir, "s", "css")
-    assert os.path.exists(out_dir), "%s dir doesn't exist" % out_dir
-    prev_dir = os.getcwd()
-    os.chdir(pj(src_dir, "css"))
-    files = [f for f in os.listdir(".") if is_main_sass_file(f)]
-    for f in files:
-        dst_file = pj(out_dir, sass_name_to_css(f))
-        #print("sass compiling %s => %s" % (f, dst_file))
-        subprocess.check_output(["sassc", f, dst_file])
-    os.chdir(prev_dir)
+def compile_assets():
+    subprocess.check_output(["./node_modules/.bin/gulp", "default"])
 
 if __name__ == "__main__":
     os.chdir(src_dir)
-    ensure_has_sassc()
-    compile_sass()
     git_ensure_clean()
+    compile_assets()
     subprocess.check_output(["./scripts/webpack-prod.sh"])
     subprocess.check_output(["./scripts/build_linux.sh"])
     sha1 = git_trunk_sha1()

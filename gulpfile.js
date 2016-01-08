@@ -1,7 +1,7 @@
 // Pre-requisites: need to install all the npm modules with:
 // npm install
 
-var babelify = require("babelify");
+var babelify = require('babelify');
 var browserify = require('browserify');
 var buffer = require('vinyl-buffer');
 var envify = require('envify/custom');
