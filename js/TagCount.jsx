@@ -21,3 +21,11 @@ export default class TagCount extends React.Component {
       );
   }
 }
+
+TagCount.propTypes = {
+  onTagSelected: React.PropTypes.func.isRequired,
+  count: React.PropTypes.number,
+  displayName: React.PropTypes.string,
+  isSelected: React.PropTpyes.bool,
+  tagName: React.PropTypes.string
+};
