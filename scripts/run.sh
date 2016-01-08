@@ -17,6 +17,6 @@ gdep go build -o quicknotes
 #go build -o quicknotes
 #gdep go build -race -o quicknotes
 
-echo "starging quicknotes"
+echo "starting quicknotes, using mysql from docker"
 ./quicknotes -local $@ || true
 rm quicknotes

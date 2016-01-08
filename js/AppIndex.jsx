@@ -26,7 +26,7 @@ class RecentNotes extends React.Component {
       return <div key={ k }>
                <a href={ noteUrl }>
                  { title }
-               </a> by
+               </a> by&nbsp;
                <a href={ userUrl }>
                  { userHandle }
                </a>
