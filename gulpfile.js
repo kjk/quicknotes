@@ -30,7 +30,7 @@ var t_babelify = ['babelify', {
 
 gulp.task('js', function() {
   browserify({
-    entries: ['jsx/App.jsx'],
+    entries: ['js/App.jsx'],
     'transform': [t_babelify],
     debug: true
   })
@@ -42,7 +42,7 @@ gulp.task('js', function() {
 
 gulp.task('jsprod', function() {
   browserify({
-    entries: ['jsx/App.jsx'],
+    entries: ['js/App.jsx'],
     'transform': [t_babelify, t_envify],
     debug: true
   })
@@ -64,7 +64,7 @@ gulp.task('css', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('jsx/*', ['js']);
+  gulp.watch('js/*', ['js']);
   gulp.watch('./sass/**/*', ['css']);
 });
 
