@@ -64,9 +64,8 @@ export default class FullComposer extends React.Component {
   }
 
   componentDidMount() {
-    const el = ReactDOM.findDOMNode(this.refs.editArea);
     // TODO: this doesn't work
-    el.focus();
+    this.editAreaNode.focus();
     this.updatePreview(ni.Content(this.props.note));
   }
 
@@ -160,6 +159,7 @@ export default class FullComposer extends React.Component {
     const formatTxt = format.numberToName(ni.Format(note));
     const formatSelect = this.renderFormatSelect(format.Formats, formatTxt);
 
+    const setEditArea = el => this.editAreaNode = el;
     // TODO: if editing code, change CodeMirror mode property to match code being edited
     return (
       <div id="full-composer-wrapper">
@@ -185,7 +185,7 @@ export default class FullComposer extends React.Component {
             codeText={ ni.Content(note) }
             value={ ni.Content(note) }
             onChange={ this.handleTextChanged }
-            ref="editArea" />
+            ref={ setEditArea } />
           <div className="full-composer-preview" dangerouslySetInnerHTML={ {  __html: previewHtml} }></div>
         </div>
         <div id="full-composer-actions">
