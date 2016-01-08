@@ -39,6 +39,11 @@ const NoResults = (props) => {
     );
 };
 
+NoResults.propTypes = {
+  term: React.PropTypes.string
+};
+
+
 export default class SearchResults extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -106,3 +111,9 @@ export default class SearchResults extends React.Component {
       );
   }
 }
+
+SearchResults.propTypes = {
+  term: React.PropTypes.string,
+  onSearchResultSelected: React.PropTypes.func,
+  searchResults: React.PropTypes.array, // TODO: more specific
+};
