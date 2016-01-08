@@ -72,6 +72,9 @@ CodeMirrorEditor.defaultProps = {
 
 CodeMirrorEditor.propTypes = {
   lineNumbers: React.PropTypes.bool,
-  onChange: React.PropTypes.func
+  onChange: React.PropTypes.func,
+  mode: React.PropTypes.string,
+  readOnly: React.PropTypes.bool,
+  codeText: React.PropTypes.string,
+  className: React.PropTypes.string
 };
-
