@@ -344,5 +344,5 @@ Note.propTypes = {
   permanentDeleteNoteCb: React.PropTypes.func,
   makeNotePublicPrivateCb: React.PropTypes.func,
   editCb: React.PropTypes.func,
-  startUnstarNoteCb:  React.PropTypes.func
+  startUnstarNoteCb: React.PropTypes.func
 };
