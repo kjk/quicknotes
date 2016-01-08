@@ -1,9 +1,6 @@
 @import 'normalize';
 @import 'logo';
 
-@import '../node_modules/codemirror/lib/codemirror';
-@import '../node_modules/codemirror/theme/solarized';
-
 $sidebar-width: 180px;
 $font-size-main: 14px;
 $font-size-note: 13px;
@@ -822,7 +819,7 @@ hr.light2 {
   resize: none;
   background: #FFF;
   overflow-y: scroll;
-  ouline: none;
+  outline: none;
 }
 
 .full-composer-text-area {
@@ -830,7 +827,7 @@ hr.light2 {
   height: 100%;
   resize: none;
   border: 0;
-  ouline: none;
+  outline: none;
 }
 
 .full-composer-preview {
@@ -1246,3 +1243,6 @@ elements inside note-header div.
 @media (max-width: 768px) {
 
 }
+
+@import '../node_modules/codemirror/lib/codemirror';
+@import '../node_modules/codemirror/theme/solarized';
