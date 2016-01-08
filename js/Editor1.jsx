@@ -13,14 +13,6 @@ export default class Editor extends React.Component {
     };
   }
 
-  render() {
-    const style1 = {
-      top: this.state.top
-    };
-
-    return <div style={ style1 } id="editor-wrapper"></div>;
-  }
-
   render2() {
     return (
       <div id="editor-wrapper">
@@ -66,6 +58,15 @@ export default class Editor extends React.Component {
       </div>
       );
   }
+
+  render() {
+    const style1 = {
+      top: this.state.top
+    };
+
+    return <div style={ style1 } id="editor-wrapper"></div>;
+  }
+
 }
 
 class AppEditor extends React.Component {

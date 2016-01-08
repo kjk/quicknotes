@@ -56,6 +56,15 @@ class AppIndex extends React.Component {
     };
   }
 
+  componentDidMount() {
+    action.onShowSettings(this.showSettings, this);
+    action.onHideSettings(this.hideSettings, this);
+  }
+
+  componentWillUnmount() {
+    action.offAllForOwner(this);
+  }
+
   showSettings() {
     console.log('showSettings');
     this.setState({
@@ -70,14 +79,6 @@ class AppIndex extends React.Component {
     });
   }
 
-  componentDidMount() {
-    action.onShowSettings(this.showSettings, this);
-    action.onHideSettings(this.hideSettings, this);
-  }
-
-  componentWillUnmount() {
-    action.offAllForOwner(this);
-  }
 
   render() {
     console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
