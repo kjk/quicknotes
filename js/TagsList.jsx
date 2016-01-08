@@ -31,3 +31,10 @@ export default class TagsList extends React.Component {
       );
   }
 }
+
+TagsList.propTypes = {
+  tagNames: React.PropTypes.array, // TODO: arroay of string
+  tags: React.PropTypes.array, // TODO: more specific
+  selectedTag: React.PropTypes.string,
+  onTagSelected: React.PropTypes.function.isRequired
+};
