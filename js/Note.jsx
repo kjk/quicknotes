@@ -91,6 +91,11 @@ class NoteBody extends React.Component {
   }
 }
 
+NoteBody.propTypes = {
+  note: React.PropTypes.object, // TODO: more specific
+  compact: React.PropTyps.bool
+};
+
 export default class Note extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -330,3 +335,14 @@ export default class Note extends React.Component {
       );
   }
 }
+
+Note.propTypes = {
+  note: React.PropTypes.object, // TODO: more specific
+  compact: React.PropTyps.bool,
+  myNotes: React.PropTypes.array,
+  delUndelNoteCb: React.PropTypes.func, // TODO: change name
+  permanentDeleteNoteCb: React.PropTypes.func,
+  makeNotePublicPrivateCb: React.PropTypes.func,
+  editCb: React.PropTypes.func,
+  startUnstarNoteCb:  React.PropTypes.func
+};
