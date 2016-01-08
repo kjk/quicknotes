@@ -25,7 +25,7 @@ export default class CodeMirrorEditor extends React.Component {
   componentDidMount() {
     if (IS_MOBILE) return;
 
-    this.editor = CodeMirror.fromTextArea(ReactDOM.findDOMNode(this.refs.editor), {
+    const opts = {
       mode: this.props.mode,
       lineNumbers: this.props.lineNumbers,
       lineWrapping: true,
@@ -33,7 +33,8 @@ export default class CodeMirrorEditor extends React.Component {
       matchBrackets: true,
       theme: 'solarized-light',
       readOnly: this.props.readOnly
-    });
+    };
+    this.editor = CodeMirror.fromTextArea(this.editorNode, opts);
     this.editor.on('change', this.handleChange);
   }
 
@@ -50,16 +51,15 @@ export default class CodeMirrorEditor extends React.Component {
   }
 
   render() {
-    let editor;
-
     if (IS_MOBILE) {
       return (
         <pre className={ this.props.className } style={ {  overflow: 'scroll'} }>{ this.props.codeText }</pre>
         );
     } else {
+      const setEditor = el => this.editorNode = el;
       return (
         <div className={ this.props.className }>
-          <textarea ref="editor" className="full-composer-text-area" defaultValue={ this.props.codeText } />
+          <textarea ref={ setEditor } className="full-composer-text-area" defaultValue={ this.props.codeText } />
         </div>
         );
     }
