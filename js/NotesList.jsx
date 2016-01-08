@@ -81,3 +81,14 @@ export default class NotesList extends React.Component {
       );
   }
 }
+
+NotesList.propTypes = {
+  notes: React.PropTypes.array, // TODO: more specific
+  compact: React.PropTypes.bool,
+  myNotes: React.PropTypes.array, // TODO: more specific
+  permanentDeleteNoteCb: React.PropTypes.func,
+  delUndelNoteCb: React.PropTypes.func,
+  makeNotePublicPrivateCb: React.PropTypes.func,
+  startUnstarNoteCb: React.PropTypes.func,
+  editCb: React.PropTypes.func
+};
