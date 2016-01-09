@@ -9,3 +9,7 @@ echo "running eslint"
 
 echo "running go vet"
 gdep go vet github.com/kjk/quicknotes
+
+#echo "go vet"
+#go tool vet -printfuncs=LogInfof,LogErrorf,LogVerbosef .
+#go tool vet -printfuncs=LogInfof,LogErrorf,LogVerbosef .
