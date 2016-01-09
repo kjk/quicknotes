@@ -77,7 +77,7 @@ export default class Top extends React.Component {
 
 Top.propTypes = {
   onSearchTermChanged: React.PropTypes.func,
-  onStartNewNote: React.PropTypes.func,
+  onStartNewNote: React.PropTypes.func.isRequired,
   isLoggedIn: React.PropTypes.bool.isRequired,
   loggedInUserHandle: React.PropTypes.string,
   notesUserHandle: React.PropTypes.string
