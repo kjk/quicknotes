@@ -189,7 +189,7 @@ export default class AppUser extends React.Component {
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
   delUndelNote(note) {
-    const noteId = ni.IDStr(note)
+    const noteId = ni.IDStr(note);
     if (ni.IsDeleted(note)) {
       api.undeleteNote(noteId, () => {
         this.updateNotes();
@@ -197,19 +197,19 @@ export default class AppUser extends React.Component {
     } else {
       api.deleteNote(noteId, () => {
         thsi.updateNotes();
-      })
+      });
     }
   }
 
   permanentDeleteNote(note) {
-    const noteId = ni.IDStr(note)
+    const noteId = ni.IDStr(note);
     api.permanentDeleteNote(noteId, () => {
       this.updateNotes();
     });
   }
 
   makeNotePublicPrivate(note) {
-    const noteId = ni.IDStr(note)
+    const noteId = ni.IDStr(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, () => {
         this.updateNotes();
@@ -288,7 +288,7 @@ export default class AppUser extends React.Component {
       this.setState({
         noteBeingEdited: noteJson
       });
-    })
+    });
   }
 
   handleStartNewNote() {
