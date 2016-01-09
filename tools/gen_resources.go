@@ -50,6 +50,28 @@ func fataliferr(err error) {
 	}
 }
 
+func isBlaclisted(path string) bool {
+	toExcludeSuffix := []string{".map", ".gitkeep", "test.html", "test2.html"}
+	path = strings.ToLower(path)
+	for _, suff := range toExcludeSuffix {
+		if strings.HasSuffix(path, suff) {
+			return true
+		}
+	}
+	return false
+}
+
+func zipNameConvert(s string) string {
+	conversions := []string{"s/dist/bundle.min.js", "s/dist/bundle.js"}
+	n := len(conversions) / 2
+	for i := 0; i < n; i++ {
+		if conversions[i*2] == s {
+			return conversions[i*2+1]
+		}
+	}
+	return s
+}
+
 func zipFileName(path, baseDir string) string {
 	fatalif(!strings.HasPrefix(path, baseDir), "'%s' doesn't start with '%s'", path, baseDir)
 	n := len(baseDir)
@@ -63,6 +85,7 @@ func zipFileName(path, baseDir string) string {
 }
 
 func addZipFileMust(zw *zip.Writer, path, zipName string) {
+	fmt.Printf("adding '%s' as '%s'\n", path, zipName)
 	fi, err := os.Stat(path)
 	fataliferr(err)
 	fih, err := zip.FileInfoHeader(fi)
@@ -94,7 +117,10 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 				dirsToVisit = append(dirsToVisit, path)
 			} else if fi.Mode().IsRegular() {
 				zipName := zipFileName(path, baseDir)
-				addZipFileMust(zw, path, zipName)
+				zipName = zipNameConvert(zipName)
+				if !isBlaclisted(path) {
+					addZipFileMust(zw, path, zipName)
+				}
 			}
 		}
 	}
