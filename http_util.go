@@ -131,10 +131,20 @@ func servePlainText(w http.ResponseWriter, r *http.Request, code int, format str
 	}
 }
 
-func serveData(w http.ResponseWriter, r *http.Request, code int, contentType string, data []byte) {
+func serveData(w http.ResponseWriter, r *http.Request, code int, contentType string, data, gzippedData []byte) {
+	d := data
 	if len(contentType) > 0 {
 		w.Header().Set("Content-Type", contentType)
 	}
+	// https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+	// prevent caching non-gzipped version
+	w.Header().Add("Vary", "Accept-Encoding")
+
+	if acceptsGzip(r) && len(gzippedData) > 0 {
+		d = gzippedData
+	}
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Length", strconv.Itoa(len(d)))
 	w.WriteHeader(code)
-	w.Write(data)
+	w.Write(d)
 }
