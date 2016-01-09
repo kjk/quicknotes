@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -50,15 +51,24 @@ func fataliferr(err error) {
 	}
 }
 
-func isBlaclisted(path string) bool {
-	toExcludeSuffix := []string{".map", ".gitkeep", "test.html", "test2.html"}
-	path = strings.ToLower(path)
-	for _, suff := range toExcludeSuffix {
-		if strings.HasSuffix(path, suff) {
+func hasAnySuffix(s string, suffixes []string) bool {
+	s = strings.ToLower(s)
+	for _, suff := range suffixes {
+		if strings.HasSuffix(s, suff) {
 			return true
 		}
 	}
 	return false
+}
+
+func isBlacklisted(path string) bool {
+	toExcludeSuffix := []string{".map", ".gitkeep", "test.html", "test2.html"}
+	return hasAnySuffix(path, toExcludeSuffix)
+}
+
+func shouldAddCompressed(path string) bool {
+	toCompressSuffix := []string{".js", ".css", ".html"}
+	return hasAnySuffix(path, toCompressSuffix)
 }
 
 func zipNameConvert(s string) string {
@@ -84,16 +94,85 @@ func zipFileName(path, baseDir string) string {
 	return strings.Replace(path, "\\", "/", -1)
 }
 
+func cmdToStr(cmd *exec.Cmd) string {
+	s := filepath.Base(cmd.Path)
+	arr := []string{s}
+	arr = append(arr, cmd.Args...)
+	return strings.Join(arr, " ")
+}
+
+func getCmdOutMust(cmd *exec.Cmd) []byte {
+	var resOut, resErr []byte
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
+	cmd.Start()
+
+	go func() {
+		buf := make([]byte, 1024, 1024)
+		for {
+			n, err := stdout.Read(buf)
+			if err != nil {
+				break
+			}
+			if n > 0 {
+				d := buf[:n]
+				resOut = append(resOut, d...)
+			}
+		}
+	}()
+
+	go func() {
+		buf := make([]byte, 1024, 1024)
+		for {
+			n, err := stderr.Read(buf)
+			if err != nil {
+				break
+			}
+			if n > 0 {
+				d := buf[:n]
+				resErr = append(resErr, d...)
+				os.Stderr.Write(d)
+			}
+		}
+	}()
+	err := cmd.Wait()
+	fataliferr(err)
+	fatalif(len(resErr) != 0, "failed to execute %s\n", cmdToStr(cmd))
+	return resOut
+}
+
+func compressWithZopfliMust(path string) []byte {
+	cmd := exec.Command("zopfli", "-c", path)
+	return getCmdOutMust(cmd)
+}
+
 func addZipFileMust(zw *zip.Writer, path, zipName string) {
-	fmt.Printf("adding '%s' as '%s'\n", path, zipName)
 	fi, err := os.Stat(path)
 	fataliferr(err)
+	fmt.Printf("adding '%s' (%d bytes) as '%s'\n", path, fi.Size(), zipName)
 	fih, err := zip.FileInfoHeader(fi)
 	fataliferr(err)
 	fih.Name = zipName
 	fih.Method = zip.Deflate
 	d, err := ioutil.ReadFile(path)
 	fataliferr(err)
+	fw, err := zw.CreateHeader(fih)
+	fataliferr(err)
+	_, err = fw.Write(d)
+	fataliferr(err)
+	// fw is just a io.Writer so we can't Close() it. It's not necessary as
+	// it's implicitly closed by the next Create(), CreateHeader()
+	// or Close() call on zip.Writer
+}
+
+func addZipDataMust(zw *zip.Writer, path string, d []byte, zipName string) {
+	fmt.Printf("adding data (%d bytes) as '%s'\n", len(d), zipName)
+	fi, err := os.Stat(path)
+	fataliferr(err)
+	fih, err := zip.FileInfoHeader(fi)
+	fataliferr(err)
+	fih.Name = zipName
+	fih.Method = zip.Deflate
 	fw, err := zw.CreateHeader(fih)
 	fataliferr(err)
 	_, err = fw.Write(d)
@@ -118,8 +197,13 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 			} else if fi.Mode().IsRegular() {
 				zipName := zipFileName(path, baseDir)
 				zipName = zipNameConvert(zipName)
-				if !isBlaclisted(path) {
+				if !isBlacklisted(path) {
 					addZipFileMust(zw, path, zipName)
+					if shouldAddCompressed(path) {
+						zipName = zipName + ".gz"
+						d := compressWithZopfliMust(path)
+						addZipDataMust(zw, path, d, zipName)
+					}
 				}
 			}
 		}
