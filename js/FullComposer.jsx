@@ -50,8 +50,7 @@ export default class FullComposer extends React.Component {
   }
 
   componentDidMount() {
-    // TODO: this doesn't work
-    this.editAreaNode.focus();
+    this.editAreaNode.editor.focus();
     this.updatePreview(ni.Content(this.props.note));
   }
 
