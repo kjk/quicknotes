@@ -211,5 +211,5 @@ export default class FullComposer extends React.Component {
 FullComposer.propTypes = {
   saveNoteCb: React.PropTypes.func.isRequired,
   cancelNoteEditCb: React.PropTypes.func.isRequired,
-  note: React.PropTypes.object
+  note: React.PropTypes.array
 };
