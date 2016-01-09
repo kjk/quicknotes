@@ -1,6 +1,6 @@
 .DS_Store
-quicknotes
 node_modules
 s/dist
-sass/codemirror.scss
-sass/solarized.scss
+quicknotes_resources.zip
+resources.go
+quicknotes

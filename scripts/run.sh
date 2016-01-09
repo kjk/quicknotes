@@ -5,8 +5,10 @@ set -o errexit
 set -o pipefail
 
 . scripts/fmt.sh
-
 . scripts/lint.sh
+
+echo "running gulp default"
+./node_modules/.bin/gulp default
 
 echo "go build"
 gdep go build -o quicknotes
