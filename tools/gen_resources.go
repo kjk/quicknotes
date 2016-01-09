@@ -194,17 +194,22 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 			path := filepath.Join(dir, name)
 			if fi.IsDir() {
 				dirsToVisit = append(dirsToVisit, path)
-			} else if fi.Mode().IsRegular() {
-				zipName := zipFileName(path, baseDir)
-				zipName = zipNameConvert(zipName)
-				if !isBlacklisted(path) {
-					addZipFileMust(zw, path, zipName)
-					if shouldAddCompressed(path) {
-						zipName = zipName + ".gz"
-						d := compressWithZopfliMust(path)
-						addZipDataMust(zw, path, d, zipName)
-					}
-				}
+				continue
+			}
+
+			if !fi.Mode().IsRegular() {
+				continue
+			}
+			zipName := zipFileName(path, baseDir)
+			zipName = zipNameConvert(zipName)
+			if isBlacklisted(path) {
+				continue
+			}
+			addZipFileMust(zw, path, zipName)
+			if shouldAddCompressed(path) {
+				zipName = zipName + ".gz"
+				d := compressWithZopfliMust(path)
+				addZipDataMust(zw, path, d, zipName)
 			}
 		}
 	}
@@ -219,6 +224,7 @@ func createResourcesZip(path string) {
 	fataliferr(err)
 	dir := filepath.Join(currDir, "s")
 	addZipDirMust(zw, dir, currDir)
+	addZipFileMust(zw, "createdb.sql", "createdb.sql")
 	err = zw.Close()
 	fataliferr(err)
 }
