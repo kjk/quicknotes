@@ -86,9 +86,11 @@ func loadResourcesFromEmbeddedZip() error {
 
 func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 	path = normalizePath(path)
-	LogInfof("serving '%s' from zip\n", path)
 
 	data := resourcesFromZip[path]
+	gzippedData := resourcesFromZip[path+".gz"]
+
+	LogInfof("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
 
 	if data == nil {
 		LogErrorf("no data for file '%s'\n", path)
@@ -101,7 +103,7 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 		return
 	}
 
-	serveData(w, r, 200, MimeTypeByExtensionExt(path), data)
+	serveData(w, r, 200, MimeTypeByExtensionExt(path), data, gzippedData)
 }
 
 /*
