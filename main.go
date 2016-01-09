@@ -140,6 +140,16 @@ func main() {
 		return
 	}
 
+	if hasZipResources() {
+		LogInfof("using resoruces from embedded .zip\n")
+		err = loadResourcesFromEmbeddedZip()
+		if err != nil {
+			LogFatalf("loadResourcesFromEmbeddedZip() failed with '%s'\n", err)
+		}
+	} else {
+		LogInfof("not using resoruces from embedded .zip\n")
+	}
+
 	localStore, err = NewLocalStore(getLocalStoreDir())
 	if err != nil {
 		LogFatalf("NewLocalStore() failed with %s\n", err)
@@ -172,7 +182,7 @@ func main() {
 		return
 	}
 
-	if flgIsLocal {
+	if flgIsLocal && !hasZipResources() {
 		runGulpAsync()
 	}
 
