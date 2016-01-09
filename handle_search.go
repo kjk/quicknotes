@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/kjk/log"
 )
 
 const (
@@ -37,13 +39,13 @@ type SearchResult struct {
 func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	if userHandle == "" {
-		LogErrorf("missing user arg in '%s'\n", r.URL)
+		log.Errorf("missing user arg in '%s'\n", r.URL)
 		http.NotFound(w, r)
 		return
 	}
 	searchTerm := r.FormValue("term")
 	if searchTerm == "" {
-		LogErrorf("missing search term in '%s'\n", r.URL)
+		log.Errorf("missing search term in '%s'\n", r.URL)
 		httpServerError(w, r)
 		return
 	}
@@ -54,7 +56,7 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 	}
 	searchPrivate := userHandle == loggedInUserHandle
 
-	LogInfof("userHandle: '%s', term: '%s', private: %v, url: '%s'\n", userHandle, searchTerm, searchPrivate, r.URL)
+	log.Infof("userHandle: '%s', term: '%s', private: %v, url: '%s'\n", userHandle, searchTerm, searchPrivate, r.URL)
 
 	i, err := getCachedUserInfoByHandle(userHandle)
 	if err != nil || i == nil {

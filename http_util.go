@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/kjk/log"
 )
 
 func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
@@ -51,7 +53,7 @@ func httpOkWithJSON(w http.ResponseWriter, r *http.Request, v interface{}) {
 	b, err := json.MarshalIndent(v, "", "\t")
 	if err != nil {
 		// should never happen
-		LogErrorf("json.MarshalIndent() failed with %q\n", err)
+		log.Errorf("json.MarshalIndent() failed with %q\n", err)
 	}
 	httpOkBytesWithContentType(w, r, "application/json", b)
 }
@@ -60,7 +62,7 @@ func httpOkWithJSONCompact(w http.ResponseWriter, r *http.Request, v interface{}
 	b, err := json.Marshal(v)
 	if err != nil {
 		// should never happen
-		LogErrorf("json.MarshalIndent() failed with %q\n", err)
+		log.Errorf("json.MarshalIndent() failed with %q\n", err)
 	}
 	httpOkBytesWithContentType(w, r, "application/json", b)
 }
@@ -72,7 +74,7 @@ func httpOkWithJsonpCompact(w http.ResponseWriter, r *http.Request, v interface{
 		b, err := json.Marshal(v)
 		if err != nil {
 			// should never happen
-			LogErrorf("json.MarshalIndent() failed with %q\n", err)
+			log.Errorf("json.MarshalIndent() failed with %q\n", err)
 		}
 		res := []byte(jsonp)
 		res = append(res, '(')
@@ -127,7 +129,7 @@ func servePlainText(w http.ResponseWriter, r *http.Request, code int, format str
 		_, err = w.Write([]byte(format))
 	}
 	if err != nil {
-		LogErrorf("err: '%s'\n", err)
+		log.Errorf("err: '%s'\n", err)
 	}
 }
 

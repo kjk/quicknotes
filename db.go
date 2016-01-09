@@ -15,6 +15,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 )
 
@@ -175,7 +176,7 @@ func (n *Note) SetSnippet() {
 	}
 	// TODO: make this trimming when we create snippet sha1
 	n.Snippet = strings.TrimSpace(string(getShortSnippet(snippet)))
-	//LogInfof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
+	//log.Infof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
 }
 
 // SetCalculatedProperties calculates some props
@@ -312,7 +313,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	i := userIDToCachedInfo[userID]
 	mu.Unlock()
 	if i != nil {
-		LogVerbosef("user '%d', got from cache\n", userID)
+		log.Verbosef("user '%d', got from cache\n", userID)
 		return i, nil
 	}
 	timeStart := time.Now()
@@ -332,7 +333,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	mu.Lock()
 	userIDToCachedInfo[userID] = res
 	mu.Unlock()
-	LogVerbosef("took %s for user '%d'\n", time.Since(timeStart), userID)
+	log.Verbosef("took %s for user '%d'\n", time.Since(timeStart), userID)
 	return res, nil
 }
 
@@ -349,11 +350,11 @@ func ensureValidFormat(format int) {
 	if format >= formatText && format <= formatLast {
 		return
 	}
-	LogFatalf("invalid format: %d\n", format)
+	log.Fatalf("invalid format: %d\n", format)
 }
 
 func execMust(db *sql.DB, q string, args ...interface{}) {
-	LogVerbosef("db.Exec(): %s\n", q)
+	log.Verbosef("db.Exec(): %s\n", q)
 	_, err := db.Exec(q, args...)
 	fatalIfErr(err, fmt.Sprintf("db.Exec('%s')", q))
 }
@@ -381,7 +382,7 @@ func upgradeDbMust(db *sql.DB) {
 }
 
 func createDatabaseMust() *sql.DB {
-	LogVerbosef("trying to create the database\n")
+	log.Verbosef("trying to create the database\n")
 	db, err := sql.Open("mysql", getSqlConnectionRoot())
 	fatalIfErr(err, "sql.Open()")
 	err = db.Ping()
@@ -396,7 +397,7 @@ func createDatabaseMust() *sql.DB {
 		execMust(db, stm)
 	}
 
-	LogVerbosef("created database\n")
+	log.Verbosef("created database\n")
 	err = db.Ping()
 	fatalIfErr(err, "db.Ping()")
 	return db
@@ -492,32 +493,32 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count, is_starred) VALUES (?, ?, ?, ?, ?, 1, false)`
 	res, err := tx.Exec(q, userID, 0, note.createdAt, note.isDeleted, note.isPublic)
 	if err != nil {
-		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		//TODO: ignore for now
 		//return 0, err
 		return 0, nil
 	}
 	noteID, err := res.LastInsertId()
 	if err != nil {
-		LogErrorf("res.LastInsertId() of noteID failed with %s\n", err)
+		log.Errorf("res.LastInsertId() of noteID failed with %s\n", err)
 		return 0, err
 	}
 	serilizedTags := serializeTags(note.tags)
 	q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
 	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
 	if err != nil {
-		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
 	versionID, err := res.LastInsertId()
 	if err != nil {
-		LogErrorf("res.LastInsertId() of versionId failed with %s\n", err)
+		log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
 		return 0, err
 	}
 	q = `UPDATE notes SET curr_version_id=? WHERE id=?`
 	_, err = tx.Exec(q, versionID, noteID)
 	if err != nil {
-		LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
 	err = tx.Commit()
@@ -594,34 +595,34 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	}
 
 	if needNewVersion {
-		//LogInfof("inserting new version of note %d\n", noteID)
+		//log.Infof("inserting new version of note %d\n", noteID)
 		serilizedTags := serializeTags(note.tags)
 		q := `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
 		res, err := tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
 		if err != nil {
-			LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 			return 0, err
 		}
 		versionID, err := res.LastInsertId()
 		if err != nil {
-			LogErrorf("res.LastInsertId() of versionId failed with %s\n", err)
+			log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
 			return 0, err
 		}
 		q = `UPDATE notes SET curr_version_id=?, versions_count = versions_count + 1 WHERE id=?`
 		_, err = tx.Exec(q, versionID, noteID)
 		if err != nil {
-			LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 			return 0, err
 		}
 	}
 
 	// TODO: could combine with the above update in some cases
 	if note.isPublic != existingNote.IsPublic {
-		LogInfof("changing is_public status of note %d to %v\n", noteID, note.isPublic)
+		log.Infof("changing is_public status of note %d to %v\n", noteID, note.isPublic)
 		q := `UPDATE notes SET is_public=? WHERE id=?`
 		_, err = tx.Exec(q, note.isPublic, noteID)
 		if err != nil {
-			LogErrorf("tx.Exec('%s') failed with %s\n", q, err)
+			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 			return 0, err
 		}
 	}
@@ -640,7 +641,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	}
 	note.contentSha1, note.snippetSha1, err = saveContent(note.content)
 	if err != nil {
-		LogErrorf("saveContent() failed with %s\n", err)
+		log.Errorf("saveContent() failed with %s\n", err)
 		return 0, err
 	}
 	if !isValidFormat(note.format) {
@@ -699,7 +700,7 @@ func dbSetNoteDeleteState(userID, noteID int, isDeleted bool) error {
 	q := `UPDATE notes SET is_deleted=? WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, isDeleted, noteID, userID)
 	if err != nil {
-		LogErrorf("db.Exec() failed with '%s'\n", err)
+		log.Errorf("db.Exec() failed with '%s'\n", err)
 	}
 	clearCachedUserInfo(userID)
 	return err
@@ -714,13 +715,13 @@ func dbUndeleteNote(userID, noteID int) error {
 }
 
 func dbSetNotePublicState(userID, noteID int, isPublic bool) error {
-	LogInfof("userID: %d, noteID: %d, isPublic: %v\n", userID, noteID, isPublic)
+	log.Infof("userID: %d, noteID: %d, isPublic: %v\n", userID, noteID, isPublic)
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
 	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, isPublic, noteID, userID)
 	if err != nil {
-		LogErrorf("db.Exec() failed with '%s'\n", err)
+		log.Errorf("db.Exec() failed with '%s'\n", err)
 	}
 	clearCachedUserInfo(userID)
 	return err
@@ -735,13 +736,13 @@ func dbMakeNotePrivate(userID, noteID int) error {
 }
 
 func dbSetNoteStarredState(userID, noteID int, isStarred bool) error {
-	LogInfof("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
+	log.Infof("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
 	q := `UPDATE notes SET is_starred=? WHERE id=? AND user_id=?`
 	_, err := db.Exec(q, isStarred, noteID, userID)
 	if err != nil {
-		LogErrorf("db.Exec() failed with '%s'\n", err)
+		log.Errorf("db.Exec() failed with '%s'\n", err)
 	}
 	clearCachedUserInfo(userID)
 	return err
@@ -779,7 +780,7 @@ WHERE v.id = n.curr_version_id
 LIMIT 10000`
 	rows, err := db.Query(q)
 	if err != nil {
-		LogErrorf("db.Query('%s') failed with %s\n", q, err)
+		log.Errorf("db.Query('%s') failed with %s\n", q, err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -809,7 +810,7 @@ LIMIT 10000`
 	}
 	err = rows.Err()
 	if err != nil {
-		LogErrorf("rows.Err() for '%s' failed with %s\n", q, err)
+		log.Errorf("rows.Err() for '%s' failed with %s\n", q, err)
 		return nil, err
 	}
 	return notes, nil
@@ -837,7 +838,7 @@ FROM notes n, versions v
 WHERE user_id=? AND v.id = n.curr_version_id`
 	rows, err := db.Query(q, user.ID)
 	if err != nil {
-		LogErrorf("db.Query('%s') failed with %s\n", q, err)
+		log.Errorf("db.Query('%s') failed with %s\n", q, err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -867,7 +868,7 @@ WHERE user_id=? AND v.id = n.curr_version_id`
 	}
 	err = rows.Err()
 	if err != nil {
-		LogErrorf("rows.Err() for '%s' failed with %s\n", q, err)
+		log.Errorf("rows.Err() for '%s' failed with %s\n", q, err)
 		return nil, err
 	}
 	return notes, nil
@@ -1049,7 +1050,7 @@ func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			LogInfof("db.QueryRow('%s') failed with %s\n", q, err)
+			log.Infof("db.QueryRow('%s') failed with %s\n", q, err)
 		}
 		return nil, err
 	}
@@ -1157,7 +1158,7 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 }
 
 func deleteDatabaseMust() {
-	LogVerbosef("trying to delete the database\n")
+	log.Verbosef("trying to delete the database\n")
 	db, err := sql.Open("mysql", getSqlConnectionRoot())
 	fatalIfErr(err, "sql.Open()")
 	err = db.Ping()
@@ -1181,16 +1182,16 @@ func getDbMust() *sql.DB {
 	defer sqlDbMu.Unlock()
 	db, err := sql.Open("mysql", getSqlConnection())
 	if err != nil {
-		LogFatalf("sql.Open() failed with %s", err)
+		log.Fatalf("sql.Open() failed with %s", err)
 	}
 	err = db.Ping()
 	if err != nil {
 		db.Close()
 		if strings.Contains(err.Error(), "Error 1049") {
-			LogVerbosef("db.Ping() failed because no database exists\n")
+			log.Verbosef("db.Ping() failed because no database exists\n")
 			db = createDatabaseMust()
 		} else {
-			LogFatalf("db.Ping() failed with %s\n", err)
+			log.Fatalf("db.Ping() failed with %s\n", err)
 		}
 	} else {
 		upgradeDbMust(db)

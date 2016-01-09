@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/kjk/log"
 )
 
 const (
@@ -44,7 +46,7 @@ func gaLog(ua string, values url.Values) error {
 	resp, err := c.Do(req)
 
 	if err != nil {
-		LogErrorf("GAEvent Recording error '%s'", err)
+		log.Errorf("GAEvent Recording error '%s'", err)
 		return err
 	}
 	resp.Body.Close()

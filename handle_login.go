@@ -13,6 +13,7 @@ import (
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/google/go-github/github"
 	"github.com/gorilla/securecookie"
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 	"golang.org/x/oauth2"
 	goauth2 "google.golang.org/api/oauth2/v2"
@@ -132,11 +133,11 @@ func getSecureCookie(w http.ResponseWriter, r *http.Request) *SecureCookieValue 
 	var ret SecureCookieValue
 	if err = secureCookie.Decode(cookieName, cookie.Value, &ret); err != nil {
 		// most likely expired cookie, so ignore and delete
-		LogErrorf("secureCookie.Decode() failed with %s\n", err)
+		log.Errorf("secureCookie.Decode() failed with %s\n", err)
 		deleteSecureCookie(w)
 		return nil
 	}
-	//LogVerbosef("Got cookie %#v\n", ret)
+	//log.Verbosef("Got cookie %#v\n", ret)
 	return &ret
 }
 
@@ -147,7 +148,7 @@ func getUserFromCookie(w http.ResponseWriter, r *http.Request) *DbUser {
 	}
 	user, err := dbGetUserByID(sc.UserID)
 	if err != nil {
-		LogErrorf("dbGetUserById(%d) failed with %s\n", sc.UserID, err)
+		log.Errorf("dbGetUserById(%d) failed with %s\n", sc.UserID, err)
 		return nil
 	}
 	return user
@@ -228,7 +229,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	twitterHandle, okUser := info["screen_name"].(string)
 	if !okUser {
-		LogErrorf("no 'screen_name' in %#v\n", info)
+		log.Errorf("no 'screen_name' in %#v\n", info)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
@@ -241,12 +242,12 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	userHandle := "twitter:" + twitterHandle
 	user, err := dbGetOrCreateUser(userHandle, fullName)
 	if err != nil {
-		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
+		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("created user %d with handle '%s'\n", user.ID, userHandle)
+	log.Infof("created user %d with handle '%s'\n", user.ID, userHandle)
 	cookieVal := &SecureCookieValue{
 		UserID: user.ID,
 	}
@@ -303,20 +304,20 @@ func tokenFromJSON(jsonStr string) (*oauth2.Token, error) {
 func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
 	if !strings.HasPrefix(state, oauthSecretPrefix) {
-		LogErrorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretPrefix, state)
+		log.Errorf("invalid oauth state, expected '%s', got '%s'\n", oauthSecretPrefix, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 	redir := state[len(oauthSecretPrefix):]
 	if redir == "" {
-		LogErrorf("Missing 'redir' arg for /googleoauth2cb\n")
+		log.Errorf("Missing 'redir' arg for /googleoauth2cb\n")
 		redir = "/"
 	}
 
 	code := r.FormValue("code")
 	token, err := oauthGitHubConf.Exchange(oauth2.NoContext, code)
 	if err != nil {
-		LogErrorf("oauthGitHubConf.Exchange() failed with '%s'\n", err)
+		log.Errorf("oauthGitHubConf.Exchange() failed with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -325,11 +326,11 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	client := github.NewClient(oauthClient)
 	user, _, err := client.Users.Get("")
 	if err != nil {
-		LogErrorf("client.Users.Get() faled with '%s'\n", err)
+		log.Errorf("client.Users.Get() faled with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("Logged in as GitHub user: %s\n", *user.Login)
+	log.Infof("Logged in as GitHub user: %s\n", *user.Login)
 	githubLogin := *user.Login
 	fullName := *user.Name
 
@@ -339,12 +340,12 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	userLogin := "github:" + githubLogin
 	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
-		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
+		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
+	log.Infof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
@@ -367,24 +368,24 @@ func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 
 // logingooglecb
 func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: %s", r.URL)
+	log.Infof("url: %s", r.URL)
 	state := r.FormValue("state")
 	if !strings.HasPrefix(state, oauthSecretPrefix) {
-		LogErrorf("invalid oauth state, expected '%s*', got '%s'\n", oauthSecretPrefix, state)
+		log.Errorf("invalid oauth state, expected '%s*', got '%s'\n", oauthSecretPrefix, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	redir := state[len(oauthSecretPrefix):]
 	if redir == "" {
-		LogErrorf("Missing 'redir' arg for /logingooglecb\n")
+		log.Errorf("Missing 'redir' arg for /logingooglecb\n")
 		redir = "/"
 	}
 
 	code := r.FormValue("code")
 	token, err := oauthGoogleConf.Exchange(oauth2.NoContext, code)
 	if err != nil {
-		LogErrorf("oauthGoogleConf.Exchange() failed with '%s'\n", err)
+		log.Errorf("oauthGoogleConf.Exchange() failed with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -393,7 +394,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 
 	service, err := goauth2.New(oauthClient)
 	if err != nil {
-		LogErrorf("goauth2.New() failed with %s\n", err)
+		log.Errorf("goauth2.New() failed with %s\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -401,12 +402,12 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	call := service.Userinfo.Get()
 	userInfo, err := call.Do()
 	if err != nil {
-		LogErrorf("call.Do() failed with %s", err)
+		log.Errorf("call.Do() failed with %s", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	//LogInfof("Logged in as Google user: %s\n", userInfo.Email)
+	//log.Infof("Logged in as Google user: %s\n", userInfo.Email)
 	fullName := userInfo.Name
 
 	// also might be useful:
@@ -414,12 +415,12 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	userLogin := "google:" + nameFromEmail(userInfo.Email)
 	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
-		LogErrorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
+		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	LogInfof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
+	log.Infof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
@@ -450,7 +451,7 @@ func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
 func handleLogout(w http.ResponseWriter, r *http.Request) {
 	redir := strings.TrimSpace(r.FormValue("redir"))
 	if redir == "" {
-		LogErrorf("Missing 'redir' arg for /logout\n")
+		log.Errorf("Missing 'redir' arg for /logout\n")
 		redir = "/"
 	}
 	deleteSecureCookie(w)
