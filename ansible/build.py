@@ -43,20 +43,15 @@ def add_dir_files(zip_file, dir, dirInZip=None):
 
 def zip_files(zip_path):
     zf = zipfile.ZipFile(zip_path, mode="w", compression=zipfile.ZIP_DEFLATED)
-    zf.write("quicknotes_linux", "quicknotes")
-    zf.write("createdb.sql")
+    zf.write("quicknotes_prod_linux", "quicknotes")
     zf.write(pj("scripts", "server_run.sh"), "server_run.sh")
     add_dir_files(zf, "s")
     zf.close()
 
-def compile_assets():
-    subprocess.check_output(["./node_modules/.bin/gulp", "default"])
-
 if __name__ == "__main__":
     os.chdir(src_dir)
     git_ensure_clean()
-    compile_assets()
-    subprocess.check_output(["./scripts/build_linux.sh"])
+    subprocess.check_output("./scripts/build_linux.sh")
     sha1 = git_trunk_sha1()
     zip_name = sha1 + ".zip"
     zip_path = os.path.join(src_dir, zip_name)
