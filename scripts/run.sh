@@ -4,13 +4,10 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-echo "running eslint"
-./node_modules/.bin/eslint js/*.js*
+. scripts/fmt.sh
 
-echo "go vet"
-go tool vet -printfuncs=LogInfof,LogErrorf,LogVerbosef .
+. scripts/lint.sh
 
-#go tool vet -printfuncs=LogInfof,LogErrorf,LogVerbosef .
 echo "go build"
 gdep go build -o quicknotes
 
