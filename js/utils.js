@@ -1,5 +1,4 @@
 import * as ni from './noteinfo.js';
-import $ from 'jquery';
 
 export function noteHasTag(note, tag) {
   const tags = ni.Tags(note);
@@ -92,17 +91,25 @@ export function dictInc(d, key) {
 
 // focus "search" input area at the top of the page
 export function focusSearch() {
-  $('#search').focus();
+  console.log('focusSearch');
+  const el = document.getElementById('search');
+  el.focus();
 }
 
 export function focusNewNote() {
-  $('#Composer').focus();
+  console.log('focusNewNote');
+  const el = document.getElementById('composer');
+  el.focus();
 }
 
 // TODO: should do it the react way
 export function clearNewNote() {
   // TODO: this doesn't work
-  $('Composer').val(null);
+  console.log('clearNewNote');
+  // TODO: write me
+  //const el = document.getElementById('Composer');
+  //el.nodeValue = '';
+  //$('#composer').val(null);
 }
 // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
 export function deepCloneObject(o) {

@@ -115,5 +115,5 @@ export default class SearchResults extends React.Component {
 SearchResults.propTypes = {
   term: React.PropTypes.string,
   onSearchResultSelected: React.PropTypes.func,
-  searchResults: React.PropTypes.array, // TODO: more specific
+  searchResults: React.PropTypes.object, // TODO: more specific
 };
