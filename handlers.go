@@ -1,15 +1,108 @@
 package main
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/kjk/u"
 )
+
+var (
+	// loaded only once at startup. maps a file path of the resource
+	// to its data
+	resourcesFromZip map[string][]byte
+)
+
+func hasZipResources() bool {
+	return len(resourcesZipData) > 0
+}
+
+func normalizePath(s string) string {
+	return strings.Replace(s, "\\", "/", -1)
+}
+
+func loadResourcesFromZipReader(zr *zip.Reader) error {
+	for _, f := range zr.File {
+		name := normalizePath(f.Name)
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		d, err := ioutil.ReadAll(rc)
+		rc.Close()
+		if err != nil {
+			return err
+		}
+		// for simplicity of the build, the file that we embedded in zip
+		// is bundle.min.js but the html refers to it as bundle.js
+		if name == "s/dist/bundle.min.js" {
+			name = "s/dist/bundle.js"
+		}
+		//LogInfof("Loaded '%s' of size %d bytes\n", name, len(d))
+		resourcesFromZip[name] = d
+	}
+	return nil
+}
+
+// call this only once at startup
+func loadResourcesFromZip(path string) error {
+	resourcesFromZip = make(map[string][]byte)
+	zrc, err := zip.OpenReader(path)
+	if err != nil {
+		return err
+	}
+	defer zrc.Close()
+	return loadResourcesFromZipReader(&zrc.Reader)
+}
+
+func loadResourcesFromEmbeddedZip() error {
+	LogInfof("loadResourcesFromEmbeddedZip() ")
+	timeStart := time.Now()
+	defer func() {
+		LogInfof("in %s\n", time.Since(timeStart))
+	}()
+
+	n := len(resourcesZipData)
+	if n == 0 {
+		return errors.New("len(resourcesZipData) == 0")
+	}
+	resourcesFromZip = make(map[string][]byte)
+	r := bytes.NewReader(resourcesZipData)
+	zrc, err := zip.NewReader(r, int64(n))
+	if err != nil {
+		return err
+	}
+	return loadResourcesFromZipReader(zrc)
+}
+
+func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
+	path = normalizePath(path)
+	LogInfof("serving '%s' from zip\n", path)
+
+	data := resourcesFromZip[path]
+
+	if data == nil {
+		LogErrorf("no data for file '%s'\n", path)
+		servePlainText(w, r, 404, fmt.Sprintf("file '%s' not found", path))
+		return
+	}
+
+	if len(data) == 0 {
+		servePlainText(w, r, 404, "Asset is empty")
+		return
+	}
+
+	serveData(w, r, 200, MimeTypeByExtensionExt(path), data)
+}
 
 /*
 Big picture:
@@ -78,8 +171,15 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 
 // /s/$rest
 func handleStatic(w http.ResponseWriter, r *http.Request) {
+	if hasZipResources() {
+		path := r.URL.Path[1:] // remove initial "/" i.e. "/s/*" => "s/*"
+		serveResourceFromZip(w, r, path)
+		return
+	}
+
 	fileName := r.URL.Path[len("/s/"):]
 	path := filepath.Join("s", fileName)
+
 	if u.PathExists(path) {
 		http.ServeFile(w, r, path)
 	} else {

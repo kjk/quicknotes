@@ -3,17 +3,14 @@
 set -o nounset
 set -o errexit
 set -o pipefail
+set -o verbose
 
-#. scripts/fmt.sh
 . scripts/lint.sh
 
-rm -rf s/dist/*.map s/dist/*.js s/dist/*.css
+rm -rf s/dist/*.map s/dist/*.js s/dist/*.css resources.go
 
-echo "running gulp prod"
 ./node_modules/.bin/gulp prod
 
-echo "running tools/gen_resources.go"
 go run tools/gen_resources.go
 
-echo "go build"
-gdep go build -tags embedded_resources -o quicknotes
+gdep go build -o quicknotes_prod -tags embeded_resources

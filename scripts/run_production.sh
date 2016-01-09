@@ -10,5 +10,5 @@ set -o pipefail
 #gdep go build -race -o quicknotes
 
 echo "starting quicknotes, using mysql from docker"
-./quicknotes -local $@ || true
+./quicknotes_prod -local $@ || true
 #rm quicknotes

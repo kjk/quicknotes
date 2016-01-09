@@ -172,7 +172,7 @@ func addZipDataMust(zw *zip.Writer, path string, d []byte, zipName string) {
 	fih, err := zip.FileInfoHeader(fi)
 	fataliferr(err)
 	fih.Name = zipName
-	fih.Method = zip.Deflate
+	fih.Method = zip.Store
 	fw, err := zw.CreateHeader(fih)
 	fataliferr(err)
 	_, err = fw.Write(d)
