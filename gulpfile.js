@@ -4,6 +4,7 @@
 var babelify = require('babelify');
 var browserify = require('browserify');
 var buffer = require('vinyl-buffer');
+var cssnano = require('gulp-cssnano');
 var envify = require('envify/custom');
 var exorcist = require('exorcist');
 var gulp = require('gulp');
@@ -63,11 +64,19 @@ gulp.task('css', function() {
     .pipe(gulp.dest('./s/dist/'));
 });
 
+gulp.task('cssprod', function() {
+  return gulp.src('./sass/main.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(prefix('last 2 versions'))
+    .pipe(cssnano())
+    .pipe(gulp.dest('./s/dist/'));
+});
+
 gulp.task('watch', function() {
   gulp.watch('js/*', ['js']);
   gulp.watch('./sass/**/*', ['css']);
 });
 
-gulp.task('build_and_watch', ['default', 'watch']);
-gulp.task('prod', ['css', 'jsprod']);
+gulp.task('prod', ['cssprod', 'jsprod']);
 gulp.task('default', ['css', 'js']);
+gulp.task('build_and_watch', ['default', 'watch']);
