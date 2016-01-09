@@ -7,14 +7,14 @@
 
 // index is one of the above constants.
 // value at a given index is [[cbFunc, cbId], ...]
-let actionCallbacks = {};
+let registeredActions = {};
 
 // current global callback id to hand out in on()
 // we don't bother recycling them after off()
 let currCid = 0;
 
 function broadcast(actionCmd) {
-  const callbacks = actionCallbacks[actionCmd];
+  const callbacks = registeredActions[actionCmd];
   if (!callbacks || callbacks.length === 0) {
     console.log('action.broadcast: no callback for action', actionCmd);
     return;
@@ -36,10 +36,10 @@ function broadcast(actionCmd) {
 // returns an id that can be used to unsubscribe with off()
 export function on(actionCmd, cb, owner) {
   currCid++;
-  const callbacks = actionCallbacks[actionCmd];
+  const callbacks = registeredActions[actionCmd];
   const el = [cb, currCid, owner];
   if (!callbacks) {
-    actionCallbacks[actionCmd] = [el];
+    registeredActions[actionCmd] = [el];
   } else {
     callbacks.push(el);
   }
@@ -47,12 +47,12 @@ export function on(actionCmd, cb, owner) {
 }
 
 export function off(actionCmd, cbIdOrOwner) {
-  const callbacks = actionCallbacks[actionCmd];
+  const callbacks = registeredActions[actionCmd];
   if (callbacks && callbacks.length > 0) {
     const n = callbacks.length;
     for (let i = 0; i < n; i++) {
       const cb = callbacks[i];
-      if (cb[1] === cbId || cb[2] === cbIdOrOwner) {
+      if (cb[1] === cbIdOrOwner || cb[2] === cbIdOrOwner) {
         callbacks.splice(i, 1);
         return;
       }
@@ -62,14 +62,14 @@ export function off(actionCmd, cbIdOrOwner) {
 }
 
 export function offAllForOwner(owner) {
-  for (let i = 0; i < lastIdx; i++) {
-    off(i, owner);
+  for (let actionCmd in registeredActions) {
+    off(actionCmd, owner);
   }
 }
 
 /* actions specific to an app */
 
-// index in actionCallbacks array for a given action
+// key in registeredActions
 const showSettingsCmd = 'showSettings';
 const hideSettingsCmd = 'hideSettings';
 const tagSelectedCmd = 'tagSelected';
