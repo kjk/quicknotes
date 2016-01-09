@@ -12,7 +12,7 @@ import * as u from './utils.js';
 import * as format from './format.js';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
-import $ from 'jquery';
+import * as api from './api.js';
 
 function tagsFromNotes(notes) {
   let tags = {
@@ -153,11 +153,9 @@ export default class AppUser extends React.Component {
   updateNotes() {
     const userHandle = this.props.notesUserHandle;
     //console.log("updateNotes: userHandle=", userHandle);
-    const uri = '/api/getnotescompact.json?user=' + encodeURIComponent(userHandle);
-    //console.log("updateNotes: uri=", uri);
-    $.get(uri, function(json) {
+    api.getNotesCompact(userHandle, json => {
       this.setNotes(json);
-    }.bind(this));
+    });
   }
 
   standardKeyFilter(event) {
@@ -191,56 +189,35 @@ export default class AppUser extends React.Component {
   // TODO: after delete/undelete should show a message at the top
   // with 'undo' link
   delUndelNote(note) {
-    const data = {
-      noteIdHash: ni.IDStr(note)
-    };
+    const noteId = ni.IDStr(note)
     if (ni.IsDeleted(note)) {
-      $.post('/api/undeletenote.json', data, function() {
+      api.undeleteNote(noteId, () => {
         this.updateNotes();
-      }.bind(this))
-        .fail(function() {
-          alert('error undeleting a note');
-        });
+      });
     } else {
-      $.post('/api/deletenote.json', data, function() {
-        this.updateNotes();
-      }.bind(this))
-        .fail(function() {
-          alert('error deleting a note');
-        });
+      api.deleteNote(noteId, () => {
+        thsi.updateNotes();
+      })
     }
   }
 
   permanentDeleteNote(note) {
-    const data = {
-      noteIdHash: ni.IDStr(note)
-    };
-    $.post('/api/permanentdeletenote.json', data, function() {
+    const noteId = ni.IDStr(note)
+    api.permanentDeleteNote(noteId, () => {
       this.updateNotes();
-    }.bind(this))
-      .fail(function() {
-        alert('error deleting a note');
-      });
+    });
   }
 
   makeNotePublicPrivate(note) {
-    const data = {
-      noteIdHash: ni.IDStr(note)
-    };
+    const noteId = ni.IDStr(note)
     if (ni.IsPublic(note)) {
-      $.post('/api/makenoteprivate.json', data, function() {
+      api.makeNotePrivate(noteId, () => {
         this.updateNotes();
-      }.bind(this))
-        .fail(function() {
-          alert('error making note private');
-        });
+      });
     } else {
-      $.post('/api/makenotepublic.json', data, function() {
+      api.makeNotePublic(noteId, () => {
         this.updateNotes();
-      }.bind(this))
-        .fail(function() {
-          alert('error making note private');
-        });
+      });
     }
   }
 
@@ -249,19 +226,13 @@ export default class AppUser extends React.Component {
       noteIdHash: ni.IDStr(note)
     };
     if (ni.IsStarred(note)) {
-      $.post('/api/unstarnote.json', data, function() {
+      api.unstartNote(noteId, () => {
         this.updateNotes();
-      }.bind(this))
-        .fail(function() {
-          alert('error unstarring note');
-        });
+      });
     } else {
-      $.post('/api/starnote.json', data, function() {
+      api.startNote(noteId, () => {
         this.updateNotes();
-      }.bind(this))
-        .fail(function() {
-          alert('error starring note');
-        });
+      });
     }
   }
 
@@ -271,15 +242,9 @@ export default class AppUser extends React.Component {
       Format: format.Text
     };
     const noteJSON = JSON.stringify(note);
-    const data = {
-      noteJSON: noteJSON
-    };
-    $.post('/api/createorupdatenote.json', data, function() {
+    api.createOrUpdateNote(noteJSON, () => {
       this.updateNotes();
-    }.bind(this))
-      .fail(function() {
-        alert('error creating new note: ' + noteJSON);
-      });
+    });
   }
 
   saveNote(note) {
@@ -291,15 +256,9 @@ export default class AppUser extends React.Component {
     });
     u.clearNewNote();
 
-    const data = {
-      noteJSON: noteJSON
-    };
-    $.post('/api/createorupdatenote.json', data, function() {
+    api.createOrUpdateNote(noteJSON, () => {
       this.updateNotes();
-    }.bind(this))
-      .fail(function() {
-        alert('error creating or updaing a note: ' + noteJSON);
-      });
+    });
   }
 
   cancelNoteEdit() {
@@ -324,16 +283,14 @@ export default class AppUser extends React.Component {
   }
 
   editNote(note) {
-    const userHandle = this.props.notesUserHandle;
-    const uri = '/api/getnotecompact.json?id=' + ni.IDStr(note);
-    console.log('AppUser.editNote: ' + ni.IDStr(note) + ' uri: ' + uri);
-
-    // TODO: show an error message on error
-    $.get(uri, function(noteJson) {
+    //const userHandle = this.props.notesUserHandle;
+    const noteId = ni.IDStr(note);
+    console.log('AppUser.editNote: ' + noteId);
+    api.getNoteCompact(noteId, noteJson => {
       this.setState({
         noteBeingEdited: noteJson
       });
-    }.bind(this));
+    })
   }
 
   handleStartNewNote() {
@@ -355,8 +312,7 @@ export default class AppUser extends React.Component {
     if (searchTerm === '') {
       return;
     }
-    var uri = '/api/searchusernotes.json?user=' + encodeURIComponent(userHandle) + '&term=' + encodeURIComponent(searchTerm);
-    $.get(uri, function(json) {
+    api.searchUserNotes(userHandle, searchTerm, json => {
       console.log('finished search for ' + json.Term);
       if (json.Term != gCurrSearchTerm) {
         console.log('discarding search results because not for ' + gCurrSearchTerm);
@@ -365,7 +321,7 @@ export default class AppUser extends React.Component {
       this.setState({
         searchResults: json
       });
-    }.bind(this));
+    });
   }
 
   handleSearchTermChanged(searchTerm) {

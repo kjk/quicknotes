@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import * as api from './api.js';
 
 const noteHashIDIdx = 0;
 const noteTitleIdx = 1;
@@ -132,16 +132,13 @@ function getContent(note, cb) {
     return res;
   }
   console.log('getContent: starting to fetch content for note', noteID);
-  var uri = '/api/getnotecompact.json?id=' + encodeURIComponent(noteID);
-  //console.log("updateNotes: uri=", uri);
-  $.get(uri, function(json) {
+  api.getNoteCompact(noteID, json => {
     console.log('getContent: json=', json);
-    var content = json[noteContentIdx];
+    const content = json[noteContentIdx];
     console.log('getContent: content=', content);
     setContent(note, content);
     cb(note);
   });
-  return '';
 }
 
 function getHumanSize(note) {

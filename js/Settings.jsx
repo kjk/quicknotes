@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
 import * as action from './action.js';
 
 const allThemes = [
@@ -40,8 +39,7 @@ export default class Settings extends React.Component {
     this.setState({
       theme: theme
     });
-    $('body').removeClass();
-    $('body').addClass('theme-' + theme);
+    document.body.className = 'theme-' + theme;
   }
 
   handleLayoutChanged(e) {
@@ -50,7 +48,7 @@ export default class Settings extends React.Component {
     this.setState({
       layout: layout
     });
-    $('body').attr('data-spacing', layout);
+    document.body.setAttribute('data-spacing', layout);
   }
 
   renderThemesSelect(themes, selected) {

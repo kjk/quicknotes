@@ -21,20 +21,14 @@ function tagsToText(tags) {
 }
 
 function textToTags(s) {
-  let tags = [];
-  const parts = s.split('#');
-  parts.forEach(function(part) {
-    part = part.trim();
-    if (part.length > 0) {
-      tags.push(part);
-    }
-  });
-  return tags;
+  let tags = s.split('#').map(tag => tag.trim());
+  return tags.filter(tag => tag.length == 0);
 }
 
 export default class FullComposer extends React.Component {
   constructor(props, context) {
     super(props, context);
+
     this.handleCancel = this.handleCancel.bind(this);
     this.handleFormatChanged = this.handleFormatChanged.bind(this);
     this.handlePublicChanged = this.handlePublicChanged.bind(this);
