@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 )
 
@@ -47,7 +48,7 @@ func loadResourcesFromZipReader(zr *zip.Reader) error {
 		if name == "s/dist/bundle.min.js" {
 			name = "s/dist/bundle.js"
 		}
-		//LogInfof("Loaded '%s' of size %d bytes\n", name, len(d))
+		//log.Infof("Loaded '%s' of size %d bytes\n", name, len(d))
 		resourcesFromZip[name] = d
 	}
 	return nil
@@ -65,10 +66,10 @@ func loadResourcesFromZip(path string) error {
 }
 
 func loadResourcesFromEmbeddedZip() error {
-	LogInfof("loadResourcesFromEmbeddedZip() ")
+	log.Infof("loadResourcesFromEmbeddedZip() ")
 	timeStart := time.Now()
 	defer func() {
-		LogInfof("in %s\n", time.Since(timeStart))
+		log.Infof("in %s\n", time.Since(timeStart))
 	}()
 
 	n := len(resourcesZipData)
@@ -90,10 +91,10 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 	data := resourcesFromZip[path]
 	gzippedData := resourcesFromZip[path+".gz"]
 
-	LogInfof("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
+	log.Infof("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
 
 	if data == nil {
-		LogErrorf("no data for file '%s'\n", path)
+		log.Errorf("no data for file '%s'\n", path)
 		servePlainText(w, r, 404, fmt.Sprintf("file '%s' not found", path))
 		return
 	}
@@ -135,9 +136,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		}*/
 
 	if dbUser != nil {
-		LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
+		log.Infof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
 	} else {
-		LogInfof("url: '%s'\n", uri)
+		log.Infof("url: '%s'\n", uri)
 	}
 
 	model := struct {
@@ -153,9 +154,9 @@ func handleImport(w http.ResponseWriter, r *http.Request) {
 	uri := r.URL.Path
 	dbUser := getUserFromCookie(w, r)
 	if dbUser != nil {
-		LogInfof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
+		log.Infof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
 	} else {
-		LogInfof("url: '%s'\n", uri)
+		log.Infof("url: '%s'\n", uri)
 	}
 
 	model := struct {
@@ -185,7 +186,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	if u.PathExists(path) {
 		http.ServeFile(w, r, path)
 	} else {
-		LogInfof("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
+		log.Infof("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
 		http.NotFound(w, r)
 	}
 }
@@ -195,11 +196,11 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	userHandle := r.URL.Path[len("/u/"):]
 	i, err := getCachedUserInfoByHandle(userHandle)
 	if err != nil || i == nil {
-		LogInfof("no user '%s', url: '%s', err: %s\n", userHandle, r.URL, err)
+		log.Infof("no user '%s', url: '%s', err: %s\n", userHandle, r.URL, err)
 		http.NotFound(w, r)
 		return
 	}
-	LogInfof("%d notes for user '%s'\n", len(i.notes), userHandle)
+	log.Infof("%d notes for user '%s'\n", len(i.notes), userHandle)
 	model := struct {
 		UserHandle         string
 		LoggedInUserHandle string
@@ -228,7 +229,7 @@ func userCanAccessNote(dbUser *DbUser, note *Note) bool {
 func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) *Note {
 	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
 	noteID := dehashInt(noteIDHashStr)
-	LogInfof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	log.Infof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		return nil
@@ -350,7 +351,7 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 	}
 	content, err := getCachedContent(note.ContentSha1)
 	if err != nil {
-		LogErrorf("getCachedContent() failed with %s\n", err)
+		log.Errorf("getCachedContent() failed with %s\n", err)
 		httpErrorWithJSONf(w, "/api/getnote.json: getCachedContent() failed with %s", err)
 		return
 	}
@@ -366,7 +367,7 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
-	LogInfof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
+	log.Infof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -389,7 +390,7 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 			notes = append(notes, noteToCompact(note))
 		}
 	}
-	LogInfof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
+	log.Infof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
 	v := struct {
 		LoggedInUserHandle string
 		Notes              [][]interface{}
@@ -408,14 +409,14 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
 	limitStr := strings.TrimSpace(r.FormValue("limit"))
-	LogInfof("jsonp: '%s', limit: '%s'\n", jsonp, limitStr)
+	log.Infof("jsonp: '%s', limit: '%s'\n", jsonp, limitStr)
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit == 0 {
 		limit = 25
 	}
 	recentNotes, err := getRecentPublicNotesCached(limit)
 	if err != nil {
-		LogErrorf("getRecentPublicNotesCached() failed with %s\n", err)
+		log.Errorf("getRecentPublicNotesCached() failed with %s\n", err)
 		httpServerError(w, r)
 		return
 	}
@@ -437,18 +438,18 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	var note NewNoteFromBrowser
 	var noteJSON = r.FormValue("noteJSON")
 	if noteJSON == "" {
-		LogInfof("missing noteJSON value\n")
+		log.Infof("missing noteJSON value\n")
 		return nil
 	}
 	fmt.Printf("json: '%s'\n", noteJSON)
 	err := json.Unmarshal([]byte(noteJSON), &note)
 	if err != nil {
-		LogInfof("json.Unmarshal('%s') failed with %s", noteJSON, err)
+		log.Infof("json.Unmarshal('%s') failed with %s", noteJSON, err)
 		return nil
 	}
-	//LogInfof("note: %s\n", noteJSON)
+	//log.Infof("note: %s\n", noteJSON)
 	if !isValidFormat(note.Format) {
-		LogInfof("invalid format %d\n", note.Format)
+		log.Infof("invalid format %d\n", note.Format)
 	}
 	newNote.idStr = note.IDStr
 	newNote.title = note.Title
@@ -466,23 +467,23 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 // POST /api/createorupdatenote.json
 //  noteJSON : note serialized as json in array format
 func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
-		LogErrorf("not logged in\n")
+		log.Errorf("not logged in\n")
 		httpErrorWithJSONf(w, "user not logged in")
 		return
 	}
 	note := newNoteFromArgs(r)
 	if note == nil {
-		LogErrorf("newNoteFromArgs() returned nil\n")
+		log.Errorf("newNoteFromArgs() returned nil\n")
 		httpErrorWithJSONf(w, "newNoteFromArgs() returned nil")
 		return
 	}
 
 	noteID, err := dbCreateOrUpdateNote(dbUser.ID, note)
 	if err != nil {
-		LogErrorf("dbCreateNewNote() failed with %s\n", err)
+		log.Errorf("dbCreateNewNote() failed with %s\n", err)
 		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
 		return
 	}
@@ -497,14 +498,14 @@ func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
-		LogErrorf("not logged int\n")
+		log.Errorf("not logged int\n")
 		httpErrorWithJSONf(w, "user not logged in")
 		return nil, 0
 	}
 
 	noteIDHashStr := strings.TrimSpace(r.FormValue("noteIdHash"))
 	noteID := dehashInt(noteIDHashStr)
-	LogInfof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	log.Infof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		httpErrorWithJSONf(w, "note doesn't exist")
@@ -521,7 +522,7 @@ func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) 
 // args:
 // - noteIdHash
 func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -531,7 +532,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
 		return
 	}
-	LogInfof("deleted note %d\n", noteID)
+	log.Infof("deleted note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -544,7 +545,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 // args:
 // - noteIdHash
 func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -554,7 +555,7 @@ func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to permanently delete note with '%s'", err)
 		return
 	}
-	LogInfof("permanently deleted note %d\n", noteID)
+	log.Infof("permanently deleted note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -567,7 +568,7 @@ func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
 // args:
 // - noteIdHash
 func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -577,7 +578,7 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to undelete note with '%s'", err)
 		return
 	}
-	LogInfof("undeleted note %d\n", noteID)
+	log.Infof("undeleted note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -590,7 +591,7 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 // args:
 // - noteIdHash
 func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -600,7 +601,7 @@ func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to make note private with '%s'", err)
 		return
 	}
-	LogInfof("made note %d private\n", noteID)
+	log.Infof("made note %d private\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -613,7 +614,7 @@ func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 // args:
 // - noteIdHash
 func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -623,7 +624,7 @@ func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to make note public with '%s'", err)
 		return
 	}
-	LogInfof("made note %d public\n", noteID)
+	log.Infof("made note %d public\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -636,7 +637,7 @@ func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 // args:
 // - noteIdHash
 func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -646,7 +647,7 @@ func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to star note with '%s'", err)
 		return
 	}
-	LogInfof("starred note %d\n", noteID)
+	log.Infof("starred note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{
@@ -659,7 +660,7 @@ func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
 // args:
 // - noteIdHash
 func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
-	LogInfof("url: '%s'\n", r.URL)
+	log.Infof("url: '%s'\n", r.URL)
 	dbUser, noteID := getUserNoteFromArgs(w, r)
 	if dbUser == nil {
 		return
@@ -669,7 +670,7 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "failed to unstar note with '%s'", err)
 		return
 	}
-	LogInfof("unstarred note %d\n", noteID)
+	log.Infof("unstarred note %d\n", noteID)
 	v := struct {
 		Msg string
 	}{

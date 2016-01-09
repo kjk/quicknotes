@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/kjk/log"
+
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -66,10 +68,10 @@ func testListObjects() {
 	for {
 		objects, err := storage.ListObjects(ctx, notenikBucket, query)
 		if err != nil {
-			LogErrorf("storage.ListObjects() failed with %s\n", err)
+			log.Errorf("storage.ListObjects() failed with %s\n", err)
 			return
 		}
-		//LogInfof("%d objects\n", len(objects.Results))
+		//log.Infof("%d objects\n", len(objects.Results))
 		//for _, obj := range objects.Results {
 		//	fmt.Printf("name: %s, size: %v\n", obj.Name, obj.Size)
 		//}
@@ -79,7 +81,7 @@ func testListObjects() {
 			break
 		}
 	}
-	LogInfof("listed %d objects in %s\n", nTotal, time.Since(timeStart))
+	log.Infof("listed %d objects in %s\n", nTotal, time.Since(timeStart))
 }
 
 func noteGoogleStoragePath(sha1 []byte) string {
@@ -101,7 +103,7 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 	}
 	if err != nil {
 		if err != storage.ErrObjectNotExist {
-			LogErrorf("storage.StatObject('%s') failed with %s", path, err)
+			log.Errorf("storage.StatObject('%s') failed with %s", path, err)
 			return err
 		}
 	}
@@ -109,11 +111,11 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 	w.ContentType = "text/plain"
 	_, err = w.Write(d)
 	if err != nil {
-		LogErrorf("w.Write() failed with %s\n", err)
+		log.Errorf("w.Write() failed with %s\n", err)
 	}
 	err2 := w.Close()
 	if err2 != nil {
-		LogErrorf("w.Close() failed with %s\n", err2)
+		log.Errorf("w.Close() failed with %s\n", err2)
 	}
 	if err != nil {
 		return err
@@ -121,7 +123,7 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 	if err2 != nil {
 		return err2
 	}
-	LogVerbosef("saved %d bytes in %s, file: '%s'\n", len(d), time.Since(timeStart), path)
+	log.Verbosef("saved %d bytes in %s, file: '%s'\n", len(d), time.Since(timeStart), path)
 	return nil
 }
 
@@ -139,6 +141,6 @@ func readNoteFromGoogleStorage(sha1 []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	LogInfof("downloaded %s from google storage in %s\n", path, time.Since(timeStart))
+	log.Infof("downloaded %s from google storage in %s\n", path, time.Since(timeStart))
 	return d, nil
 }

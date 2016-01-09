@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 	"github.com/syndtr/goleveldb/leveldb"
 )
@@ -87,7 +88,7 @@ func saveToFile(path string, d []byte) error {
 	}
 	err := u.CreateDirForFile(path)
 	if err != nil {
-		LogErrorf("u.CrewateDirForFile('%s') failed with %s\n", path, err)
+		log.Errorf("u.CrewateDirForFile('%s') failed with %s\n", path, err)
 		return err
 	}
 	return ioutil.WriteFile(path, d, 0644)
@@ -120,13 +121,13 @@ func getSegmentFileName(dir string, maxSegmentSize int) (string, error) {
 		if parts[0] != "segment" || parts[2] != "txt" {
 			continue
 		}
-		LogVerbosef("found segment file: %s\n", fi.Name())
+		log.Verbosef("found segment file: %s\n", fi.Name())
 		if fi.Size() < int64(maxSegmentSize) {
 			return fi.Name(), nil
 		}
 		n, err := strconv.Atoi(parts[1])
 		if err != nil {
-			LogErrorf("strconv.Atoi('%s') failed with %s\n", parts[1], err)
+			log.Errorf("strconv.Atoi('%s') failed with %s\n", parts[1], err)
 			continue
 		}
 		if n > maxSegmentFileNo {
@@ -145,24 +146,24 @@ func (store *LocalStore) saveToSegmentFile(d []byte) ([]byte, error) {
 		}
 		path := filepath.Join(store.filesDir, segmentFileName)
 		if u.PathExists(path) {
-			LogVerbosef("opening existing segment file %s\n", path)
+			log.Verbosef("opening existing segment file %s\n", path)
 			fi, err := os.Stat(path)
 			if err != nil {
-				LogErrorf("os.Stat('%s') failed with %s\n", path, err)
+				log.Errorf("os.Stat('%s') failed with %s\n", path, err)
 				return nil, err
 			}
 			f, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0644)
 			if err != nil {
-				LogErrorf("os.OpenFile('%s') failed with %s\n", path, err)
+				log.Errorf("os.OpenFile('%s') failed with %s\n", path, err)
 				return nil, err
 			}
 			store.currSegmentFile = f
 			store.currSegmentSize = int(fi.Size())
 		} else {
-			LogVerbosef("creating new segment file %s\n", path)
+			log.Verbosef("creating new segment file %s\n", path)
 			f, err := os.Create(path)
 			if err != nil {
-				LogErrorf("os.Create('%s') failed with %s\n", path, err)
+				log.Errorf("os.Create('%s') failed with %s\n", path, err)
 				return nil, err
 			}
 			store.currSegmentFile = f
@@ -177,21 +178,21 @@ func (store *LocalStore) saveToSegmentFile(d []byte) ([]byte, error) {
 	n, err := store.currSegmentFile.Write(d)
 	store.currSegmentSize += n
 	if err != nil {
-		LogErrorf("store.currSegmentFile.Write() failed with %s\n", err)
+		log.Errorf("store.currSegmentFile.Write() failed with %s\n", err)
 		return nil, err
 	}
 	err = store.currSegmentFile.Sync()
 	if err != nil {
-		LogErrorf("store.currSegmentFile.Sync() failed with %s\n", err)
+		log.Errorf("store.currSegmentFile.Sync() failed with %s\n", err)
 		return nil, err
 	}
 	if store.currSegmentSize >= store.MaxSegmentSize {
 		// this will trigger opening a new segment file on next save
 		err := closeFilePtr(&store.currSegmentFile)
 		if err != nil {
-			LogErrorf("closeFilePtr() failed with %s\n", err)
+			log.Errorf("closeFilePtr() failed with %s\n", err)
 		}
-		LogVerbosef("closed segment file '%s' because reached size limit (%d > %d)\n", store.currSegmentFileName, store.currSegmentSize, store.MaxSegmentSize)
+		log.Verbosef("closed segment file '%s' because reached size limit (%d > %d)\n", store.currSegmentFileName, store.currSegmentSize, store.MaxSegmentSize)
 	}
 	name := fmt.Sprintf("%s:%d:%d", store.currSegmentFileName, offset, size)
 	return []byte(name), nil
@@ -258,18 +259,18 @@ func readFromFilePath(path string, offset, size int) ([]byte, error) {
 func (store *LocalStore) readFromSegmentFile(fileName string) ([]byte, error) {
 	parts := strings.Split(fileName, ":")
 	if len(parts) != 3 {
-		LogErrorf("invalid segment file path '%s'\n", fileName)
+		log.Errorf("invalid segment file path '%s'\n", fileName)
 		return nil, ErrInvalidSegmentFilePath
 	}
 	fileName = parts[0]
 	offset, err := strconv.Atoi(parts[1])
 	if err != nil {
-		LogErrorf("invalid offset '%s' in segment file path '%s'\n", parts[1], fileName)
+		log.Errorf("invalid offset '%s' in segment file path '%s'\n", parts[1], fileName)
 		return nil, ErrInvalidSegmentFilePath
 	}
 	size, err := strconv.Atoi(parts[2])
 	if err != nil {
-		LogErrorf("invalid size '%s' in segment file path '%s'\n", parts[1], fileName)
+		log.Errorf("invalid size '%s' in segment file path '%s'\n", parts[1], fileName)
 		return nil, ErrInvalidSegmentFilePath
 	}
 	path := filepath.Join(store.filesDir, fileName)

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 )
 
@@ -118,14 +118,19 @@ func listDbUsers() {
 	}
 }
 
+func openLogFileMust() {
+	err := log.Open(getLogDir(), ".txt")
+	fatalIfErr(err, "openLogFileMust")
+}
+
 func main() {
 	var err error
 	parseFlags()
-	logToStdout = true
+	log.LogToStdout = true
 	verifyDirs()
-	OpenLogFiles()
-	IncLogVerbosity()
-	LogInfof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSqlConnectionRoot(), getDataDir())
+	log.IncVerbosity()
+	openLogFileMust()
+	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSqlConnectionRoot(), getDataDir())
 	initAppMust()
 
 	if flgImportStackOverflow {
@@ -141,18 +146,18 @@ func main() {
 	}
 
 	if hasZipResources() {
-		LogInfof("using resoruces from embedded .zip\n")
+		log.Infof("using resoruces from embedded .zip\n")
 		err = loadResourcesFromEmbeddedZip()
 		if err != nil {
-			LogFatalf("loadResourcesFromEmbeddedZip() failed with '%s'\n", err)
+			log.Fatalf("loadResourcesFromEmbeddedZip() failed with '%s'\n", err)
 		}
 	} else {
-		LogInfof("not using resoruces from embedded .zip\n")
+		log.Infof("not using resoruces from embedded .zip\n")
 	}
 
 	localStore, err = NewLocalStore(getLocalStoreDir())
 	if err != nil {
-		LogFatalf("NewLocalStore() failed with %s\n", err)
+		log.Fatalf("NewLocalStore() failed with %s\n", err)
 	}
 
 	if flgImportJSONFile != "" {
