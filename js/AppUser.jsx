@@ -140,7 +140,7 @@ export default class AppUser extends React.Component {
     const allNotes = json.Notes || [];
     const tags = tagsFromNotes(allNotes);
     // TODO: if selectedTag is not valid, reset to __all
-    //var selectedTag = this.state.selectedTag;
+    const selectedTag = this.state.selectedTag;
     const selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
     this.setState({
       allNotes: allNotes,
@@ -222,15 +222,13 @@ export default class AppUser extends React.Component {
   }
 
   startUnstarNote(note) {
-    const data = {
-      noteIdHash: ni.IDStr(note)
-    };
+    const noteId = ni.IDStr(note);
     if (ni.IsStarred(note)) {
       api.unstartNote(noteId, () => {
         this.updateNotes();
       });
     } else {
-      api.startNote(noteId, () => {
+      api.starNote(noteId, () => {
         this.updateNotes();
       });
     }
