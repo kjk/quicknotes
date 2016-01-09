@@ -358,9 +358,19 @@ func execMust(db *sql.DB, q string, args ...interface{}) {
 	fatalIfErr(err, fmt.Sprintf("db.Exec('%s')", q))
 }
 
+func getCreateDbSQLMust() []byte {
+	path := "createdb.sql"
+	d := resourcesFromZip[path]
+	if len(d) > 0 {
+		return d
+	}
+	d, err := ioutil.ReadFile(path)
+	fatalIfErr(err, "getCreateDbSqlMust")
+	return d
+}
+
 func getCreateDbStatementsMust() []string {
-	d, err := ioutil.ReadFile("createdb.sql")
-	fatalIfErr(err, "getCreateDbStatementsMust")
+	d := getCreateDbSQLMust()
 	return strings.Split(string(d), "\n\n")
 }
 
