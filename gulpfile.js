@@ -48,7 +48,6 @@ gulp.task('jsprod', function() {
     debug: true
   })
     .bundle()
-    .pipe(exorcist('s/dist/bundle.min.js.map'))
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
     .pipe(uglify())
