@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if os.path.exists(zip_path):
         os.remove(zip_path)
     zip_files(zip_path)
-    os.remove("quicknotes_linux")
+    os.remove("quicknotes_prod_linux")
     os.chdir(script_dir)
     if os.path.exists(zip_name):
         os.remove(zip_name)
