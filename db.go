@@ -54,15 +54,16 @@ func init() {
 	userIDToDbUserCache = make(map[int]*DbUser)
 }
 
-func getSqlConnectionRoot() string {
+func getSQLConnectionRoot() string {
 	if flgIsLocal && !flgProdDb {
-		return "root@tcp(localhost:3306)/"
+		//return "root@tcp(localhost:3306)/"
+		return fmt.Sprintf("root@tcp(%s:%s)/", flgDbHost, flgDbPort)
 	}
 	return "root:8Nmjt97WJFhR@tcp(173.194.251.111:3306)/"
 }
 
-func getSqlConnection() string {
-	return getSqlConnectionRoot() + "quicknotes?parseTime=true"
+func getSQLConnection() string {
+	return getSQLConnectionRoot() + "quicknotes?parseTime=true"
 }
 
 func isValidFormat(format int) bool {
@@ -383,14 +384,14 @@ func upgradeDbMust(db *sql.DB) {
 
 func createDatabaseMust() *sql.DB {
 	log.Verbosef("trying to create the database\n")
-	db, err := sql.Open("mysql", getSqlConnectionRoot())
+	db, err := sql.Open("mysql", getSQLConnectionRoot())
 	fatalIfErr(err, "sql.Open()")
 	err = db.Ping()
 	fatalIfErr(err, "db.Ping()")
 	execMust(db, `CREATE DATABASE quicknotes CHARACTER SET utf8 COLLATE utf8_general_ci`)
 	db.Close()
 
-	db, err = sql.Open("mysql", getSqlConnection())
+	db, err = sql.Open("mysql", getSQLConnection())
 	fatalIfErr(err, "sql.Open()")
 	stmts := getCreateDbStatementsMust()
 	for _, stm := range stmts {
@@ -1162,7 +1163,7 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 
 func deleteDatabaseMust() {
 	log.Verbosef("trying to delete the database\n")
-	db, err := sql.Open("mysql", getSqlConnectionRoot())
+	db, err := sql.Open("mysql", getSQLConnectionRoot())
 	fatalIfErr(err, "sql.Open()")
 	err = db.Ping()
 	fatalIfErr(err, "db.Ping()")
@@ -1183,7 +1184,7 @@ func getDbMust() *sql.DB {
 	}
 	sqlDbMu.Lock()
 	defer sqlDbMu.Unlock()
-	db, err := sql.Open("mysql", getSqlConnection())
+	db, err := sql.Open("mysql", getSQLConnection())
 	if err != nil {
 		log.Fatalf("sql.Open() failed with %s", err)
 	}
