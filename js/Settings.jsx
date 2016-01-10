@@ -88,6 +88,7 @@ export default class Settings extends React.Component {
   }
 
   render() {
+    console.log('Settings.render');
     const layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
     const themes = this.renderThemesSelect(allThemes, this.state.theme);
     return (
