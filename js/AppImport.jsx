@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Top from './Top.jsx';
 
-/*global gLoggedInUserHandle b:true*/
-
 function appImportStart() {
   console.log('appImportStart: gLoggedInUserHandle: ', gLoggedInUserHandle);
   const isLoggedIn = gLoggedInUserHandle !== '';
