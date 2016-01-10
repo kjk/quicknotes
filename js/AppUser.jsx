@@ -352,22 +352,6 @@ export default class AppUser extends React.Component {
     this.handleSearchTermChanged(''); // hide search results
   }
 
-  renderFullComposer() {
-    if (this.state.noteBeingEdited) {
-      return (
-        <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } />
-        );
-    }
-  }
-
-  renderSearchResults() {
-    if (this.state.searchResults) {
-      return (
-        <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } />
-        );
-    }
-  }
-
   render() {
     const compact = false;
     const isLoggedIn = this.state.loggedInUserHandle !== '';
@@ -394,10 +378,13 @@ export default class AppUser extends React.Component {
           startUnstarNoteCb={ this.startUnstarNote }
           editCb={ this.editNote } />
         { this.state.isShowingSettings ?
-          <Setings /> :
+          <Settings /> :
           null }
-        { this.renderFullComposer() }
-        { this.renderSearchResults() }
+        { this.state.noteBeingEdited ?
+          <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } /> :
+          null }
+        { this.state.searchResults ?
+          <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } /> : null }
       </div>
       );
   }
