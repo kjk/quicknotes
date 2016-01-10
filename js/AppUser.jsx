@@ -103,7 +103,7 @@ export default class AppUser extends React.Component {
       loggedInUserHandle: loggedInUserHandle,
       noteBeingEdited: null,
       searchResults: null,
-      showingSettings: false
+      isShowingSettings: false
     };
   }
 
@@ -175,14 +175,14 @@ export default class AppUser extends React.Component {
   showSettings() {
     console.log('showSettings');
     this.setState({
-      showingSettings: true
+      isShowingSettings: true
     });
   }
 
   hideSettings() {
     console.log('hideSettings');
     this.setState({
-      showingSettings: false
+      isShowingSettings: false
     });
   }
 
@@ -368,13 +368,6 @@ export default class AppUser extends React.Component {
     }
   }
 
-  renderSettings() {
-    console.log('renderSettings: ', this.state.showingSettings);
-    if (this.state.showingSettings) {
-      return <Settings />;
-    }
-  }
-
   render() {
     const compact = false;
     const isLoggedIn = this.state.loggedInUserHandle !== '';
@@ -400,7 +393,9 @@ export default class AppUser extends React.Component {
           makeNotePublicPrivateCb={ this.makeNotePublicPrivate }
           startUnstarNoteCb={ this.startUnstarNote }
           editCb={ this.editNote } />
-        { this.renderSettings() }
+        { this.state.isShowingSettings ?
+          <Setings /> :
+          null }
         { this.renderFullComposer() }
         { this.renderSearchResults() }
       </div>
