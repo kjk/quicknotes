@@ -12,6 +12,8 @@
     "jsx": true
   },
   "rules": {
+    "no-undef": 2,
+    //"no-unused-vars": [1, {"vars": "all", "args": "none", "varsIgnorePattern": "React|PropTypes|Component"}],
     "semi": 2,
     "react/jsx-boolean-value": 1,
     "react/jsx-key": 1,

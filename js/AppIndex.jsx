@@ -5,6 +5,9 @@ import Settings from './Settings.jsx';
 import * as action from './action.js';
 import * as u from './utils.js';
 
+/*global gRecentNotesInitial b:true*/
+/*global gLoggedInUserHandle b:true*/
+
 class RecentNotes extends React.Component {
   constructor(props, context) {
     super(props, context);

@@ -1,5 +1,4 @@
 import React from 'react';
-import format from './format.js';
 
 const TypeTitle = 1;
 const TypeLine = 2;
