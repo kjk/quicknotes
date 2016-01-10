@@ -49,7 +49,7 @@ export default class AppIndex extends Component {
     console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
     const isLoggedIn = gLoggedInUserHandle !== '';
     const showSettings = this.state.isShowingSettings;
-    console.log("AppIndex.render: showSettings=", showSettings);
+    console.log('AppIndex.render: showSettings=', showSettings);
     return (
       <div>
         <Top isLoggedIn={ isLoggedIn }
