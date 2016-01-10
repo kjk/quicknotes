@@ -37,6 +37,12 @@
     //rules we might enfornce in the future
     //"react/no-multi-comp": 1,
   },
+  "globals": {
+    "gLoggedInUserHandle": true,
+    "gRecentNotesInitial": true,
+    "gNotesUserHandle": true,
+    "gInitialNotesJSON": true
+  },
   "plugins": [
     "eslint-plugin-react"
   ],

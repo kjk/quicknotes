@@ -14,9 +14,6 @@ import * as ni from './noteinfo.js';
 import * as action from './action.js';
 import * as api from './api.js';
 
-/*global gNotesUserHandle b:true*/
-/*global gInitialNotesJSON b:true*/
-
 function tagsFromNotes(notes) {
   let tags = {
     __all: 0,
