@@ -125,11 +125,15 @@ function getCurrentVersionID(note) {
 }
 
 function getContent(note, cb) {
+  return note[noteContentIdx] || '';
+}
+
+function fetchContentIfNeeded(note, cb) {
   const noteID = getIDStr(note);
   const res = note[noteContentIdx];
   if (res) {
     console.log('getContent: already has it for note', noteID);
-    return res;
+    cb(note);
   }
   console.log('getContent: starting to fetch content for note', noteID);
   api.getNoteCompact(noteID, json => {
@@ -265,6 +269,7 @@ exports.IsPublic = getIsPublic;
 exports.IsPartial = getIsPartial;
 exports.HumanSize = getHumanSize;
 exports.Content = getContent;
+exports.FetchContent = fetchContentIfNeeded;
 exports.SetPublicState = setPublicState;
 exports.SetTitle = setTitle;
 exports.SetTags = setTags;

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';
+import NoteBody from './NoteBody.jsx';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
 
@@ -8,95 +9,7 @@ function urlifyTitle(s) {
   return s.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
-class NoteBody extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.handleCollapse = this.handleCollapse.bind(this);
-    this.handleExpand = this.handleExpand.bind(this);
-    this.onContent = this.onContent.bind(this);
-
-    this.state = {
-      note: props.note
-    };
-  }
-
-  handleExpand() {
-    const note = this.state.note;
-    console.log('expand note', ni.IDStr(note));
-    ni.Expand(note);
-    const content = ni.Content(note, this.onContent);
-    // if has content, change the state immediately.
-    // if doesn't have content, it'll be changed in onContent.
-    // if we always do it and there is no content, we'll get an ugly flash
-    // due to 2 updates in quick succession.
-    if (content) {
-      this.setState({
-        note: note
-      });
-    }
-  }
-
-  handleCollapse() {
-    const note = this.state.note;
-    console.log('collapse note', ni.IDStr(note));
-    ni.Collapse(note);
-    this.setState({
-      note: note
-    });
-  }
-
-  renderCollapseOrExpand(note) {
-    // if a note is not partial, there's neither collapse nor exapnd
-    if (!ni.IsPartial(note)) {
-      return;
-    }
-
-    if (ni.IsCollapsed(note)) {
-      return (
-        <a href="#" className="expand" onClick={ this.handleExpand }>Expand</a>
-        );
-    }
-
-    return (
-      <a href="#" className="collapse" onClick={ this.handleCollapse }>Collapse</a>
-      );
-  }
-
-  onContent(note) {
-    console.log('NoteBody.onContent');
-    this.setState({
-      note: note
-    });
-  }
-
-  renderContent(note) {
-    if (ni.IsCollapsed(note)) {
-      return <pre className="note-body">{ ni.Snippet(note) }</pre>;
-    }
-    return <pre className="note-body">{ ni.Content(note, this.onContent) }</pre>;
-  }
-
-  render() {
-    if (this.props.compact) {
-      return;
-    }
-    const note = this.state.note;
-    //console.log("NoteBody.render() note: ", ni.IDStr(note), "collapsed:", ni.IsCollapsed(note));
-    return (
-      <div className="note-content">
-        { this.renderContent(note) }
-        { this.renderCollapseOrExpand(note) }
-      </div>
-      );
-  }
-}
-
-NoteBody.propTypes = {
-  note: React.PropTypes.array,
-  compact: React.PropTypes.bool
-};
-
-export default class Note extends React.Component {
+export default class Note extends Component {
   constructor(props, context) {
     super(props, context);
     this.handleDelUndel = this.handleDelUndel.bind(this);
@@ -337,12 +250,12 @@ export default class Note extends React.Component {
 }
 
 Note.propTypes = {
-  note: React.PropTypes.array,
-  compact: React.PropTypes.bool,
-  myNotes: React.PropTypes.bool,
-  delUndelNoteCb: React.PropTypes.func, // TODO: change name
-  permanentDeleteNoteCb: React.PropTypes.func,
-  makeNotePublicPrivateCb: React.PropTypes.func,
-  editCb: React.PropTypes.func,
-  startUnstarNoteCb: React.PropTypes.func
+  note: PropTypes.array,
+  compact: PropTypes.bool,
+  myNotes: PropTypes.bool,
+  delUndelNoteCb: PropTypes.func, // TODO: change name
+  permanentDeleteNoteCb: PropTypes.func,
+  makeNotePublicPrivateCb: PropTypes.func,
+  editCb: PropTypes.func,
+  startUnstarNoteCb: PropTypes.func
 };
