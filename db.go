@@ -557,7 +557,10 @@ func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
 }
 
 func dbUpdateNote(userID int, note *NewNote) (int, error) {
-	noteID := dehashInt(note.idStr)
+	noteID, err := dehashInt(note.idStr)
+	if err != nil {
+		return 0, err
+	}
 	existingNote, err := dbGetNoteByID(noteID)
 	if err != nil {
 		return 0, err

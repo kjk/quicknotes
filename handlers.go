@@ -226,21 +226,24 @@ func userCanAccessNote(dbUser *DbUser, note *Note) bool {
 	return dbUser.ID == note.userID
 }
 
-func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) *Note {
+func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) (*Note, error) {
 	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
-	noteID := dehashInt(noteIDHashStr)
-	log.Infof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	noteID, err := dehashInt(noteIDHashStr)
+	if err != nil {
+		return nil, err
+	}
+	log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	dbUser := getUserFromCookie(w, r)
 	// TODO: when we have sharing via secret link we'll have to check
 	// permissions
-	if userCanAccessNote(dbUser, note) {
-		return note
+	if !userCanAccessNote(dbUser, note) {
+		return nil, fmt.Errorf("no access to note '%s'", noteIDHashStr)
 	}
-	return nil
+	return note, nil
 }
 
 // /n/{note_id_hash}-rest
@@ -251,8 +254,9 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		noteIDHashStr = noteIDHashStr[:idx]
 	}
 
-	note := getNoteByIDHash(w, r, noteIDHashStr)
-	if note == nil {
+	note, err := getNoteByIDHash(w, r, noteIDHashStr)
+	if err != nil || note == nil {
+		log.Error(err)
 		http.NotFound(w, r)
 		return
 	}
@@ -340,8 +344,9 @@ func noteToCompact(n *Note) []interface{} {
 func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 	dbUser := getUserFromCookie(w, r)
 	noteIDHashStr := r.FormValue("id")
-	note := getNoteByIDHash(w, r, noteIDHashStr)
-	if note == nil {
+	note, err := getNoteByIDHash(w, r, noteIDHashStr)
+	if err != nil || note == nil {
+		log.Error(err)
 		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
 		return
 	}
@@ -504,14 +509,21 @@ func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) 
 	}
 
 	noteIDHashStr := strings.TrimSpace(r.FormValue("noteIdHash"))
-	noteID := dehashInt(noteIDHashStr)
+	noteID, err := dehashInt(noteIDHashStr)
+	if err != nil {
+		log.Error(err)
+		httpErrorWithJSONf(w, "ivalid note id '%s'", noteIDHashStr)
+		return nil, 0
+	}
 	log.Infof("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
+		log.Error(err)
 		httpErrorWithJSONf(w, "note doesn't exist")
 		return nil, 0
 	}
 	if note.userID != dbUser.ID {
+		log.Errorf("note '%s' doesn't belong to user '%s'\n", noteIDHashStr, dbUser.Handle)
 		httpErrorWithJSONf(w, "note doesn't belong to this user")
 		return nil, 0
 	}

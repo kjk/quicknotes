@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
 import * as u from './utils.js';
@@ -25,7 +25,8 @@ function textToTags(s) {
   return tags.filter(tag => tag.length == 0);
 }
 
-export default class FullComposer extends React.Component {
+export default class FullComposer extends Component {
+
   constructor(props, context) {
     super(props, context);
 
@@ -209,7 +210,7 @@ export default class FullComposer extends React.Component {
 }
 
 FullComposer.propTypes = {
-  saveNoteCb: React.PropTypes.func.isRequired,
-  cancelNoteEditCb: React.PropTypes.func.isRequired,
-  note: React.PropTypes.array
+  saveNoteCb: PropTypes.func.isRequired,
+  cancelNoteEditCb: PropTypes.func.isRequired,
+  note: PropTypes.object // TODO: more specific
 };

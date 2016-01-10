@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"mime"
 	"path/filepath"
@@ -116,13 +117,14 @@ func hashInt(n int) string {
 	return res
 }
 
-// TODO: return an error if fails
-func dehashInt(s string) int {
+func dehashInt(s string) (int, error) {
 	hashIDMu.Lock()
 	nums := hashID.Decode(s)
 	hashIDMu.Unlock()
-	u.PanicIf(len(nums) != 1, "len(nums) is not 1")
-	return nums[0]
+	if len(nums) != 1 {
+		return -1, fmt.Errorf("dehashInt: invalid valude '%s'", s)
+	}
+	return nums[0], nil
 }
 
 func strArrEqual(a1, a2 []string) bool {
