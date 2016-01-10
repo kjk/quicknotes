@@ -21,12 +21,16 @@ def run_cmd_out(cmd):
   return s.decode("utf-8")
 
 def run_cmd_show_progress(cmd):
+  print("Running '%s'" % cmd)
   p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
           stderr = subprocess.STDOUT, shell = True)
   while True:
     line = p.stdout.readline()
     if not line:
       break
+    sys.stdout.buffer.write(line)
+    sys.stdout.flush()
+  #print("Finished runnign '%s'" % " ".join(cmd))
 
 def verify_docker_running():
   try:
@@ -83,7 +87,7 @@ def main():
   verify_docker_running()
   ip = get_docker_machine_ip()
   start_container_if_needed(g_imageName, g_containerName, "7200:3306")
-  cmd = ["./scripts/run.sh", "-db-host", ip, "-db-port", "7200"]
+  cmd = "./scripts/run.sh -db-host %s -db-port 7200" % ip
   run_cmd_show_progress(cmd)
 
 if __name__ == "__main__":
