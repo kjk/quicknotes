@@ -1,58 +1,20 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
+import RecentNotes from './RecentNotes.jsx';
 import * as action from './action.js';
-import * as u from './utils.js';
 
-class RecentNotes extends React.Component {
+export default class AppIndex extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = {
-      notes: gRecentNotesInitial
-    };
-  }
-
-  renderNotes(notes) {
-    notes = u.arrNotNull(notes);
-    return notes.map((note) => {
-      // see NoteSummary in db.go for note definition
-      const userHandle = note.UserHandle;
-      const title = note.Title;
-      const k = note.IDStr;
-      const noteUrl = '/n/' + note.IDStr;
-      const userUrl = '/u/' + userHandle;
-      return <div key={ k }>
-               <a href={ noteUrl }>
-                 { title }
-               </a> by&nbsp;
-               <a href={ userUrl }>
-                 { userHandle }
-               </a>
-             </div>;
-    });
-  }
-
-  render() {
-    const notes = this.state.notes;
-    return <div id="recentNotes">
-             <div>
-               Recent notes:
-             </div>
-             { this.renderNotes(notes) }
-           </div>;
-  }
-}
-
-class AppIndex extends React.Component {
-  constructor(props, context) {
-    super(props, context);
     this.hideSettings = this.hideSettings.bind(this);
     this.showSettings = this.showSettings.bind(this);
+    this.handleStartNewNote = this.handleStartNewNote.bind(this);
 
     this.state = {
-      showingSettings: false
+      isShowingSettings: false
     };
   }
 
@@ -68,25 +30,32 @@ class AppIndex extends React.Component {
   showSettings() {
     console.log('showSettings');
     this.setState({
-      showingSettings: true
+      isShowingSettings: true
     });
   }
 
   hideSettings() {
     console.log('hideSettings');
     this.setState({
-      showingSettings: false
+      isShowingSettings: false
     });
   }
 
+  handleStartNewNote() {
+    console.log('handleStartNewNote');
+  }
 
   render() {
     console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
     const isLoggedIn = gLoggedInUserHandle !== '';
-    const showSettings = this.state.showingSettings;
+    const showSettings = this.state.isShowingSettings;
+    console.log("AppIndex.render: showSettings=", showSettings);
     return (
       <div>
-        <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
+        <Top isLoggedIn={ isLoggedIn }
+          loggedInUserHandle={ gLoggedInUserHandle }
+          onStartNewNote={ this.handleStartNewNote }
+          notesUserHandle="" />
         { showSettings ?
           <Settings />
           : null }
