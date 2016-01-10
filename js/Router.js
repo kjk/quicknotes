@@ -202,4 +202,5 @@ _.extend(Router.prototype, {}, {
 var router = new Router();
 router.start();
 
-module.exports = router;
+export default router;
+

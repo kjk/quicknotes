@@ -14,6 +14,9 @@ import * as ni from './noteinfo.js';
 import * as action from './action.js';
 import * as api from './api.js';
 
+/*global gNotesUserHandle b:true*/
+/*global gInitialNotesJSON b:true*/
+
 function tagsFromNotes(notes) {
   let tags = {
     __all: 0,
@@ -119,9 +122,9 @@ export default class AppUser extends React.Component {
   }
 
   componentWillUnmount() {
-    key.unbind('ctrl+f', u.focusSearch);
-    key.unbind('ctrl+e', u.focusNewNote);
-    key.unbind('esc', this.escPressed);
+    keymaster.unbind('ctrl+f', u.focusSearch);
+    keymaster.unbind('ctrl+e', u.focusNewNote);
+    keymaster.unbind('esc', this.escPressed);
 
     action.offAllForOwner(this);
   }
@@ -196,7 +199,7 @@ export default class AppUser extends React.Component {
       });
     } else {
       api.deleteNote(noteId, () => {
-        thsi.updateNotes();
+        this.updateNotes();
       });
     }
   }

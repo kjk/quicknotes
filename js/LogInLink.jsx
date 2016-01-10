@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as action from './action.js';
+//import * as action from './action.js';
 
 const LinkLoggedIn = (props) => {
   const url = encodeURI('/logout?redir=' + window.location);

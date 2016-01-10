@@ -255,29 +255,4 @@ function collapse(note) {
   delete expandedNotes[id];
 }
 
-exports.IDStr = getIDStr;
-exports.Title = getTitle;
-exports.Size = getSize;
-exports.CreatedAt = getCreatedAt;
-exports.Tags = getTags;
-exports.Snippet = getSnippet;
-exports.Format = getFormat;
-exports.CurrentVersionID = getCurrentVersionID;
-exports.IsStarred = getIsStarred;
-exports.IsDeleted = getIsDeleted;
-exports.IsPublic = getIsPublic;
-exports.IsPartial = getIsPartial;
-exports.HumanSize = getHumanSize;
-exports.Content = getContent;
-exports.FetchContent = fetchContentIfNeeded;
-exports.SetPublicState = setPublicState;
-exports.SetTitle = setTitle;
-exports.SetTags = setTags;
-exports.SetFormat = setFormat;
-exports.SetContent = setContent;
-exports.IsExpanded = isExpanded;
-exports.IsCollapsed = isCollapsed;
-exports.Expand = expand;
-exports.Collapse = collapse;
-exports.notesEq = notesEq;
-exports.toNewNote = toNewNote;
+export { getIDStr as IDStr, getTitle as Title, getSize as Size, getCreatedAt as CreatedAt, getTags as Tags, getSnippet as Snippet, getFormat as Format, getCurrentVersionID as CurrentVersionID, getIsStarred as IsStarred, getIsDeleted as IsDeleted, getIsPublic as IsPublic, getIsPartial as IsPartial, getHumanSize as HumanSize, getContent as Content, fetchContentIfNeeded as FetchContent, setPublicState as SetPublicState, setTitle as SetTitle, setTags as SetTags, setFormat as SetFormat, setContent as SetContent, isExpanded as IsExpanded, isCollapsed as IsCollapsed, expand as Expand, collapse as Collapse, notesEq as notesEq, toNewNote as toNewNote };

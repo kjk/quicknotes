@@ -1,6 +1,8 @@
 import React from 'react';
 import LogInLink from './LogInLink.jsx';
 
+/*global gLoggedInUserHandle b:true*/
+
 export default class Top extends React.Component {
   constructor(props, context) {
     super(props, context);
