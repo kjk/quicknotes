@@ -15,12 +15,14 @@ import (
 )
 
 var (
-	httpAddr = ":5111"
+	httpAddr = "127.0.0.1:5111"
 
 	flgIsLocal              bool // local means using local mysql database, production means google's cloud
 	flgProdDb               bool // if true, use gce db when running localy
 	flgDelDatabase          bool
 	flgRecreateDatabase     bool
+	flgDbHost               string
+	flgDbPort               string
 	flgImportJSONUserHandle string
 	flgImportJSONFile       string
 	flgSearchTerm           string
@@ -75,12 +77,11 @@ func parseFlags() {
 	flag.StringVar(&flgImportJSONUserHandle, "import-user", "", "handle of the user (users.handle) for which to import notes")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
 	flag.StringVar(&flgSearchTerm, "search", "", "search notes for a given term")
+	flag.StringVar(&flgDbHost, "db-host", "127.0.0.1", "database host")
+	flag.StringVar(&flgDbPort, "db-port", "3306", "database port")
 	flag.Parse()
 	if flgIsLocal {
 		onlyLocalStorage = true
-	}
-	if isMac() {
-		httpAddr = "127.0.0.1:5111"
 	}
 }
 
@@ -130,7 +131,7 @@ func main() {
 	verifyDirs()
 	log.IncVerbosity()
 	openLogFileMust()
-	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSqlConnectionRoot(), getDataDir())
+	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	initAppMust()
 
 	if flgImportStackOverflow {
