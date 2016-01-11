@@ -15,37 +15,72 @@
 
 </head>
 
-<body class="theme-light">
+<body class="theme-light" data-spacing="default">
 
-  <div id="header-top"></div>
+  <div id="root">
 
-  <div id="page-content">
+    <div id="header-top"></div>
+
     {{if .LoggedInUserHandle}}
-    <div class="box">
-      <h3>You can import your notes from simplenote.com</h3>
-      <form action="/importsimplenote" method="GET">
-        <div class="row">
-          <label for="email">Email</label>
-          <input type="text" id="email" name="email" />
+    <div class="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"> <span>×</span></button>
+            <h4 class="modal-title">Import notes from SimpleNote.com</h4>
+          </div>
+
+          <div class="modal-body">
+
+            <form id="import-simplenote" action="/importsimplenote" method="GET">
+              <table style="margin-left: auto; margin-right: auto;">
+
+                <tr>
+                  <td>
+                    <label style="padding-right: 8px;" for="email">Email</label>
+                   </td>
+                   <td>
+                    <input style="min-width: 240px" type="text" id="email" name="email" />
+                   </td>
+                </tr>
+
+                <tr style="margin-top: 8px;">
+                  <td>
+                    <label for="password">Password</label>
+                  </td>
+                  <td>
+                    <input  style="min-width: 240px" type="password" id="password" name="password" />
+                  </td>
+                </tr>
+
+                <tr>
+                  <td></td>
+                  <td>
+                    <input style="width: 96px; float: right" type="submit" name="submit" value="Import" />
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </div>
+
         </div>
-        <div class="row">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" />
-        </div>
-        <div class="row">
-          <input type="submit" name="submit" value="Import from SimpleNote" />
-        </div>
-      </form>
+      </div>
     </div>
     {{else}}
-    <p>You're not logged in. Log in with:</p>
-    <ul>
-      <li><a href="/logintwitter?redir=%2F">Twitter</a></li>
-      <li><a href="/logingithub?redir=%2F">GitHub</a></li>
-      <li><a href="/logingoogle?redir=%2F">Google</a></li>
-    </ul>
+    <div id="page-content">
+      <p>You're not logged in. Log in with:</p>
+      <ul>
+        <li><a href="/logintwitter?redir=%2F">Twitter</a></li>
+        <li><a href="/logingithub?redir=%2F">GitHub</a></li>
+        <li><a href="/logingoogle?redir=%2F">Google</a></li>
+      </ul>
+    </div>
     {{end}}
+
+
   </div>
+
 
   <script src="/s/dist/bundle.js"></script>
   <script>

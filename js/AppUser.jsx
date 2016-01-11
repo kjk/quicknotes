@@ -86,12 +86,14 @@ export default class AppUser extends React.Component {
     let selectedTag = props.initialTag;
     let loggedInUserHandle = '';
     let tags = [];
+
+    if (initialNotesJSON && initialNotesJSON.LoggedInUserHandle) {
+      loggedInUserHandle = initialNotesJSON.LoggedInUserHandle;
+    }
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
       selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
-      loggedInUserHandle = initialNotesJSON.LoggedInUserHandle;
       tags = tagsFromNotes(allNotes);
-
     }
 
     this.state = {
