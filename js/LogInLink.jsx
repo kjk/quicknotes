@@ -16,7 +16,7 @@ const LinkLoggedIn = (props) => {
         <div className="dropdown-content">
           <a href={ userUrl }>My notes</a>
           <span className="divider"></span>
-          <a href="/import">Import notes</a>
+          <a href="/import">Import from Simplenote</a>
           <span className="divider"></span>
           <a href={ url }>Sign Out</a>
         </div>

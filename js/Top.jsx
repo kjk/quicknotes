@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import LogInLink from './LogInLink.jsx';
 
-export default class Top extends React.Component {
+export default class Top extends Component {
   constructor(props, context) {
     super(props, context);
     this.handleCreateNewNote = this.handleCreateNewNote.bind(this);
@@ -76,9 +76,9 @@ export default class Top extends React.Component {
 }
 
 Top.propTypes = {
-  onSearchTermChanged: React.PropTypes.func,
-  onStartNewNote: React.PropTypes.func.isRequired,
-  isLoggedIn: React.PropTypes.bool.isRequired,
-  loggedInUserHandle: React.PropTypes.string,
-  notesUserHandle: React.PropTypes.string
+  onSearchTermChanged: PropTypes.func,
+  onStartNewNote: PropTypes.func.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired,
+  loggedInUserHandle: PropTypes.string,
+  notesUserHandle: PropTypes.string
 };
