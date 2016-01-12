@@ -86,7 +86,7 @@ export default class AppUser extends Component {
     let selectedNotes = [];
     let selectedTag = props.initialTag;
     let loggedInUserHandle = '';
-    let tags = [];
+    let tags = {};
 
     if (initialNotesJSON && initialNotesJSON.LoggedInUserHandle) {
       loggedInUserHandle = initialNotesJSON.LoggedInUserHandle;
