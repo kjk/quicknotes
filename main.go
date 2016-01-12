@@ -147,13 +147,13 @@ func main() {
 	}
 
 	if hasZipResources() {
-		log.Infof("using resoruces from embedded .zip\n")
+		log.Infof("using resources from embedded .zip\n")
 		err = loadResourcesFromEmbeddedZip()
 		if err != nil {
 			log.Fatalf("loadResourcesFromEmbeddedZip() failed with '%s'\n", err)
 		}
 	} else {
-		log.Infof("not using resoruces from embedded .zip\n")
+		log.Infof("not using resources from embedded .zip\n")
 	}
 
 	localStore, err = NewLocalStore(getLocalStoreDir())

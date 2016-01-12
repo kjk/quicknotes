@@ -58,6 +58,22 @@ $col-btn-hover-border: #1862b5;
   }
 }
 
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+.btn-disabled {
+  background-color: $col-btn-bg;
+  border-color: $col-btn-border;
+  color: $col-btn-text;
+
+  &:hover {
+    background-color: $col-btn-hover-bg;
+    border-color: $col-btn-hover-border;
+  }
+}
+
 .expand {
   color: $col-blue;
 
@@ -120,6 +136,10 @@ $col-btn-hover-border: #1862b5;
 .fixed {
   position: fixed;
   top: 0; left: 0; right: 0;
+}
+
+.hidden {
+  display: none;
 }
 
 a {
@@ -920,13 +940,16 @@ $actions-height: 34px;
   background: red;
 }*/
 
-/* TODO: remove */
-#editor-actions .right {
+.right {
   float: right;
 }
 
-/* TODO: remove */
-#editor-actions .left {
+.no-margin-x {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.left {
   float: left;
 }
 
@@ -1312,6 +1335,11 @@ button.close {
     text-shadow: 0 1px 0 #fff;
     filter: alpha(opacity=20);
     opacity: .2;
+
+  &:hover {
+    opacity: 1;
+  }
+
 }
 
 .btn-group-vertical>.btn-group:after, .btn-toolbar:after, .clearfix:after, .container-fluid:after, .container:after, .dl-horizontal dd:after, .form-horizontal .form-group:after, .modal-footer:after, .modal-header:after, .nav:after, .navbar-collapse:after, .navbar-header:after, .navbar:after, .pager:after, .panel-body:after, .row:after {

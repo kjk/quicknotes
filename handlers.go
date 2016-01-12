@@ -150,24 +150,6 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplIndex, model)
 }
 
-func handleImport(w http.ResponseWriter, r *http.Request) {
-	uri := r.URL.Path
-	dbUser := getUserFromCookie(w, r)
-	if dbUser != nil {
-		log.Infof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
-	} else {
-		log.Infof("url: '%s'\n", uri)
-	}
-
-	model := struct {
-		LoggedInUserHandle string
-	}{}
-	if dbUser != nil {
-		model.LoggedInUserHandle = dbUser.Handle
-	}
-	execTemplate(w, tmplImport, model)
-}
-
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
@@ -705,7 +687,6 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/s/", handleStatic)
 	http.HandleFunc("/u/", handleUser)
 	http.HandleFunc("/n/", handleNote)
-	http.HandleFunc("/import", handleImport)
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
 	http.HandleFunc("/logingithub", handleLoginGitHub)
