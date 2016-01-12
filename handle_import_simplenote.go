@@ -12,6 +12,8 @@ import (
 	"github.com/kjk/simplenote"
 )
 
+// TODO: don't import duplicates
+
 const (
 	simplenoteAPIKey = "b6550d1ac75048988d9007aeae5dda6b"
 )
