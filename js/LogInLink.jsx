@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-//import * as action from './action.js';
+import * as action from './action.js';
+
+function showImportSimpleNote(e) {
+  e.preventDefault();
+  action.showHideImportSimpleNote(true);
+}
 
 const LinkLoggedIn = (props) => {
   const url = encodeURI('/logout?redir=' + window.location);
@@ -16,7 +21,7 @@ const LinkLoggedIn = (props) => {
         <div className="dropdown-content">
           <a href={ userUrl }>My notes</a>
           <span className="divider"></span>
-          <a href="/import">Import from Simplenote</a>
+          <a href="/import" onClick={ showImportSimpleNote }>Import from Simplenote</a>
           <span className="divider"></span>
           <a href={ url }>Sign Out</a>
         </div>
@@ -26,7 +31,7 @@ const LinkLoggedIn = (props) => {
 };
 
 LinkLoggedIn.propTypes = {
-  loggedInUserHandle: React.PropTypes.string
+  loggedInUserHandle: PropTypes.string
 };
 
 const LinkLoggedOut = (props) => {
@@ -54,7 +59,7 @@ const LinkLoggedOut = (props) => {
     );
 };
 
-export default class LogInLink extends React.Component {
+export default class LogInLink extends Component {
   /*handleSettings(e) {
     e.preventDefault();
     console.log("handleSettings");
@@ -71,6 +76,6 @@ export default class LogInLink extends React.Component {
 }
 
 LogInLink.propTypes = {
-  loggedInUserHandle: React.PropTypes.string,
-  isLoggedIn: React.PropTypes.bool
+  loggedInUserHandle: PropTypes.string,
+  isLoggedIn: PropTypes.bool
 };

@@ -13,6 +13,10 @@ let registeredActions = {};
 // we don't bother recycling them after off()
 let currCid = 0;
 
+function slice(iter, n) {
+  return Array.prototype.slice.call(iter, n);
+}
+
 function broadcast(actionCmd) {
   const callbacks = registeredActions[actionCmd];
   if (!callbacks || callbacks.length === 0) {
@@ -20,7 +24,8 @@ function broadcast(actionCmd) {
     return;
   }
 
-  const args = Array.prototype.slice.call(arguments, 1);
+  const args = slice(arguments, 1);
+  //const args = Array.prototype.slice.call(arguments, 1);
   for (let cbInfo of callbacks) {
     const cb = cbInfo[0];
     console.log('action.broadcast: calling callback for action', actionCmd, 'args:', args);
@@ -37,27 +42,26 @@ function broadcast(actionCmd) {
 export function on(actionCmd, cb, owner) {
   currCid++;
   const callbacks = registeredActions[actionCmd];
-  const el = [cb, currCid, owner];
+  const cbInfo = [cb, currCid, owner];
   if (!callbacks) {
-    registeredActions[actionCmd] = [el];
+    registeredActions[actionCmd] = [cbInfo];
   } else {
-    callbacks.push(el);
+    callbacks.push(cbInfo);
   }
   return currCid;
 }
 
 export function off(actionCmd, cbIdOrOwner) {
-  const callbacks = registeredActions[actionCmd];
-  if (callbacks && callbacks.length > 0) {
-    const n = callbacks.length;
-    for (let i = 0; i < n; i++) {
-      const cb = callbacks[i];
-      if (cb[1] === cbIdOrOwner || cb[2] === cbIdOrOwner) {
-        callbacks.splice(i, 1);
-        return;
-      }
+  const callbacks = registeredActions[actionCmd] || [];
+  const n = callbacks.length;
+  for (let i = 0; i < n; i++) {
+    const cbInfo = callbacks[i];
+    if (cbInfo[1] === cbIdOrOwner || cbInfo[2] === cbIdOrOwner) {
+      callbacks.splice(i, 1);
+      return 1 + off(actionCmd, cbIdOrOwner);
     }
   }
+  return 0;
   //console.log("action.off: didn't find callback id", cbId, "for action", actionCmd);
 }
 
@@ -70,9 +74,11 @@ export function offAllForOwner(owner) {
 /* actions specific to an app */
 
 // key in registeredActions
+// TODO: replace with showHideSettingsCmd
 const showSettingsCmd = 'showSettings';
 const hideSettingsCmd = 'hideSettings';
 const tagSelectedCmd = 'tagSelected';
+const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
 
 export function showSettings(name) {
   broadcast(showSettingsCmd, name);
@@ -96,4 +102,12 @@ export function tagSelected(tag) {
 
 export function onTagSelected(cb, owner) {
   return on(tagSelectedCmd, cb, owner);
+}
+
+export function onShowHideImportSimpleNote(cb, owner) {
+  return on(showHideImportSimpleNoteCmd, cb, owner);
+}
+
+export function showHideImportSimpleNote(shouldShow) {
+  broadcast(showHideImportSimpleNoteCmd, shouldShow);
 }

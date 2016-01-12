@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import FullComposer from './FullComposer.jsx';
 import LeftSidebar from './LeftSidebar.jsx';
 import NotesList from './NotesList.jsx';
 import Router from './Router.js';
 import SearchResults from './SearchResults.jsx';
+import ImportSimpleNote from './ImportSimpleNote.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
 import keymaster from 'keymaster';
@@ -61,7 +62,7 @@ let gCurrSearchTerm = '';
 
 // TODO: make it variable on AppUser
 
-export default class AppUser extends React.Component {
+export default class AppUser extends Component {
   constructor(props, context) {
     super(props, context);
     this.cancelNoteEdit = this.cancelNoteEdit.bind(this);
@@ -387,15 +388,16 @@ export default class AppUser extends React.Component {
           null }
         { this.state.searchResults ?
           <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } /> : null }
+        <ImportSimpleNote />
       </div>
       );
   }
 }
 
 AppUser.propTypes = {
-  notesUserHandle: React.PropTypes.string,
-  initialTag: React.PropTypes.string,
-  initialNotesJSON: React.PropTypes.object
+  notesUserHandle: PropTypes.string,
+  initialTag: PropTypes.string,
+  initialNotesJSON: PropTypes.object
 };
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]

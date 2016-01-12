@@ -14,8 +14,7 @@ var (
 	tmplUser      = "user.html"
 	tmplResult    = "result.html"
 	tmplNote      = "note.html"
-	tmplImport    = "import.html"
-	templateNames = []string{tmplIndex, tmplUser, tmplResult, tmplNote, tmplImport}
+	templateNames = []string{tmplIndex, tmplUser, tmplResult, tmplNote}
 	templatePaths []string
 	templates     *template.Template
 
