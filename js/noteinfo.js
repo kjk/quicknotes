@@ -128,13 +128,15 @@ function getContent(note, cb) {
   return note[noteContentIdx] || '';
 }
 
+// if has content, returns it
+// otherwise returns null, starts async fetch and
+// will call cb when finished fetching content
 function fetchContentIfNeeded(note, cb) {
   const noteID = getIDStr(note);
   const res = note[noteContentIdx];
   if (res) {
     console.log('getContent: already has it for note', noteID);
-    cb(note);
-    return;
+    return res;
   }
   console.log('getContent: starting to fetch content for note', noteID);
   api.getNoteCompact(noteID, json => {
@@ -144,6 +146,7 @@ function fetchContentIfNeeded(note, cb) {
     setContent(note, content);
     cb(note);
   });
+  return null;
 }
 
 function getHumanSize(note) {

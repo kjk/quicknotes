@@ -149,7 +149,7 @@ export default class Note extends Component {
   }
 
   renderMakePublicPrivate(note) {
-    if (ni.IsDeleted) {
+    if (ni.IsDeleted(note)) {
       return;
     }
     if (ni.IsPublic(note)) {

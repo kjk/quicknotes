@@ -17,7 +17,7 @@ export default class NoteBody extends Component {
     const note = this.state.note;
     console.log('expand note', ni.IDStr(note));
     ni.Expand(note);
-    const content = ni.Content(note, this.handleFetchedContent);
+    const content = ni.FetchContent(note, this.handleFetchedContent);
     // if has content, change the state immediately.
     // if doesn't have content, it'll be changed in handleFetchedContent.
     // if we always do it and there is no content, we'll get an ugly flash
@@ -66,7 +66,7 @@ export default class NoteBody extends Component {
     if (ni.IsCollapsed(note)) {
       return <pre className="note-body">{ ni.Snippet(note) }</pre>;
     }
-    return <pre className="note-body">{ ni.FetchContent(note, this.handleFetchedContent) }</pre>;
+    return <pre className="note-body">{ ni.Content(note, this.handleFetchedContent) }</pre>;
   }
 
   render() {
