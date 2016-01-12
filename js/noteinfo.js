@@ -134,6 +134,7 @@ function fetchContentIfNeeded(note, cb) {
   if (res) {
     console.log('getContent: already has it for note', noteID);
     cb(note);
+    return;
   }
   console.log('getContent: starting to fetch content for note', noteID);
   api.getNoteCompact(noteID, json => {
