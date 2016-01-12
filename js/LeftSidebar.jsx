@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import TagsList from './TagsList.jsx';
 import * as u from './utils.js';
 
 const showDeletedTag = true;
 
-export default class LeftSidebar extends React.Component {
+export default class LeftSidebar extends Component {
   renderTagsList(sectionName, tagNames, tags) {
     if (tagNames.length === 0) {
       return;
@@ -63,8 +63,8 @@ export default class LeftSidebar extends React.Component {
 }
 
 LeftSidebar.propTypes = {
-  onTagSelected: React.PropTypes.func.isRequired,
-  tags: React.PropTypes.array, // TODO: more specific
-  myNotes: React.PropTypes.bool,
-  selectedTag: React.PropTypes.string
+  onTagSelected: PropTypes.func.isRequired,
+  tags: PropTypes.object, // TODO: more specific
+  myNotes: PropTypes.bool,
+  selectedTag: PropTypes.string
 };
