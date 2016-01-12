@@ -38,6 +38,7 @@
     //"react/no-multi-comp": 1,
   },
   "globals": {
+    "global": true,
     "gLoggedInUserHandle": true,
     "gRecentNotesInitial": true,
     "gNotesUserHandle": true,
