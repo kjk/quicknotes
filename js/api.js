@@ -1,4 +1,4 @@
-import nanoajax from 'nanoajax';
+import ajax from './nanoajax.js';
 
 // TODO: audit for error handling
 
@@ -19,11 +19,12 @@ function handleResponse(code, respTxt, cb, cbErr) {
   if (!cb) {
     return;
   }
-  respTxt = respTxt || '{}';
-  let js;
+  let js = {};
   if (code == 200) {
+    respTxt = respTxt || '{}';
     js = JSON.parse(respTxt);
   } else {
+    respTxt = respTxt || '';
     console.log(`handleResponse: code=${code}, respTxt='${respTxt}'`);
     js['error'] = `request returned code ${code}, text: '${respTxt}'`;
   }
@@ -47,7 +48,7 @@ function get(url, args, cb, cbErr) {
   const opt = {
     url: url
   };
-  nanoajax.ajax(opt, (code, respTxt) => {
+  ajax(opt, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -61,7 +62,7 @@ function post(url, args, cb, cbErr) {
   if (urlArgs) {
     opts['body'] = urlArgs;
   }
-  nanoajax.ajax(args, (code, respTxt) => {
+  ajax(args, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
