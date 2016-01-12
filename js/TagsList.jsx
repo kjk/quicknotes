@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import TagCount from './TagCount.jsx';
 import * as u from './utils.js';
 
-export default class TagsList extends React.Component {
+export default class TagsList extends Component {
   render() {
     //var sectionName = this.props.sectionName;
     const tagNames = this.props.tagNames;
@@ -33,8 +33,8 @@ export default class TagsList extends React.Component {
 }
 
 TagsList.propTypes = {
-  tagNames: React.PropTypes.array, // TODO: arroay of string
-  tags: React.PropTypes.array, // TODO: more specific
-  selectedTag: React.PropTypes.string,
-  onTagSelected: React.PropTypes.func.isRequired
+  tagNames: PropTypes.array, // TODO: array of string
+  tags: PropTypes.object, // TODO: more specific
+  selectedTag: PropTypes.string,
+  onTagSelected: PropTypes.func.isRequired
 };

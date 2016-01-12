@@ -1,103 +1,145 @@
-import $ from 'jquery';
+import nanoajax from 'nanoajax';
 
-export function getNotesCompact(userHandle, cb) {
-  const arg = encodeURIComponent(userHandle);
-  const uri = '/api/getnotescompact.json?user=' + arg;
-  $.get(uri, cb);
-  // TODO: show an error message on error
+// TODO: audit for error handling
+
+function buildArgs(args) {
+  if (!args) {
+    return null;
+  }
+  let parts = [];
+  for (let key in args) {
+    const val = args[key];
+    const p = encodeURIComponent(key) + '=' + encodeURIComponent(val);
+    parts.push(p);
+  }
+  return parts.join('&');
 }
 
-export function getNoteCompact(noteId, cb) {
-  const arg = encodeURIComponent(noteId);
-  const uri = '/api/getnotecompact.json?id=' + arg;
-  $.get(uri, cb);
-  // TODO: show an error message on error
+function handleResponse(code, respTxt, cb, cbErr) {
+  if (!cb) {
+    return;
+  }
+  respTxt = respTxt || '{}';
+  let js;
+  if (code == 200) {
+    js = JSON.parse(respTxt);
+  } else {
+    console.log(`handleResponse: code=${code}, respTxt='${respTxt}'`);
+    js['error'] = `request returned code ${code}, text: '${respTxt}'`;
+  }
+  const errMsg = js['error'];
+  if (errMsg) {
+    if (cbErr) {
+      cbErr(js);
+    } else {
+      alert(errMsg);
+    }
+  } else {
+    cb(js);
+  }
 }
 
-export function undeleteNote(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+function get(url, args, cb, cbErr) {
+  const urlArgs = buildArgs(args);
+  if (urlArgs) {
+    url += '?' + urlArgs;
+  }
+  const opt = {
+    url: url
   };
-  $.post('/api/undeletenote.json', data, cb)
-    .fail(() => {
-      alert('error undeleting a note');
-    });
+  nanoajax.ajax(opt, (code, respTxt) => {
+    handleResponse(code, respTxt, cb, cbErr);
+  });
 }
 
-export function deleteNote(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+function post(url, args, cb, cbErr) {
+  const opts = {
+    method: 'POST',
+    url: url
   };
-  $.post('/api/deletenote.json', data, cb)
-    .fail(() => {
-      alert('error deleting a note');
-    });
+  const urlArgs = buildArgs(args);
+  if (urlArgs) {
+    opts['body'] = urlArgs;
+  }
+  nanoajax.ajax(args, (code, respTxt) => {
+    handleResponse(code, respTxt, cb, cbErr);
+  });
 }
 
-export function permanentDeleteNote(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+export function getNotesCompact(userHandle, cb, cbErr) {
+  const args = {
+    'user': userHandle
   };
-  $.post('/api/permanentdeletenote.json', data, cb)
-    .fail(() => {
-      alert('error permenently deleting a note');
-    });
+  get('/api/getnotescompact.json', args, cb, cbErr);
 }
 
-export function makeNotePrivate(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+export function getNoteCompact(noteId, cb, cbErr) {
+  const args = {
+    'id': noteId
   };
-  $.post('/api/makenoteprivate.json', data, cb)
-    .fail(() => {
-      alert('error making note private');
-    });
+  get('/api/getnotecompact.json', args, cb, cbErr);
 }
 
-export function makeNotePublic(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+export function undeleteNote(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
   };
-  $.post('/api/makenotepublic.json', data, cb)
-    .fail(() => {
-      alert('error making note public');
-    });
+  post('/api/undeletenote.json', args, cb, cbErr);
 }
 
-export function starNote(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+export function deleteNote(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
   };
-  $.post('/api/starnote.json', data, cb)
-    .fail(() => {
-      alert('error starring a note');
-    });
+  post('/api/deletenote.json', args, cb, cbErr);
 }
 
-export function unstarNote(noteId, cb) {
-  const data = {
-    noteIdHash: noteId
+export function permanentDeleteNote(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
   };
-  $.post('/api/unstarnote.json', data, cb)
-    .fail(() => {
-      alert('error unstarring a note');
-    });
+  post('/api/permanentdeletenote.json', args, cb, cbErr);
 }
 
-export function createOrUpdateNote(noteJSON, cb) {
-  const data = {
-    noteJSON: noteJSON
+export function makeNotePrivate(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
   };
-  $.post('/api/createorupdatenote.json', data, cb)
-    .fail(() => {
-      alert('error in createOrUpdateNote a note');
-    });
+  post('/api/makenoteprivate.json', args, cb, cbErr);
 }
 
-export function searchUserNotes(userHandle, searchTerm, cb) {
-  const u = encodeURIComponent(userHandle);
-  const t = encodeURIComponent(searchTerm);
-  const uri = '/api/searchusernotes.json?user=' + u + '&term=' + t;
-  $.get(uri, cb);
-  // TODO: show error
+export function makeNotePublic(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
+  };
+  post('/api/makenotepublic.json', args, cb, cbErr);
+}
+
+export function starNote(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
+  };
+  post('/api/starnote.json', args, cb, cbErr);
+}
+
+export function unstarNote(noteId, cb, cbErr) {
+  const args = {
+    'noteIdHash': noteId
+  };
+  post('/api/unstarnote.json', args, cb, cbErr);
+}
+
+export function createOrUpdateNote(noteJSON, cb, cbErr) {
+  const args = {
+    'noteJSON': noteJSON
+  };
+  post('/api/createorupdatenote.json', args, cb, cbErr);
+}
+
+export function searchUserNotes(userHandle, searchTerm, cb, cbErr) {
+  const args = {
+    'user': userHandle,
+    'term': searchTerm
+  };
+  get('/api/searchusernotes.json', args, cb, cbErr);
 }
