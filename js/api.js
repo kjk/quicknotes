@@ -28,7 +28,7 @@ function handleResponse(code, respTxt, cb, cbErr) {
     console.log(`handleResponse: code=${code}, respTxt='${respTxt}'`);
     js['error'] = `request returned code ${code}, text: '${respTxt}'`;
   }
-  const errMsg = js['error'];
+  const errMsg = js['Error'];
   if (errMsg) {
     if (cbErr) {
       cbErr(js);
@@ -143,4 +143,19 @@ export function searchUserNotes(userHandle, searchTerm, cb, cbErr) {
     'term': searchTerm
   };
   get('/api/searchusernotes.json', args, cb, cbErr);
+}
+
+export function startfImportSimpleNote(email, pwd, cb, cbErr) {
+  const args = {
+    'email': email,
+    'password': pwd
+  };
+  get('/api/startimportsimplenote.json', args, cb, cbErr);
+}
+
+export function statusImportSimpleNote(importId, cb, cbErr) {
+  const args = {
+    'id': importId
+  };
+  get('/api/statusimportsimplenote.json', args, cb, cbErr);
 }
