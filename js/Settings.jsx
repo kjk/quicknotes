@@ -10,7 +10,7 @@ const allThemes = [
 const allLayouts = [
   'default',
   'grid',
-  'barebones'
+  'compact'
 ];
 
 export default class Settings extends React.Component {
@@ -20,6 +20,7 @@ export default class Settings extends React.Component {
     this.handleLayoutChanged = this.handleLayoutChanged.bind(this);
     this.handleOk = this.handleOk.bind(this);
     this.handleThemeChanged = this.handleThemeChanged.bind(this);
+    this.showHide = this.showHide.bind(this);
 
     this.state = {
       isShowing: false,

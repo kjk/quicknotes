@@ -9,8 +9,6 @@ import * as action from './action.js';
 export default class AppIndex extends Component {
   constructor(props, context) {
     super(props, context);
-
-    this.handleStartNewNote = this.handleStartNewNote.bind(this);
   }
 
   componentDidMount() {
@@ -20,19 +18,12 @@ export default class AppIndex extends Component {
     //action.offAllForOwner(this);
   }
 
-  handleStartNewNote() {
-    console.log('handleStartNewNote');
-  }
-
   render() {
     console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
     const isLoggedIn = gLoggedInUserHandle !== '';
     return (
       <div>
-        <Top isLoggedIn={ isLoggedIn }
-          loggedInUserHandle={ gLoggedInUserHandle }
-          onStartNewNote={ this.handleStartNewNote }
-          notesUserHandle="" />
+        <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
         <Settings />
         <ImportSimpleNote />
       </div>
