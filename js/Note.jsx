@@ -271,8 +271,15 @@ export default class Note extends Component {
 
   render() {
     const note = this.props.note;
+    let cls = "note";
+    if (ni.IsPrivate(note)) {
+      cls += " note-private";
+    }
     return (
-      <div className="note" onMouseEnter={ this.handleMouseEnter } onMouseLeave={ this.handleMouseLeave }>
+      <div className={cls}
+        onMouseEnter={ this.handleMouseEnter }
+        onMouseLeave={ this.handleMouseLeave }
+      >
         <div className="note-header">
           { this.renderStarUnstar(note) }
           { this.renderTitle(note) }
