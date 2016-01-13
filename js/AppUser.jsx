@@ -66,7 +66,6 @@ export default class AppUser extends Component {
   constructor(props, context) {
     super(props, context);
     this.cancelNoteEdit = this.cancelNoteEdit.bind(this);
-    this.delUndelNote = this.delUndelNote.bind(this);
     this.editNote = this.editNote.bind(this);
     this.escPressed = this.escPressed.bind(this);
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
@@ -80,6 +79,7 @@ export default class AppUser extends Component {
     this.saveNote = this.saveNote.bind(this);
     this.showSettings = this.showSettings.bind(this);
     this.startUnstarNote = this.startUnstarNote.bind(this);
+    this.reloadNotes = this.reloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
     let allNotes = [];
@@ -119,6 +119,7 @@ export default class AppUser extends Component {
     action.onShowSettings(this.showSettings, this);
     action.onHideSettings(this.hideSettings, this);
     action.onTagSelected(this.handleTagSelected, this);
+    action.onReloadNotes(this.reloadNotes, this);
   }
 
   componentWillUnmount() {
@@ -153,9 +154,9 @@ export default class AppUser extends Component {
     });
   }
 
-  updateNotes() {
+  reloadNotes() {
     const userHandle = this.props.notesUserHandle;
-    //console.log("updateNotes: userHandle=", userHandle);
+    console.log("reloadNotes: userHandle=", userHandle);
     api.getNotesCompact(userHandle, json => {
       this.setNotes(json);
     });
@@ -189,25 +190,10 @@ export default class AppUser extends Component {
     });
   }
 
-  // TODO: after delete/undelete should show a message at the top
-  // with 'undo' link
-  delUndelNote(note) {
-    const noteId = ni.IDStr(note);
-    if (ni.IsDeleted(note)) {
-      api.undeleteNote(noteId, () => {
-        this.updateNotes();
-      });
-    } else {
-      api.deleteNote(noteId, () => {
-        this.updateNotes();
-      });
-    }
-  }
-
   permanentDeleteNote(note) {
     const noteId = ni.IDStr(note);
     api.permanentDeleteNote(noteId, () => {
-      this.updateNotes();
+      action.reloadNotes();
     });
   }
 
@@ -215,11 +201,11 @@ export default class AppUser extends Component {
     const noteId = ni.IDStr(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, () => {
-        this.updateNotes();
+        action.reloadNotes();
       });
     } else {
       api.makeNotePublic(noteId, () => {
-        this.updateNotes();
+        action.reloadNotes();
       });
     }
   }
@@ -228,11 +214,11 @@ export default class AppUser extends Component {
     const noteId = ni.IDStr(note);
     if (ni.IsStarred(note)) {
       api.unstartNote(noteId, () => {
-        this.updateNotes();
+        action.reloadNotes();
       });
     } else {
       api.starNote(noteId, () => {
-        this.updateNotes();
+        action.reloadNotes();
       });
     }
   }
@@ -244,7 +230,7 @@ export default class AppUser extends Component {
     };
     const noteJSON = JSON.stringify(note);
     api.createOrUpdateNote(noteJSON, () => {
-      this.updateNotes();
+        action.reloadNotes();
     });
   }
 
@@ -258,7 +244,7 @@ export default class AppUser extends Component {
     u.clearNewNote();
 
     api.createOrUpdateNote(noteJSON, () => {
-      this.updateNotes();
+        action.reloadNotes();
     });
   }
 
@@ -376,7 +362,6 @@ export default class AppUser extends Component {
           myNotes={ myNotes }
           compact={ compact }
           permanentDeleteNoteCb={ this.permanentDeleteNote }
-          delUndelNoteCb={ this.delUndelNote }
           makeNotePublicPrivateCb={ this.makeNotePublicPrivate }
           startUnstarNoteCb={ this.startUnstarNote }
           editCb={ this.editNote } />

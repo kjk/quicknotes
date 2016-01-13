@@ -71,7 +71,6 @@ export default class NotesList extends React.Component {
                        key={ ni.IDStr(note) }
                        myNotes={ this.props.myNotes }
                        permanentDeleteNoteCb={ this.props.permanentDeleteNoteCb }
-                       delUndelNoteCb={ this.props.delUndelNoteCb }
                        makeNotePublicPrivateCb={ this.props.makeNotePublicPrivateCb }
                        startUnstarNoteCb={ this.props.startUnstarNoteCb }
                        editCb={ this.props.editCb } />;
@@ -87,7 +86,6 @@ NotesList.propTypes = {
   compact: React.PropTypes.bool,
   myNotes: React.PropTypes.bool,
   permanentDeleteNoteCb: React.PropTypes.func,
-  delUndelNoteCb: React.PropTypes.func,
   makeNotePublicPrivateCb: React.PropTypes.func,
   startUnstarNoteCb: React.PropTypes.func,
   editCb: React.PropTypes.func

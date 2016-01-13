@@ -79,6 +79,7 @@ const showSettingsCmd = 'showSettings';
 const hideSettingsCmd = 'hideSettings';
 const tagSelectedCmd = 'tagSelected';
 const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
+const reloadNotesCmd = 'reloadNotes';
 
 export function showSettings(name) {
   broadcast(showSettingsCmd, name);
@@ -110,4 +111,12 @@ export function onShowHideImportSimpleNote(cb, owner) {
 
 export function showHideImportSimpleNote(shouldShow) {
   broadcast(showHideImportSimpleNoteCmd, shouldShow);
+}
+
+export function reloadNotes() {
+  broadcast(reloadNotesCmd);
+}
+
+export function onReloadNotes(cb, owner) {
+  return on(reloadNotesCmd, cb, owner);
 }

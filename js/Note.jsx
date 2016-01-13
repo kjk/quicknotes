@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import NoteBody from './NoteBody.jsx';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
+import * as api from './api.js';
 
 function urlifyTitle(s) {
   s = s.slice(0, 32);
@@ -71,7 +72,18 @@ export default class Note extends Component {
   }
 
   handleDelUndel(e) {
-    this.props.delUndelNoteCb(this.props.note);
+    e.preventDefault()
+    const note = this.props.note;
+    const noteId = ni.IDStr(note);
+    if (ni.IsDeleted(note)) {
+      api.undeleteNote(noteId, () => {
+        action.reloadNotes();
+      });
+    } else {
+      api.deleteNote(noteId, () => {
+        action.reloadNotes();
+      });
+    }
   }
 
   handlePermanentDelete() {
@@ -253,7 +265,6 @@ Note.propTypes = {
   note: PropTypes.array,
   compact: PropTypes.bool,
   myNotes: PropTypes.bool,
-  delUndelNoteCb: PropTypes.func, // TODO: change name
   permanentDeleteNoteCb: PropTypes.func,
   makeNotePublicPrivateCb: PropTypes.func,
   editCb: PropTypes.func,

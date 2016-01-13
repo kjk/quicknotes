@@ -45,24 +45,24 @@ function get(url, args, cb, cbErr) {
   if (urlArgs) {
     url += '?' + urlArgs;
   }
-  const opt = {
+  const params = {
     url: url
   };
-  ajax(opt, function(code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
 
 function post(url, args, cb, cbErr) {
-  const opts = {
+  const params = {
     method: 'POST',
     url: url
   };
   const urlArgs = buildArgs(args);
   if (urlArgs) {
-    opts['body'] = urlArgs;
+    params['body'] = urlArgs;
   }
-  ajax(args, function(code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
