@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import LogInLink from './LogInLink.jsx';
+import * as action from './action.js';
 
 export default class Top extends Component {
   constructor(props, context) {
@@ -49,7 +50,8 @@ export default class Top extends Component {
 
   handleCreateNewNote(e) {
     e.preventDefault();
-    this.props.onStartNewNote();
+    console.log('Top.handleCreateNewNote');
+    action.createNewNote();
   }
 
   renderNewNote() {
@@ -77,7 +79,6 @@ export default class Top extends Component {
 
 Top.propTypes = {
   onSearchTermChanged: PropTypes.func,
-  onStartNewNote: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   loggedInUserHandle: PropTypes.string,
   notesUserHandle: PropTypes.string

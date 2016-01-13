@@ -70,7 +70,7 @@ export default class AppUser extends Component {
     this.escPressed = this.escPressed.bind(this);
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
-    this.handleStartNewNote = this.handleStartNewNote.bind(this);
+    this.createNewNote = this.createNewNote.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.keyFilter = this.keyFilter.bind(this);
     this.saveNote = this.saveNote.bind(this);
@@ -112,6 +112,7 @@ export default class AppUser extends Component {
 
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
+    action.onCreateNewNote(this.createNewNote, this);
   }
 
   componentWillUnmount() {
@@ -225,9 +226,9 @@ export default class AppUser extends Component {
     });
   }
 
-  handleStartNewNote() {
+  createNewNote() {
     if (this.state.noteBeingEdited !== null) {
-      console.log('handleStartNewNote: a note is already being edited');
+      console.log('createNewNote: a note is already being edited');
       return;
     }
     const note = {
@@ -295,7 +296,6 @@ export default class AppUser extends Component {
       <div>
         <Top isLoggedIn={ isLoggedIn }
           loggedInUserHandle={ this.state.loggedInUserHandle }
-          onStartNewNote={ this.handleStartNewNote }
           notesUserHandle={ this.props.notesUserHandle }
           onSearchTermChanged={ this.handleSearchTermChanged } />
         <LeftSidebar tags={ this.state.tags }
