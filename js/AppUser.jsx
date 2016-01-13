@@ -75,7 +75,6 @@ export default class AppUser extends Component {
     this.hideSettings = this.hideSettings.bind(this);
     this.keyFilter = this.keyFilter.bind(this);
     this.makeNotePublicPrivate = this.makeNotePublicPrivate.bind(this);
-    this.permanentDeleteNote = this.permanentDeleteNote.bind(this);
     this.saveNote = this.saveNote.bind(this);
     this.showSettings = this.showSettings.bind(this);
     this.startUnstarNote = this.startUnstarNote.bind(this);
@@ -156,7 +155,7 @@ export default class AppUser extends Component {
 
   reloadNotes() {
     const userHandle = this.props.notesUserHandle;
-    console.log("reloadNotes: userHandle=", userHandle);
+    console.log('reloadNotes: userHandle=', userHandle);
     api.getNotesCompact(userHandle, json => {
       this.setNotes(json);
     });
@@ -187,13 +186,6 @@ export default class AppUser extends Component {
     console.log('hideSettings');
     this.setState({
       isShowingSettings: false
-    });
-  }
-
-  permanentDeleteNote(note) {
-    const noteId = ni.IDStr(note);
-    api.permanentDeleteNote(noteId, () => {
-      action.reloadNotes();
     });
   }
 
@@ -230,7 +222,7 @@ export default class AppUser extends Component {
     };
     const noteJSON = JSON.stringify(note);
     api.createOrUpdateNote(noteJSON, () => {
-        action.reloadNotes();
+      action.reloadNotes();
     });
   }
 
@@ -244,7 +236,7 @@ export default class AppUser extends Component {
     u.clearNewNote();
 
     api.createOrUpdateNote(noteJSON, () => {
-        action.reloadNotes();
+      action.reloadNotes();
     });
   }
 

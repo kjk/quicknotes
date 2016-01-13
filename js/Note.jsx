@@ -86,8 +86,13 @@ export default class Note extends Component {
     }
   }
 
-  handlePermanentDelete() {
-    this.props.permanentDeleteNoteCb(this.props.note);
+  handlePermanentDelete(e) {
+    e.preventDefault();
+    const note = this.props.note;
+    const noteId = ni.IDStr(note);
+    api.permanentDeleteNote(noteId, () => {
+      action.reloadNotes();
+    });
   }
 
   handleMakePublicPrivate(e) {
@@ -265,7 +270,6 @@ Note.propTypes = {
   note: PropTypes.array,
   compact: PropTypes.bool,
   myNotes: PropTypes.bool,
-  permanentDeleteNoteCb: PropTypes.func,
   makeNotePublicPrivateCb: PropTypes.func,
   editCb: PropTypes.func,
   startUnstarNoteCb: PropTypes.func
