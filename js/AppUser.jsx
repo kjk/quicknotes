@@ -74,7 +74,6 @@ export default class AppUser extends Component {
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.hideSettings = this.hideSettings.bind(this);
     this.keyFilter = this.keyFilter.bind(this);
-    this.makeNotePublicPrivate = this.makeNotePublicPrivate.bind(this);
     this.saveNote = this.saveNote.bind(this);
     this.showSettings = this.showSettings.bind(this);
     this.startUnstarNote = this.startUnstarNote.bind(this);
@@ -187,19 +186,6 @@ export default class AppUser extends Component {
     this.setState({
       isShowingSettings: false
     });
-  }
-
-  makeNotePublicPrivate(note) {
-    const noteId = ni.IDStr(note);
-    if (ni.IsPublic(note)) {
-      api.makeNotePrivate(noteId, () => {
-        action.reloadNotes();
-      });
-    } else {
-      api.makeNotePublic(noteId, () => {
-        action.reloadNotes();
-      });
-    }
   }
 
   startUnstarNote(note) {
@@ -353,8 +339,6 @@ export default class AppUser extends Component {
         <NotesList notes={ this.state.selectedNotes }
           myNotes={ myNotes }
           compact={ compact }
-          permanentDeleteNoteCb={ this.permanentDeleteNote }
-          makeNotePublicPrivateCb={ this.makeNotePublicPrivate }
           startUnstarNoteCb={ this.startUnstarNote }
           editCb={ this.editNote } />
         { this.state.isShowingSettings ?

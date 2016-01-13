@@ -96,9 +96,19 @@ export default class Note extends Component {
   }
 
   handleMakePublicPrivate(e) {
+    e.preventDefault();
     const note = this.props.note;
     console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
-    this.props.makeNotePublicPrivateCb(note);
+    const noteId = ni.IDStr(note);
+    if (ni.IsPublic(note)) {
+      api.makeNotePrivate(noteId, () => {
+        action.reloadNotes();
+      });
+    } else {
+      api.makeNotePublic(noteId, () => {
+        action.reloadNotes();
+      });
+    }
   }
 
   renderTrashUntrash(note) {
@@ -270,7 +280,6 @@ Note.propTypes = {
   note: PropTypes.array,
   compact: PropTypes.bool,
   myNotes: PropTypes.bool,
-  makeNotePublicPrivateCb: PropTypes.func,
   editCb: PropTypes.func,
   startUnstarNoteCb: PropTypes.func
 };
