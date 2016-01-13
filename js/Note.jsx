@@ -199,7 +199,16 @@ export default class Note extends Component {
   handleStarUnstarNote(e) {
     const note = this.props.note;
     console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
-    this.props.startUnstarNoteCb(note);
+    const noteId = ni.IDStr(note);
+    if (ni.IsStarred(note)) {
+      api.unstartNote(noteId, () => {
+        action.reloadNotes();
+      });
+    } else {
+      api.starNote(noteId, () => {
+        action.reloadNotes();
+      });
+    }
   }
 
   renderStarUnstar(note) {
@@ -281,5 +290,4 @@ Note.propTypes = {
   compact: PropTypes.bool,
   myNotes: PropTypes.bool,
   editCb: PropTypes.func,
-  startUnstarNoteCb: PropTypes.func
 };
