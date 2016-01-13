@@ -141,7 +141,7 @@ export default class Note extends Component {
 
   handleEdit(e) {
     console.log('Note.handleEdit');
-    this.props.editCb(this.props.note);
+    action.editNote(this.props.note);
   }
 
   renderEdit(note) {
@@ -292,6 +292,5 @@ export default class Note extends Component {
 Note.propTypes = {
   note: PropTypes.array,
   compact: PropTypes.bool,
-  myNotes: PropTypes.bool,
-  editCb: PropTypes.func,
+  myNotes: PropTypes.bool
 };

@@ -70,7 +70,7 @@ export default class NotesList extends React.Component {
                        note={ note }
                        key={ ni.IDStr(note) }
                        myNotes={ this.props.myNotes }
-                       editCb={ this.props.editCb } />;
+                     />;
             }) }
         </div>
       </div>
@@ -81,6 +81,5 @@ export default class NotesList extends React.Component {
 NotesList.propTypes = {
   notes: React.PropTypes.array, // TODO: more specific
   compact: React.PropTypes.bool,
-  myNotes: React.PropTypes.bool,
-  editCb: React.PropTypes.func
+  myNotes: React.PropTypes.bool
 };

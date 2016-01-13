@@ -67,11 +67,11 @@ export default class AppUser extends Component {
   constructor(props, context) {
     super(props, context);
     this.cancelNoteEdit = this.cancelNoteEdit.bind(this);
-    this.editNote = this.editNote.bind(this);
     this.escPressed = this.escPressed.bind(this);
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
     this.createNewNote = this.createNewNote.bind(this);
+    this.editNote = this.editNote.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.keyFilter = this.keyFilter.bind(this);
     this.saveNote = this.saveNote.bind(this);
@@ -114,6 +114,7 @@ export default class AppUser extends Component {
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
     action.onCreateNewNote(this.createNewNote, this);
+    action.onEditNote(this.editNote, this);
   }
 
   componentWillUnmount() {
@@ -307,7 +308,7 @@ export default class AppUser extends Component {
         <NotesList notes={ this.state.selectedNotes }
           myNotes={ myNotes }
           compact={ compact }
-          editCb={ this.editNote } />
+        />
         <Settings />
         { this.state.noteBeingEdited ?
           <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } /> :
