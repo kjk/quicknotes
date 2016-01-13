@@ -70,7 +70,6 @@ export default class NotesList extends React.Component {
                        note={ note }
                        key={ ni.IDStr(note) }
                        myNotes={ this.props.myNotes }
-                       makeNotePublicPrivateCb={ this.props.makeNotePublicPrivateCb }
                        startUnstarNoteCb={ this.props.startUnstarNoteCb }
                        editCb={ this.props.editCb } />;
             }) }
@@ -84,7 +83,6 @@ NotesList.propTypes = {
   notes: React.PropTypes.array, // TODO: more specific
   compact: React.PropTypes.bool,
   myNotes: React.PropTypes.bool,
-  makeNotePublicPrivateCb: React.PropTypes.func,
   startUnstarNoteCb: React.PropTypes.func,
   editCb: React.PropTypes.func
 };
