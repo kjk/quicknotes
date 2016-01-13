@@ -34,7 +34,7 @@ export default class Top extends Component {
       placeholder = 'Search your notes (Ctrl-F)';
     }
     return (
-      <div id="search-wrapper" className="left">
+      <div id="search-wrapper">
         <input name="search"
           id="search"
           onKeyDown={ this.handleInputKeyDown }
