@@ -51,7 +51,7 @@ def docker_ps(containerName):
   lines = s.split("\n")
   #print(lines)
   if len(lines) < 2:
-    return None
+    return (None, None)
   lines = lines[1:]
   for l in lines:
     # imperfect heuristic
@@ -62,14 +62,17 @@ def docker_ps(containerName):
         status = kStatusExited
       parts = l.split()
       return (parts[0], status)
-  return None
+  return (None, None)
 
 def start_container_if_needed(imageName, containerName, portMapping):
-  res = docker_ps(containerName)
-  if res != None and res[1] == kStatusRunning:
+  (containerId, status) = docker_ps(containerName)
+  if status == kStatusRunning:
     print("container %s is already running" % containerName)
     return
-  cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, imageName]
+  if status == kStatusExited:
+    cmd = ["docker", "start", containerId]
+  else:
+    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, imageName]
   run_cmd(cmd)
   wait_for_container(containerName)
 
