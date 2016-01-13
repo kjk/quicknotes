@@ -76,7 +76,6 @@ export default class AppUser extends Component {
     this.keyFilter = this.keyFilter.bind(this);
     this.saveNote = this.saveNote.bind(this);
     this.showSettings = this.showSettings.bind(this);
-    this.startUnstarNote = this.startUnstarNote.bind(this);
     this.reloadNotes = this.reloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
@@ -186,19 +185,6 @@ export default class AppUser extends Component {
     this.setState({
       isShowingSettings: false
     });
-  }
-
-  startUnstarNote(note) {
-    const noteId = ni.IDStr(note);
-    if (ni.IsStarred(note)) {
-      api.unstartNote(noteId, () => {
-        action.reloadNotes();
-      });
-    } else {
-      api.starNote(noteId, () => {
-        action.reloadNotes();
-      });
-    }
   }
 
   createNewTextNote(s) {
@@ -339,7 +325,6 @@ export default class AppUser extends Component {
         <NotesList notes={ this.state.selectedNotes }
           myNotes={ myNotes }
           compact={ compact }
-          startUnstarNoteCb={ this.startUnstarNote }
           editCb={ this.editNote } />
         { this.state.isShowingSettings ?
           <Settings /> :
