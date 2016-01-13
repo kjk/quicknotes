@@ -69,8 +69,7 @@ export default class NotesList extends React.Component {
               return <Note compact={ this.props.compact }
                        note={ note }
                        key={ ni.IDStr(note) }
-                       myNotes={ this.props.myNotes }
-                     />;
+                       myNotes={ this.props.myNotes } />;
             }) }
         </div>
       </div>
