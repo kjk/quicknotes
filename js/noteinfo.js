@@ -170,6 +170,10 @@ function getIsPublic(note) {
   return isFlagSet(note, flagPublicBit);
 }
 
+function getIsPrivate(note) {
+  return !getIsPublic(note);
+}
+
 // partial is if full content is != snippet
 function getIsPartial(note) {
   return isFlagSet(note, flagPartialBit);
@@ -259,4 +263,4 @@ function collapse(note) {
   delete expandedNotes[id];
 }
 
-export { getIDStr as IDStr, getTitle as Title, getSize as Size, getCreatedAt as CreatedAt, getTags as Tags, getSnippet as Snippet, getFormat as Format, getCurrentVersionID as CurrentVersionID, getIsStarred as IsStarred, getIsDeleted as IsDeleted, getIsPublic as IsPublic, getIsPartial as IsPartial, getHumanSize as HumanSize, getContent as Content, fetchContentIfNeeded as FetchContent, setPublicState as SetPublicState, setTitle as SetTitle, setTags as SetTags, setFormat as SetFormat, setContent as SetContent, isExpanded as IsExpanded, isCollapsed as IsCollapsed, expand as Expand, collapse as Collapse, notesEq as notesEq, toNewNote as toNewNote };
+export { getIDStr as IDStr, getTitle as Title, getSize as Size, getCreatedAt as CreatedAt, getTags as Tags, getSnippet as Snippet, getFormat as Format, getCurrentVersionID as CurrentVersionID, getIsStarred as IsStarred, getIsDeleted as IsDeleted, getIsPublic as IsPublic, getIsPrivate as IsPrivate, getIsPartial as IsPartial, getHumanSize as HumanSize, getContent as Content, fetchContentIfNeeded as FetchContent, setPublicState as SetPublicState, setTitle as SetTitle, setTags as SetTags, setFormat as SetFormat, setContent as SetContent, isExpanded as IsExpanded, isCollapsed as IsCollapsed, expand as Expand, collapse as Collapse, notesEq as notesEq, toNewNote as toNewNote };

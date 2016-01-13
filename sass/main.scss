@@ -535,6 +535,11 @@ pre.note-body {
   word-wrap: break-word;
 }
 
+.note-private {
+  /* border-top: 1px solid lightblue; */
+  border-top: 1px solid lightskyblue;
+}
+
 #notes-list {
   left: $sidebar-width+1;
   top: 46px;
