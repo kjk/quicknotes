@@ -73,30 +73,13 @@ export function offAllForOwner(owner) {
 
 /* actions specific to an app */
 
-// key in registeredActions
-// TODO: replace with showHideSettingsCmd
-const showSettingsCmd = 'showSettings';
-const hideSettingsCmd = 'hideSettings';
+// keys for registeredActions
 const tagSelectedCmd = 'tagSelected';
-const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
 const reloadNotesCmd = 'reloadNotes';
+const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
+const showHideSettingsCmd = 'showHideSettings';
 
-export function showSettings(name) {
-  broadcast(showSettingsCmd, name);
-}
-
-export function onShowSettings(cb, owner) {
-  return on(showSettingsCmd, cb, owner);
-}
-
-export function hideSettings(view) {
-  broadcast(hideSettingsCmd, view);
-}
-
-export function onHideSettings(cb, owner) {
-  return on(hideSettingsCmd, cb, owner);
-}
-
+/* --------------------- */
 export function tagSelected(tag) {
   broadcast(tagSelectedCmd, tag);
 }
@@ -105,6 +88,7 @@ export function onTagSelected(cb, owner) {
   return on(tagSelectedCmd, cb, owner);
 }
 
+/* --------------------- */
 export function onShowHideImportSimpleNote(cb, owner) {
   return on(showHideImportSimpleNoteCmd, cb, owner);
 }
@@ -113,6 +97,20 @@ export function showHideImportSimpleNote(shouldShow) {
   broadcast(showHideImportSimpleNoteCmd, shouldShow);
 }
 
+/* --------------------- */
+export function showSettings() {
+  broadcast(showHideSettingsCmd, true);
+}
+
+export function hideSettings() {
+  broadcast(showHideSettingsCmd, false);
+}
+
+export function onShowHideSettings(cb, owner) {
+  return on(showHideSettingsCmd, cb, owner);
+}
+
+/* --------------------- */
 export function reloadNotes() {
   broadcast(reloadNotesCmd);
 }

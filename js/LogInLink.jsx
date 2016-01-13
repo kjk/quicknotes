@@ -7,6 +7,12 @@ function showImportSimpleNote(e) {
   action.showHideImportSimpleNote(true);
 }
 
+function showSettings(e) {
+  e.preventDefault();
+  console.log('showSettings');
+  action.showSettings();
+}
+
 const LinkLoggedIn = (props) => {
   const url = encodeURI('/logout?redir=' + window.location);
   const userUrl = '/u/' + props.loggedInUserHandle;
@@ -20,6 +26,7 @@ const LinkLoggedIn = (props) => {
         <i className="fa fa-chevron-down"></i>
         <div className="dropdown-content">
           <a href={ userUrl }>My notes</a>
+          <a href="#" onClick={ showSettings }>Settings</a>
           <span className="divider"></span>
           <a href="/import" onClick={ showImportSimpleNote }>Import from Simplenote</a>
           <span className="divider"></span>

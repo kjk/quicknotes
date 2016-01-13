@@ -72,10 +72,8 @@ export default class AppUser extends Component {
     this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
     this.handleStartNewNote = this.handleStartNewNote.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
-    this.hideSettings = this.hideSettings.bind(this);
     this.keyFilter = this.keyFilter.bind(this);
     this.saveNote = this.saveNote.bind(this);
-    this.showSettings = this.showSettings.bind(this);
     this.reloadNotes = this.reloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
@@ -102,8 +100,7 @@ export default class AppUser extends Component {
       tags: tags,
       loggedInUserHandle: loggedInUserHandle,
       noteBeingEdited: null,
-      searchResults: null,
-      isShowingSettings: false
+      searchResults: null
     };
   }
 
@@ -113,8 +110,6 @@ export default class AppUser extends Component {
     keymaster('ctrl+e', u.focusNewNote);
     keymaster('esc', this.escPressed);
 
-    action.onShowSettings(this.showSettings, this);
-    action.onHideSettings(this.hideSettings, this);
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
   }
@@ -171,20 +166,6 @@ export default class AppUser extends Component {
       return true;
     }
     return this.standardKeyFilter(event);
-  }
-
-  showSettings() {
-    console.log('showSettings');
-    this.setState({
-      isShowingSettings: true
-    });
-  }
-
-  hideSettings() {
-    console.log('hideSettings');
-    this.setState({
-      isShowingSettings: false
-    });
   }
 
   createNewTextNote(s) {
@@ -326,9 +307,7 @@ export default class AppUser extends Component {
           myNotes={ myNotes }
           compact={ compact }
           editCb={ this.editNote } />
-        { this.state.isShowingSettings ?
-          <Settings /> :
-          null }
+        <Settings />
         { this.state.noteBeingEdited ?
           <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } /> :
           null }
