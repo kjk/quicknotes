@@ -46,7 +46,7 @@ export default class EditorNew extends Component {
     });
     action.onToggleEditor(this.toggleEditor, this);
     action.onEditNote(this.editNote, this);
-    action.onCreateNewNte(this.createNewNote, this);
+    action.onCreateNewNote(this.createNewNote, this);
   }
 
   componentWillUnmount() {
