@@ -201,7 +201,7 @@ export default class Note extends Component {
     console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     const noteId = ni.IDStr(note);
     if (ni.IsStarred(note)) {
-      api.unstartNote(noteId, () => {
+      api.unstarNote(noteId, () => {
         action.reloadNotes();
       });
     } else {

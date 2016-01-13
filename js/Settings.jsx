@@ -7,17 +7,11 @@ const allThemes = [
   'dark'
 ];
 
-
 const allLayouts = [
   'default',
   'grid',
   'barebones'
 ];
-
-/*
-TODO:
- - when this is shown, the rest should be inactive i.e. make it modal
-*/
 
 export default class Settings extends React.Component {
   constructor(props, context) {
@@ -28,9 +22,25 @@ export default class Settings extends React.Component {
     this.handleThemeChanged = this.handleThemeChanged.bind(this);
 
     this.state = {
+      isShowing: false,
       theme: 'light',
       layout: 'default'
     };
+  }
+
+  componentDidMount() {
+    action.onShowHideSettings(this.showHide, this);
+  }
+
+  componentWillUnmount() {
+    action.offAllForOwner(this);
+  }
+
+  showHide(shouldShow) {
+    console.log('Settings.showHide: shouldShow: ", shouldShow');
+    this.setState({
+      isShowing: shouldShow
+    });
   }
 
   handleThemeChanged(e) {
@@ -89,6 +99,12 @@ export default class Settings extends React.Component {
 
   render() {
     console.log('Settings.render');
+    if (!this.state.isShowing) {
+      return (
+        <div id="no-import-simple-note" className="hidden">
+        </div>
+        );
+    }
     const layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
     const themes = this.renderThemesSelect(allThemes, this.state.theme);
     return (

@@ -10,36 +10,14 @@ export default class AppIndex extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.hideSettings = this.hideSettings.bind(this);
-    this.showSettings = this.showSettings.bind(this);
     this.handleStartNewNote = this.handleStartNewNote.bind(this);
-
-    this.state = {
-      isShowingSettings: false
-    };
   }
 
   componentDidMount() {
-    action.onShowSettings(this.showSettings, this);
-    action.onHideSettings(this.hideSettings, this);
   }
 
   componentWillUnmount() {
-    action.offAllForOwner(this);
-  }
-
-  showSettings() {
-    console.log('showSettings');
-    this.setState({
-      isShowingSettings: true
-    });
-  }
-
-  hideSettings() {
-    console.log('hideSettings');
-    this.setState({
-      isShowingSettings: false
-    });
+    //action.offAllForOwner(this);
   }
 
   handleStartNewNote() {
@@ -49,17 +27,13 @@ export default class AppIndex extends Component {
   render() {
     console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
     const isLoggedIn = gLoggedInUserHandle !== '';
-    const showSettings = this.state.isShowingSettings;
-    console.log('AppIndex.render: showSettings=', showSettings);
     return (
       <div>
         <Top isLoggedIn={ isLoggedIn }
           loggedInUserHandle={ gLoggedInUserHandle }
           onStartNewNote={ this.handleStartNewNote }
           notesUserHandle="" />
-        { showSettings ?
-          <Settings />
-          : null }
+        <Settings />
         <ImportSimpleNote />
       </div>
       );
