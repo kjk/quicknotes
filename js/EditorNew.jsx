@@ -21,14 +21,14 @@ export default class EditorNew extends Component {
     this.handleTextChanged = debounce(s => {
       this.setState({
         txt: s
-      })
+      });
     }, 250);
 
     this.height = getWindowMiddle();
     this.state = {
       isShowing: true,
       note: null,
-      txt: "initial text"
+      txt: 'initial text'
     };
   }
 
@@ -54,20 +54,20 @@ export default class EditorNew extends Component {
   }
 
   editNote(note) {
-    console.log("EditorNew.editNote: note=", note);
+    console.log('EditorNew.editNote: note=', note);
     this.setState({
       note: note,
       isShowing: true
-    })
+    });
   }
 
   createNewNote() {
-    console.log("EditorNew.createNewNote: note=", note);
+    console.log('EditorNew.createNewNote');
     // TODO: create empty default note with empty id
     this.setState({
       note: null,
       isShowing: true
-    })
+    });
   }
 
   toggleEditor() {
@@ -108,7 +108,7 @@ export default class EditorNew extends Component {
               className="editor-text-area"
               codeText={ s }
               value={ s }
-              onChange={ this.handleTextChanged}
+              onChange={ this.handleTextChanged }
               ref={ setEditArea } />
           </div>
           <div id="editor-preview-area" dangerouslySetInnerHTML={ html }>
