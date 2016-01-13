@@ -100,6 +100,7 @@ export default class ImportSimpleNote extends Component {
         isImporting: false,
         errorMessage: res.Error
       });
+      action.reloadNotes();
       return;
     }
     const n = res.ImportedCount;
@@ -113,7 +114,9 @@ export default class ImportSimpleNote extends Component {
       isImporting: isImporting,
       statusMessage: msg
     });
-    if (!res.IsFinished) {
+    if (res.IsFinished) {
+      action.reloadNotes();
+    } else {
       const importId = this.state.importId;
       this.scheduleCheckStatus(importId);
     }
