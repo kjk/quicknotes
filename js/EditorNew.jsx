@@ -15,6 +15,8 @@ export default class EditorNew extends Component {
 
     this.toggleEditor = this.toggleEditor.bind(this);
     this.toHtml = this.toHtml.bind(this);
+    this.editNote = this.editNote.bind(this);
+    this.createNewNote = this.createNewNote.bind(this);
 
     this.handleTextChanged = debounce(s => {
       this.setState({
@@ -25,6 +27,7 @@ export default class EditorNew extends Component {
     this.height = getWindowMiddle();
     this.state = {
       isShowing: true,
+      note: null,
       txt: "initial text"
     };
   }
@@ -42,13 +45,33 @@ export default class EditorNew extends Component {
       smartypants: false
     });
     action.onToggleEditor(this.toggleEditor, this);
+    action.onEditNote(this.editNote, this);
+    action.onCreateNewNte(this.createNewNote, this);
   }
 
   componentWillUnmount() {
     action.offAllForOwner(this);
   }
 
+  editNote(note) {
+    console.log("EditorNew.editNote: note=", note);
+    this.setState({
+      note: note,
+      isShowing: true
+    })
+  }
+
+  createNewNote() {
+    console.log("EditorNew.createNewNote: note=", note);
+    // TODO: create empty default note with empty id
+    this.setState({
+      note: null,
+      isShowing: true
+    })
+  }
+
   toggleEditor() {
+    this.height = getWindowMiddle();
     this.setState({
       isShowing: !this.state.isShowing
     });
