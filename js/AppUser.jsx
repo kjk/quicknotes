@@ -8,6 +8,7 @@ import SearchResults from './SearchResults.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
+import EditorNew from './EditorNew.jsx';
 import keymaster from 'keymaster';
 import * as u from './utils.js';
 import * as format from './format.js';
@@ -314,6 +315,7 @@ export default class AppUser extends Component {
         { this.state.searchResults ?
           <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } /> : null }
         <ImportSimpleNote />
+        <EditorNew />
       </div>
       );
   }

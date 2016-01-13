@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Overlay from './Overlay.jsx';
 
-export default class Editor extends React.Component {
+export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
     const dy = window.innerHeight;
