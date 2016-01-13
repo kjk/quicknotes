@@ -995,7 +995,81 @@ $actions-height: 34px;
       line-height: $line-height-note;
     }
   }
+}
 
+#editor-control {
+  width: 100%;
+  z-index: 999;
+  background-color: #e9e9e9;
+  bottom: 0;
+  position: fixed;
+}
+
+#editor-text-preview-wrapper {
+  position: absolute;
+  right: 16px;
+  left: 16px;
+  top: 6px;
+  bottom: 45px;
+  background-color: lightcyan;
+}
+
+#editor-text-area-wrapper {
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+
+  width: 50%;
+  float: left;
+  background-color: lightgreen;
+  padding-right: 5px;
+}
+
+#editor-preview-area {
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+
+  width: 50%;
+  float: right;
+  background-color: lightseagreen;
+  padding-left: 5px;
+  overflow-y: scroll;
+}
+
+.editor-text-area {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 0px;
+  border-top: 30px solid transparent;
+  border-radius: 0;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: auto;
+  padding: 7px;
+  margin: 0;
+  background-color: #fff;
+  word-wrap: break-word;
+
+  resize: none;
+}
+
+#editor-bottom {
+  position: absolute;
+  right: 16px;
+  left: 16px;
+  bottom: 8px;
+  background-color: lightblue;
+  display: block;
 }
 
 /**/
@@ -1385,3 +1459,6 @@ div class="modal" tabIndex="-1" role="dialog"
 @import '../node_modules/codemirror/theme/solarized';
 @import 'font-awesome/font-awesome';
 
+.CodeMirror {
+  height: 100%;
+}

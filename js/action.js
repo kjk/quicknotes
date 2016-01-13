@@ -80,6 +80,7 @@ const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
 const showHideSettingsCmd = 'showHideSettings';
 const createNewNoteCmd = 'createNewNote';
 const editNoteCmd = 'editNote';
+const toggleEditorCmd = 'toggleEditor';
 
 /* --------------------- */
 export function tagSelected(tag) {
@@ -137,4 +138,13 @@ export function editNote(note) {
 
 export function onEditNote(cb, owner) {
   return on(editNoteCmd, cb, owner);
+}
+
+/* --------------------- */
+export function toggleEditor() {
+  broadcast(toggleEditorCmd);
+}
+
+export function onToggleEditor(cb, owner) {
+  return on(toggleEditorCmd, cb, owner);
 }
