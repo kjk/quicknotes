@@ -72,7 +72,7 @@ export default class Note extends Component {
   }
 
   handleDelUndel(e) {
-    e.preventDefault()
+    e.preventDefault();
     const note = this.props.note;
     const noteId = ni.IDStr(note);
     if (ni.IsDeleted(note)) {

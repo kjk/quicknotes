@@ -94,12 +94,20 @@ func importMarkFinished(id int) {
 	})
 }
 
+func isSimpleNoteUnothorizedError(s string) bool {
+	// a heuristic
+	return strings.Contains(s, "401") && strings.Contains(s, "/authorize/")
+}
 func importSimpleNote(id int, userID int, email, password string) {
 	client := simplenote.NewClient(simplenoteAPIKey, email, password)
 	notes, err := client.List()
 	if err != nil {
 		log.Errorf("c.List() failed with '%s'\n", err)
-		importSetError(id, fmt.Sprintf("c.List() failed with '%s'", err))
+		msg := fmt.Sprintf("c.List() failed with '%s'", err)
+		if isSimpleNoteUnothorizedError(err.Error()) {
+			msg = "Authentication failed. Invalid email or password"
+		}
+		importSetError(id, msg)
 		return
 	}
 
