@@ -13,12 +13,6 @@ function showSettings(e) {
   action.showSettings();
 }
 
-function toggleEditor(e) {
-  e.preventDefault();
-  console.log('toggleEditor');
-  action.toggleEditor();
-}
-
 const LinkLoggedIn = (props) => {
   const url = encodeURI('/logout?redir=' + window.location);
   const userUrl = '/u/' + props.loggedInUserHandle;
@@ -33,7 +27,6 @@ const LinkLoggedIn = (props) => {
         <div className="dropdown-content">
           <a href={ userUrl }>My notes</a>
           <a href="#" onClick={ showSettings }>Settings</a>
-          <a href="#" onClick={ toggleEditor }>Toggle Editor</a>
           <span className="divider"></span>
           <a href="/import" onClick={ showImportSimpleNote }>Import from Simplenote</a>
           <span className="divider"></span>

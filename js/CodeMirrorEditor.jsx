@@ -9,12 +9,12 @@ var CodeMirror;
 
 var IS_MOBILE = typeof navigator === 'undefined' || (
   navigator.userAgent.match(/Android/i)
-    || navigator.userAgent.match(/webOS/i)
-    || navigator.userAgent.match(/iPhone/i)
-    || navigator.userAgent.match(/iPad/i)
-    || navigator.userAgent.match(/iPod/i)
-    || navigator.userAgent.match(/BlackBerry/i)
-    || navigator.userAgent.match(/Windows Phone/i)
+  || navigator.userAgent.match(/webOS/i)
+  || navigator.userAgent.match(/iPhone/i)
+  || navigator.userAgent.match(/iPad/i)
+  || navigator.userAgent.match(/iPod/i)
+  || navigator.userAgent.match(/BlackBerry/i)
+  || navigator.userAgent.match(/Windows Phone/i)
 );
 
 if (!IS_MOBILE) {
@@ -23,7 +23,9 @@ if (!IS_MOBILE) {
 
 var CodeMirrorEditor = React.createClass({
   getInitialState: function() {
-    return { isControlled: this.props.value != null };
+    return {
+      isControlled: this.props.value != null
+    };
   },
 
   propTypes: {
@@ -38,7 +40,8 @@ var CodeMirrorEditor = React.createClass({
     var isTextArea = this.props.forceTextArea || IS_MOBILE;
     if (!isTextArea) {
       var editor = this.refs.editor;
-      if (!editor.getAttribute) editor = editor.getDOMNode();
+      if (!editor.getAttribute)
+        editor = editor.getDOMNode();
       this.editor = CodeMirror.fromTextArea(editor, this.props);
       this.editor.on('change', this.handleChange);
     }
@@ -58,7 +61,11 @@ var CodeMirrorEditor = React.createClass({
     if (this.editor) {
       var value = this.editor.getValue();
       if (value !== this.props.value) {
-        this.props.onChange && this.props.onChange({target: {value: value}});
+        this.props.onChange && this.props.onChange({
+          target: {
+            value: value
+          }
+        });
         if (this.editor.getValue() !== this.props.value) {
           if (this.state.isControlled) {
             this.editor.setValue(this.props.value);
@@ -81,7 +88,10 @@ var CodeMirrorEditor = React.createClass({
       className: this.props.textAreaClassName || this.props.textAreaClass
     });
 
-    return React.createElement('div', {style: this.props.style, className: this.props.className}, editor);
+    return React.createElement('div', {
+      style: this.props.style,
+      className: this.props.className
+    }, editor);
   }
 });
 

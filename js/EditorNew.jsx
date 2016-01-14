@@ -14,7 +14,6 @@ export default class EditorNew extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.toggleEditor = this.toggleEditor.bind(this);
     this.toHtml = this.toHtml.bind(this);
     this.editNote = this.editNote.bind(this);
     this.createNewNote = this.createNewNote.bind(this);
@@ -39,7 +38,6 @@ export default class EditorNew extends Component {
       smartLists: true,
       smartypants: false
     });
-    action.onToggleEditor(this.toggleEditor, this);
     action.onEditNote(this.editNote, this);
     action.onCreateNewNote(this.createNewNote, this);
   }
@@ -63,7 +61,7 @@ export default class EditorNew extends Component {
         txt: ni.Content(note)
       });
     });
-    s = s || "";
+    s = s || '';
     this.setState({
       note: note,
       txt: s,
@@ -78,13 +76,6 @@ export default class EditorNew extends Component {
     this.setState({
       note: null,
       isShowing: true
-    });
-  }
-
-  toggleEditor() {
-    this.top = getWindowMiddle();
-    this.setState({
-      isShowing: !this.state.isShowing
     });
   }
 
@@ -115,7 +106,7 @@ export default class EditorNew extends Component {
           <i className="fa fa-code"></i>
         </button>
         <button className="ebtn no-text" title="Upload">
-            <i className="fa fa-upload"></i>
+          <i className="fa fa-upload"></i>
         </button>
         <div className="d-editor-spacer"></div>
         <button className="ebtn no-text" title="Bulleted List (⌘⇧8)">
@@ -173,7 +164,7 @@ export default class EditorNew extends Component {
               onChange={ this.handleTextChanged }
               ref={ setEditArea } />
           </div>
-          <div id="edit2-preview" dangerouslySetInnerHTML={html}></div>
+          <div id="edit2-preview" dangerouslySetInnerHTML={ html }></div>
         </div>
         <div id="edit2-bottom" className="flex-row">
           <div>
