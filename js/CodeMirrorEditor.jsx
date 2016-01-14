@@ -34,12 +34,9 @@ export default class CodeMirrorEditor extends Component {
     if (isTextArea) {
       return;
     }
-    let editor = this.refs.editor;
-    if (!editor.getAttribute) {
-      editor = editor.getDOMNode();
-    }
-    this.editor = CodeMirror.fromTextArea(editor, this.props);
+    this.editor = CodeMirror.fromTextArea(this.editorNode, this.props);
     this.editor.on('change', this.handleChange);
+    this.props.onEditorCreated && this.props.onEditorCreated(this.editor);
   }
 
   componentDidUpdate() {
@@ -76,8 +73,9 @@ export default class CodeMirrorEditor extends Component {
   }
 
   render() {
+    const setEditorNode = n => this.editorNode = n;
     const editor = React.createElement('textarea', {
-      ref: 'editor',
+      ref: setEditorNode,
       value: this.props.value,
       readOnly: this.props.readOnly,
       defaultValue: this.props.defaultValue,
@@ -99,6 +97,7 @@ CodeMirrorEditor.propTypes = {
   style: PropTypes.object,
   className: PropTypes.string,
   onChange: PropTypes.func,
+  onEditorCreated: PropTypes.func,
   forceTextArea: PropTypes.bool,
   readOnly: PropTypes.bool,
   textAreaStyle: PropTypes.object,

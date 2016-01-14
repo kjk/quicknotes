@@ -18,8 +18,12 @@ export default class EditorNew extends Component {
     this.editNote = this.editNote.bind(this);
     this.createNewNote = this.createNewNote.bind(this);
     this.handleTextChanged = this.handleTextChanged.bind(this);
+    this.handleDiscard = this.handleDiscard.bind(this);
+    this.handleEditorCreated = this.handleEditorCreated.bind(this);
 
-    this.top = getWindowMiddle();
+    this.cm = null;
+    this.height = getWindowMiddle();
+
     this.state = {
       isShowing: false,
       note: null,
@@ -46,11 +50,33 @@ export default class EditorNew extends Component {
     action.offAllForOwner(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    const cm = this.cm;
+    console.log('EditorNew.componentWillReceiveProps, cm: ', cm);
+    if (!cm) {
+      return;
+    }
+    /*cm.focus();*/
+    cm.execCommand("goDocEnd");
+    cm.scrollIntoView();
+  }
+
   handleTextChanged(e) {
     const s = e.target.value;
     this.setState({
       txt: s
     });
+  }
+
+  handleDiscard(e) {
+    this.setState({
+      isShowing: false,
+      txt: ""
+    });
+  }
+
+  handleEditorCreated(cm) {
+    this.cm = cm;
   }
 
   editNote(note) {
@@ -125,11 +151,10 @@ export default class EditorNew extends Component {
       );
   }
 
-  renderMarkdownPreview() {
-    console.log('renderMarkdownPreview: s=', s);
-
+  renderMarkdownWithPreview() {
     const mode = 'text';
     const s = this.state.txt;
+    console.log('renderMarkdownPreview: s=', s);
     const html = {
       __html: this.toHtml(s)
     };
@@ -141,7 +166,7 @@ export default class EditorNew extends Component {
     };
 
     const style = {
-      top: this.top
+      height: this.height
     };
 
     return (
@@ -161,7 +186,9 @@ export default class EditorNew extends Component {
               textAreaClassName="edit2-textarea"
               placeholder="Enter text here..."
               value={ s }
+              autofocus={true}
               onChange={ this.handleTextChanged }
+              onEditorCreated={ this.handleEditorCreated }
               ref={ setEditArea } />
           </div>
           <div id="edit2-preview" dangerouslySetInnerHTML={ html }></div>
@@ -171,7 +198,7 @@ export default class EditorNew extends Component {
             <button className="btn btn-primary">
               Save
             </button>
-            <button className="btn btn-primary">
+            <button className="btn btn-primary" onClick={this.handleDiscard}>
               Discard
             </button>
             <div style={ style1 }>
@@ -188,12 +215,12 @@ export default class EditorNew extends Component {
   }
 
   render() {
-    console.log('EditorNew.render, isShowing:', this.state.isShowing, 'top:', this.top);
+    console.log('EditorNew.render, isShowing:', this.state.isShowing, 'height:', this.height);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
     }
 
-    return this.renderMarkdownPreview();
+    return this.renderMarkdownWithPreview();
   }
 }

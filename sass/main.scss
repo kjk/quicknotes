@@ -1516,7 +1516,7 @@ div class="modal" tabIndex="-1" role="dialog"
 
 #editor2-wrapper {
   position: absolute;
-  top: 98px;
+  height: 320px;
   bottom: 0px;
   width: 100%;
   /* background-color: lightgray; */
@@ -1599,5 +1599,5 @@ div class="modal" tabIndex="-1" role="dialog"
 @import '../node_modules/codemirror/theme/solarized';
 
 .CodeMirror {
-  height: 100%;
+  height: 100vw;
 }
