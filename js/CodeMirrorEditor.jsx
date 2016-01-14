@@ -59,7 +59,7 @@ export default class CodeMirrorEditor extends React.Component {
       const setEditor = el => this.editorNode = el;
       return (
         <div className={ this.props.className }>
-          <textarea ref={ setEditor } className="full-composer-text-area" defaultValue={ this.props.codeText } />
+          <textarea ref={ setEditor } defaultValue={ this.props.codeText } />
         </div>
         );
     }

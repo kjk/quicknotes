@@ -1,6 +1,5 @@
 @import 'normalize';
 @import 'logo';
-@import 'font-awesome/font-awesome';
 
 $sidebar-width: 180px;
 $font-size-main: 14px;
@@ -22,9 +21,11 @@ body {
   box-sizing: border-box;
 }
 
+/*
 :after, :before {
   box-sizing: border-box;
 }
+*/
 
 :focus { outline:none; }
 ::-moz-focus-inner { border:0; }
@@ -32,10 +33,6 @@ body {
 body {
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, 'Segoe UI', Tahoma, Arial, sans-serif;
   font-size: $font-size-main;
-}
-
-.half {
-  width: 50%;
 }
 
 .btn {
@@ -149,6 +146,10 @@ $col-btn-hover-border: #1862b5;
 .fixed {
   position: fixed;
   top: 0; left: 0; right: 0;
+}
+
+.half {
+  width: 50%;
 }
 
 .hidden {
@@ -1080,22 +1081,36 @@ $actions-height: 34px;
     line-height: 10px;
 }
 
-.d-editor-spacer {
-    width: 1px;
-    height: 20px;
-    margin-right: 8px;
-    margin-left: 5px;
-    background-color: #e9e9e9;
-    display: inline-block;
-    float: left
+.d-editor-button-bar {
+    top: 0;
+    position: absolute;
+    color: #919191;
+    background-color: #fff;
+    z-index: 100;
+    overflow: hidden;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.d-editor-button-bar button {
+    color: #919191;
+}
+
+.d-editor-button-bar button {
+    background-color: transparent;
+    padding: 2px 4px;
+    float: left;
+    margin-right: 6px;
 }
 
 .ebtn {
   border: none;
   color: #222;
   font-weight: normal;
-  /*background: #e9e9e9;*/
-  background-color: white;
+  background: #e9e9e9;
+}
+
+.ebtn {
   display: inline-block;
   margin: 0;
   padding: 6px 12px;
@@ -1105,12 +1120,7 @@ $actions-height: 34px;
   text-align: center;
   cursor: pointer;
   transition: all .25s;
-
-  &:hover {
-    background-color: lightgray;
-  }
 }
-
 
 #editor-bottom {
   position: absolute;
@@ -1123,11 +1133,12 @@ $actions-height: 34px;
 
 .drag-bar-vert {
   width: 100%;
-  cursor: row-resize;
   height: 11px;
   overflow: hidden;
-  /* background: url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) #e9e9e9 no-repeat center 3px; */
+  //background: url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) #e9e9e9 no-repeat center 3px;
   background: url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px;
+  z-index: 3999;
+  cursor: row-resize;
 }
 /**/
 .dropdown-content {
@@ -1519,14 +1530,9 @@ div class="modal" tabIndex="-1" role="dialog"
   top: 98px;
   bottom: 0px;
   width: 100%;
-  /* background-color: lightgray; */
-  background-color: white;
+  background-color: lightgray;
 }
 
-#editor2-wrapper input {
-  border: 0;
-  padding-left: 16px;
-}
 
 #editor2-top {
   flex-wrap: nowrap;
@@ -1541,14 +1547,12 @@ div class="modal" tabIndex="-1" role="dialog"
 }
 
 #edit2-button-bar {
-  flex-wrap: nowrap;
   padding: 2px 4px;
 }
 
 #edit2-button-bar i:hover {
   color: black;
-  /* background-color: lightgray; */
-  background-color: white;
+  background-color: lightgray;
 }
 
 #edit2-textarea {
@@ -1556,16 +1560,14 @@ div class="modal" tabIndex="-1" role="dialog"
   resize: none;
   border: 0;
   padding: 2px 4px;
-  /* background-color: #eaeaea; */
-  background-color: white;
+  background-color: #eaeaea;
   flex-grow: 3;
 }
 
 #edit2-preview {
   width: 50%;
   padding: 2px 4px;
-  /* background-color: #e3e3e3; */
-  background-color: white;
+  background-color: #e3e3e3;
 }
 
 #edit2-text-with-preview {
@@ -1575,13 +1577,13 @@ div class="modal" tabIndex="-1" role="dialog"
 }
 
 #edit2-bottom {
-  background-color: #e9e9e9;
+  background-color: yellow;
   padding: 2px 4px;
   justify-content: space-between;
 }
 
 #editor2-hide-preview {
-  padding-top: 8px;
+  padding-top: 12px;
   padding-right: 8px;
 }
 
@@ -1591,6 +1593,7 @@ div class="modal" tabIndex="-1" role="dialog"
 
 @import '../node_modules/codemirror/lib/codemirror';
 @import '../node_modules/codemirror/theme/solarized';
+@import 'font-awesome/font-awesome';
 
 .CodeMirror {
   height: 100%;

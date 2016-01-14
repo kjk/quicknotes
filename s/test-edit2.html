@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test page</title>
+
+  <link rel="stylesheet" href="/s/dist/main4.css">
+  <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="theme-light">
+
+  <div id="main">
+  </div>
+
+<div id="editor2-wrapper" class="flex-col">
+  <div class="drag-bar-vert"></div>
+  <div id="editor2-top" class="flex-row">
+    <input id="editor2-title" class="editor-input half" placeholder="title goes here...">
+    <input id="editor2-tags" class="editor-input half" placeholder="#enter #tags">
+  </div>
+  <div id="edit2-text-with-preview" class="flex-row">
+    <div id="edit2-preview-with-buttons" class="flex-col">
+      <div id="edit2-button-bar">
+        <i class="fa fa-comment-o"></i>
+        <i class="fa fa-bold"></i>
+      </div>
+      <textarea id="edit2-textarea" placeholder="Enter text here..."></textarea>
+
+    </div>
+    <div id="edit2-preview">preview</div>
+  </div>
+
+  <div id="edit2-bottom" class="flex-row">
+    <div>
+      <button class="btn btn-primary">Save</button>
+      <button class="btn btn-primary">Discard</button>
+      <div style="display: inline-block; padding-top: 8px;">
+        <span>Format:</span>
+        <span class="drop-down-init">markdown <i class="fa fa-angle-down"></i></span>
+      </div>
+    </div>
+    <div id="editor2-hide-preview"><span style="vertical-align: center">hide preview</span></div>
+  </div>
+
+</div>
+
+</body>
+
+</html>
