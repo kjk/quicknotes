@@ -86,45 +86,93 @@ export default class EditorNew extends Component {
   renderMarkdownButtons() {
     console.log('renderMarkdownButtons');
     return (
-      <div className="d-editor-button-bar">
-        <button className="ebtn no-text quote" title="Quote whole post">
-          <i className="fa fa-comment-o"></i>
-        </button>
-        <button className="ebtn no-text bold" title="Strong (⌘B)">
+      <div id="edit2-button-bar" className="flex-row">
+        <button className="ebtn no-text" title="Strong (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
-        <button className="ebtn no-text italic" title="Emphasis (⌘I)">
+        <button className="ebtn no-text" title="Emphasis (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
         <div className="d-editor-spacer"></div>
-        <button className="ember-view ebtn no-text link" title="Hyperlink (⌘K)">
+        <button className="ebtn no-text" title="Hyperlink (⌘K)">
           <i className="fa fa-link"></i>
         </button>
-        <button className="ebtn no-text quote" title="Blockquote (⌘⇧9)">
+        <button className="ebtn no-text" title="Blockquote (⌘⇧9)">
           <i className="fa fa-quote-right"></i>
         </button>
-        <button className="ebtn no-text code" title="Preformatted text (⌘⇧C)">
+        <button className="ebtn no-text" title="Preformatted text (⌘⇧C)">
           <i className="fa fa-code"></i>
         </button>
-        <button className="ember-view ebtn no-text upload" title="Upload">
+        <button className="ebtn no-text" title="Upload">
           <i className="fa fa-upload"></i>
         </button>
         <div className="d-editor-spacer"></div>
-        <button className="ebtn no-text bullet" title="Bulleted List (⌘⇧8)">
+        <button className="ebtn no-text" title="Bulleted List (⌘⇧8)">
           <i className="fa fa-list-ul"></i>
         </button>
-        <button className="ebtn no-text list" title="Numbered List (⌘⇧7)">
+        <button className="ebtn no-text" title="Numbered List (⌘⇧7)">
           <i className="fa fa-list-ol"></i>
         </button>
-        <button className="ebtn no-text heading" title="Heading (⌘⌥1)">
+        <button className="ebtn no-text" title="Heading (⌘⌥1)">
           <i className="fa fa-font"></i>
         </button>
-        <button className="ebtn no-text rule" title="Horizontal Rule (⌘⌥R)">
+        <button className="ebtn no-text" title="Horizontal Rule (⌘⌥R)">
           <i className="fa fa-minus"></i>
         </button>
-        <button className="ebtn no-text emoji" title="Emoji :smile:">
-          <i className="fa fa-smile-o"></i>
-        </button>
+      </div>
+      );
+  }
+
+  renderMarkdownPreview(s) {
+    const mode = 'text';
+    const setEditArea = el => this.editAreaNode = el;
+    const style1 = {
+      display: "inline-block",
+      paddingTop: 8
+    };
+
+    return (
+      <div id="editor2-wrapper" className="flex-col">
+        <div className="drag-bar-vert"></div>
+        <div id="editor2-top" className="flex-row">
+          <input id="editor2-title" className="editor-input half" placeholder="title goes here...">
+          </input>
+          <input id="editor2-tags" className="editor-input half" placeholder="#enter #tags">
+          </input>
+        </div>
+        <div id="edit2-text-with-preview" className="flex-row">
+          <div id="edit2-preview-with-buttons" className="flex-col">
+            { this.renderMarkdownButtons() }
+            <CodeMirrorEditor mode={ mode }
+              id="edit2-textarea"
+              placeholder="Enter text here..."
+              className=""
+              codeText={ s }
+              value={ s }
+              onChange={ this.handleTextChanged }
+              ref={ setEditArea } />
+          </div>
+          <div id="edit2-preview">
+            preview
+          </div>
+        </div>
+        <div id="edit2-bottom" className="flex-row">
+          <div>
+            <button className="btn btn-primary">
+              Save
+            </button>
+            <button className="btn btn-primary">
+              Discard
+            </button>
+            <div style={style1}>
+              <span>Format:</span>
+              <span className="drop-down-init">markdown <i className="fa fa-angle-down"></i></span>
+            </div>
+          </div>
+          <div id="editor2-hide-preview">
+            <span>hide preview</span>
+          </div>
+        </div>
       </div>
       );
   }
@@ -140,37 +188,41 @@ export default class EditorNew extends Component {
       height: this.height
     };
 
-    const setEditArea = el => this.editAreaNode = el;
     const mode = 'text';
     const s = this.state.txt;
     const html = {
       __html: this.toHtml(s)
     };
-    return (
-      <div style={ style } id="editor-control">
-        <div className="drag-bar-vert"></div>
-        <div id="editor-text-preview-wrapper">
-          { this.renderMarkdownButtons() }
-          <div id="editor-text-area-wrapper">
-            <CodeMirrorEditor mode={ mode }
-              className="editor-text-area"
-              codeText={ s }
-              value={ s }
-              onChange={ this.handleTextChanged }
-              ref={ setEditArea } />
+
+    return this.renderMarkdownPreview(s);
+
+    /*
+        return (
+          <div style={ style } id="editor-control">
+            <div className="drag-bar-vert"></div>
+            <div id="editor-text-preview-wrapper">
+              { this.renderMarkdownButtons() }
+              <div id="editor-text-area-wrapper">
+                <CodeMirrorEditor mode={ mode }
+                  className="editor-text-area"
+                  codeText={ s }
+                  value={ s }
+                  onChange={ this.handleTextChanged }
+                  ref={ setEditArea } />
+              </div>
+              <div id="editor-preview-area" dangerouslySetInnerHTML={ html }>
+              </div>
+            </div>
+            <div id="editor-bottom">
+              <button className="btn btn-primary">
+                Save
+              </button>
+              <button className="btn btn-primary">
+                Cancel
+              </button>
+            </div>
           </div>
-          <div id="editor-preview-area" dangerouslySetInnerHTML={ html }>
-          </div>
-        </div>
-        <div id="editor-bottom">
-          <button className="btn btn-primary">
-            Save
-          </button>
-          <button className="btn btn-primary">
-            Cancel
-          </button>
-        </div>
-      </div>
-      );
+          );
+    */
   }
 }
