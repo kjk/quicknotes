@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
 import * as action from './action.js';
+import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
 
 function getWindowMiddle() {
@@ -17,23 +18,17 @@ export default class EditorNew extends Component {
     this.toHtml = this.toHtml.bind(this);
     this.editNote = this.editNote.bind(this);
     this.createNewNote = this.createNewNote.bind(this);
+    this.handleTextChanged = this.handleTextChanged.bind(this);
 
-    this.handleTextChanged = debounce(s => {
-      this.setState({
-        txt: s
-      });
-    }, 250);
-
-    this.height = getWindowMiddle();
+    this.top = getWindowMiddle();
     this.state = {
-      isShowing: true,
+      isShowing: false,
       note: null,
-      txt: 'initial text'
+      txt: ''
     };
   }
 
   componentDidMount() {
-    this.editAreaNode.editor.focus();
     marked.setOptions({
       renderer: new marked.Renderer(),
       gfm: true,
@@ -53,10 +48,25 @@ export default class EditorNew extends Component {
     action.offAllForOwner(this);
   }
 
+  handleTextChanged(e) {
+    const s = e.target.value;
+    this.setState({
+      txt: s
+    });
+  }
+
   editNote(note) {
     console.log('EditorNew.editNote: note=', note);
+    //this.editAreaNode.editor.focus();
+    let s = ni.FetchContent(note, () => {
+      this.setState({
+        txt: ni.Content(note)
+      });
+    });
+    s = s || "";
     this.setState({
       note: note,
+      txt: s,
       isShowing: true
     });
   }
@@ -64,6 +74,7 @@ export default class EditorNew extends Component {
   createNewNote() {
     console.log('EditorNew.createNewNote');
     // TODO: create empty default note with empty id
+    //this.editAreaNode.editor.focus();
     this.setState({
       note: null,
       isShowing: true
@@ -71,7 +82,7 @@ export default class EditorNew extends Component {
   }
 
   toggleEditor() {
-    this.height = getWindowMiddle();
+    this.top = getWindowMiddle();
     this.setState({
       isShowing: !this.state.isShowing
     });
@@ -104,7 +115,7 @@ export default class EditorNew extends Component {
           <i className="fa fa-code"></i>
         </button>
         <button className="ebtn no-text" title="Upload">
-          <i className="fa fa-upload"></i>
+            <i className="fa fa-upload"></i>
         </button>
         <div className="d-editor-spacer"></div>
         <button className="ebtn no-text" title="Bulleted List (⌘⇧8)">
@@ -123,16 +134,27 @@ export default class EditorNew extends Component {
       );
   }
 
-  renderMarkdownPreview(s) {
+  renderMarkdownPreview() {
+    console.log('renderMarkdownPreview: s=', s);
+
     const mode = 'text';
+    const s = this.state.txt;
+    const html = {
+      __html: this.toHtml(s)
+    };
+
     const setEditArea = el => this.editAreaNode = el;
     const style1 = {
-      display: "inline-block",
+      display: 'inline-block',
       paddingTop: 8
     };
 
+    const style = {
+      top: this.top
+    };
+
     return (
-      <div id="editor2-wrapper" className="flex-col">
+      <div id="editor2-wrapper" className="flex-col" style={ style }>
         <div className="drag-bar-vert"></div>
         <div id="editor2-top" className="flex-row">
           <input id="editor2-title" className="editor-input half" placeholder="title goes here...">
@@ -144,17 +166,14 @@ export default class EditorNew extends Component {
           <div id="edit2-preview-with-buttons" className="flex-col">
             { this.renderMarkdownButtons() }
             <CodeMirrorEditor mode={ mode }
-              id="edit2-textarea"
+              className="edit2-textarea-wrap"
+              textAreaClassName="edit2-textarea"
               placeholder="Enter text here..."
-              className=""
-              codeText={ s }
               value={ s }
               onChange={ this.handleTextChanged }
               ref={ setEditArea } />
           </div>
-          <div id="edit2-preview">
-            preview
-          </div>
+          <div id="edit2-preview" dangerouslySetInnerHTML={html}></div>
         </div>
         <div id="edit2-bottom" className="flex-row">
           <div>
@@ -164,7 +183,7 @@ export default class EditorNew extends Component {
             <button className="btn btn-primary">
               Discard
             </button>
-            <div style={style1}>
+            <div style={ style1 }>
               <span>Format:</span>
               <span className="drop-down-init">markdown <i className="fa fa-angle-down"></i></span>
             </div>
@@ -178,51 +197,12 @@ export default class EditorNew extends Component {
   }
 
   render() {
-    console.log('EditorNew.render, isShowing:', this.state.isShowing, 'height:', this.height);
+    console.log('EditorNew.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
     }
 
-    const style = {
-      height: this.height
-    };
-
-    const mode = 'text';
-    const s = this.state.txt;
-    const html = {
-      __html: this.toHtml(s)
-    };
-
-    return this.renderMarkdownPreview(s);
-
-    /*
-        return (
-          <div style={ style } id="editor-control">
-            <div className="drag-bar-vert"></div>
-            <div id="editor-text-preview-wrapper">
-              { this.renderMarkdownButtons() }
-              <div id="editor-text-area-wrapper">
-                <CodeMirrorEditor mode={ mode }
-                  className="editor-text-area"
-                  codeText={ s }
-                  value={ s }
-                  onChange={ this.handleTextChanged }
-                  ref={ setEditArea } />
-              </div>
-              <div id="editor-preview-area" dangerouslySetInnerHTML={ html }>
-              </div>
-            </div>
-            <div id="editor-bottom">
-              <button className="btn btn-primary">
-                Save
-              </button>
-              <button className="btn btn-primary">
-                Cancel
-              </button>
-            </div>
-          </div>
-          );
-    */
+    return this.renderMarkdownPreview();
   }
 }

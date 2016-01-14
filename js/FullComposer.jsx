@@ -176,7 +176,7 @@ export default class FullComposer extends Component {
         <div id="full-composer-content">
           <CodeMirrorEditor mode="text"
             className="full-composer-editor"
-            codeText={ ni.Content(note) }
+            defaultValue={ ni.Content(note) }
             value={ ni.Content(note) }
             onChange={ this.handleTextChanged }
             ref={ setEditArea } />

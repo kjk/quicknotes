@@ -1551,14 +1551,19 @@ div class="modal" tabIndex="-1" role="dialog"
   background-color: white;
 }
 
-#edit2-textarea {
+.edit2-textarea-wrap {
   width: 100%;
-  resize: none;
   border: 0;
   padding: 2px 4px;
   /* background-color: #eaeaea; */
   background-color: white;
-  flex-grow: 3;
+  flex-grow: 4;
+  /* max-height: 100%; */
+  overflow: scroll;
+}
+
+.edit2-textarea {
+  height: 100%;
 }
 
 #edit2-preview {
@@ -1566,6 +1571,7 @@ div class="modal" tabIndex="-1" role="dialog"
   padding: 2px 4px;
   /* background-color: #e3e3e3; */
   background-color: white;
+  overflow: scroll;
 }
 
 #edit2-text-with-preview {
