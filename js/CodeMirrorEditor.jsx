@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-var CodeMirror;
+import CodeMirror from 'codemirror';
 
 // adapted from:
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js#L16
@@ -7,7 +7,7 @@ var CodeMirror;
 // also used as an example:
 // https://github.com/facebook/react/blob/master/src/browser/ui/dom/components/ReactDOMInput.js
 
-var IS_MOBILE = typeof navigator === 'undefined' || (
+const isMobile = typeof navigator === 'undefined' || (
   navigator.userAgent.match(/Android/i)
   || navigator.userAgent.match(/webOS/i)
   || navigator.userAgent.match(/iPhone/i)
@@ -17,68 +17,66 @@ var IS_MOBILE = typeof navigator === 'undefined' || (
   || navigator.userAgent.match(/Windows Phone/i)
 );
 
-if (!IS_MOBILE) {
-  CodeMirror = require('codemirror');
-}
+export default class CodeMirrorEditor extends Component {
 
-var CodeMirrorEditor = React.createClass({
-  getInitialState: function() {
-    return {
+  constructor(props, context) {
+    super(props, context);
+
+    this.handleChange = this.handleChange.bind(this);
+
+    this.state = {
       isControlled: this.props.value != null
     };
-  },
+  }
 
-  propTypes: {
-    value: React.PropTypes.string,
-    defaultValue: React.PropTypes.string,
-    style: React.PropTypes.object,
-    className: React.PropTypes.string,
-    onChange: React.PropTypes.func
-  },
-
-  componentDidMount: function() {
-    var isTextArea = this.props.forceTextArea || IS_MOBILE;
-    if (!isTextArea) {
-      var editor = this.refs.editor;
-      if (!editor.getAttribute)
-        editor = editor.getDOMNode();
-      this.editor = CodeMirror.fromTextArea(editor, this.props);
-      this.editor.on('change', this.handleChange);
+  componentDidMount() {
+    const isTextArea = this.props.forceTextArea || isMobile;
+    if (isTextArea) {
+      return;
     }
-  },
+    let editor = this.refs.editor;
+    if (!editor.getAttribute) {
+      editor = editor.getDOMNode();
+    }
+    this.editor = CodeMirror.fromTextArea(editor, this.props);
+    this.editor.on('change', this.handleChange);
+  }
 
-  componentDidUpdate: function() {
-    if (this.editor) {
-      if (this.props.value != null) {
-        if (this.editor.getValue() !== this.props.value) {
-          this.editor.setValue(this.props.value);
-        }
+  componentDidUpdate() {
+    if (!this.editor || !this.props.value) {
+      return;
+    }
+    if (this.editor.getValue() !== this.props.value) {
+      this.editor.setValue(this.props.value);
+    }
+  }
+
+  handleChange() {
+    if (!this.editor) {
+      return;
+    }
+    var value = this.editor.getValue();
+    if (value === this.props.value) {
+      return;
+    }
+
+    this.props.onChange && this.props.onChange({
+      target: {
+        value: value
+      }
+    });
+
+    if (this.editor.getValue() !== this.props.value) {
+      if (this.state.isControlled) {
+        this.editor.setValue(this.props.value);
+      } else {
+        this.props.value = value;
       }
     }
-  },
+  }
 
-  handleChange: function() {
-    if (this.editor) {
-      var value = this.editor.getValue();
-      if (value !== this.props.value) {
-        this.props.onChange && this.props.onChange({
-          target: {
-            value: value
-          }
-        });
-        if (this.editor.getValue() !== this.props.value) {
-          if (this.state.isControlled) {
-            this.editor.setValue(this.props.value);
-          } else {
-            this.props.value = value;
-          }
-        }
-      }
-    }
-  },
-
-  render: function() {
-    var editor = React.createElement('textarea', {
+  render() {
+    const editor = React.createElement('textarea', {
       ref: 'editor',
       value: this.props.value,
       readOnly: this.props.readOnly,
@@ -93,6 +91,17 @@ var CodeMirrorEditor = React.createClass({
       className: this.props.className
     }, editor);
   }
-});
+}
 
-module.exports = CodeMirrorEditor;
+CodeMirrorEditor.propTypes = {
+  value: PropTypes.string,
+  defaultValue: PropTypes.string,
+  style: PropTypes.object,
+  className: PropTypes.string,
+  onChange: PropTypes.func,
+  forceTextArea: PropTypes.bool,
+  readOnly: PropTypes.bool,
+  textAreaStyle: PropTypes.object,
+  textAreaClassName: PropTypes.string,
+  textAreaClass: PropTypes.string
+};
