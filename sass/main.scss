@@ -1062,6 +1062,52 @@ $actions-height: 34px;
   resize: none;
 }
 
+.ebtn.no-text .fa {
+    margin-right: 0;
+    line-height: 10px;
+}
+
+.d-editor-button-bar {
+    top: 0;
+    position: absolute;
+    color: #919191;
+    background-color: #fff;
+    z-index: 100;
+    overflow: hidden;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.d-editor-button-bar button {
+    color: #919191;
+}
+
+.d-editor-button-bar button {
+    background-color: transparent;
+    padding: 2px 4px;
+    float: left;
+    margin-right: 6px;
+}
+
+.ebtn {
+  border: none;
+  color: #222;
+  font-weight: normal;
+  background: #e9e9e9;
+}
+
+.ebtn {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 12px;
+  font-weight: 500;
+  font-size: 1em;
+  line-height: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .25s;
+}
+
 #editor-bottom {
   position: absolute;
   right: 16px;
@@ -1071,6 +1117,13 @@ $actions-height: 34px;
   display: block;
 }
 
+.drag-bar-vert {
+  width: 100%;
+  cursor: row-reisize;
+  height: 11px;
+  overflow: hidden;
+  background: url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) #e9e9e9 no-repeat center 3px;
+}
 /**/
 .dropdown-content {
   text-align: left;

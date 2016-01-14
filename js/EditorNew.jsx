@@ -83,6 +83,52 @@ export default class EditorNew extends Component {
     return html;
   }
 
+  renderMarkdownButtons() {
+    console.log('renderMarkdownButtons');
+    return (
+      <div className="d-editor-button-bar">
+        <button className="ebtn no-text quote" title="Quote whole post">
+          <i className="fa fa-comment-o"></i>
+        </button>
+        <button className="ebtn no-text bold" title="Strong (⌘B)">
+          <i className="fa fa-bold"></i>
+        </button>
+        <button className="ebtn no-text italic" title="Emphasis (⌘I)">
+          <i className="fa fa-italic"></i>
+        </button>
+        <div className="d-editor-spacer"></div>
+        <button className="ember-view ebtn no-text link" title="Hyperlink (⌘K)">
+          <i className="fa fa-link"></i>
+        </button>
+        <button className="ebtn no-text quote" title="Blockquote (⌘⇧9)">
+          <i className="fa fa-quote-right"></i>
+        </button>
+        <button className="ebtn no-text code" title="Preformatted text (⌘⇧C)">
+          <i className="fa fa-code"></i>
+        </button>
+        <button className="ember-view ebtn no-text upload" title="Upload">
+          <i className="fa fa-upload"></i>
+        </button>
+        <div className="d-editor-spacer"></div>
+        <button className="ebtn no-text bullet" title="Bulleted List (⌘⇧8)">
+          <i className="fa fa-list-ul"></i>
+        </button>
+        <button className="ebtn no-text list" title="Numbered List (⌘⇧7)">
+          <i className="fa fa-list-ol"></i>
+        </button>
+        <button className="ebtn no-text heading" title="Heading (⌘⌥1)">
+          <i className="fa fa-font"></i>
+        </button>
+        <button className="ebtn no-text rule" title="Horizontal Rule (⌘⌥R)">
+          <i className="fa fa-minus"></i>
+        </button>
+        <button className="ebtn no-text emoji" title="Emoji :smile:">
+          <i className="fa fa-smile-o"></i>
+        </button>
+      </div>
+      );
+  }
+
   render() {
     console.log('EditorNew.render, isShowing:', this.state.isShowing, 'height:', this.height);
 
@@ -102,7 +148,9 @@ export default class EditorNew extends Component {
     };
     return (
       <div style={ style } id="editor-control">
+        <div className="drag-bar-vert"></div>
         <div id="editor-text-preview-wrapper">
+          { this.renderMarkdownButtons() }
           <div id="editor-text-area-wrapper">
             <CodeMirrorEditor mode={ mode }
               className="editor-text-area"
@@ -115,10 +163,10 @@ export default class EditorNew extends Component {
           </div>
         </div>
         <div id="editor-bottom">
-          <button>
+          <button className="btn btn-primary">
             Save
           </button>
-          <button>
+          <button className="btn btn-primary">
             Cancel
           </button>
         </div>
