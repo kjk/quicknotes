@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 
-export default class TagCount extends React.Component {
+export default class TagCount extends Component {
   constructor(props, context) {
     super(props, context);
     this.handleClick = this.handleClick.bind(this);
@@ -23,9 +23,9 @@ export default class TagCount extends React.Component {
 }
 
 TagCount.propTypes = {
-  onTagSelected: React.PropTypes.func.isRequired,
-  count: React.PropTypes.number,
-  displayName: React.PropTypes.string,
-  isSelected: React.PropTypes.bool,
-  tagName: React.PropTypes.string
+  onTagSelected: PropTypes.func.isRequired,
+  count: PropTypes.number,
+  displayName: PropTypes.string,
+  isSelected: PropTypes.bool,
+  tagName: PropTypes.string
 };
