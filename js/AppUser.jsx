@@ -307,7 +307,7 @@ export default class AppUser extends Component {
           selectedTag={ this.state.selectedTag } />
         <NotesList notes={ this.state.selectedNotes } myNotes={ myNotes } compact={ compact } />
         <Settings />
-        { this.state.noteBeingEdited ?
+        { this.state.noteBeingEdited && false ?
           <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } /> :
           null }
         { this.state.searchResults ?
