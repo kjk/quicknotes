@@ -5,10 +5,30 @@ import Overlay from './Overlay.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
+import * as u from './utils.js';
 
 function getWindowMiddle() {
   const dy = window.innerHeight;
   return dy / 2;
+}
+
+function tagsToText(tags) {
+  if (!tags) {
+    return '';
+  }
+  let s = '';
+  tags.forEach(function(tag) {
+    if (s !== '') {
+      s += ' ';
+    }
+    s += '#' + tag;
+  });
+  return s;
+}
+
+function textToTags(s) {
+  let tags = s.split('#').map(tag => tag.trim());
+  return tags.filter(tag => tag.length == 0);
 }
 
 export default class EditorNew extends Component {
@@ -22,6 +42,7 @@ export default class EditorNew extends Component {
     this.handleDiscard = this.handleDiscard.bind(this);
     this.handleEditorCreated = this.handleEditorCreated.bind(this);
 
+    this.initialNote = null;
     this.cm = null;
     this.height = getWindowMiddle();
 
@@ -82,7 +103,9 @@ export default class EditorNew extends Component {
 
   editNote(note) {
     console.log('EditorNew.editNote: note=', note);
-    //this.editAreaNode.editor.focus();
+    note = u.deepCloneObject(note);
+
+    this.initialNote = u.deepCloneObject(note);
     let s = ni.FetchContent(note, () => {
       this.setState({
         txt: ni.Content(note)
@@ -152,6 +175,12 @@ export default class EditorNew extends Component {
       );
   }
 
+  noteHasChanged() {
+    const n1 = this.initialNote;
+    const n2 = this.state.note;
+    return !ni.notesEq(n1, n2);
+  }
+
   renderMarkdownWithPreview() {
     const mode = 'text';
     const s = this.state.txt;
@@ -169,6 +198,8 @@ export default class EditorNew extends Component {
     const style = {
       height: this.height
     };
+
+    const saveDisabled = true;
 
     return (
       <Overlay>
@@ -197,7 +228,7 @@ export default class EditorNew extends Component {
           </div>
           <div id="edit2-bottom" className="flex-row">
             <div>
-              <button className="btn btn-primary">
+              <button className="btn btn-primary" disabled={ saveDisabled }>
                 Save
               </button>
               <button className="btn btn-primary" onClick={ this.handleDiscard }>
