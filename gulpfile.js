@@ -55,25 +55,7 @@ gulp.task('jsprod', function() {
 });
 
 gulp.task('css', function() {
-  return gulp.src('./sass/main.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
-    .pipe(prefix('last 2 versions'))
-    .pipe(sourcemaps.write('.')) // this is relative to gulp.dest()
-    .pipe(gulp.dest('./s/dist/'));
-});
-
-gulp.task('css2', function() {
-  return gulp.src('./sass/main2.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
-    .pipe(prefix('last 2 versions'))
-    .pipe(sourcemaps.write('.')) // this is relative to gulp.dest()
-    .pipe(gulp.dest('./s/dist/'));
-});
-
-gulp.task('css3', function() {
-  return gulp.src('./sass/main3.scss')
+  return gulp.src('./sass/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
@@ -82,7 +64,7 @@ gulp.task('css3', function() {
 });
 
 gulp.task('cssprod', function() {
-  return gulp.src('./sass/main.scss')
+  return gulp.src('./sass/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
     .pipe(cssnano())
@@ -91,9 +73,9 @@ gulp.task('cssprod', function() {
 
 gulp.task('watch', function() {
   gulp.watch('js/*', ['js']);
-  gulp.watch('./sass/**/*', ['css', 'css2', 'css3']);
+  gulp.watch('./sass/**/*', ['css']);
 });
 
-gulp.task('prod', ['cssprod', 'css2', 'jsprod']);
-gulp.task('default', ['css', 'css2', 'css3', 'js']);
+gulp.task('prod', ['cssprod', 'jsprod']);
+gulp.task('default', ['css', 'js']);
 gulp.task('build_and_watch', ['default', 'watch']);
