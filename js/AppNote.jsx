@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Top from './Top.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
+import Editor from './Editor.jsx';
 
 const AppNote = (props) => {
   console.log('appNoteStart: gLoggedInUserHandle: ', gLoggedInUserHandle);
@@ -10,6 +11,7 @@ const AppNote = (props) => {
     <div>
       <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
       <ImportSimpleNote />
+      <Editor />
     </div>
     );
 };

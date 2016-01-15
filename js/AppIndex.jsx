@@ -4,6 +4,7 @@ import Top from './Top.jsx';
 import Settings from './Settings.jsx';
 import RecentNotes from './RecentNotes.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
+import Editor from './Editor.jsx';
 import * as action from './action.js';
 
 export default class AppIndex extends Component {
@@ -26,6 +27,7 @@ export default class AppIndex extends Component {
         <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
         <Settings />
         <ImportSimpleNote />
+        <Editor />
       </div>
       );
   }

@@ -31,7 +31,31 @@ function textToTags(s) {
   return tags.filter(tag => tag.length == 0);
 }
 
-export default class EditorNew extends Component {
+/*
+  createNewTextNote(s) {
+    const note = {
+      Content: s.trim(),
+      Format: format.Text
+    };
+    const noteJSON = JSON.stringify(note);
+    api.createOrUpdateNote(noteJSON, () => {
+      action.reloadNotes();
+    });
+  }
+
+  saveNote(note) {
+    const newNote = ni.toNewNote(note);
+    newNote.Content = newNote.Content.trim();
+    const noteJSON = JSON.stringify(newNote);
+    u.clearNewNote();
+
+    api.createOrUpdateNote(noteJSON, () => {
+      action.reloadNotes();
+    });
+  }
+*/
+
+export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -70,7 +94,7 @@ export default class EditorNew extends Component {
 
   componentWillReceiveProps(nextProps) {
     const cm = this.cm;
-    console.log('EditorNew.componentWillReceiveProps, cm: ', cm);
+    console.log('Editor.componentWillReceiveProps, cm: ', cm);
     if (!cm) {
       return;
     }
@@ -102,7 +126,7 @@ export default class EditorNew extends Component {
   }
 
   editNote(note) {
-    console.log('EditorNew.editNote: note=', note);
+    console.log('Editor.editNote: note=', note);
     note = u.deepCloneObject(note);
 
     this.initialNote = u.deepCloneObject(note);
@@ -120,7 +144,7 @@ export default class EditorNew extends Component {
   }
 
   createNewNote() {
-    console.log('EditorNew.createNewNote');
+    console.log('Editor.createNewNote');
     // TODO: create empty default note with empty id
     //this.editAreaNode.editor.focus();
     this.setState({
@@ -138,7 +162,7 @@ export default class EditorNew extends Component {
   renderMarkdownButtons() {
     console.log('renderMarkdownButtons');
     return (
-      <div id="edit2-button-bar" className="flex-row">
+      <div id="editor-button-bar" className="flex-row">
         <button className="ebtn no-text" title="Strong (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
@@ -203,20 +227,20 @@ export default class EditorNew extends Component {
 
     return (
       <Overlay>
-        <div id="editor2-wrapper" className="flex-col" style={ style }>
+        <div id="editor-wrapper" className="flex-col" style={ style }>
           <div className="drag-bar-vert"></div>
-          <div id="editor2-top" className="flex-row">
-            <input id="editor2-title" className="editor-input half" placeholder="title goes here...">
+          <div id="editor-top" className="flex-row">
+            <input id="editor-title" className="editor-input half" placeholder="title goes here...">
             </input>
-            <input id="editor2-tags" className="editor-input half" placeholder="#enter #tags">
+            <input id="editor-tags" className="editor-input half" placeholder="#enter #tags">
             </input>
           </div>
-          <div id="edit2-text-with-preview" className="flex-row">
-            <div id="edit2-preview-with-buttons" className="flex-col">
+          <div id="editor-text-with-preview" className="flex-row">
+            <div id="editor-preview-with-buttons" className="flex-col">
               { this.renderMarkdownButtons() }
               <CodeMirrorEditor mode={ mode }
-                className="edit2-textarea-wrap"
-                textAreaClassName="edit2-textarea"
+                className="editor-textarea-wrap"
+                textAreaClassName="editor-textarea"
                 placeholder="Enter text here..."
                 value={ s }
                 autofocus
@@ -224,9 +248,9 @@ export default class EditorNew extends Component {
                 onEditorCreated={ this.handleEditorCreated }
                 ref={ setEditArea } />
             </div>
-            <div id="edit2-preview" dangerouslySetInnerHTML={ html }></div>
+            <div id="editor-preview" dangerouslySetInnerHTML={ html }></div>
           </div>
-          <div id="edit2-bottom" className="flex-row">
+          <div id="editor-bottom" className="flex-row">
             <div>
               <button className="btn btn-primary" disabled={ saveDisabled }>
                 Save
@@ -239,7 +263,7 @@ export default class EditorNew extends Component {
                 <span className="drop-down-init">markdown <i className="fa fa-angle-down"></i></span>
               </div>
             </div>
-            <div id="editor2-hide-preview">
+            <div id="editor-hide-preview">
               <span>hide preview</span>
             </div>
           </div>
@@ -249,7 +273,7 @@ export default class EditorNew extends Component {
   }
 
   render() {
-    console.log('EditorNew.render, isShowing:', this.state.isShowing, 'height:', this.height);
+    console.log('Editor.render, isShowing:', this.state.isShowing, 'height:', this.height);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
