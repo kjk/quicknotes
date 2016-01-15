@@ -13,9 +13,11 @@ body {
   box-sizing: border-box;
 }
 
+/*
 :after, :before {
   box-sizing: border-box;
 }
+*/
 
 :focus { outline:none; }
 ::-moz-focus-inner { border:0; }
@@ -53,6 +55,11 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+}
+
+// the idea is to have it expand to take available space
+.flex-spacer {
+  flex-grow: 8;
 }
 
 .btn {

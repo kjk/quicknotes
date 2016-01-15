@@ -7,6 +7,7 @@ import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
 import * as u from './utils.js';
+import * as format from './format.js';
 
 const kDragBarDy = 11;
 
@@ -57,7 +58,7 @@ function tagsToText(tags) {
     return '';
   }
   let s = '';
-  tags.forEach(function(tag) {
+  tags.forEach(tag => {
     if (s !== '') {
       s += ' ';
     }
@@ -100,13 +101,13 @@ function editorHeight(y) {
 }
 
 class Note {
-  constructor(id, title, tags, body, isPublic, format) {
+  constructor(id, title, tags, body, isPublic, formatName) {
     this.id = id;
     this.title = title;
     this.tags = tags;
     this.body = body;
     this.isPublic = isPublic;
-    this.format = format;
+    this.formatName = formatName;
   }
 }
 
@@ -117,12 +118,13 @@ function noteFromCompact(noteCompact) {
   const tagsStr = tagsToText(tags);
   const body = ni.Content(noteCompact);
   const isPublic = ni.IsPublic(noteCompact);
-  const format = ni.Format(noteCompact);
-  return new Note(id, title, tagsStr, body, isPublic, format);
+  const formatId = ni.Format(noteCompact);
+  const formatName = format.NameFromId(formatId);
+  return new Note(id, title, tagsStr, body, isPublic, formatName);
 }
 
 function newEmptyNote() {
-  return new Note(null, '', '', '', false, ni.formatMarkdow);
+  return new Note(null, '', '', '', false, format.MarkdownName);
 }
 
 function didNoteChange(n1, n2) {
@@ -142,22 +144,25 @@ export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.toHtml = this.toHtml.bind(this);
-    this.editNote = this.editNote.bind(this);
-    this.createNewNote = this.createNewNote.bind(this);
-    this.handleTextChanged = this.handleTextChanged.bind(this);
-    this.handleDiscard = this.handleDiscard.bind(this);
-    this.handleEditorCreated = this.handleEditorCreated.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
     this.handleDragBarMoved = this.handleDragBarMoved.bind(this);
+    this.handleEditorCreated = this.handleEditorCreated.bind(this);
+    this.handleFormatChanged = this.handleFormatChanged.bind(this);
+    this.handleTagsChanged = this.handleTagsChanged.bind(this);
+    this.handleTextChanged = this.handleTextChanged.bind(this);
     this.handleTimer = this.handleTimer.bind(this);
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
-    this.handleTagsChanged = this.handleTagsChanged.bind(this);
+
+    this.createNewNote = this.createNewNote.bind(this);
+    this.editNote = this.editNote.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
+    this.toHtml = this.toHtml.bind(this);
 
     this.initialNote = null;
     this.cm = null;
     this.top = getWindowMiddle();
+    this.firstRender = true;
 
     this.state = {
       isShowing: false,
@@ -175,9 +180,10 @@ export default class Editor extends Component {
   componentDidUpdate() {
     const cm = this.cm;
     //console.log('Editor.componentDidUpdate, cm: ', cm);
-    if (!cm) {
+    if (!cm || !this.firstRender) {
       return;
     }
+    this.firstRender = false;
     /*cm.focus();*/
     cm.execCommand('goDocEnd');
     cm.scrollIntoView();
@@ -220,7 +226,7 @@ export default class Editor extends Component {
     });
   }
 
-  handleDiscard(e) {
+  handleCancel(e) {
     this.setState({
       isShowing: false,
       note: newEmptyNote()
@@ -232,6 +238,7 @@ export default class Editor extends Component {
   }
 
   startEditingNote(noteCompact) {
+    this.firstRender = true;
     const note = noteFromCompact(noteCompact);
     this.initialNote = u.deepCloneObject(note);
     this.setState({
@@ -333,6 +340,31 @@ export default class Editor extends Component {
     this.scheduleTimer();
   }
 
+  handleFormatChanged(e) {
+    const formatName = e.target.value;
+    let note = this.state.note;
+    note.formatName = formatName;
+    this.setState({
+      note: note
+    });
+  }
+
+  renderFormatSelect(formats, selected) {
+    const options = formats.map(function(format) {
+      return <option key={ format }>
+               { format }
+             </option>;
+    });
+    return (
+      <div className="editor-select-wrapper">
+        <select value={ selected } onChange={ this.handleFormatChanged }>
+          { options }
+        </select>
+        <span></span>
+      </div>
+      );
+  }
+
   renderMarkdownWithPreview() {
     const mode = 'text';
     const note = this.state.note;
@@ -358,6 +390,8 @@ export default class Editor extends Component {
       overflow: 'hidden',
       background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px'
     };
+
+    const formatSelect = this.renderFormatSelect(format.FormatNames, note.formatName);
 
     const dragBarMax = window.innerHeight - 320;
     const dragBarMin = 64;
@@ -415,20 +449,18 @@ export default class Editor extends Component {
             </div>
           </div>
           <div id="editor-bottom" className="flex-row">
-            <div>
-              <button className="btn btn-primary" disabled={ saveDisabled }>
-                Save
-              </button>
-              <button className="btn btn-primary" onClick={ this.handleDiscard }>
-                Discard
-              </button>
-              <div style={ styleFormat }>
-                <span>Format:</span>
-                <span className="drop-down-init">markdown <i className="fa fa-angle-down"></i></span>
-              </div>
+            <button className="btn btn-primary" disabled={ saveDisabled }>
+              Save
+            </button>
+            <button className="btn btn-primary" onClick={ this.handleCancel }>
+              Cancel
+            </button>
+            { formatSelect }
+            <div className="flex-spacer">
+              &nbsp;
             </div>
             <div id="editor-hide-preview">
-              <span>hide preview</span>
+              hide preview
             </div>
           </div>
         </div>
