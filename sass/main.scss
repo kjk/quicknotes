@@ -1,16 +1,7 @@
 @import 'normalize';
 @import 'logo';
 @import 'font-awesome/font-awesome';
-
-$sidebar-width: 180px;
-$font-size-main: 14px;
-$font-size-note: 13px;
-$line-height-note: 18px;
-$font-size-note-tag: 13px;
-$font-size-sidebar: 12px;
-$note-header-dy: 26px;
-$col-blue: #09f;
-$col-note: rgba(0,0,0,.8);
+@import 'colors';
 
 html,
 body {
@@ -34,6 +25,12 @@ body {
   font-size: $font-size-main;
 }
 
+
+.h4, h4 {
+  font-size: 18px;
+  font-weight: 500;
+}
+
 .half {
   width: 50%;
 }
@@ -44,6 +41,16 @@ body {
 
 .left {
   float: left;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
 }
 
 .btn {
@@ -698,35 +705,6 @@ hr.light2 {
 }
 
 /**/
-#composer {
-  height: 64px;
-  bottom: 0; left: 220px; right: 0;
-  display: none;
-}
-
-#composer .inner {
-  position: absolute;
-  top: 12px; right: 16px; bottom: 12px; left: 16px;
-}
-
-#composer input {
-  width: 100%;
-  position: relative;
-  height: 34px;
-  top: 2px;
-  font-size: 14px;
-  text-indent: 10px;
-}
-
-#composer textarea {
-  width: 100%;
-  height: 38px;
-  padding: 0;
-  font-size: 14px;
-  resize: none;
-}
-
-/**/
 #search-results {
   position: absolute;
   top: 46px; left: 220px; right: 0; bottom: 0;
@@ -916,29 +894,6 @@ hr.light2 {
 }
 
 /**/
-#editor-wrapper {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  top: 80px;
-  background: lightgray;
-  color: red;
-  z-index: 90;
-}
-
-$title-and-tags-height: 30px;
-$actions-height: 34px;
-
-#editor-content {
-  position: abosolute;
-  left: 0; right: 0;
-  top: $title-and-tags-height;
-  bottom: $actions-height;
-
-  background: lightyellow;
-  color: black;
-}
-
-/**/
 #full-note {
   top: 46px; left: 0; right: 0; bottom: 0;
 
@@ -993,16 +948,6 @@ $actions-height: 34px;
   }
 }
 
-
-#editor-bottom {
-  position: absolute;
-  right: 16px;
-  left: 16px;
-  bottom: 8px;
-  background-color: lightblue;
-  display: block;
-}
-
 .drag-bar-vert {
   width: 100%;
   cursor: row-resize;
@@ -1014,238 +959,6 @@ $actions-height: 34px;
 /**/
 .dropdown-content {
   text-align: left;
-}
-
-/* Light Theme
------------------------------------------------ */
-.theme-light #header {
-  background: #FFF;
-  border-bottom: 1px solid rgba(0,0,0,.1);
-  /*box-shadow: 0 1px 1px rgba(0,0,0,.05);*/
-}
-
-.theme-light #header #logo {
-  border-right: 1px solid rgba(0,0,0,.1);
-}
-
-.theme-light #header #search-wrapper input {
-  border: 1px solid rgba(0,0,0,.1);
-}
-
-.theme-light #header #user .user {
-  color: rgba(0,0,0,.8);
-}
-
-.theme-light #header .dropdown i {
-  color: rgba(0,0,0,.6);
-}
-
-.theme-light #header .dropdown-content {
-  background: #FFF;
-  box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 0 2px rgba(0,0,0,.1), 0 1px 6px rgba(0,0,0,.2);
-}
-
-.theme-light #header .dropdown-content a {
-  color: rgba(0,0,0,.8);
-}
-
-.theme-light #header .dropdown-content a:hover {
-  /*color: rgba(0,0,0,0.45);*/
-  color: $col-blue;
-}
-
-#header .dropdown-content .divider {
-  border-color: rgba(0,0,0,.1);
-}
-
-.theme-light #left-sidebar {
-  background: #FFF;
-  border-right: 1px solid rgba(0,0,0,.1);
-}
-
-.theme-light #left-sidebar .tag {
-  color: rgba(0,0,0,.8);
-}
-
-.theme-light #left-sidebar .tag:hover {
-  background: rgba(0,0,0,.05);
-}
-
-.theme-light #left-sidebar .tag-count {
-  color: rgba(0,0,0,.5);
-}
-
-.theme-light #left-sidebar .tag.selected {
-  color: rgba(0,0,0,1);
-  font-weight: bold;
-  background: rgba(0,0,0,.02);
-}
-
-.theme-light #left-sidebar .tag.selected .tag-count {
-  color: rgba(0,0,0,.8);
-}
-
-.theme-light #notes-list {
-  background: rgba(0,0,0,.03);
-}
-
-.theme-light #notes-list .note .note-starred {
-  color: #03A9F4;
-}
-
-.theme-light #notes-list .note {
-  background: #FFF;
-  border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0,0,0,.1);
-}
-
-.theme-light #notes-list .note .note-tag {
-  color: rgba(0,0,0,.5);
-}
-
-.theme-light #notes-list .note .note-tag:hover {
-  color: rgba(0,0,0,.8);
-}
-
-.theme-light #notes-list .note .note-size {
-  color: rgba(0,0,0,.4);
-}
-
-.theme-light #composer {
-  background: rgba(252,252,252,1);
-  border-top: 1px solid rgba(0,0,0,.1);
-}
-
-.theme-light #composer input {
-  border: 1px solid rgba(0,0,0,.1);
-}
-
-/* Dark Theme
------------------------------------------------ */
-.theme-dark #header {
-  background: #F8F8FA;
-  background: linear-gradient(to bottom, #FFFEFD 0%,rgba(252,252,252,1) 100%);
-  border-bottom: 1px solid rgba(0,0,0,.2);
-}
-
-.theme-dark #left-sidebar {
-  background: #444550;
-  border-right: 1px solid rgba(0,0,0,.2);
-}
-
-.theme-dark #left-sidebar .tag {
-  color: rgba(255,255,255,.5);
-}
-
-.theme-dark #left-sidebar .tag:hover {
-  background: rgba(0,0,0,.08);
-}
-
-.theme-dark #left-sidebar .tag-count {
-  color: rgba(255,255,255,.3);
-}
-
-.theme-dark #left-sidebar .tag.selected {
-  color: rgba(255,255,255,1);
-}
-
-.theme-dark #left-sidebar .tag.selected .tag-count {
-  color: rgba(255,255,255,.6);
-}
-
-.theme-dark #notes-list {
-  background: #E3E3E3;
-}
-
-.theme-dark #composer {
-  background: rgba(252,252,252,1);
-  border-top: 1px solid rgba(0,0,0,.1);
-}
-
-.theme-dark #composer input {
-  border: 1px solid rgba(0,0,0,.2);
-}
-
-/* Spacing : Default
------------------------------------------------ */
-[data-spacing="default"] #notes-list .note {
-  margin: 14px 16px;
-  padding: 8px 16px;
-}
-
-[data-spacing="default"] #notes-list .note:first-of-type {
-  margin-top: 16px;
-}
-
-[data-spacing="default"] #notes-list .note:last-of-type {
-  margin-bottom: 16px;
-}
-
-/*
-The idea is to have the title shrink if it's too big to show on a line, but
-that would probably require flexbox container since it's only one of many
-elements inside note-header div.
-
-[data-spacing="default"] #notes-list .note-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-*/
-
-/* Spacing : Grid
------------------------------------------------ */
-[data-spacing="grid"] #notes-list .wrapper {
-  padding: 16px;
-  -moz-column-count: 3;
-  -webkit-column-count: 3;
-  column-count: 3;
-  -moz-column-gap: 1em;
-  -webkit-column-gap: 1em;
-  column-gap: 1em;
-}
-
-[data-spacing="grid"] #notes-list .note {
-  display: inline-block;
-  width: 90%;
-  margin: 0 0 16px;
-  padding: 16px 18px;
-}
-
-[data-spacing="grid"] #notes-list .note-title {
-  width: 70%;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-[data-spacing="grid"] #notes-list .note-action.note-star {
-  position: relative;
-  top: -8px;
-}
-
-[data-spacing="grid"] #notes-list .note .note-actions {
-  background: #FFF;
-}
-
-/* Spacing : Minimal
------------------------------------------------ */
-[data-spacing="minimal"] #notes-list .note {
-  padding: 16px 18px;
-  margin-bottom: 1px;
-}
-
-/* Spacing : Barebones
------------------------------------------------ */
-[data-spacing="barebones"] #notes-list .note {
-  padding: 16px 18px 10px 18px;
-  margin-bottom: 1px;
-}
-
-[data-spacing="barebones"] #notes-list .note-content,
-[data-spacing="barebones"] #notes-list .note-footer {
-  display: none;
 }
 
 /* Media Queries
@@ -1271,11 +984,6 @@ elements inside note-header div.
     position: relative;
     top: -8px;
   }
-}
-
-.h4, h4 {
-  font-size: 18px;
-  font-weight: 500;
 }
 
 /* modal */
@@ -1378,108 +1086,14 @@ button.close {
   }
 }
 
-/* use:
-div class="modal" tabIndex="-1" role="dialog"
-  div class="modal-dialog"
-    div class="modal-content"
-      div class="modal-header"
-
-*/
-
-.flex-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.flex-row {
-  display: flex;
-  flex-direction: row;
-}
-
-#editor2-wrapper {
-  position: absolute;
-  height: 320px;
-  bottom: 0px;
-  width: 100%;
-  /* background-color: lightgray; */
-  background-color: white;
-}
-
-#editor2-wrapper input {
-  border: 0;
-  padding-left: 16px;
-}
-
-#editor2-top {
-  flex-wrap: nowrap;
-}
-
-#edit2-text-with-preview {
-  flex-wrap: nowrap;
-}
-
-#edit2-preview-with-buttons {
-  width: 50%;
-}
-
-#edit2-button-bar {
-  flex-wrap: nowrap;
-  padding: 2px 4px;
-}
-
-#edit2-button-bar i:hover {
-  color: black;
-  /* background-color: lightgray; */
-  background-color: white;
-}
-
-.edit2-textarea-wrap {
-  width: 100%;
-  border: 0;
-  padding: 2px 4px;
-  /* background-color: #eaeaea; */
-  background-color: white;
-  flex-grow: 4;
-  /* max-height: 100%; */
-  overflow: scroll;
-}
-
-.edit2-textarea {
-  height: 100%;
-}
-
-#edit2-preview {
-  width: 50%;
-  padding: 2px 4px;
-  /* background-color: #e3e3e3; */
-  background-color: white;
-  overflow: scroll;
-}
-
-#edit2-text-with-preview {
-  background-color: white;
-  height: 140px;
-  flex-grow: 8;
-}
-
-#edit2-bottom {
-  background-color: #e9e9e9;
-  padding: 2px 4px;
-  justify-content: space-between;
-}
-
-#editor2-hide-preview {
-  padding-top: 8px;
-  padding-right: 8px;
-}
-
-@media (max-width: 768px) {
-
-}
+@import 'editor';
+@import 'theme-light';
+@import 'theme-dark';
+@import 'spacing';
 
 @import '../node_modules/codemirror/lib/codemirror';
 @import '../node_modules/codemirror/theme/solarized';
 
 .CodeMirror {
-  height: 100vw;
+  min-height: 100%;
 }
