@@ -1,0 +1,105 @@
+@import 'colors';
+
+/* Light Theme
+----------------------------------------------- */
+.theme-light #header {
+  background: #FFF;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  /*box-shadow: 0 1px 1px rgba(0,0,0,.05);*/
+}
+
+.theme-light #header #logo {
+  border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #header #search-wrapper input {
+  border: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #header #user .user {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #header .dropdown i {
+  color: rgba(0,0,0,.6);
+}
+
+.theme-light #header .dropdown-content {
+  background: #FFF;
+  box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 0 2px rgba(0,0,0,.1), 0 1px 6px rgba(0,0,0,.2);
+}
+
+.theme-light #header .dropdown-content a {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #header .dropdown-content a:hover {
+  /*color: rgba(0,0,0,0.45);*/
+  color: $col-blue;
+}
+
+#header .dropdown-content .divider {
+  border-color: rgba(0,0,0,.1);
+}
+
+.theme-light #left-sidebar {
+  background: #FFF;
+  border-right: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #left-sidebar .tag {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #left-sidebar .tag:hover {
+  background: rgba(0,0,0,.05);
+}
+
+.theme-light #left-sidebar .tag-count {
+  color: rgba(0,0,0,.5);
+}
+
+.theme-light #left-sidebar .tag.selected {
+  color: rgba(0,0,0,1);
+  font-weight: bold;
+  background: rgba(0,0,0,.02);
+}
+
+.theme-light #left-sidebar .tag.selected .tag-count {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #notes-list {
+  background: rgba(0,0,0,.03);
+}
+
+.theme-light #notes-list .note .note-starred {
+  color: #03A9F4;
+}
+
+.theme-light #notes-list .note {
+  background: #FFF;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+
+.theme-light #notes-list .note .note-tag {
+  color: rgba(0,0,0,.5);
+}
+
+.theme-light #notes-list .note .note-tag:hover {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light #notes-list .note .note-size {
+  color: rgba(0,0,0,.4);
+}
+
+.theme-light #composer {
+  background: rgba(252,252,252,1);
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-light #composer input {
+  border: 1px solid rgba(0,0,0,.1);
+}

@@ -1,0 +1,47 @@
+@import 'colors';
+
+/* Dark Theme
+----------------------------------------------- */
+.theme-dark #header {
+  background: #F8F8FA;
+  background: linear-gradient(to bottom, #FFFEFD 0%,rgba(252,252,252,1) 100%);
+  border-bottom: 1px solid rgba(0,0,0,.2);
+}
+
+.theme-dark #left-sidebar {
+  background: #444550;
+  border-right: 1px solid rgba(0,0,0,.2);
+}
+
+.theme-dark #left-sidebar .tag {
+  color: rgba(255,255,255,.5);
+}
+
+.theme-dark #left-sidebar .tag:hover {
+  background: rgba(0,0,0,.08);
+}
+
+.theme-dark #left-sidebar .tag-count {
+  color: rgba(255,255,255,.3);
+}
+
+.theme-dark #left-sidebar .tag.selected {
+  color: rgba(255,255,255,1);
+}
+
+.theme-dark #left-sidebar .tag.selected .tag-count {
+  color: rgba(255,255,255,.6);
+}
+
+.theme-dark #notes-list {
+  background: #E3E3E3;
+}
+
+.theme-dark #composer {
+  background: rgba(252,252,252,1);
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.theme-dark #composer input {
+  border: 1px solid rgba(0,0,0,.2);
+}
