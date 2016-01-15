@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
+import { Overlay } from './Overlay.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
@@ -46,10 +47,6 @@ export default class EditorNew extends Component {
     action.onCreateNewNote(this.createNewNote, this);
   }
 
-  componentWillUnmount() {
-    action.offAllForOwner(this);
-  }
-
   componentWillReceiveProps(nextProps) {
     const cm = this.cm;
     console.log('EditorNew.componentWillReceiveProps, cm: ', cm);
@@ -57,8 +54,12 @@ export default class EditorNew extends Component {
       return;
     }
     /*cm.focus();*/
-    cm.execCommand("goDocEnd");
+    cm.execCommand('goDocEnd');
     cm.scrollIntoView();
+  }
+
+  componentWillUnmount() {
+    action.offAllForOwner(this);
   }
 
   handleTextChanged(e) {
@@ -71,7 +72,7 @@ export default class EditorNew extends Component {
   handleDiscard(e) {
     this.setState({
       isShowing: false,
-      txt: ""
+      txt: ''
     });
   }
 
@@ -170,47 +171,49 @@ export default class EditorNew extends Component {
     };
 
     return (
-      <div id="editor2-wrapper" className="flex-col" style={ style }>
-        <div className="drag-bar-vert"></div>
-        <div id="editor2-top" className="flex-row">
-          <input id="editor2-title" className="editor-input half" placeholder="title goes here...">
-          </input>
-          <input id="editor2-tags" className="editor-input half" placeholder="#enter #tags">
-          </input>
-        </div>
-        <div id="edit2-text-with-preview" className="flex-row">
-          <div id="edit2-preview-with-buttons" className="flex-col">
-            { this.renderMarkdownButtons() }
-            <CodeMirrorEditor mode={ mode }
-              className="edit2-textarea-wrap"
-              textAreaClassName="edit2-textarea"
-              placeholder="Enter text here..."
-              value={ s }
-              autofocus={true}
-              onChange={ this.handleTextChanged }
-              onEditorCreated={ this.handleEditorCreated }
-              ref={ setEditArea } />
+      <Overlay>
+        <div id="editor2-wrapper" className="flex-col" style={ style }>
+          <div className="drag-bar-vert"></div>
+          <div id="editor2-top" className="flex-row">
+            <input id="editor2-title" className="editor-input half" placeholder="title goes here...">
+            </input>
+            <input id="editor2-tags" className="editor-input half" placeholder="#enter #tags">
+            </input>
           </div>
-          <div id="edit2-preview" dangerouslySetInnerHTML={ html }></div>
-        </div>
-        <div id="edit2-bottom" className="flex-row">
-          <div>
-            <button className="btn btn-primary">
-              Save
-            </button>
-            <button className="btn btn-primary" onClick={this.handleDiscard}>
-              Discard
-            </button>
-            <div style={ style1 }>
-              <span>Format:</span>
-              <span className="drop-down-init">markdown <i className="fa fa-angle-down"></i></span>
+          <div id="edit2-text-with-preview" className="flex-row">
+            <div id="edit2-preview-with-buttons" className="flex-col">
+              { this.renderMarkdownButtons() }
+              <CodeMirrorEditor mode={ mode }
+                className="edit2-textarea-wrap"
+                textAreaClassName="edit2-textarea"
+                placeholder="Enter text here..."
+                value={ s }
+                autofocus
+                onChange={ this.handleTextChanged }
+                onEditorCreated={ this.handleEditorCreated }
+                ref={ setEditArea } />
+            </div>
+            <div id="edit2-preview" dangerouslySetInnerHTML={ html }></div>
+          </div>
+          <div id="edit2-bottom" className="flex-row">
+            <div>
+              <button className="btn btn-primary">
+                Save
+              </button>
+              <button className="btn btn-primary" onClick={ this.handleDiscard }>
+                Discard
+              </button>
+              <div style={ style1 }>
+                <span>Format:</span>
+                <span className="drop-down-init">markdown <i className="fa fa-angle-down"></i></span>
+              </div>
+            </div>
+            <div id="editor2-hide-preview">
+              <span>hide preview</span>
             </div>
           </div>
-          <div id="editor2-hide-preview">
-            <span>hide preview</span>
-          </div>
         </div>
-      </div>
+      </Overlay>
       );
   }
 

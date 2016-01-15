@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import Overlay from './Overlay.jsx';
+import { Overlay } from './Overlay.jsx';
 
 export default class Editor extends Component {
   constructor(props, context) {
@@ -72,10 +72,9 @@ export default class Editor extends Component {
 class AppEditor extends React.Component {
   render() {
     return (
-      <div>
-        <Overlay />
+      <Overlay>
         <Editor />
-      </div>
+      </Overlay>
       );
   }
 }
