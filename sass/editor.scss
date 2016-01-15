@@ -1,5 +1,5 @@
 
-#editor2-wrapper {
+#editor-wrapper {
   position: absolute;
   height: 320px;
   bottom: 0px;
@@ -8,35 +8,35 @@
   background-color: white;
 }
 
-#editor2-wrapper input {
+#editor-wrapper input {
   border: 0;
   padding-left: 16px;
 }
 
-#editor2-top {
+#editor-top {
   flex-wrap: nowrap;
 }
 
-#edit2-text-with-preview {
+#editor-text-with-preview {
   flex-wrap: nowrap;
 }
 
-#edit2-preview-with-buttons {
+#editor-preview-with-buttons {
   width: 50%;
 }
 
-#edit2-button-bar {
+#editor-button-bar {
   flex-wrap: nowrap;
   padding: 2px 4px;
 }
 
-#edit2-button-bar i:hover {
+#editor-button-bar i:hover {
   color: black;
   /* background-color: lightgray; */
   background-color: white;
 }
 
-.edit2-textarea-wrap {
+.editor-textarea-wrap {
   width: 100%;
   border: 0;
   padding: 2px 4px;
@@ -47,11 +47,11 @@
   overflow: scroll;
 }
 
-.edit2-textarea {
+.editor-textarea {
   height: 100%;
 }
 
-#edit2-preview {
+#editor-preview {
   width: 50%;
   padding: 2px 4px;
   /* background-color: #e3e3e3; */
@@ -59,19 +59,19 @@
   overflow: scroll;
 }
 
-#edit2-text-with-preview {
+#editor-text-with-preview {
   background-color: white;
   height: 140px;
   flex-grow: 8;
 }
 
-#edit2-bottom {
+#editor-bottom {
   background-color: #e9e9e9;
   padding: 2px 4px;
   justify-content: space-between;
 }
 
-#editor2-hide-preview {
+#editor-hide-preview {
   padding-top: 8px;
   padding-right: 8px;
 }

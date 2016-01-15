@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import FullComposer from './FullComposer.jsx';
 import LeftSidebar from './LeftSidebar.jsx';
 import NotesList from './NotesList.jsx';
 import Router from './Router.js';
@@ -8,7 +7,7 @@ import SearchResults from './SearchResults.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
-import EditorNew from './EditorNew.jsx';
+import Editor from './Editor.jsx';
 import keymaster from 'keymaster';
 import * as u from './utils.js';
 import * as format from './format.js';
@@ -66,15 +65,11 @@ let gCurrSearchTerm = '';
 export default class AppUser extends Component {
   constructor(props, context) {
     super(props, context);
-    this.cancelNoteEdit = this.cancelNoteEdit.bind(this);
     this.escPressed = this.escPressed.bind(this);
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
-    this.createNewNote = this.createNewNote.bind(this);
-    this.editNote = this.editNote.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.keyFilter = this.keyFilter.bind(this);
-    this.saveNote = this.saveNote.bind(this);
     this.reloadNotes = this.reloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
@@ -100,7 +95,6 @@ export default class AppUser extends Component {
       selectedTag: selectedTag,
       tags: tags,
       loggedInUserHandle: loggedInUserHandle,
-      noteBeingEdited: null,
       searchResults: null
     };
   }
@@ -113,8 +107,6 @@ export default class AppUser extends Component {
 
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
-    action.onCreateNewNote(this.createNewNote, this);
-    action.onEditNote(this.editNote, this);
   }
 
   componentWillUnmount() {
@@ -171,75 +163,8 @@ export default class AppUser extends Component {
     return this.standardKeyFilter(event);
   }
 
-  createNewTextNote(s) {
-    const note = {
-      Content: s.trim(),
-      Format: format.Text
-    };
-    const noteJSON = JSON.stringify(note);
-    api.createOrUpdateNote(noteJSON, () => {
-      action.reloadNotes();
-    });
-  }
-
-  saveNote(note) {
-    const newNote = ni.toNewNote(note);
-    newNote.Content = newNote.Content.trim();
-    const noteJSON = JSON.stringify(newNote);
-    this.setState({
-      noteBeingEdited: null
-    });
-    u.clearNewNote();
-
-    api.createOrUpdateNote(noteJSON, () => {
-      action.reloadNotes();
-    });
-  }
-
-  cancelNoteEdit() {
-    if (!this.state.noteBeingEdited) {
-      return;
-    }
-    this.setState({
-      noteBeingEdited: null
-    });
-    u.clearNewNote();
-  }
-
   escPressed() {
     console.log('ESC pressed');
-    if (this.state.noteBeingEdited) {
-      this.setState({
-        noteBeingEdited: null
-      });
-      u.clearNewNote();
-      return;
-    }
-  }
-
-  editNote(note) {
-    //const userHandle = this.props.notesUserHandle;
-    const noteId = ni.IDStr(note);
-    console.log('AppUser.editNote: ' + noteId);
-    api.getNoteCompact(noteId, noteJson => {
-      this.setState({
-        noteBeingEdited: noteJson
-      });
-    });
-  }
-
-  createNewNote() {
-    if (this.state.noteBeingEdited !== null) {
-      console.log('createNewNote: a note is already being edited');
-      return;
-    }
-    const note = {
-      Content: '',
-      Format: format.Text
-    };
-    this.setState({
-      noteBeingEdited: note
-    });
   }
 
   startSearch(userHandle, searchTerm) {
@@ -307,13 +232,10 @@ export default class AppUser extends Component {
           selectedTag={ this.state.selectedTag } />
         <NotesList notes={ this.state.selectedNotes } myNotes={ myNotes } compact={ compact } />
         <Settings />
-        { this.state.noteBeingEdited && false ?
-          <FullComposer note={ this.state.noteBeingEdited } saveNoteCb={ this.saveNote } cancelNoteEditCb={ this.cancelNoteEdit } /> :
-          null }
         { this.state.searchResults ?
           <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } /> : null }
         <ImportSimpleNote />
-        <EditorNew />
+        <Editor />
       </div>
       );
   }
