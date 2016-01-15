@@ -59,6 +59,7 @@
 
 #editor-preview-with-buttons {
   width: 50%;
+  padding: 0px 8px;
 }
 
 #editor-button-bar {
@@ -72,17 +73,21 @@
   background-color: white;
 }
 
-.editor-textarea-wrap {
+#cm-wrapper {
   width: 100%;
   border: 0;
-  // padding: 2px 4px;
-  background-color: red;
+  //background-color: red;
+  background-color: white;
   flex-grow: 4;
-  //overflow: scroll;
+  overflow: hidden;
 }
 
-.editor-textarea {
+.codemirror-div {
   height: 100%;
+}
+
+.cm-textarea {
+  /* height: 100%; */
 }
 
 #editor-preview {
@@ -102,6 +107,7 @@
   background-color: #e9e9e9;
   padding: 2px 4px 8px 4px;
   justify-content: space-between;
+  min-height: 42px; // TODO: why doesn't it size to content?
 }
 
 #editor-hide-preview {
