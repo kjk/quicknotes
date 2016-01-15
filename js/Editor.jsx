@@ -225,18 +225,22 @@ export default class Editor extends Component {
   scheduleTimer() {
     setTimeout(() => {
       this.handleTimer();
-    }, 333);
+    }, 100);
   }
 
   handleTimer() {
-    if (true || !this.state.isShowing) {
+    if (!this.state.isShowing) {
       this.scheduleTimer();
       return;
     }
-    const node = this.editorTextAreaWrapperNode.editorNode;
-    const h1 = node.style.height;
-    console.log('h1=', h1);
-    this.cm.setSize(null, h1);
+    const node = this.editorTextAreaWrapperNode;
+    const h = node.clientHeight;
+    console.log('h=', h);
+
+    const els = document.getElementsByClassName('codemirror-div');
+    console.log('el: ', els);
+    els.item(0).style.height = h + 'px';
+    //this.cm.setSize(null, h);
     this.scheduleTimer();
   }
 
@@ -276,10 +280,8 @@ export default class Editor extends Component {
     const saveDisabled = true;
 
     const setEditorWrapperNode = node => this.editorWrapperNode = node;
-    const setEditorTextAreaWrapperNode = node => {
-      console.log('node: ', node);
-      this.editorTextAreaWrapperNode = node
-    };
+    const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode = node;
+    const setCodemirrorDivNode = node => this.codeMirrorDivNode = node;
 
     return (
       <Overlay>
@@ -301,15 +303,17 @@ export default class Editor extends Component {
           <div id="editor-text-with-preview" className="flex-row">
             <div id="editor-preview-with-buttons" className="flex-col">
               { this.renderMarkdownButtons() }
-              <CodeMirrorEditor mode={ mode }
-                className="editor-textarea-wrap"
-                textAreaClassName="editor-textarea"
-                placeholder="Enter text here..."
-                value={ s }
-                autofocus
-                onChange={ this.handleTextChanged }
-                onEditorCreated={ this.handleEditorCreated }
-                ref={ setEditorTextAreaWrapperNode } />
+              <div id="cm-wrapper" ref={ setEditorTextAreaWrapperNode }>
+                <CodeMirrorEditor mode={ mode }
+                  className="codemirror-div"
+                  textAreaClassName="cm-textarea"
+                  placeholder="Enter text here..."
+                  value={ s }
+                  autofocus
+                  onChange={ this.handleTextChanged }
+                  onEditorCreated={ this.handleEditorCreated }
+                  ref={ setCodemirrorDivNode } />
+              </div>
             </div>
             <div id="editor-preview">
               <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
@@ -338,7 +342,7 @@ export default class Editor extends Component {
   }
 
   render() {
-    console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
+    //console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
