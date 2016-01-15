@@ -89,7 +89,7 @@
   padding: 4px 8px;
   /* background-color: #e3e3e3; */
   background-color: white;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #editor-text-with-preview {
@@ -99,12 +99,58 @@
 
 #editor-bottom {
   background-color: #e9e9e9;
-  padding: 2px 4px 8px 4px;
-  justify-content: space-between;
-  min-height: 42px; // TODO: why doesn't it size to content?
+  align-items: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 #editor-hide-preview {
-  padding-top: 8px;
+  margin-right: 8px;
+}
+
+/* http://authenticstyle.co.uk/how-to-style-select-boxes-using-css-and-html/
+http://codepen.io/gnclmorais/pen/cHkqt/ is simpler but uses fixed width
+http://fettblog.eu/style-select-elements/
+
+ */
+.editor-select-wrapper
+{
+	background: transparent;
+	overflow: hidden;
+	display: inline-block;
+	color: #525252;
+	position: relative;
+	cursor: pointer;
+	padding-right:16px;
+
+	box-shadow: 0 0 5px rgba(123, 123, 123, 0.2);
+	border: solid 1px #DADADA;
+  border-radius: 5px 4px 4px 5px/5px 5px 4px 4px;
+  padding-top: 2px;
+  padding-bottom: 3px;
+  padding-left: 8px;
   padding-right: 8px;
+}
+.editor-select-wrapper span
+{
+	position: absolute;
+	right: 10px;
+	width: 8px;
+	height: 8px;
+	background: url(/s/img/arrow.png) no-repeat;
+	top: 50%;
+	margin-top: -4px;
+}
+
+.editor-select-wrapper select
+{
+	webkit-appearance: none;
+	appearance:none;
+	background:none;
+	background:transparent;
+	border:none;
+	outline:none;
+	cursor:pointer;
 }

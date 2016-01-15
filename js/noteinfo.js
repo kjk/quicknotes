@@ -21,6 +21,11 @@ const flagPartialBit = 3;
 const formatText = 1;
 const formatMarkdown = 2;
 
+const formatNames = [
+  'text',
+  'markdown'
+];
+
 // note properties that can be compared for equality with ==
 const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
 
@@ -37,6 +42,19 @@ export function NewCompactNote() {
     0, // noteCurrentVersionIDIdx
     null, // noteContentIdx
   ];
+}
+
+export function FormatNameFromId(id) {
+  return formatNames[id];
+}
+
+export function FormatIdFromName(name) {
+  for (let [idx, val] of formatNames) {
+    if (val == name) {
+      return idx;
+    }
+  }
+  throw `invaid name: '${name}'`;
 }
 
 export function IsUnsaved(compactNote) {

@@ -1,26 +1,46 @@
 // name <-> number mapping of note content formats
 
-const Invalid = 0;
+export const Invalid = 0;
 export const Text = 1;
 export const Markdown = 2;
 export const Html = 3;
 
-const formatNames = ['invalid', 'text', 'markdown', 'html'];
+export const InvalidId = 0;
+export const TextId = 1;
+export const MarkdownId = 2;
+export const HtmlId = 3;
 
-export const Formats = ['text', 'markdown'];
+export const InvalidName = 'invalid';
+export const TextName = 'text';
+export const MarkdownName = 'markdown';
+export const HtmlName = 'html';
 
+const formatNames = [
+  InvalidName,
+  TextName,
+  MarkdownName,
+  HtmlName
+];
+
+export const Formats = [TextName, MarkdownName];
+export const FormatNames = [TextName, MarkdownName];
+
+// TODO: rename to NameFromId
 export function numberToName(n) {
   if (n >= formatNames.length) {
-    return 'invalid';
+    return InvalidName;
   }
   return formatNames[n];
 }
 
+// TODO: rename to IdFromName
 export function nameToNumber(s) {
-  for (var i = 0; i < formatNames.length; i++) {
-    if (formatNames[i] == s) {
-      return i;
+  for (let [idx, val] of formatNames) {
+    if (val == s) {
+      return idx;
     }
   }
   return Invalid;
 }
+
+export { nameToNumber as IdFromName, numberToName as NameFromId };
