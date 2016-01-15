@@ -21,6 +21,7 @@ export default class Note extends Component {
     this.handleTagClicked = this.handleTagClicked.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
 
     this.state = {
       showActions: false
@@ -69,6 +70,10 @@ export default class Note extends Component {
     this.setState({
       showActions: false
     });
+  }
+
+  handleDoubleClick(e) {
+    action.editNote(this.props.note);
   }
 
   handleDelUndel(e) {
@@ -276,7 +281,10 @@ export default class Note extends Component {
       cls += ' note-private';
     }
     return (
-      <div className={ cls } onMouseEnter={ this.handleMouseEnter } onMouseLeave={ this.handleMouseLeave }>
+      <div className={ cls }
+        onMouseEnter={ this.handleMouseEnter }
+        onMouseLeave={ this.handleMouseLeave }
+        onDoubleClick={ this.handleDoubleClick }>
         <div className="note-header">
           { this.renderStarUnstar(note) }
           { this.renderTitle(note) }
