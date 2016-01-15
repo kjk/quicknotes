@@ -113,7 +113,7 @@ class Note {
 function noteFromCompact(noteCompact) {
   const id = ni.IDStr(noteCompact);
   const title = ni.Title(noteCompact);
-  const tags = ni.Tags(noteCompact)
+  const tags = ni.Tags(noteCompact);
   const tagsStr = tagsToText(tags);
   const body = ni.Content(noteCompact);
   const isPublic = ni.IsPublic(noteCompact);
@@ -153,6 +153,7 @@ export default class Editor extends Component {
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
     this.handleTagsChanged = this.handleTagsChanged.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
+    this.startEditingNote = this.startEditingNote.bind(this);
 
     this.initialNote = null;
     this.cm = null;
@@ -193,7 +194,7 @@ export default class Editor extends Component {
   }
 
   handleTextChanged(e) {
-    const s = e.target.value
+    const s = e.target.value;
     let note = this.state.note;
     note.body = s;
     this.setState({
@@ -245,13 +246,13 @@ export default class Editor extends Component {
       this.startEditingNote(noteCompact);
     });
     if (s !== null) {
-      this.startEditingNote(noteCompact)
+      this.startEditingNote(noteCompact);
     }
   }
 
   createNewNote() {
     console.log('Editor.createNewNote');
-    startEditingNote(newEmptyNote());
+    this.startEditingNote(newEmptyNote());
   }
 
   toHtml(s) {
