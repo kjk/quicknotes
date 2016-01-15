@@ -46,11 +46,13 @@ body {
 .flex-col {
   display: flex;
   flex-direction: column;
+  flex-wrap: nowrap;
 }
 
 .flex-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 .btn {
@@ -909,42 +911,6 @@ hr.light2 {
       color: $col-note;
       line-height: $line-height-note;
     }
-  }
-}
-
-.ebtn.no-text .fa {
-    margin-right: 0;
-    line-height: 10px;
-}
-
-.editor-spacer {
-    width: 1px;
-    height: 20px;
-    margin-right: 8px;
-    margin-left: 5px;
-    background-color: #e9e9e9;
-    display: inline-block;
-    float: left
-}
-
-.ebtn {
-  border: none;
-  color: #222;
-  font-weight: normal;
-  /*background: #e9e9e9;*/
-  background-color: white;
-  display: inline-block;
-  margin: 0;
-  padding: 6px 12px;
-  font-weight: 500;
-  font-size: 1em;
-  line-height: 18px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .25s;
-
-  &:hover {
-    background-color: lightgray;
   }
 }
 

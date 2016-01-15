@@ -169,7 +169,7 @@ function fetchContentIfNeeded(note, cb) {
   api.getNoteCompact(noteID, json => {
     console.log('getContent: json=', json);
     const content = json[noteContentIdx];
-    console.log('getContent: content=', content);
+    //console.log('getContent: content=', content);
     setContent(note, content);
     cb(note);
   });
