@@ -122,7 +122,7 @@ export default class EditorNew extends Component {
         <button className="ebtn no-text" title="Emphasis (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
-        <div className="d-editor-spacer"></div>
+        <div className="editor-spacer"></div>
         <button className="ebtn no-text" title="Hyperlink (⌘K)">
           <i className="fa fa-link"></i>
         </button>
@@ -135,7 +135,7 @@ export default class EditorNew extends Component {
         <button className="ebtn no-text" title="Upload">
           <i className="fa fa-upload"></i>
         </button>
-        <div className="d-editor-spacer"></div>
+        <div className="editor-spacer"></div>
         <button className="ebtn no-text" title="Bulleted List (⌘⇧8)">
           <i className="fa fa-list-ul"></i>
         </button>
