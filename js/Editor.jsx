@@ -235,10 +235,10 @@ export default class Editor extends Component {
     }
     const node = this.editorTextAreaWrapperNode;
     const h = node.clientHeight;
-    console.log('h=', h);
+    //console.log('h=', h);
 
     const els = document.getElementsByClassName('codemirror-div');
-    console.log('el: ', els);
+    //console.log('el: ', els);
     els.item(0).style.height = h + 'px';
     //this.cm.setSize(null, h);
     this.scheduleTimer();
