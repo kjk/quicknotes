@@ -1,4 +1,5 @@
 import * as api from './api.js';
+import { assert } from './utils.js';
 
 const noteHashIDIdx = 0;
 const noteTitleIdx = 1;
@@ -17,8 +18,30 @@ const flagDeletedBit = 1;
 const flagPublicBit = 2;
 const flagPartialBit = 3;
 
+const formatText = 1;
+const formatMarkdown = 2;
+
 // note properties that can be compared for equality with ==
 const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
+
+export function NewCompactNote() {
+  return [
+    null, // noteHashIDIdx
+    '', // noteTitleIdx
+    0, // noteSizeIdx
+    0, // noteFlagsIdx, not starred, not deleted, private (not public), not partial
+    0, // noteCreatedAtIdx, will be filled in the callback
+    '', // noteTagsIdx
+    '', // noteSnippetIdx,
+    formatMarkdown, // noteFormatIdx
+    0, // noteCurrentVersionIDIdx
+    null, // noteContentIdx
+  ];
+}
+
+export function IsUnsaved(compactNote) {
+  return compactNote[noteHashIDIdx] == null;
+}
 
 function arrEmpty(a) {
   return !a || (a.length === 0);
@@ -62,8 +85,12 @@ function strArrEq(a1, a2) {
 
 function notesEq(n1, n2) {
   // Note: maybe should compare content after trim() ?
-  for (let prop of simpleProps) {
-    if (n1[prop] != n2[prop]) {
+  for (let propIdx of simpleProps) {
+    const v1 = n1[propIdx];
+    const v2 = n2[propIdx];
+
+    assert(typeof v1 === typeof v2);
+    if (v1 !== v2) {
       return false;
     }
   }

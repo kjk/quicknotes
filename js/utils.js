@@ -151,4 +151,10 @@ export function debounce(func, wait, immediate) {
   };
 }
 
+export function assert(cond) {
+  if (!cond) {
+    throw 'assert() failed';
+  }
+}
+
 window.runOnLoad = runOnLoad;
