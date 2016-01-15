@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
 import Overlay from './Overlay.jsx';
+import DragBarHoriz from './DragBarHoriz.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
@@ -65,10 +66,11 @@ export default class Editor extends Component {
     this.handleTextChanged = this.handleTextChanged.bind(this);
     this.handleDiscard = this.handleDiscard.bind(this);
     this.handleEditorCreated = this.handleEditorCreated.bind(this);
+    this.handleDragBarMoved = this.handleDragBarMoved.bind(this);
 
     this.initialNote = null;
     this.cm = null;
-    this.height = getWindowMiddle();
+    this.top = getWindowMiddle();
 
     this.state = {
       isShowing: false,
@@ -105,6 +107,10 @@ export default class Editor extends Component {
 
   componentWillUnmount() {
     action.offAllForOwner(this);
+  }
+
+  handleDragBarMoved(y, yDelta) {
+    console.log('Editor.handleDragBarMoved: y=', y, 'yDelta=', yDelta);
   }
 
   handleTextChanged(e) {
@@ -219,16 +225,28 @@ export default class Editor extends Component {
       paddingTop: 8
     };
 
+    const dragBarDy = 11;
+    const y = this.top;
     const style = {
-      height: this.height
+      height: y - dragBarDy
     };
 
     const saveDisabled = true;
+    const dragBarStyle = {
+      position: 'absolute',
+      top: y,
+      width: '100%',
+      cursor: 'row-resize',
+      height: dragBarDy,
+      zIndex: 20, // higher than overlay
+      overflow: 'hidden',
+      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px;'
+    };
 
     return (
       <Overlay>
+        <DragBarHoriz style={ dragBarStyle } initialY={ 0 } onPosChanged={ this.handleDragBarMoved } />
         <div id="editor-wrapper" className="flex-col" style={ style }>
-          <div className="drag-bar-vert"></div>
           <div id="editor-top" className="flex-row">
             <input id="editor-title" className="editor-input half" placeholder="title goes here...">
             </input>
@@ -273,7 +291,7 @@ export default class Editor extends Component {
   }
 
   render() {
-    console.log('Editor.render, isShowing:', this.state.isShowing, 'height:', this.height);
+    console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
