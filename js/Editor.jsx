@@ -99,6 +99,45 @@ function editorHeight(y) {
   return window.innerHeight - y - kDragBarDy;
 }
 
+class Note {
+  constructor(id, title, tags, body, isPublic, format) {
+    this.id = id;
+    this.title = title;
+    this.tags = tags;
+    this.body = body;
+    this.isPublic = isPublic;
+    this.format = format;
+  }
+}
+
+function noteFromCompact(noteCompact) {
+  const id = ni.IDStr(noteCompact);
+  const title = ni.Title(noteCompact);
+  const tags = ni.Tags(noteCompact)
+  const tagsStr = tagsToText(tags);
+  const body = ni.Content(noteCompact);
+  const isPublic = ni.IsPublic(noteCompact);
+  const format = ni.Format(noteCompact);
+  return new Note(id, title, tagsStr, body, isPublic, format);
+}
+
+function newEmptyNote() {
+  return new Note(null, '', '', '', false, ni.formatMarkdow);
+}
+
+function didNoteChange(n1, n2) {
+  if (n1.title != n2.title) {
+    return false;
+  }
+  if (n1.tags != n2.tags) {
+    return false;
+  }
+  if (n1.body != n2.body) {
+    return false;
+  }
+  return true;
+}
+
 export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
@@ -111,6 +150,8 @@ export default class Editor extends Component {
     this.handleEditorCreated = this.handleEditorCreated.bind(this);
     this.handleDragBarMoved = this.handleDragBarMoved.bind(this);
     this.handleTimer = this.handleTimer.bind(this);
+    this.handleTitleChanged = this.handleTitleChanged.bind(this);
+    this.handleTagsChanged = this.handleTagsChanged.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
 
     this.initialNote = null;
@@ -120,7 +161,6 @@ export default class Editor extends Component {
     this.state = {
       isShowing: false,
       note: null,
-      txt: ''
     };
   }
 
@@ -133,7 +173,7 @@ export default class Editor extends Component {
 
   componentDidUpdate() {
     const cm = this.cm;
-    console.log('Editor.componentDidUpdate, cm: ', cm);
+    //console.log('Editor.componentDidUpdate, cm: ', cm);
     if (!cm) {
       return;
     }
@@ -153,16 +193,36 @@ export default class Editor extends Component {
   }
 
   handleTextChanged(e) {
-    const s = e.target.value;
+    const s = e.target.value
+    let note = this.state.note;
+    note.body = s;
     this.setState({
-      txt: s
+      note: note
+    });
+  }
+
+  handleTitleChanged(e) {
+    const s = e.target.value;
+    let note = this.state.note;
+    note.title = s;
+    this.setState({
+      note: note
+    });
+  }
+
+  handleTagsChanged(e) {
+    const s = e.target.value;
+    let note = this.state.note;
+    note.tags = s;
+    this.setState({
+      note: note
     });
   }
 
   handleDiscard(e) {
     this.setState({
       isShowing: false,
-      txt: ''
+      note: newEmptyNote()
     });
   }
 
@@ -170,32 +230,28 @@ export default class Editor extends Component {
     this.cm = cm;
   }
 
-  editNote(note) {
-    console.log('Editor.editNote: note=', note);
-    note = u.deepCloneObject(note);
-
+  startEditingNote(noteCompact) {
+    const note = noteFromCompact(noteCompact);
     this.initialNote = u.deepCloneObject(note);
-    let s = ni.FetchContent(note, () => {
-      this.setState({
-        txt: ni.Content(note)
-      });
-    });
-    s = s || '';
     this.setState({
-      note: note,
-      txt: s,
-      isShowing: true
+      isShowing: true,
+      note: note
     });
+  }
+
+  editNote(noteCompact) {
+    console.log('Editor.editNote: noteCompact=', noteCompact);
+    let s = ni.FetchContent(noteCompact, () => {
+      this.startEditingNote(noteCompact);
+    });
+    if (s !== null) {
+      this.startEditingNote(noteCompact)
+    }
   }
 
   createNewNote() {
     console.log('Editor.createNewNote');
-    // TODO: create empty default note with empty id
-    //this.editAreaNode.editor.focus();
-    this.setState({
-      note: null,
-      isShowing: true
-    });
+    startEditingNote(newEmptyNote());
   }
 
   toHtml(s) {
@@ -261,6 +317,11 @@ export default class Editor extends Component {
       return;
     }
     const node = this.editorTextAreaWrapperNode;
+    if (!node) {
+      this.scheduleTimer();
+      return;
+    }
+
     const h = node.clientHeight;
     //console.log('h=', h);
 
@@ -273,9 +334,9 @@ export default class Editor extends Component {
 
   renderMarkdownWithPreview() {
     const mode = 'text';
-    const s = this.state.txt;
+    const note = this.state.note;
     const html = {
-      __html: this.toHtml(s)
+      __html: this.toHtml(note.body)
     };
 
     const styleFormat = {
@@ -304,7 +365,7 @@ export default class Editor extends Component {
       height: editorHeight(y)
     };
 
-    const saveDisabled = true;
+    const saveDisabled = didNoteChange(note, this.initialNote);
 
     const setEditorWrapperNode = node => this.editorWrapperNode = node;
     const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode = node;
@@ -322,10 +383,16 @@ export default class Editor extends Component {
           style={ style }
           ref={ setEditorWrapperNode }>
           <div id="editor-top" className="flex-row">
-            <input id="editor-title" className="editor-input" placeholder="title goes here...">
-            </input>
-            <input id="editor-tags" className="editor-input" placeholder="#enter #tags">
-            </input>
+            <input id="editor-title"
+              className="editor-input"
+              placeholder="title goes here..."
+              value={ note.title }
+              onChange={ this.handleTitleChanged } />
+            <input id="editor-tags"
+              className="editor-input"
+              placeholder="#enter #tags"
+              value={ note.tags }
+              onChange={ this.handleTagsChanged } />
           </div>
           <div id="editor-text-with-preview" className="flex-row">
             <div id="editor-preview-with-buttons" className="flex-col">
@@ -335,7 +402,7 @@ export default class Editor extends Component {
                   className="codemirror-div"
                   textAreaClassName="cm-textarea"
                   placeholder="Enter text here..."
-                  value={ s }
+                  value={ note.body }
                   autofocus
                   onChange={ this.handleTextChanged }
                   onEditorCreated={ this.handleEditorCreated }
