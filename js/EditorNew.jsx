@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
-import { Overlay } from './Overlay.jsx';
+import Overlay from './Overlay.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
