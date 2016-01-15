@@ -48,9 +48,9 @@ export default class DragBarHoriz extends Component {
   }
 
   isAllowed(y) {
-    const yMin = this.props.min || 0;
-    const yMax = this.props.max || 9999999;
-    return (y >= yMin) && (y <= yMax);
+    const min = this.props.min || 0;
+    const max = this.props.max || 9999999;
+    return (y >= min) && (y <= max);
   }
 
   handleMouseMove(e) {
@@ -65,9 +65,10 @@ export default class DragBarHoriz extends Component {
       return;
     }
     this.y = y;
-    const yDelta = this.props.initialY - yDelta;
+    const yDelta = this.props.initialY - y;
     const el = ReactDOM.findDOMNode(this);
-    el.style.top = y + 'px';
+    // TODO: to be re-usable, must be in sync with the caller i.e. Editor.jsx
+    el.style.bottom = (window.innerHeight - y - 11) + 'px';
     this.props.onPosChanged(y, yDelta);
   }
 
