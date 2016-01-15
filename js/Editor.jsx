@@ -10,6 +10,43 @@ import * as u from './utils.js';
 
 const kDragBarDy = 11;
 
+const renderer = new marked.Renderer();
+
+// like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
+// but adds target="_blank"
+renderer.link = function(href, title, text) {
+  if (this.options.sanitize) {
+    try {
+      var prot = decodeURIComponent(unescape(href))
+        .replace(/[^\w:]/g, '')
+        .toLowerCase();
+    } catch (e) {
+      return '';
+    }
+    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0) {
+      return '';
+    }
+  }
+  var out = '<a href="' + href + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += 'target="_blank"';
+  out += '>' + text + '</a>';
+  return out;
+};
+
+const markedOpts = {
+  renderer: renderer,
+  gfm: true,
+  tables: true,
+  breaks: true,
+  pedantic: false,
+  sanitize: true,
+  smartLists: true,
+  smartypants: false
+};
+
 function getWindowMiddle() {
   const dy = window.innerHeight;
   return dy / 3;
@@ -88,16 +125,6 @@ export default class Editor extends Component {
   }
 
   componentDidMount() {
-    marked.setOptions({
-      renderer: new marked.Renderer(),
-      gfm: true,
-      tables: true,
-      breaks: true,
-      pedantic: false,
-      sanitize: true,
-      smartLists: true,
-      smartypants: false
-    });
     action.onEditNote(this.editNote, this);
     action.onCreateNewNote(this.createNewNote, this);
 
@@ -173,7 +200,7 @@ export default class Editor extends Component {
 
   toHtml(s) {
     s = s.trim();
-    const html = marked(s);
+    const html = marked(s, markedOpts);
     return html;
   }
 
