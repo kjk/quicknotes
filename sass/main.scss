@@ -714,9 +714,10 @@ hr.light2 {
 /**/
 #full-note {
   top: 46px; left: 0; right: 0; bottom: 0;
+  overflow: auto;
 
   .note-content-wrapper {
-    margin: 20px;
+    margin: 8px 16px;
 
     h1 {
       font-size: 1.4em;
