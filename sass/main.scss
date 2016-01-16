@@ -264,26 +264,6 @@ a {
 }
 
 #header {
-  #search-wrapper {
-    width: 30%;
-    position: relative;
-    margin: 8px auto;
-  }
-
-  #search-wrapper {
-    input {
-      width: 90%;
-      /*height: 22px;*/
-      font-size: 16px;
-      line-height: 23px;
-      padding: 2px 16px;
-      border-radius: 20px;
-      outline: none;
-    }
-  }
-}
-
-#header {
   .dropdown {
     float: left;
   }
@@ -731,83 +711,6 @@ hr.light2 {
 }
 
 /**/
-#search-results {
-  position: absolute;
-  top: 46px; left: 220px; right: 0; bottom: 0;
-  z-index: 10;
-  background: #FFF;
-  overflow-y: scroll;
-}
-
-#search-results .box {
-  text-align: center;
-}
-
-.search-results-list {
-  width: 100%;
-  height: 100%;
-}
-
-.search-result-note {
-  position: relative;
-  clear: both;
-  padding: 16px;
-  margin: 6px 16px;
-  border: 1px solid rgba(0,0,0,.1);
-  // font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-  font-size: 13px;
-  line-height: 18px;
-  color: rgba(0,0,0,.8);
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.search-result-note:first-of-type {
-  margin-top: 16px;
-}
-
-.search-result-note:last-of-type {
-  margin-bottom: 16px;
-}
-
-.search-result-note:hover {
-  border-color: #2196F3;
-}
-
-.search-result-title-item {
-  font-weight: bold;
-}
-
-/*
-.LoggedInSiteHeader .lookup_bar_results_wrapper .results_wrapper:before, .LoggedInSiteHeader .lookup_bar_results_wrapper .results_wrapper:after {
-    position: absolute;
-    top: 0;
-    left: calc(50% - 7.5px);
-}
-.LoggedInSiteHeader .lookup_bar_results_wrapper .results_wrapper:after {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    border-color: rgba(204,204,204,0);
-    border-left: 7.5px solid transparent;
-    border-right: 7.5px solid transparent;
-    border-bottom: 7px solid #f6f6f6;
-    margin-top: -6px;
-}
-*/
-
-.line-no {
-  color: lightgray;
-}
-
-.s-h {
-  padding: 1px 2px;
-  background: #ffeb3b;
-  border-radius: 2px;
-}
-
-/**/
 #full-note {
   top: 46px; left: 0; right: 0; bottom: 0;
 
@@ -826,6 +729,8 @@ hr.light2 {
   }
 }
 
+@import 'search';
+
 /**/
 .dropdown-content {
   text-align: left;
@@ -834,7 +739,7 @@ hr.light2 {
 /* Media Queries
 ----------------------------------------------- */
 @media (max-width: 320px) {
-  #left-sidebar, #header #search-wrapper, #header #logo {
+  #left-sidebar, #search-wrapper, #header #logo {
     display: none;
   }
   #notes-list {

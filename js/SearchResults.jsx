@@ -30,8 +30,8 @@ const NoResults = (props) => {
     <div id="search-results">
       <div className="box">
         <p>
-          No results for
-          { props.term }
+          No results for&nbsp;
+          <b>{ props.term }</b>
         </p>
       </div>
     </div>
