@@ -10,7 +10,7 @@ const noteCreatedAtIdx = 4;
 const noteTagsIdx = 5;
 const noteSnippetIdx = 6;
 const noteFormatIdx = 7;
-const noteCurrentVersionIDIdx = 8;
+const noteCurrentVersionIdx = 8;
 const noteContentIdx = 9;
 
 const flagStarredBit = 0;
@@ -27,39 +27,7 @@ const formatNames = [
 ];
 
 // note properties that can be compared for equality with ==
-const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIDIdx, noteContentIdx];
-
-export function NewCompactNote() {
-  return [
-    null, // noteHashIDIdx
-    '', // noteTitleIdx
-    0, // noteSizeIdx
-    0, // noteFlagsIdx, not starred, not deleted, private (not public), not partial
-    0, // noteCreatedAtIdx, will be filled in the callback
-    '', // noteTagsIdx
-    '', // noteSnippetIdx,
-    formatMarkdown, // noteFormatIdx
-    0, // noteCurrentVersionIDIdx
-    null, // noteContentIdx
-  ];
-}
-
-export function FormatNameFromId(id) {
-  return formatNames[id];
-}
-
-export function FormatIdFromName(name) {
-  for (let [idx, val] of formatNames) {
-    if (val == name) {
-      return idx;
-    }
-  }
-  throw `invaid name: '${name}'`;
-}
-
-export function IsUnsaved(compactNote) {
-  return compactNote[noteHashIDIdx] == null;
-}
+const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIdx, noteContentIdx];
 
 function arrEmpty(a) {
   return !a || (a.length === 0);
@@ -137,39 +105,39 @@ function clearFlagBit(note, nBit) {
   note[noteFlagsIdx] = clearBit(flags, nBit);
 }
 
-function getIDStr(note) {
+export function IDStr(note) {
   return note[noteHashIDIdx];
 }
 
-function getTitle(note) {
+export function Title(note) {
   return note[noteTitleIdx];
 }
 
-function getSize(note) {
+export function Size(note) {
   return note[noteSizeIdx];
 }
 
-function getCreatedAt(note) {
+export function CreatedAt(note) {
   return note[noteCreatedAtIdx];
 }
 
-function getTags(note) {
+export function Tags(note) {
   return note[noteTagsIdx];
 }
 
-function getSnippet(note) {
+export function Snippet(note) {
   return note[noteSnippetIdx];
 }
 
-function getFormat(note) {
+export function Format(note) {
   return note[noteFormatIdx];
 }
 
-function getCurrentVersionID(note) {
-  return note[noteCurrentVersionIDIdx];
+export function CurrentVersion(note) {
+  return note[noteCurrentVersionIdx];
 }
 
-function getContent(note, cb) {
+export function Content(note, cb) {
   return note[noteContentIdx] || '';
 }
 
@@ -177,8 +145,8 @@ function getContent(note, cb) {
 // otherwise returns null, starts async fetch and
 // will call cb when finished fetching content
 // TODO: always call callback
-function fetchContentIfNeeded(note, cb) {
-  const noteID = getIDStr(note);
+export function FetchContent(note, cb) {
+  const noteID = IDStr(note);
   const res = note[noteContentIdx];
   if (res) {
     console.log('getContent: already has it for note', noteID);
@@ -189,39 +157,39 @@ function fetchContentIfNeeded(note, cb) {
     console.log('getContent: json=', json);
     const content = json[noteContentIdx];
     //console.log('getContent: content=', content);
-    setContent(note, content);
+    SetContent(note, content);
     cb(note);
   });
   return null;
 }
 
-function getHumanSize(note) {
+export function HumanSize(note) {
   // TODO: write me
-  return '' + getSize(note) + ' bytes';
+  return '' + Size(note) + ' bytes';
 }
 
 function isFlagSet(note, nBit) {
   return isBitSet(note[noteFlagsIdx], nBit);
 }
 
-function getIsStarred(note) {
+export function IsStarred(note) {
   return isFlagSet(note, flagStarredBit);
 }
 
-function getIsDeleted(note) {
+export function IsDeleted(note) {
   return isFlagSet(note, flagDeletedBit);
 }
 
-function getIsPublic(note) {
+export function IsPublic(note) {
   return isFlagSet(note, flagPublicBit);
 }
 
-function getIsPrivate(note) {
-  return !getIsPublic(note);
+export function IsPrivate(note) {
+  return !IsPublic(note);
 }
 
 // partial is if full content is != snippet
-function getIsPartial(note) {
+export function IsPartial(note) {
   return isFlagSet(note, flagPartialBit);
 }
 
@@ -245,68 +213,46 @@ function setFlagState(note, f, nBit) {
   }
 }
 
-function setPublicState(note, isPublic) {
+export function SetPublicState(note, isPublic) {
   setFlagState(note, isPublic, flagPublicBit);
 }
 
-function setTitle(note, title) {
+export function SetTitle(note, title) {
   note[noteTitleIdx] = title;
 }
 
-function setTags(note, tags) {
+export function SetTags(note, tags) {
   note[noteTagsIdx] = tags;
 }
 
-function setFormat(note, format) {
+export function SetFormat(note, format) {
   note[noteFormatIdx] = format;
 }
 
-function setContent(note, content) {
+export function SetContent(note, content) {
   note[noteContentIdx] = content;
-}
-
-/* convert compact note to
-type NewNoteFromBrowser struct {
-	IDStr    string
-	Title    string
-	Format   int
-	Content  string
-	Tags     []string
-	IsPublic bool
-}
-*/
-function toNewNote(note) {
-  var n = {};
-  n.IDStr = getIDStr(note);
-  n.Title = getTitle(note);
-  n.Format = getFormat(note);
-  n.Content = getContent(note);
-  n.Tags = getTags(note);
-  n.IsPublic = getIsPublic(note);
-  return n;
 }
 
 /* locally manage expanded/collapsed state of notes */
 
 let expandedNotes = {};
 
-function isExpanded(note) {
-  const id = getIDStr(note);
+export function IsExpanded(note) {
+  const id = IDStr(note);
   return expandedNotes.hasOwnProperty(id);
 }
 
-function isCollapsed(note) {
-  return !isExpanded(note);
+export function IsCollapsed(note) {
+  return !IsExpanded(note);
 }
 
-function expand(note) {
-  const id = getIDStr(note);
+export function Expand(note) {
+  const id = IDStr(note);
   expandedNotes[id] = true;
 }
 
-function collapse(note) {
-  const id = getIDStr(note);
+export function Collapse(note) {
+  const id = IDStr(note);
   delete expandedNotes[id];
 }
 
-export { getIDStr as IDStr, getTitle as Title, getSize as Size, getCreatedAt as CreatedAt, getTags as Tags, getSnippet as Snippet, getFormat as Format, getCurrentVersionID as CurrentVersionID, getIsStarred as IsStarred, getIsDeleted as IsDeleted, getIsPublic as IsPublic, getIsPrivate as IsPrivate, getIsPartial as IsPartial, getHumanSize as HumanSize, getContent as Content, fetchContentIfNeeded as FetchContent, setPublicState as SetPublicState, setTitle as SetTitle, setTags as SetTags, setFormat as SetFormat, setContent as SetContent, isExpanded as IsExpanded, isCollapsed as IsCollapsed, expand as Expand, collapse as Collapse, notesEq as notesEq, toNewNote as toNewNote };
