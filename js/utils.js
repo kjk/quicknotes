@@ -142,4 +142,15 @@ export function assert(cond) {
   }
 }
 
+export function strArrRemoveDups(a) {
+  if (a.length == 0) {
+    return a;
+  }
+  let d = {};
+  for (let v of a) {
+    d[v] = 1;
+  }
+  return Object.keys(d);
+}
+
 window.runOnLoad = runOnLoad;

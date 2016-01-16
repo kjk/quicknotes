@@ -46,8 +46,7 @@ export default class Note extends Component {
     if (!tags) {
       return;
     }
-    const tagEls = tags.map((tag) => {
-      tag = '#' + tag;
+    const tagEls = tags.map(tag => {
       return (
         <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
         );

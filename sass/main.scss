@@ -7,6 +7,8 @@ html,
 body {
   height: 100%;
   width: 100%;
+  // http://mir.aculo.us/2011/07/29/prevent-rubber-band-scrolling-for-single-page-apps-in-safari-5-1/
+  overflow: hidden;
 }
 
 * {

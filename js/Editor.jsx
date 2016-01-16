@@ -70,22 +70,18 @@ function tagsToText(tags) {
 }
 
 function textToTags(s) {
-  let tags = s.split('#').map(tag => tag.trim());
-  return tags.filter(tag => tag.length == 0);
+  let tags = [];
+  s.split(' ').forEach(tag => {
+    tag = tag.trim();
+    if (tag.startsWith('#')) {
+      tag = tag.substring(1);
+    }
+    if (tag.length > 0) {
+      tags.push(tag);
+    }
+  });
+  return u.strArrRemoveDups(tags);
 }
-
-/*
-  createNewTextNote(s) {
-    const note = {
-      Content: s.trim(),
-      Format: format.Text
-    };
-    const noteJSON = JSON.stringify(note);
-    api.createOrUpdateNote(noteJSON, () => {
-      action.reloadNotes();
-    });
-  }
-*/
 
 function editorHeight(y) {
   return window.innerHeight - y - kDragBarDy;
