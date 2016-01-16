@@ -176,6 +176,7 @@ function getContent(note, cb) {
 // if has content, returns it
 // otherwise returns null, starts async fetch and
 // will call cb when finished fetching content
+// TODO: always call callback
 function fetchContentIfNeeded(note, cb) {
   const noteID = getIDStr(note);
   const res = note[noteContentIdx];
