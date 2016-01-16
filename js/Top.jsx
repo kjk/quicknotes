@@ -5,7 +5,7 @@ import * as action from './action.js';
 export default class Top extends Component {
   constructor(props, context) {
     super(props, context);
-    this.handleCreateNewNote = this.handleCreateNewNote.bind(this);
+    this.handleEditNewNote = this.handleEditNewNote.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
   }
@@ -48,10 +48,10 @@ export default class Top extends Component {
       );
   }
 
-  handleCreateNewNote(e) {
+  handleEditNewNote(e) {
     e.preventDefault();
-    console.log('Top.handleCreateNewNote');
-    action.createNewNote();
+    console.log('Top.handleEditNewNote');
+    action.editNewNote();
   }
 
   renderNewNote() {
@@ -60,7 +60,7 @@ export default class Top extends Component {
         <a id="new-note"
           title="Create new note"
           href="#"
-          onClick={ this.handleCreateNewNote }><i className="icn-plus"></i></a>
+          onClick={ this.handleEditNewNote }><i className="icn-plus"></i></a>
         );
     }
   }
