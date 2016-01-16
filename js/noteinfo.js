@@ -193,30 +193,6 @@ export function IsPartial(note) {
   return isFlagSet(note, flagPartialBit);
 }
 
-function setIsStarred(note) {
-  setFlagBit(note, flagStarredBit);
-}
-
-function setIsDeleted(note) {
-  setFlagBit(note, flagDeletedBit);
-}
-
-function setIsPublic(note) {
-  setFlagBit(note, flagPublicBit);
-}
-
-function setFlagState(note, f, nBit) {
-  if (f) {
-    setFlagBit(note, nBit);
-  } else {
-    clearFlagBit(note, nBit);
-  }
-}
-
-export function SetPublicState(note, isPublic) {
-  setFlagState(note, isPublic, flagPublicBit);
-}
-
 export function SetTitle(note, title) {
   note[noteTitleIdx] = title;
 }
