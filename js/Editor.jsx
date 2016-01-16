@@ -125,7 +125,7 @@ function toNewNoteJSON(note) {
   n.IDStr = note.id;
   n.Title = note.title;
   n.Format = format.IdFromName(note.formatName);
-  n.Content = note.body.trim() + "\n";
+  n.Content = note.body.trim() + '\n';
   n.Tags = textToTags(note.tags);
   n.IsPublic = note.isPublic;
   return JSON.stringify(n);
