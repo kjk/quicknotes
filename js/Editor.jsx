@@ -157,6 +157,7 @@ export default class Editor extends Component {
     this.handleFormatChanged = this.handleFormatChanged.bind(this);
     this.handleHidePreview = this.handleHidePreview.bind(this);
     this.handlePublicOrPrivateChanged = this.handlePublicOrPrivateChanged.bind(this);
+    this.handleSave = this.handleSave.bind(this);
     this.handleShowPreview = this.handleShowPreview.bind(this);
     this.handleTagsChanged = this.handleTagsChanged.bind(this);
     this.handleTextChanged = this.handleTextChanged.bind(this);
@@ -245,6 +246,10 @@ export default class Editor extends Component {
     this.setState({
       note: note
     });
+  }
+
+  handleSave(e) {
+    console.log('handleSave');
   }
 
   handleCancel(e) {
@@ -411,7 +416,6 @@ export default class Editor extends Component {
     const v = e.target.value;
     let note = this.state.note;
     note.isPublic = v == 'public';
-    console.log('handlePublicOrPrivateChanged: v=', v, 'isPublic=', note.isPublic);
     this.setState({
       note: note
     });
@@ -424,9 +428,9 @@ export default class Editor extends Component {
     };
     const values = ['public', 'private'];
     const selected = isPublic ? values[0] : values[1];
-    console.log('renderPublicOrPrivateSelect: ispublic=', isPublic, 'selected=', selected);
+
     const options = values.map(v => {
-      return <option key={ v }>
+      return <option key={ v } value={ v }>
                { v }
              </option>;
     });
@@ -442,7 +446,6 @@ export default class Editor extends Component {
 
   handleHidePreview(e) {
     e.preventDefault();
-    console.log('handleHidePreview');
     this.setState({
       isShowingPreview: false
     });
@@ -450,7 +453,6 @@ export default class Editor extends Component {
 
   handleShowPreview(e) {
     e.preventDefault();
-    console.log('handleShowPreview');
     this.setState({
       isShowingPreview: true
     });
@@ -463,10 +465,8 @@ export default class Editor extends Component {
       width: 108
     };
 
-    console.log('renderFormatSelect: selected=', selected);
-
     const options = formats.map(function(format) {
-      return <option key={ format }>
+      return <option key={ format } value={ format }>
                { format }
              </option>;
     });
@@ -499,7 +499,7 @@ export default class Editor extends Component {
     const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
     return (
       <div id="editor-bottom" className="flex-row">
-        <button className="btn btn-primary" disabled={ saveDisabled }>
+        <button className="btn btn-primary" disabled={ saveDisabled } onClick={ this.handleSave }>
           Save
         </button>
         <button className="btn btn-primary" onClick={ this.handleCancel }>
