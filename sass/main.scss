@@ -489,6 +489,7 @@ a {
   border-radius: 2px;
   z-index: 20;
   background: white;
+  box-sizing: content-box;
 }
 
 ul.log-in {
