@@ -62,6 +62,14 @@ body {
   flex-grow: 8;
 }
 
+.modal-overlay {
+  position: fixed;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  z-index: 10;
+  background-color: rgba(0,0,0,0.5); /*dim the background*/
+}
+
 .btn {
   background-image: none;
   border: 1px solid transparent;
@@ -165,7 +173,6 @@ $col-btn-hover-border: #1862b5;
 #left-sidebar,
 #notes-list,
 #composer,
-#full-composer,
 #page-content,
 #full-note {
   position: absolute;
@@ -797,137 +804,6 @@ hr.light2 {
   padding: 1px 2px;
   background: #ffeb3b;
   border-radius: 2px;
-}
-
-/**/
-#full-composer-wrapper {
-  position: absolute;
-  top: 46px; left: 220px; right: 0; bottom: 0;
-  background: #E5E5E5;
-  z-index: 10;
-}
-
-#full-composer-wrapper > div {
-  position: absolute;
-}
-
-#full-composer-title input,
-#full-composer-tags input {
-  width: 100%;
-  height: 34px;
-  border: 0;
-  font-size: 14px;
-  text-indent: 16px;
-}
-
-#full-composer-title {
-  top: 0; left: 0; right: 0;
-  height: 34px;
-}
-
-#full-composer-title input {
-
-}
-
-#full-composer-tags {
-  top: 37px; left: 0; right: 0;
-  height: 34px;
-}
-
-#full-composer-tags input {
-  color: rgba(0,0,0,.6);
-}
-
-#full-composer-actions {
-  width: 100%;
-  height: 45px;
-  top: -46px;
-  background: #FFF;
-}
-
-#full-composer-actions .inner {
-  padding: 12px 16px;
-}
-
-#full-composer-actions .right {
-  float: right;
-}
-
-#full-composer-actions label,
-#full-composer-actions .right span {
-  font-size: 12px;
-  color: rgba(0,0,0,.6);
-}
-
-#full-composer-actions .right span {
-  padding-right: 8px;
-}
-
-#full-composer-content {
-  top: 74px; left: 0; right: 0; bottom: 0;
-}
-
-#full-composer-content > div {
-  position: absolute;
-  top: 0; bottom: 0;
-}
-
-.full-composer-editor {
-  width: 50%;
-  border: 0;
-  left: 0;
-  resize: none;
-  background: #FFF;
-  overflow-y: scroll;
-  outline: none;
-}
-
-.full-composer-text-area {
-  width: 100%;
-  height: 100%;
-  resize: none;
-  border: 0;
-  outline: none;
-}
-
-.full-composer-preview {
-  width: 50%;
-  right: 0;
-  border: 0;
-  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 400;
-  background: #FFF;
-}
-
-.full-composer-preview pre {
-  height: 100%;
-  position: relative;
-  margin: 16px;
-  padding: 4px 16px;
-  overflow-y: scroll;
-  white-space: pre-wrap;
-  white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
-  word-wrap: break-word;
-}
-
-.full-composer-preview:before {
-  content: "";
-  width: 1px;
-  position: absolute;
-  top: 0; left: 4px; bottom: 0;
-  background: #E5E5E5;
-}
-
-.overlay {
-  position: fixed;
-  left: 0; right: 0;
-  top: 0; bottom: 0;
-  z-index: 10;
-  background-color: rgba(0,0,0,0.5); /*dim the background*/
 }
 
 /**/

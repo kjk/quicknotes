@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 const Overlay = (props) => {
   return (
-    <div className="overlay">
+    <div className="modal-overlay">
       { props.children }
     </div>
     );
