@@ -1,5 +1,6 @@
 import * as api from './api.js';
 import { assert } from './utils.js';
+import filesize from 'filesize';
 
 const noteHashIDIdx = 0;
 const noteTitleIdx = 1;
@@ -164,8 +165,7 @@ export function FetchContent(note, cb) {
 }
 
 export function HumanSize(note) {
-  // TODO: write me
-  return '' + Size(note) + ' bytes';
+  return filesize(Size(note));
 }
 
 function isFlagSet(note, nBit) {
