@@ -576,6 +576,8 @@ ul.log-in {
 pre.note-body {
   white-space: pre-wrap;
   word-wrap: break-word;
+  // default for pre is: 1em 0px 1em;
+  margin: 0;
 }
 
 .note-private {
