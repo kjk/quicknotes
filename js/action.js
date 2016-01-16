@@ -78,7 +78,7 @@ const tagSelectedCmd = 'tagSelected';
 const reloadNotesCmd = 'reloadNotes';
 const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
 const showHideSettingsCmd = 'showHideSettings';
-const createNewNoteCmd = 'createNewNote';
+const editNewNoteCmd = 'editNewNote';
 const editNoteCmd = 'editNote';
 
 /* --------------------- */
@@ -122,12 +122,12 @@ export function onReloadNotes(cb, owner) {
 }
 
 /* --------------------- */
-export function createNewNote() {
-  broadcast(createNewNoteCmd);
+export function editNewNote() {
+  broadcast(editNewNoteCmd);
 }
 
-export function onCreateNewNote(cb, owner) {
-  return on(createNewNoteCmd, cb, owner);
+export function onEditNewNote(cb, owner) {
+  return on(editNewNoteCmd, cb, owner);
 }
 
 /* --------------------- */

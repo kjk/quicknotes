@@ -185,7 +185,7 @@ export default class Editor extends Component {
     this.handleEditCmdHeading = this.handleEditCmdHeading.bind(this);
     this.handleEditCmdHr = this.handleEditCmdHr.bind(this);
 
-    this.createNewNote = this.createNewNote.bind(this);
+    this.editNewNote = this.editNewNote.bind(this);
     this.ctrlEnterPressed = this.ctrlEnterPressed.bind(this);
     this.editNote = this.editNote.bind(this);
     this.escPressed = this.escPressed.bind(this);
@@ -207,7 +207,7 @@ export default class Editor extends Component {
 
   componentDidMount() {
     action.onEditNote(this.editNote, this);
-    action.onCreateNewNote(this.createNewNote, this);
+    action.onEditNewNote(this.editNewNote, this);
     keymaster('esc', this.escPressed);
 
     this.scheduleTimer();
@@ -227,7 +227,7 @@ export default class Editor extends Component {
 
   componentWillUnmount() {
     action.offAllForOwner(this);
-    keymaster.unbind('esc', this.escPressed);
+    keymaster.unbind('esc');
   }
 
   ctrlEnterPressed() {
@@ -328,8 +328,11 @@ export default class Editor extends Component {
     });
   }
 
-  createNewNote() {
-    //console.log('Editor.createNewNote');
+  editNewNote() {
+    if (this.state.isShowing) {
+      //console.log('Editor.editNewNote: skipping because already editing');
+      return;
+    }
     this.startEditingNote(newEmptyNote());
   }
 

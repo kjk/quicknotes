@@ -172,7 +172,6 @@ $col-btn-hover-border: #1862b5;
 #header,
 #left-sidebar,
 #notes-list,
-#composer,
 #page-content,
 #full-note {
   position: absolute;
@@ -833,7 +832,7 @@ hr.light2 {
 /* Media Queries
 ----------------------------------------------- */
 @media (max-width: 320px) {
-  #left-sidebar, #header #search-wrapper, #header #logo, #composer {
+  #left-sidebar, #header #search-wrapper, #header #logo {
     display: none;
   }
   #notes-list {

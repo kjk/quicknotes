@@ -66,7 +66,6 @@ let gCurrSearchTerm = '';
 export default class AppUser extends Component {
   constructor(props, context) {
     super(props, context);
-    this.escPressed = this.escPressed.bind(this);
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
@@ -103,17 +102,17 @@ export default class AppUser extends Component {
   componentDidMount() {
     keymaster.filter = this.keyFilter;
     keymaster('ctrl+f', u.focusSearch);
-    keymaster('ctrl+e', u.focusNewNote);
-    keymaster('esc', this.escPressed);
+    keymaster('ctrl+n', () => action.editNewNote());
+    //keymaster('ctrl+e', u.focusNewNote);
 
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
   }
 
   componentWillUnmount() {
-    keymaster.unbind('ctrl+f', u.focusSearch);
-    keymaster.unbind('ctrl+e', u.focusNewNote);
-    keymaster.unbind('esc', this.escPressed);
+    keymaster.unbind('ctrl+f');
+    keymaster.unbind('ctrl+n');
+    //keymaster.unbind('ctrl+e');
 
     action.offAllForOwner(this);
   }
@@ -165,10 +164,6 @@ export default class AppUser extends Component {
       return true;
     }
     return this.standardKeyFilter(event);
-  }
-
-  escPressed() {
-    console.log('ESC pressed');
   }
 
   startSearch(userHandle, searchTerm) {
