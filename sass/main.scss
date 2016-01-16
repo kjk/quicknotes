@@ -744,7 +744,7 @@ hr.light2 {
   padding: 16px;
   margin: 6px 16px;
   border: 1px solid rgba(0,0,0,.1);
-  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  // font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   font-size: 13px;
   line-height: 18px;
   color: rgba(0,0,0,.8);
@@ -767,6 +767,25 @@ hr.light2 {
 .search-result-title-item {
   font-weight: bold;
 }
+
+/*
+.LoggedInSiteHeader .lookup_bar_results_wrapper .results_wrapper:before, .LoggedInSiteHeader .lookup_bar_results_wrapper .results_wrapper:after {
+    position: absolute;
+    top: 0;
+    left: calc(50% - 7.5px);
+}
+.LoggedInSiteHeader .lookup_bar_results_wrapper .results_wrapper:after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-color: rgba(204,204,204,0);
+    border-left: 7.5px solid transparent;
+    border-right: 7.5px solid transparent;
+    border-bottom: 7px solid #f6f6f6;
+    margin-top: -6px;
+}
+*/
 
 .line-no {
   color: lightgray;
