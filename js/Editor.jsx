@@ -245,7 +245,7 @@ export default class Editor extends Component {
       this.setState({
         isShowing: false,
         note: newEmptyNote()
-      })
+      });
     }
   }
 
