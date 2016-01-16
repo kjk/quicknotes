@@ -66,9 +66,10 @@ export default class NotesList extends React.Component {
       <div id="notes-list" onScroll={ this.handleScroll }>
         <div className="wrapper">
           { this.state.notes.map((note) => {
+              const key = `${ni.IDStr(note)}-${ni.CurrentVersion(note)}`;
               return <Note compact={ this.props.compact }
                        note={ note }
-                       key={ ni.IDStr(note) }
+                       key={ key }
                        myNotes={ this.props.myNotes } />;
             }) }
         </div>

@@ -15,6 +15,7 @@ import * as ni from './noteinfo.js';
 import * as action from './action.js';
 import * as api from './api.js';
 
+// returns { tagName1: count, ... }
 function tagsFromNotes(notes) {
   let tags = {
     __all: 0,
@@ -130,13 +131,16 @@ export default class AppUser extends Component {
   setNotes(json) {
     const allNotes = json.Notes || [];
     const tags = tagsFromNotes(allNotes);
-    // TODO: if selectedTag is not valid, reset to __all
-    const selectedTag = this.state.selectedTag;
+    let selectedTag = this.state.selectedTag;
+    if (!(selectedTag in tags)) {
+      selectedTag = '__all';
+    }
     const selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
     this.setState({
       allNotes: allNotes,
       selectedNotes: selectedNotes,
       tags: tags,
+      selectedTag: selectedTag,
       loggedInUserHandle: json.LoggedInUserHandle
     });
   }

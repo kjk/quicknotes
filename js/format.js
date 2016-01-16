@@ -25,22 +25,17 @@ const formatNames = [
 export const Formats = [TextName, MarkdownName];
 export const FormatNames = [TextName, MarkdownName];
 
-// TODO: rename to NameFromId
-export function numberToName(n) {
+export function NameFromId(n) {
   if (n >= formatNames.length) {
     return InvalidName;
   }
   return formatNames[n];
 }
 
-// TODO: rename to IdFromName
-export function nameToNumber(s) {
-  for (let [idx, val] of formatNames) {
-    if (val == s) {
-      return idx;
-    }
+export function IdFromName(s) {
+  var idx = formatNames.indexOf(s);
+  if (idx == -1) {
+    return Invalid;
   }
-  return Invalid;
+  return idx;
 }
-
-export { nameToNumber as IdFromName, numberToName as NameFromId };

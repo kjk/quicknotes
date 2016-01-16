@@ -131,19 +131,6 @@ export default class FullComposer extends Component {
     });
   }
 
-  renderFormatSelect(formats, selected) {
-    const options = formats.map(function(format) {
-      return <option key={ format }>
-               { format }
-             </option>;
-    });
-    return (
-      <select value={ selected } onChange={ this.handleFormatChanged }>
-        { options }
-      </select>
-      );
-  }
-
   render() {
     const initialNote = this.props.note;
     const initialTags = tagsToText(ni.Tags(initialNote));

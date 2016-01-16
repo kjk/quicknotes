@@ -8,6 +8,7 @@ import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
 import * as u from './utils.js';
 import * as format from './format.js';
+import * as api from './api.js';
 
 const kDragBarDy = 11;
 
@@ -83,17 +84,6 @@ function textToTags(s) {
       action.reloadNotes();
     });
   }
-
-  saveNote(note) {
-    const newNote = ni.toNewNote(note);
-    newNote.Content = newNote.Content.trim();
-    const noteJSON = JSON.stringify(newNote);
-    u.clearNewNote();
-
-    api.createOrUpdateNote(noteJSON, () => {
-      action.reloadNotes();
-    });
-  }
 */
 
 function editorHeight(y) {
@@ -121,6 +111,27 @@ function noteFromCompact(noteCompact) {
   const formatId = ni.Format(noteCompact);
   const formatName = format.NameFromId(formatId);
   return new Note(id, title, tagsStr, body, isPublic, formatName);
+}
+
+/* convert Note note to
+type NewNoteFromBrowser struct {
+	IDStr    string
+	Title    string
+	Format   int
+	Content  string
+	Tags     []string
+	IsPublic bool
+}
+*/
+function toNewNoteJSON(note) {
+  var n = {};
+  n.IDStr = note.id;
+  n.Title = note.title;
+  n.Format = format.IdFromName(note.formatName);
+  n.Content = note.body.trim();
+  n.Tags = textToTags(note.tags);
+  n.IsPublic = note.isPublic;
+  return JSON.stringify(n);
 }
 
 function newEmptyNote() {
@@ -249,7 +260,16 @@ export default class Editor extends Component {
   }
 
   handleSave(e) {
-    console.log('handleSave');
+    const note = this.state.note;
+    const noteJSON = toNewNoteJSON(note);
+    //console.log('handleSave, note=', note, 'noteJSON=', noteJSON);
+    api.createOrUpdateNote(noteJSON, () => {
+      this.setState({
+        isShowing: false,
+        note: newEmptyNote()
+      });
+      action.reloadNotes();
+    });
   }
 
   handleCancel(e) {
@@ -273,12 +293,12 @@ export default class Editor extends Component {
   }
 
   createNewNote() {
-    console.log('Editor.createNewNote');
+    //console.log('Editor.createNewNote');
     this.startEditingNote(newEmptyNote());
   }
 
   editNote(noteCompact) {
-    console.log('Editor.editNote: noteCompact=', noteCompact);
+    //console.log('Editor.editNote: noteCompact=', noteCompact);
     let s = ni.FetchContent(noteCompact, () => {
       const note = noteFromCompact(noteCompact);
       this.startEditingNote(note);
