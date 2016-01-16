@@ -163,15 +163,15 @@ export default class Editor extends Component {
     this.handleTimer = this.handleTimer.bind(this);
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
 
-    this.editCmdBold = this.editCmdBold.bind(this);
-    this.editCmdItalic = this.editCmdItalic.bind(this);
-    this.editCmdLink = this.editCmdLink.bind(this);
-    this.editCmdQuote = this.editCmdQuote.bind(this);
-    this.editCmdCode = this.editCmdCode.bind(this);
-    this.editCmdListUnordered = this.editCmdListUnordered.bind(this);
-    this.editCmdListOrdered = this.editCmdListOrdered.bind(this);
-    this.editCmdHeading = this.editCmdHeading.bind(this);
-    this.editCmdHr = this.editCmdHr.bind(this);
+    this.handleEditCmdBold = this.handleEditCmdBold.bind(this);
+    this.handleEditCmdItalic = this.handleEditCmdItalic.bind(this);
+    this.handleEditCmdLink = this.handleEditCmdLink.bind(this);
+    this.handleEditCmdQuote = this.handleEditCmdQuote.bind(this);
+    this.handleEditCmdCode = this.handleEditCmdCode.bind(this);
+    this.handleEditCmdListUnordered = this.handleEditCmdListUnordered.bind(this);
+    this.handleEditCmdListOrdered = this.handleEditCmdListOrdered.bind(this);
+    this.handleEditCmdHeading = this.handleEditCmdHeading.bind(this);
+    this.handleEditCmdHr = this.handleEditCmdHr.bind(this);
 
     this.createNewNote = this.createNewNote.bind(this);
     this.editNote = this.editNote.bind(this);
@@ -290,47 +290,47 @@ export default class Editor extends Component {
     return html;
   }
 
-  editCmdBold(e) {
+  handleEditCmdBold(e) {
     e.preventDefault();
     console.log('editCmdBold');
   }
 
-  editCmdItalic(e) {
+  handleEditCmdItalic(e) {
     e.preventDefault();
     console.log('editCmdItalic');
   }
 
-  editCmdLink(e) {
+  handleEditCmdLink(e) {
     e.preventDefault();
     console.log('editCmdLink');
   }
 
-  editCmdQuote(e) {
+  handleEditCmdQuote(e) {
     e.preventDefault();
     console.log('editCmdQuote');
   }
 
-  editCmdCode(e) {
+  handleEditCmdCode(e) {
     e.preventDefault();
     console.log('editCmdCode');
   }
 
-  editCmdListUnordered(e) {
+  handleEditCmdListUnordered(e) {
     e.preventDefault();
     console.log('editCmdListUnordered');
   }
 
-  editCmdListOrdered(e) {
+  handleEditCmdListOrdered(e) {
     e.preventDefault();
     console.log('editCmdListOrdered');
   }
 
-  editCmdHeading(e) {
+  handleEditCmdHeading(e) {
     e.preventDefault();
     console.log('editCmdHeading');
   }
 
-  editCmdHr(e) {
+  handleEditCmdHr(e) {
     e.preventDefault();
     console.log('editCmdHr');
   }
@@ -338,33 +338,33 @@ export default class Editor extends Component {
   renderMarkdownButtons() {
     return (
       <div id="editor-button-bar" className="flex-row">
-        <button className="btn" onClick={ this.editCmdBold } title="Strong (⌘B)">
+        <button className="btn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
-        <button className="btn" onClick={ this.editCmdItalic } title="Emphasis (⌘I)">
+        <button className="btn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
         <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.editCmdLink } title="Hyperlink (⌘K)">
+        <button className="btn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
           <i className="fa fa-link"></i>
         </button>
-        <button className="btn" onClick={ this.editCmdQuote } title="Blockquote (⌘⇧9)">
+        <button className="btn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
           <i className="fa fa-quote-right"></i>
         </button>
-        <button className="btn" onClick={ this.editCmdCode } title="Preformatted text (⌘⇧C)">
+        <button className="btn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
           <i className="fa fa-code"></i>
         </button>
         <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.editCmdListUnordered } title="Bulleted List (⌘⇧8)">
+        <button className="btn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
           <i className="fa fa-list-ul"></i>
         </button>
-        <button className="btn" onClick={ this.editCmdListOrdered } title="Numbered List (⌘⇧7)">
+        <button className="btn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
           <i className="fa fa-list-ol"></i>
         </button>
-        <button className="btn" onClick={ this.editCmdHeading } title="Heading (⌘⌥1)">
+        <button className="btn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
           <i className="fa fa-font"></i>
         </button>
-        <button className="btn" onClick={ this.editCmdHr } title="Horizontal Rule (⌘⌥R)">
+        <button className="btn" onClick={ this.handleEditCmdHr } title="Horizontal Rule (⌘⌥R)">
           <i className="fa fa-minus"></i>
         </button>
       </div>
@@ -445,7 +445,7 @@ export default class Editor extends Component {
     console.log('handleHidePreview');
     this.setState({
       isShowingPreview: false
-    })
+    });
   }
 
   handleShowPreview(e) {
@@ -453,7 +453,7 @@ export default class Editor extends Component {
     console.log('handleShowPreview');
     this.setState({
       isShowingPreview: true
-    })
+    });
   }
 
   renderFormatSelect(formats, selected) {
@@ -487,9 +487,9 @@ export default class Editor extends Component {
       return null;
     }*/
     if (this.state.isShowingPreview) {
-      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleHidePreview }>« hide preview</a>
+      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleHidePreview }>« hide preview</a>;
     } else {
-      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleShowPreview }>show preview »</a>
+      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleShowPreview }>show preview »</a>;
     }
   }
 
