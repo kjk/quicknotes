@@ -76,6 +76,12 @@ body {
   user-select: none;
   vertical-align: middle;
   white-space: nowrap;
+  padding: 2px 8px;
+
+  &:disabled {
+    cursor: pointer;
+    opacity: 0.5;
+  }
 }
 
 $col-btn-bg: #2780e3;

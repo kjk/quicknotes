@@ -127,6 +127,7 @@ function newEmptyNote() {
   return new Note(null, '', '', '', false, format.MarkdownName);
 }
 
+// TODO: use a generic object by-value compare
 function didNoteChange(n1, n2) {
   if (n1.title != n2.title) {
     return false;
@@ -135,6 +136,12 @@ function didNoteChange(n1, n2) {
     return false;
   }
   if (n1.body != n2.body) {
+    return false;
+  }
+  if (n1.isPublic != n2.isPublic) {
+    return false;
+  }
+  if (n1.formatName != n2.formatName) {
     return false;
   }
   return true;
@@ -148,10 +155,23 @@ export default class Editor extends Component {
     this.handleDragBarMoved = this.handleDragBarMoved.bind(this);
     this.handleEditorCreated = this.handleEditorCreated.bind(this);
     this.handleFormatChanged = this.handleFormatChanged.bind(this);
+    this.handleHidePreview = this.handleHidePreview.bind(this);
+    this.handlePublicOrPrivateChanged = this.handlePublicOrPrivateChanged.bind(this);
+    this.handleShowPreview = this.handleShowPreview.bind(this);
     this.handleTagsChanged = this.handleTagsChanged.bind(this);
     this.handleTextChanged = this.handleTextChanged.bind(this);
     this.handleTimer = this.handleTimer.bind(this);
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
+
+    this.editCmdBold = this.editCmdBold.bind(this);
+    this.editCmdItalic = this.editCmdItalic.bind(this);
+    this.editCmdLink = this.editCmdLink.bind(this);
+    this.editCmdQuote = this.editCmdQuote.bind(this);
+    this.editCmdCode = this.editCmdCode.bind(this);
+    this.editCmdListUnordered = this.editCmdListUnordered.bind(this);
+    this.editCmdListOrdered = this.editCmdListOrdered.bind(this);
+    this.editCmdHeading = this.editCmdHeading.bind(this);
+    this.editCmdHr = this.editCmdHr.bind(this);
 
     this.createNewNote = this.createNewNote.bind(this);
     this.editNote = this.editNote.bind(this);
@@ -166,6 +186,7 @@ export default class Editor extends Component {
 
     this.state = {
       isShowing: false,
+      isShowingPreview: false,
       note: null,
     };
   }
@@ -237,9 +258,8 @@ export default class Editor extends Component {
     this.cm = cm;
   }
 
-  startEditingNote(noteCompact) {
+  startEditingNote(note) {
     this.firstRender = true;
-    const note = noteFromCompact(noteCompact);
     this.initialNote = u.deepCloneObject(note);
     this.setState({
       isShowing: true,
@@ -247,19 +267,21 @@ export default class Editor extends Component {
     });
   }
 
-  editNote(noteCompact) {
-    console.log('Editor.editNote: noteCompact=', noteCompact);
-    let s = ni.FetchContent(noteCompact, () => {
-      this.startEditingNote(noteCompact);
-    });
-    if (s !== null) {
-      this.startEditingNote(noteCompact);
-    }
-  }
-
   createNewNote() {
     console.log('Editor.createNewNote');
     this.startEditingNote(newEmptyNote());
+  }
+
+  editNote(noteCompact) {
+    console.log('Editor.editNote: noteCompact=', noteCompact);
+    let s = ni.FetchContent(noteCompact, () => {
+      const note = noteFromCompact(noteCompact);
+      this.startEditingNote(note);
+    });
+    if (s !== null) {
+      const note = noteFromCompact(noteCompact);
+      this.startEditingNote(note);
+    }
   }
 
   toHtml(s) {
@@ -268,49 +290,85 @@ export default class Editor extends Component {
     return html;
   }
 
+  editCmdBold(e) {
+    e.preventDefault();
+    console.log('editCmdBold');
+  }
+
+  editCmdItalic(e) {
+    e.preventDefault();
+    console.log('editCmdItalic');
+  }
+
+  editCmdLink(e) {
+    e.preventDefault();
+    console.log('editCmdLink');
+  }
+
+  editCmdQuote(e) {
+    e.preventDefault();
+    console.log('editCmdQuote');
+  }
+
+  editCmdCode(e) {
+    e.preventDefault();
+    console.log('editCmdCode');
+  }
+
+  editCmdListUnordered(e) {
+    e.preventDefault();
+    console.log('editCmdListUnordered');
+  }
+
+  editCmdListOrdered(e) {
+    e.preventDefault();
+    console.log('editCmdListOrdered');
+  }
+
+  editCmdHeading(e) {
+    e.preventDefault();
+    console.log('editCmdHeading');
+  }
+
+  editCmdHr(e) {
+    e.preventDefault();
+    console.log('editCmdHr');
+  }
+
   renderMarkdownButtons() {
     return (
       <div id="editor-button-bar" className="flex-row">
-        <button className="btn" title="Strong (⌘B)">
+        <button className="btn" onClick={ this.editCmdBold } title="Strong (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
-        <button className="btn" title="Emphasis (⌘I)">
+        <button className="btn" onClick={ this.editCmdItalic } title="Emphasis (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
         <div className="editor-spacer"></div>
-        <button className="btn" title="Hyperlink (⌘K)">
+        <button className="btn" onClick={ this.editCmdLink } title="Hyperlink (⌘K)">
           <i className="fa fa-link"></i>
         </button>
-        <button className="btn" title="Blockquote (⌘⇧9)">
+        <button className="btn" onClick={ this.editCmdQuote } title="Blockquote (⌘⇧9)">
           <i className="fa fa-quote-right"></i>
         </button>
-        <button className="btn" title="Preformatted text (⌘⇧C)">
+        <button className="btn" onClick={ this.editCmdCode } title="Preformatted text (⌘⇧C)">
           <i className="fa fa-code"></i>
         </button>
-        <button className="btn" title="Upload">
-          <i className="fa fa-upload"></i>
-        </button>
         <div className="editor-spacer"></div>
-        <button className="btn" title="Bulleted List (⌘⇧8)">
+        <button className="btn" onClick={ this.editCmdListUnordered } title="Bulleted List (⌘⇧8)">
           <i className="fa fa-list-ul"></i>
         </button>
-        <button className="btn" title="Numbered List (⌘⇧7)">
+        <button className="btn" onClick={ this.editCmdListOrdered } title="Numbered List (⌘⇧7)">
           <i className="fa fa-list-ol"></i>
         </button>
-        <button className="btn" title="Heading (⌘⌥1)">
+        <button className="btn" onClick={ this.editCmdHeading } title="Heading (⌘⌥1)">
           <i className="fa fa-font"></i>
         </button>
-        <button className="btn" title="Horizontal Rule (⌘⌥R)">
+        <button className="btn" onClick={ this.editCmdHr } title="Horizontal Rule (⌘⌥R)">
           <i className="fa fa-minus"></i>
         </button>
       </div>
       );
-  }
-
-  noteHasChanged() {
-    const n1 = this.initialNote;
-    const n2 = this.state.note;
-    return !ni.notesEq(n1, n2);
   }
 
   scheduleTimer() {
@@ -341,26 +399,124 @@ export default class Editor extends Component {
   }
 
   handleFormatChanged(e) {
-    const formatName = e.target.value;
+    const v = e.target.value;
     let note = this.state.note;
-    note.formatName = formatName;
+    note.formatName = v;
     this.setState({
       note: note
     });
   }
 
+  handlePublicOrPrivateChanged(e) {
+    const v = e.target.value;
+    let note = this.state.note;
+    note.isPublic = v == 'public';
+    console.log('handlePublicOrPrivateChanged: v=', v, 'isPublic=', note.isPublic);
+    this.setState({
+      note: note
+    });
+  }
+
+  renderPublicOrPrivateSelect(isPublic) {
+    const style = {
+      marginLeft: 8,
+      width: 108
+    };
+    const values = ['public', 'private'];
+    const selected = isPublic ? values[0] : values[1];
+    console.log('renderPublicOrPrivateSelect: ispublic=', isPublic, 'selected=', selected);
+    const options = values.map(v => {
+      return <option key={ v }>
+               { v }
+             </option>;
+    });
+    return (
+      <div className="editor-select-wrapper" style={ style }>
+        <select value={ selected } onChange={ this.handlePublicOrPrivateChanged }>
+          { options }
+        </select>
+        <span></span>
+      </div>
+      );
+  }
+
+  handleHidePreview(e) {
+    e.preventDefault();
+    console.log('handleHidePreview');
+    this.setState({
+      isShowingPreview: false
+    })
+  }
+
+  handleShowPreview(e) {
+    e.preventDefault();
+    console.log('handleShowPreview');
+    this.setState({
+      isShowingPreview: true
+    })
+  }
+
   renderFormatSelect(formats, selected) {
+    const style = {
+      marginLeft: 8,
+      marginRight: 16,
+      width: 108
+    };
+
+    console.log('renderFormatSelect: selected=', selected);
+
     const options = formats.map(function(format) {
       return <option key={ format }>
                { format }
              </option>;
     });
     return (
-      <div className="editor-select-wrapper">
+      <div className="editor-select-wrapper" style={ style }>
         <select value={ selected } onChange={ this.handleFormatChanged }>
           { options }
         </select>
         <span></span>
+      </div>
+      );
+  }
+
+  renderShowHidePreview(note) {
+    // preview is only available for markdown
+    /*
+    if (note.formatName != format.MarkdownName) {
+      return null;
+    }*/
+    if (this.state.isShowingPreview) {
+      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleHidePreview }>« hide preview</a>
+    } else {
+      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleShowPreview }>show preview »</a>
+    }
+  }
+
+  renderBottom(note) {
+    const saveDisabled = didNoteChange(note, this.initialNote);
+    const formatSelect = this.renderFormatSelect(format.FormatNames, note.formatName);
+    const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
+    return (
+      <div id="editor-bottom" className="flex-row">
+        <button className="btn btn-primary" disabled={ saveDisabled }>
+          Save
+        </button>
+        <button className="btn btn-primary" onClick={ this.handleCancel }>
+          Cancel
+        </button>
+        <div>
+          Format:
+        </div>
+        { formatSelect }
+        <div>
+          Visibility:
+        </div>
+        { publicSelect }
+        <div className="flex-spacer">
+          &nbsp;
+        </div>
+        { this.renderShowHidePreview(note) }
       </div>
       );
   }
@@ -388,10 +544,9 @@ export default class Editor extends Component {
       height: kDragBarDy,
       zIndex: 20, // higher than overlay
       overflow: 'hidden',
-      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px'
+      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px',
+      backgroundColor: '#f0f0f0'
     };
-
-    const formatSelect = this.renderFormatSelect(format.FormatNames, note.formatName);
 
     const dragBarMax = window.innerHeight - 320;
     const dragBarMin = 64;
@@ -400,11 +555,11 @@ export default class Editor extends Component {
       height: editorHeight(y)
     };
 
-    const saveDisabled = didNoteChange(note, this.initialNote);
-
     const setEditorWrapperNode = node => this.editorWrapperNode = node;
     const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode = node;
     const setCodemirrorDivNode = node => this.codeMirrorDivNode = node;
+
+    const bottom = this.renderBottom(note);
 
     return (
       <Overlay>
@@ -448,21 +603,7 @@ export default class Editor extends Component {
               <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
             </div>
           </div>
-          <div id="editor-bottom" className="flex-row">
-            <button className="btn btn-primary" disabled={ saveDisabled }>
-              Save
-            </button>
-            <button className="btn btn-primary" onClick={ this.handleCancel }>
-              Cancel
-            </button>
-            { formatSelect }
-            <div className="flex-spacer">
-              &nbsp;
-            </div>
-            <div id="editor-hide-preview">
-              hide preview
-            </div>
-          </div>
+          { bottom }
         </div>
       </Overlay>
       );
