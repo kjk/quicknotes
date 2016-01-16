@@ -3,6 +3,7 @@ import marked from 'marked';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
 import Overlay from './Overlay.jsx';
 import DragBarHoriz from './DragBarHoriz.jsx';
+import keymaster from 'keymaster';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
@@ -138,24 +139,23 @@ function newEmptyNote() {
   return new Note(null, '', '', '', false, format.MarkdownName);
 }
 
-// TODO: use a generic object by-value compare
 function didNoteChange(n1, n2) {
   if (n1.title != n2.title) {
-    return false;
+    return true;
   }
   if (n1.tags != n2.tags) {
-    return false;
+    return true;
   }
   if (n1.body != n2.body) {
-    return false;
+    return true;
   }
   if (n1.isPublic != n2.isPublic) {
-    return false;
+    return true;
   }
   if (n1.formatName != n2.formatName) {
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 export default class Editor extends Component {
@@ -186,7 +186,9 @@ export default class Editor extends Component {
     this.handleEditCmdHr = this.handleEditCmdHr.bind(this);
 
     this.createNewNote = this.createNewNote.bind(this);
+    this.ctrlEnterPressed = this.ctrlEnterPressed.bind(this);
     this.editNote = this.editNote.bind(this);
+    this.escPressed = this.escPressed.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
     this.toHtml = this.toHtml.bind(this);
@@ -206,6 +208,7 @@ export default class Editor extends Component {
   componentDidMount() {
     action.onEditNote(this.editNote, this);
     action.onCreateNewNote(this.createNewNote, this);
+    keymaster('esc', this.escPressed);
 
     this.scheduleTimer();
   }
@@ -224,6 +227,30 @@ export default class Editor extends Component {
 
   componentWillUnmount() {
     action.offAllForOwner(this);
+    keymaster.unbind('esc', this.escPressed);
+  }
+
+  ctrlEnterPressed() {
+    console.log('ctrlEnterPressed');
+    if (!this.state.isShowing) {
+      return;
+    }
+    if (!didNoteChange(this.initialNote, this.state.note)) {
+      return;
+    }
+    this.handleSave();
+  }
+
+  escPressed() {
+    if (!this.state.isShowing) {
+      return;
+    }
+    if (!didNoteChange(this.initialNote, this.state.note)) {
+      this.setState({
+        isShowing: false,
+        note: newEmptyNote()
+      })
+    }
   }
 
   handleDragBarMoved(y) {
@@ -280,7 +307,16 @@ export default class Editor extends Component {
   }
 
   handleEditorCreated(cm) {
+    console.log('handleEditorCreated');
     this.cm = cm;
+    cm.setOption('extraKeys', {
+      'Ctrl-Enter': cm => {
+        this.ctrlEnterPressed();
+      },
+      'Cmd-Enter': cm => {
+        this.ctrlEnterPressed();
+      }
+    });
   }
 
   startEditingNote(note) {
@@ -514,7 +550,7 @@ export default class Editor extends Component {
   }
 
   renderBottom(note) {
-    const saveDisabled = didNoteChange(note, this.initialNote);
+    const saveDisabled = !didNoteChange(note, this.initialNote);
     const formatSelect = this.renderFormatSelect(format.FormatNames, note.formatName);
     const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
     return (
