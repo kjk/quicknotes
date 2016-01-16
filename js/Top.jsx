@@ -58,7 +58,7 @@ export default class Top extends Component {
     if (this.props.isLoggedIn) {
       return (
         <a id="new-note"
-          title="Create new note"
+          title="Create new note (ctrl-n)"
           href="#"
           onClick={ this.handleEditNewNote }><i className="icn-plus"></i></a>
         );

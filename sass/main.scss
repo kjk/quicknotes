@@ -228,6 +228,7 @@ a {
     padding: 0 4px;
     text-align: center;
     cursor: pointer;
+    box-sizing: content-box;
 
     .icn-plus {
       position: relative;
