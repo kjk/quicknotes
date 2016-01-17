@@ -67,10 +67,9 @@ func loadResourcesFromZip(path string) error {
 }
 
 func loadResourcesFromEmbeddedZip() error {
-	log.Infof("loadResourcesFromEmbeddedZip() ")
 	timeStart := time.Now()
 	defer func() {
-		log.Infof("in %s\n", time.Since(timeStart))
+		log.Infof(" in %s\n", time.Since(timeStart))
 	}()
 
 	n := len(resourcesZipData)
