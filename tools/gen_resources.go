@@ -65,7 +65,7 @@ func isBlacklisted(path string) bool {
 	// filter out all .css files other than main.css
 	if strings.HasSuffix(path, ".css") {
 		if !strings.HasSuffix(path, "main.css") {
-			return false
+			return true
 		}
 	}
 	toExcludeSuffix := []string{".map", ".gitkeep", "test.html", "test2.html"}
