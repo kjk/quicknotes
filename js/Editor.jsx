@@ -193,10 +193,16 @@ export default class Editor extends Component {
     this.cm = null;
     this.top = getWindowMiddle();
     this.firstRender = true;
+    // markdown + preview
+    this.editorWrapperNode = null;
+    this.editorTextAreaWrapperNode = null;
+    // markdown, no preview
+    this.editorWrapperNode2 = null;
+    this.editorTextAreaWrapperNode2 = null;
 
     this.state = {
       isShowing: false,
-      isShowingPreview: false,
+      isShowingPreview: true,
       note: null,
     };
   }
@@ -252,7 +258,12 @@ export default class Editor extends Component {
   handleDragBarMoved(y) {
     //console.log('Editor.handleDragBarMoved: y=', y, 'height=', height);
     this.top = y;
-    this.editorWrapperNode.style.height = editorHeight(y) + 'px';
+    if (this.editorWrapperNode) {
+      this.editorWrapperNode.style.height = editorHeight(y) + 'px';
+    }
+    if (this.editorWrapperNode2) {
+      this.editorWrapperNode2.style.height = editorHeight(y) + 'px';
+    }
   }
 
   handleTextChanged(e) {
@@ -395,42 +406,6 @@ export default class Editor extends Component {
     console.log('editCmdHr');
   }
 
-  renderMarkdownButtons() {
-    return (
-      <div id="editor-button-bar" className="flex-row">
-        <button className="btn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
-          <i className="fa fa-bold"></i>
-        </button>
-        <button className="btn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
-          <i className="fa fa-italic"></i>
-        </button>
-        <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
-          <i className="fa fa-link"></i>
-        </button>
-        <button className="btn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
-          <i className="fa fa-quote-right"></i>
-        </button>
-        <button className="btn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
-          <i className="fa fa-code"></i>
-        </button>
-        <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
-          <i className="fa fa-list-ul"></i>
-        </button>
-        <button className="btn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
-          <i className="fa fa-list-ol"></i>
-        </button>
-        <button className="btn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
-          <i className="fa fa-font"></i>
-        </button>
-        <button className="btn" onClick={ this.handleEditCmdHr } title="Horizontal Rule (⌘⌥R)">
-          <i className="fa fa-minus"></i>
-        </button>
-      </div>
-      );
-  }
-
   scheduleTimer() {
     setTimeout(() => {
       this.handleTimer();
@@ -442,7 +417,9 @@ export default class Editor extends Component {
       this.scheduleTimer();
       return;
     }
-    const node = this.editorTextAreaWrapperNode;
+    const node = this.editorTextAreaWrapperNode || this.editorTextAreaWrapperNode2;
+    // if the node we monitor for size changes doesn't exist yet,
+    // skip dependent updates but check back later
     if (!node) {
       this.scheduleTimer();
       return;
@@ -453,7 +430,10 @@ export default class Editor extends Component {
 
     const els = document.getElementsByClassName('codemirror-div');
     //console.log('el: ', els);
-    els.item(0).style.height = h + 'px';
+    const n = els.length;
+    for (let i = 0; i < n; i++) {
+      els.item(i).style.height = h + 'px';
+    }
     //this.cm.setSize(null, h);
     this.scheduleTimer();
   }
@@ -548,6 +528,42 @@ export default class Editor extends Component {
     }
   }
 
+  renderMarkdownButtons() {
+    return (
+      <div id="editor-button-bar" className="flex-row">
+        <button className="btn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
+          <i className="fa fa-bold"></i>
+        </button>
+        <button className="btn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
+          <i className="fa fa-italic"></i>
+        </button>
+        <div className="editor-spacer"></div>
+        <button className="btn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
+          <i className="fa fa-link"></i>
+        </button>
+        <button className="btn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
+          <i className="fa fa-quote-right"></i>
+        </button>
+        <button className="btn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
+          <i className="fa fa-code"></i>
+        </button>
+        <div className="editor-spacer"></div>
+        <button className="btn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
+          <i className="fa fa-list-ul"></i>
+        </button>
+        <button className="btn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
+          <i className="fa fa-list-ol"></i>
+        </button>
+        <button className="btn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
+          <i className="fa fa-font"></i>
+        </button>
+        <button className="btn" onClick={ this.handleEditCmdHr } title="Horizontal Rule (⌘⌥R)">
+          <i className="fa fa-minus"></i>
+        </button>
+      </div>
+      );
+  }
+
   renderBottom(note) {
     const saveDisabled = !didNoteChange(note, this.initialNote);
     const formatSelect = this.renderFormatSelect(format.FormatNames, note.formatName);
@@ -573,6 +589,84 @@ export default class Editor extends Component {
         </div>
         { this.renderShowHidePreview(note) }
       </div>
+      );
+  }
+
+  renderMarkdownNoPreview() {
+    const mode = 'text';
+    const note = this.state.note;
+    const html = {
+      __html: this.toHtml(note.body)
+    };
+
+    const styleFormat = {
+      display: 'inline-block',
+      paddingTop: 8,
+    };
+
+    const y = this.top;
+    const dragBarStyle = {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: window.innerHeight - y - kDragBarDy,
+      //width: '100%',
+      cursor: 'row-resize',
+      height: kDragBarDy,
+      zIndex: 20, // higher than overlay
+      overflow: 'hidden',
+      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px',
+      backgroundColor: '#f0f0f0'
+    };
+
+    const dragBarMax = window.innerHeight - 320;
+    const dragBarMin = 64;
+
+    const style = {
+      height: editorHeight(y)
+    };
+    const setEditorWrapperNode = node => this.editorWrapperNode2 = node;
+    const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode2 = node;
+
+    const bottom = this.renderBottom(note);
+
+    return (
+      <Overlay>
+        <DragBarHoriz style={ dragBarStyle }
+          initialY={ y }
+          min={ dragBarMin }
+          max={ dragBarMax }
+          onPosChanged={ this.handleDragBarMoved } />
+        <div id="editor-wrapper"
+          className="flex-col"
+          style={ style }
+          ref={ setEditorWrapperNode }>
+          <div id="editor-top" className="flex-row">
+            <input id="editor-title"
+              className="editor-input"
+              placeholder="title goes here..."
+              value={ note.title }
+              onChange={ this.handleTitleChanged } />
+            <input id="editor-tags"
+              className="editor-input"
+              placeholder="#enter #tags"
+              value={ note.tags }
+              onChange={ this.handleTagsChanged } />
+          </div>
+          { this.renderMarkdownButtons() }
+          <div id="cm-wrapper" ref={ setEditorTextAreaWrapperNode }>
+            <CodeMirrorEditor mode={ mode }
+              className="codemirror-div"
+              textAreaClassName="cm-textarea"
+              placeholder="Enter text here..."
+              value={ note.body }
+              autofocus
+              onChange={ this.handleTextChanged }
+              onEditorCreated={ this.handleEditorCreated } />
+          </div>
+          { bottom }
+        </div>
+      </Overlay>
       );
   }
 
@@ -612,7 +706,6 @@ export default class Editor extends Component {
 
     const setEditorWrapperNode = node => this.editorWrapperNode = node;
     const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode = node;
-    const setCodemirrorDivNode = node => this.codeMirrorDivNode = node;
 
     const bottom = this.renderBottom(note);
 
@@ -650,8 +743,7 @@ export default class Editor extends Component {
                   value={ note.body }
                   autofocus
                   onChange={ this.handleTextChanged }
-                  onEditorCreated={ this.handleEditorCreated }
-                  ref={ setCodemirrorDivNode } />
+                  onEditorCreated={ this.handleEditorCreated } />
               </div>
             </div>
             <div id="editor-preview">
@@ -671,6 +763,10 @@ export default class Editor extends Component {
       return <div className="hidden"></div>;
     }
 
-    return this.renderMarkdownWithPreview();
+    if (this.state.isShowingPreview) {
+      return this.renderMarkdownWithPreview();
+    } else {
+      return this.renderMarkdownNoPreview();
+    }
   }
 }
