@@ -2,15 +2,6 @@
 // TODO: probably strip down everything we don't use, but is good for now
 // TODO: this is not very react'y. There is react-router but looks very
 // complicated
-import _ from 'underscore';
-
-var Router = function() {
-  // Ensure that `History` can be used outside of the browser.
-  if (typeof window !== 'undefined') {
-    this.location = window.location;
-    this.history = window.history;
-  }
-};
 
 // Cached regex for stripping a leading hash/slash and trailing space.
 var routeStripper = /^[#\/]|\s+$/g;
@@ -21,38 +12,44 @@ var rootStripper = /^\/+|\/+$/g;
 // Cached regex for stripping urls of hash.
 var pathStripper = /#.*$/;
 
-// Set up all inheritable **Backbone.History** properties and methods.
-_.extend(Router.prototype, {}, {
+class Router {
+  constructor() {
+    // Ensure that `History` can be used outside of the browser.
+    if (typeof window !== 'undefined') {
+      this.location = window.location;
+      this.history = window.history;
+    }
+  }
 
   // Are we at the app root?
-  atRoot: function() {
+  atRoot() {
     var path = this.location.pathname.replace(/[^\/]$/, '$&/');
     return path === this.root && !this.getSearch();
-  },
+  }
 
   // Unicode characters in `location.pathname` are percent encoded so they're
   // decoded for comparison. `%25` should not be decoded since it may be part
   // of an encoded parameter.
-  decodeFragment: function(fragment) {
+  decodeFragment(fragment) {
     return decodeURI(fragment.replace(/%25/g, '%2525'));
-  },
+  }
 
   // In IE6, the hash fragment and search params are incorrect if the
   // fragment contains `?`.
-  getSearch: function() {
+  getSearch() {
     var match = this.location.href.replace(/#.*/, '').match(/\?.+/);
     return match ? match[0] : '';
-  },
+  }
 
   // Gets the true hash value. Cannot use location.hash directly due to bug
   // in Firefox where location.hash will always be decoded.
-  getHash: function(window) {
+  getHash(window) {
     var match = (window || this).location.href.match(/#(.*)$/);
     return match ? match[1] : '';
-  },
+  }
 
   // Get the pathname and search params, without the root.
-  getPath: function() {
+  getPath() {
     var path = this.decodeFragment(
       this.location.pathname + this.getSearch()
     );
@@ -60,10 +57,10 @@ _.extend(Router.prototype, {}, {
     if (!path.indexOf(root))
       path = path.slice(root.length);
     return path.charAt(0) === '/' ? path.slice(1) : path;
-  },
+  }
 
   // Get the cross-browser normalized URL fragment from the path or hash.
-  getFragment: function(fragment) {
+  getFragment(fragment) {
     if (fragment == null) {
       if (this._usePushState || !this._wantsHashChange) {
         fragment = this.getPath();
@@ -72,17 +69,19 @@ _.extend(Router.prototype, {}, {
       }
     }
     return fragment.replace(routeStripper, '');
-  },
+  }
 
   // Start the hash change handling, returning `true` if the current URL matches
   // an existing route, and `false` otherwise.
-  start: function(options) {
+  start(options) {
 
     // Figure out the initial configuration. Do we need an iframe?
     // Is pushState desired ... is it available?
-    this.options = _.extend({
+    // TODO: was _.extend(), hope this is equivalent
+    this.options = Object.assign(this.options, options, {
       root: '/'
-    }, this.options, options);
+    });
+
     this.root = this.options.root;
     this._wantsHashChange = this.options.hashChange !== false;
     this._hasHashChange = 'onhashchange' in window;
@@ -130,8 +129,7 @@ _.extend(Router.prototype, {}, {
       this.iframe.document.open().close();
       this.iframe.location.hash = '#' + this.fragment;
     }
-
-  },
+  }
 
   // Save a fragment into the hash history, or replace the URL state if the
   // 'replace' option is passed. You are responsible for properly URL-encoding
@@ -140,7 +138,7 @@ _.extend(Router.prototype, {}, {
   // The options object can contain `trigger: true` if you wish to have the
   // route callback be fired (not usually desirable), or `replace: true`, if
   // you wish to modify the current URL without adding an entry to the history.
-  navigate: function(fragment, options) {
+  navigate(fragment, options) {
     if (!options || options === true)
       options = {
         trigger: !!options
@@ -183,11 +181,11 @@ _.extend(Router.prototype, {}, {
     } else {
       return this.location.assign(url);
     }
-  },
+  }
 
   // Update the hash location, either replacing the current entry, or adding
   // a new one to the browser history.
-  _updateHash: function(location, fragment, replace) {
+  _updateHash(location, fragment, replace) {
     if (replace) {
       var href = location.href.replace(/(javascript:|#).*$/, '');
       location.replace(href + '#' + fragment);
@@ -197,9 +195,9 @@ _.extend(Router.prototype, {}, {
     }
   }
 
-});
+}
 
-var router = new Router();
+let router = new Router();
 router.start();
 
 export default router;
