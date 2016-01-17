@@ -96,6 +96,12 @@ class Note {
     this.isPublic = isPublic;
     this.formatName = formatName;
   }
+  isText() {
+    return format.IdFromName(this.formatName) == format.TextId;
+  }
+  isMarkdown() {
+    return format.IdFromName(this.foramtName) == format.MarkdownId;
+  }
 }
 
 function noteFromCompact(noteCompact) {
@@ -324,6 +330,8 @@ export default class Editor extends Component {
         this.ctrlEnterPressed();
       }
     });
+    cm.setOption('lineWrapping', true);
+    cm.setOption('lineNumbers', true);
   }
 
   startEditingNote(note) {
@@ -516,11 +524,9 @@ export default class Editor extends Component {
   }
 
   renderShowHidePreview(note) {
-    // preview is only available for markdown
-    /*
-    if (note.formatName != format.MarkdownName) {
-      return null;
-    }*/
+    if (note.isText()) {
+      return;
+    }
     if (this.state.isShowingPreview) {
       return <a className="editor-hide-show-preview" href="#" onClick={ this.handleHidePreview }>« hide preview</a>;
     } else {
@@ -592,7 +598,84 @@ export default class Editor extends Component {
       );
   }
 
-  renderMarkdownNoPreview() {
+  renderEditorText() {
+    const mode = 'text';
+    const note = this.state.note;
+    const html = {
+      __html: this.toHtml(note.body)
+    };
+
+    const styleFormat = {
+      display: 'inline-block',
+      paddingTop: 8,
+    };
+
+    const y = this.top;
+    const dragBarStyle = {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: window.innerHeight - y - kDragBarDy,
+      //width: '100%',
+      cursor: 'row-resize',
+      height: kDragBarDy,
+      zIndex: 20, // higher than overlay
+      overflow: 'hidden',
+      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px',
+      backgroundColor: '#f0f0f0'
+    };
+
+    const dragBarMax = window.innerHeight - 320;
+    const dragBarMin = 64;
+
+    const style = {
+      height: editorHeight(y)
+    };
+    const setEditorWrapperNode = node => this.editorWrapperNode2 = node;
+    const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode2 = node;
+
+    const bottom = this.renderBottom(note);
+
+    return (
+      <Overlay>
+        <DragBarHoriz style={ dragBarStyle }
+          initialY={ y }
+          min={ dragBarMin }
+          max={ dragBarMax }
+          onPosChanged={ this.handleDragBarMoved } />
+        <div id="editor-wrapper"
+          className="flex-col"
+          style={ style }
+          ref={ setEditorWrapperNode }>
+          <div id="editor-top" className="flex-row">
+            <input id="editor-title"
+              className="editor-input"
+              placeholder="title goes here..."
+              value={ note.title }
+              onChange={ this.handleTitleChanged } />
+            <input id="editor-tags"
+              className="editor-input"
+              placeholder="#enter #tags"
+              value={ note.tags }
+              onChange={ this.handleTagsChanged } />
+          </div>
+          <div id="cm-wrapper" ref={ setEditorTextAreaWrapperNode }>
+            <CodeMirrorEditor mode={ mode }
+              className="codemirror-div"
+              textAreaClassName="cm-textarea"
+              placeholder="Enter text here..."
+              value={ note.body }
+              autofocus
+              onChange={ this.handleTextChanged }
+              onEditorCreated={ this.handleEditorCreated } />
+          </div>
+          { bottom }
+        </div>
+      </Overlay>
+      );
+  }
+
+  renderEditorMarkdownNoPreview() {
     const mode = 'text';
     const note = this.state.note;
     const html = {
@@ -670,7 +753,7 @@ export default class Editor extends Component {
       );
   }
 
-  renderMarkdownWithPreview() {
+  renderEditorMarkdownWithPreview() {
     const mode = 'text';
     const note = this.state.note;
     const html = {
@@ -762,11 +845,14 @@ export default class Editor extends Component {
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
     }
-
+    const note = this.state.note;
+    if (note.isText()) {
+      return this.renderEditorText();
+    }
     if (this.state.isShowingPreview) {
-      return this.renderMarkdownWithPreview();
+      return this.renderEditorMarkdownWithPreview();
     } else {
-      return this.renderMarkdownNoPreview();
+      return this.renderEditorMarkdownNoPreview();
     }
   }
 }
