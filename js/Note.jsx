@@ -38,7 +38,10 @@ export default class Note extends Component {
   }
 
   handleTagClicked(e) {
-    const tag = e.target.textContent.substr(1);
+    let tag = e.target.textContent;
+    if (tag.startsWith('#')) {
+      tag = tag.substr(1)
+    }
     action.tagSelected(tag);
   }
 
@@ -47,6 +50,7 @@ export default class Note extends Component {
       return;
     }
     const tagEls = tags.map(tag => {
+      //tag = '#' + tag;
       return (
         <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
         );
