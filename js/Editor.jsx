@@ -212,6 +212,7 @@ export default class Editor extends Component {
     this.editorWrapperNode2 = null;
     this.editorTextAreaWrapperNode2 = null;
 
+    this.setFocusInUpdate = false;
     this.state = {
       isShowing: false,
       isShowingPreview: true,
@@ -230,7 +231,14 @@ export default class Editor extends Component {
   componentDidUpdate() {
     const cm = this.cm;
     //console.log('Editor.componentDidUpdate, cm: ', cm);
-    if (!cm || !this.firstRender) {
+    if (!cm) {
+      return;
+    }
+    if (this.setFocusInUpdate) {
+      this.cm.focus();
+      this.setFocusInUpdate = false;
+    }
+    if (!this.firstRender) {
       return;
     }
     this.firstRender = false;
@@ -450,6 +458,7 @@ export default class Editor extends Component {
     const v = e.target.value;
     let note = this.state.note;
     note.formatName = v;
+    this.setFocusInUpdate = true;
     this.setState({
       note: note
     });
@@ -459,6 +468,7 @@ export default class Editor extends Component {
     const v = e.target.value;
     let note = this.state.note;
     note.isPublic = v == 'public';
+    this.setFocusInUpdate = true;
     this.setState({
       note: note
     });
