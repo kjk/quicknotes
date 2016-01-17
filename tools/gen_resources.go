@@ -62,6 +62,12 @@ func hasAnySuffix(s string, suffixes []string) bool {
 }
 
 func isBlacklisted(path string) bool {
+	// filter out all .css files other than main.css
+	if strings.HasSuffix(path, ".css") {
+		if !strings.HasSuffix(path, "main.css") {
+			return false
+		}
+	}
 	toExcludeSuffix := []string{".map", ".gitkeep", "test.html", "test2.html"}
 	return hasAnySuffix(path, toExcludeSuffix)
 }
