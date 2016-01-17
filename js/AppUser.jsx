@@ -8,7 +8,6 @@ import ImportSimpleNote from './ImportSimpleNote.jsx';
 import Top from './Top.jsx';
 import Settings from './Settings.jsx';
 import Editor from './Editor.jsx';
-import keymaster from 'keymaster';
 import * as u from './utils.js';
 import * as format from './format.js';
 import * as ni from './noteinfo.js';
@@ -69,7 +68,6 @@ export default class AppUser extends Component {
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
-    this.keyFilter = this.keyFilter.bind(this);
     this.reloadNotes = this.reloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
@@ -100,20 +98,11 @@ export default class AppUser extends Component {
   }
 
   componentDidMount() {
-    keymaster.filter = this.keyFilter;
-    keymaster('ctrl+f', u.focusSearch);
-    keymaster('ctrl+n', () => action.editNewNote());
-    //keymaster('ctrl+e', u.focusNewNote);
-
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
   }
 
   componentWillUnmount() {
-    keymaster.unbind('ctrl+f');
-    keymaster.unbind('ctrl+n');
-    //keymaster.unbind('ctrl+e');
-
     action.offAllForOwner(this);
   }
 
@@ -150,20 +139,6 @@ export default class AppUser extends Component {
     api.getNotesCompact(userHandle, json => {
       this.setNotes(json);
     });
-  }
-
-  standardKeyFilter(event) {
-    const tagName = (event.target || event.srcElement).tagName;
-    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
-  }
-
-  // by default all keypresses are filtered
-  keyFilter(event) {
-    if (event.keyCode == 27) {
-      // allow ESC always
-      return true;
-    }
-    return this.standardKeyFilter(event);
   }
 
   startSearch(userHandle, searchTerm) {
