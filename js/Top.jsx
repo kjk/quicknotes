@@ -1,6 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import LogInLink from './LogInLink.jsx';
+import keymaster from 'keymaster';
 import * as action from './action.js';
+import * as u from './utils.js';
+
+// by default all keypresses are filtered
+function keyFilter(event) {
+  if (event.keyCode == 27) {
+    // allow ESC always
+    return true;
+  }
+  // standard key filter, disable if inside those elements
+  const tag = (event.target || event.srcElement).tagName;
+  return !(tag == 'INPUT' || tag == 'SELECT' || tag == 'TEXTAREA');
+}
 
 export default class Top extends Component {
   constructor(props, context) {
@@ -8,6 +21,19 @@ export default class Top extends Component {
     this.handleEditNewNote = this.handleEditNewNote.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
+  }
+
+  componentDidMount() {
+    keymaster.filter = keyFilter;
+    keymaster('ctrl+f', u.focusSearch);
+    keymaster('ctrl+n', () => action.editNewNote());
+    //keymaster('ctrl+e', u.focusNewNote);
+  }
+
+  componentWillUnmount() {
+    keymaster.unbind('ctrl+f');
+    keymaster.unbind('ctrl+n');
+    //keymaster.unbind('ctrl+e');
   }
 
   handleInputKeyDown(e) {
