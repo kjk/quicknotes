@@ -78,7 +78,7 @@ class Router {
     // Figure out the initial configuration. Do we need an iframe?
     // Is pushState desired ... is it available?
     // TODO: was _.extend(), hope this is equivalent
-    this.options = Object.assign(this.options, options, {
+    this.options = Object.assign(options || {}, {
       root: '/'
     });
 
