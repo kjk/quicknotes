@@ -144,8 +144,8 @@ func serveData(w http.ResponseWriter, r *http.Request, code int, contentType str
 
 	if acceptsGzip(r) && len(gzippedData) > 0 {
 		d = gzippedData
+		w.Header().Set("Content-Encoding", "gzip")
 	}
-	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Length", strconv.Itoa(len(d)))
 	w.WriteHeader(code)
 	w.Write(d)
