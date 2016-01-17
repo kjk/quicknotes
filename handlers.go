@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -260,13 +261,19 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	model := struct {
-		Note               *Note
-		LoggedInUserHandle string
-		NoteUserHandle     string
+		NoteTitle            string
+		NoteTitleJS          string
+		NoteBodyJS           string
+		NoteFormat           string
+		LoggedInUserHandleJS string
+		NoteUserHandleJS     string
 	}{
-		Note:               note,
-		LoggedInUserHandle: loggedInUserHandle,
-		NoteUserHandle:     noteUserHandle,
+		NoteTitle:            note.Title,
+		NoteTitleJS:          template.JSEscapeString(note.Title),
+		NoteBodyJS:           template.JSEscapeString(note.Content()),
+		NoteFormat:           formatNameFromID(note.Format),
+		LoggedInUserHandleJS: template.JSEscapeString(loggedInUserHandle),
+		NoteUserHandleJS:     template.JSEscapeString(noteUserHandle),
 	}
 	execTemplate(w, tmplNote, model)
 }

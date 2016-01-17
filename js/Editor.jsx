@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
+import keymaster from 'keymaster';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
+
 import Overlay from './Overlay.jsx';
 import DragBarHoriz from './DragBarHoriz.jsx';
-import keymaster from 'keymaster';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
@@ -14,6 +15,17 @@ import * as api from './api.js';
 const kDragBarDy = 11;
 
 const renderer = new marked.Renderer();
+
+const markedOpts = {
+  renderer: renderer,
+  gfm: true,
+  tables: true,
+  breaks: true,
+  pedantic: false,
+  sanitize: true,
+  smartLists: true,
+  smartypants: false
+};
 
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
@@ -39,16 +51,11 @@ renderer.link = function(href, title, text) {
   return out;
 };
 
-const markedOpts = {
-  renderer: renderer,
-  gfm: true,
-  tables: true,
-  breaks: true,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: false
-};
+function toHtml(s) {
+  s = s.trim();
+  const html = marked(s, markedOpts);
+  return html;
+}
 
 function getWindowMiddle() {
   const dy = window.innerHeight;
@@ -193,7 +200,6 @@ export default class Editor extends Component {
     this.escPressed = this.escPressed.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
-    this.toHtml = this.toHtml.bind(this);
 
     this.initialNote = null;
     this.cm = null;
@@ -361,12 +367,6 @@ export default class Editor extends Component {
       const note = noteFromCompact(noteCompact);
       this.startEditingNote(note);
     }
-  }
-
-  toHtml(s) {
-    s = s.trim();
-    const html = marked(s, markedOpts);
-    return html;
   }
 
   handleEditCmdBold(e) {
@@ -601,9 +601,6 @@ export default class Editor extends Component {
   renderEditorText() {
     const mode = 'text';
     const note = this.state.note;
-    const html = {
-      __html: this.toHtml(note.body)
-    };
 
     const styleFormat = {
       display: 'inline-block',
@@ -678,9 +675,6 @@ export default class Editor extends Component {
   renderEditorMarkdownNoPreview() {
     const mode = 'text';
     const note = this.state.note;
-    const html = {
-      __html: this.toHtml(note.body)
-    };
 
     const styleFormat = {
       display: 'inline-block',
@@ -757,7 +751,7 @@ export default class Editor extends Component {
     const mode = 'text';
     const note = this.state.note;
     const html = {
-      __html: this.toHtml(note.body)
+      __html: toHtml(note.body)
     };
 
     const styleFormat = {

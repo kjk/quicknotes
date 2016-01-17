@@ -42,7 +42,11 @@
     "gLoggedInUserHandle": true,
     "gRecentNotesInitial": true,
     "gNotesUserHandle": true,
-    "gInitialNotesJSON": true
+    "gInitialNotesJSON": true,
+    "gNoteTitle": true,
+    "gNoteUserHandle": true,
+    "gNoteBody": true,
+    "gNoteFormat": true
   },
   "plugins": [
     "eslint-plugin-react"

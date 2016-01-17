@@ -5,30 +5,24 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{.Note.Title}}</title>
+  <title>{{.NoteTitle}}</title>
 
   <link rel="stylesheet" href="/s/dist/main.css">
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
 
   <script>
-    var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
+    var gLoggedInUserHandle = "{{.LoggedInUserHandleJS}}";
+    var gNoteUserHandle = "{{.NoteUserHandleJS}}";
+    var gNoteBody = "{{.NoteBodyJS}}";
+    var gNoteFormat = "{{.NoteFormat}}";
+    var gNoteTitle = "{{.NoteTitleJS}}";
   </script>
 </head>
 
 <body class="theme-light">
 
-  <div id="note-top"></div>
+  <div id="root">
 
-  <div id="full-note">
-    <div class="note-content-wrapper">
-      <h1>{{.Note.Title}}</h1>
-      {{.Note.ContentHTML}}
-    </div>
-
-    <hr class="light">
-    <center class="dimmed">
-      A note by <a href="/u/{{.NoteUserHandle}}">{{.NoteUserHandle}}</a>.
-    </center>
   </div>
 
   <script src="/s/dist/bundle.js"></script>

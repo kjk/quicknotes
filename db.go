@@ -37,6 +37,7 @@ const (
 )
 
 var (
+	formatNames         = []string{"invalid", "text", "markdown", "html"}
 	sqlDb               *sql.DB
 	sqlDbMu             sync.Mutex
 	tagSepStr           = string([]byte{30})
@@ -186,6 +187,13 @@ func (n *Note) SetCalculatedProperties() {
 	n.HumanSize = humanize.Bytes(uint64(n.Size))
 	n.IDStr = hashInt(n.id)
 	n.SetSnippet()
+}
+
+func formatNameFromID(id int) string {
+	if id >= 0 && id < len(formatNames) {
+		return formatNames[id]
+	}
+	return "invalid"
 }
 
 func getShortSnippet(d []byte) []byte {

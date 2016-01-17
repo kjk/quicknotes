@@ -40,7 +40,7 @@ export default class Note extends Component {
   handleTagClicked(e) {
     let tag = e.target.textContent;
     if (tag.startsWith('#')) {
-      tag = tag.substr(1)
+      tag = tag.substr(1);
     }
     action.tagSelected(tag);
   }
