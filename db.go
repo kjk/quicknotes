@@ -110,11 +110,12 @@ type DbNote struct {
 // Note describes note in memory
 type Note struct {
 	DbNote
-	UpdatedAt time.Time
-	Snippet   string
-	IsPartial bool
-	HumanSize string
-	IDStr     string
+	UpdatedAt   time.Time
+	Snippet     string
+	IsPartial   bool
+	IsTruncated bool
+	HumanSize   string
+	IDStr       string
 }
 
 // NewNote describes a new note to be inserted into a database
@@ -167,6 +168,7 @@ func (s notesByCreatedAt) Less(i, j int) bool {
 
 // SetSnippet sets a short version of note (if is big)
 func (n *Note) SetSnippet() {
+	var snippetBytes []byte
 	if n.Snippet != "" {
 		return
 	}
@@ -176,7 +178,8 @@ func (n *Note) SetSnippet() {
 		return
 	}
 	// TODO: make this trimming when we create snippet sha1
-	n.Snippet = strings.TrimSpace(string(getShortSnippet(snippet)))
+	snippetBytes, n.IsTruncated = getShortSnippet(snippet)
+	n.Snippet = strings.TrimSpace(string(snippetBytes))
 	//log.Infof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
 }
 
@@ -195,7 +198,7 @@ func formatNameFromID(id int) string {
 	return "invalid"
 }
 
-func getShortSnippet(d []byte) []byte {
+func getShortSnippet(d []byte) ([]byte, bool) {
 	var lines [][]byte
 	maxLines := 10
 	sizeLeft := 512
@@ -218,7 +221,9 @@ func getShortSnippet(d []byte) []byte {
 		}
 		d = d[advance:]
 	}
-	return bytes.Join(lines, []byte{'\n'})
+	truncated := len(d) > 0
+	res := bytes.Join(lines, []byte{'\n'})
+	return res, truncated
 }
 
 // returns first non-empty line
