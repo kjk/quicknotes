@@ -45,7 +45,8 @@
     "gNoteTitle": true,
     "gNoteUserHandle": true,
     "gNoteBody": true,
-    "gNoteFormat": true
+    "gNoteFormat": true,
+    "linkify": true
   },
   "plugins": [
     "eslint-plugin-react"
