@@ -153,4 +153,13 @@ export function strArrRemoveDups(a) {
   return Object.keys(d);
 }
 
+// Use the browser's built-in functionality to quickly and
+// safely escape the string
+export function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+;
+
 window.runOnLoad = runOnLoad;

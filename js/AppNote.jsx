@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import marked from 'marked';
-
+import './linkify.js';
 import Top from './Top.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
 import Editor from './Editor.jsx';
+import { escapeHtml } from './utils.js';
 
 const renderer = new marked.Renderer();
 
@@ -25,6 +26,19 @@ function toHtml(s) {
   return html;
 }
 
+function linkifyCb(s, href) {
+  if (!href) {
+    return escapeHtml(s);
+  }
+  return `<a href="${href}" target="_blank" rel="nofollow">${s}</a>`;
+}
+
+function linkify2(s) {
+  return linkify(s, {
+    callback: linkifyCb
+  });
+}
+
 export default class AppNote extends Component {
   constructor(props, context) {
     super(props, context);
@@ -35,7 +49,10 @@ export default class AppNote extends Component {
     const fmtName = gNoteFormat;
     const isTxt = fmtName == 'text';
     if (isTxt) {
-      return <pre><b>not markdown</b>: { body }</pre>;
+      const html = {
+        __html: linkify2(body)
+      };
+      return <pre dangerouslySetInnerHTML={ html }></pre>;
     }
     const html = {
       __html: toHtml(body)
@@ -43,12 +60,12 @@ export default class AppNote extends Component {
 
     return <div dangerouslySetInnerHTML={ html }></div>;
   }
-
   render() {
     console.log('appNoteStart: gLoggedInUserHandle: ', gLoggedInUserHandle);
     const isLoggedIn = gLoggedInUserHandle !== '';
     const title = gNoteTitle;
     const noteUser = gNoteUserHandle;
+    const url = '/u/' + noteUser;
     return (
       <div>
         <div id="note-top">
@@ -61,8 +78,8 @@ export default class AppNote extends Component {
           </div>
           <hr className="light" />
           <center className="dimmed">
-            A note by
-            <a href="/u/{noteUser}">
+            A note by&nbsp;
+            <a href={ url }>
               { noteUser }
             </a>.
           </center>
