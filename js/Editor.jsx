@@ -51,7 +51,7 @@ renderer.link = function(href, title, text) {
   if (title) {
     out += ' title="' + title + '"';
   }
-  out += 'target="_blank"';
+  out += 'target="_blank" rel="nofollow"';
   out += '>' + text + '</a>';
   return out;
 };
