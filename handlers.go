@@ -301,11 +301,11 @@ func boolToInt(b bool) int {
 
 // encode multiple bool flags as a single int
 func encodeNoteFlags(n *Note) int {
-	res := 0
-	res += 1 * boolToInt(n.IsStarred)
+	res := 1 * boolToInt(n.IsStarred)
 	res += 2 * boolToInt(n.IsDeleted)
 	res += 4 * boolToInt(n.IsPublic)
 	res += 8 * boolToInt(n.IsPartial)
+	res += 16 * boolToInt(n.IsTruncated)
 	return res
 }
 

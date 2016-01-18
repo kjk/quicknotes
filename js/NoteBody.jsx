@@ -40,7 +40,7 @@ export default class NoteBody extends Component {
 
   renderCollapseOrExpand(note) {
     // if a note is not partial, there's neither collapse nor exapnd
-    if (!ni.IsPartial(note)) {
+    if (!ni.NeedsExpansion(note)) {
       return;
     }
 

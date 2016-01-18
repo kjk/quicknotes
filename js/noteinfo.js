@@ -18,6 +18,7 @@ const flagStarredBit = 0;
 const flagDeletedBit = 1;
 const flagPublicBit = 2;
 const flagPartialBit = 3;
+const flagTruncatedBit = 4;
 
 const formatText = 1;
 const formatMarkdown = 2;
@@ -191,6 +192,14 @@ export function IsPrivate(note) {
 // partial is if full content is != snippet
 export function IsPartial(note) {
   return isFlagSet(note, flagPartialBit);
+}
+
+export function IsTruncated(note) {
+  return isFlagSet(note, flagTruncatedBit);
+}
+
+export function NeedsExpansion(note) {
+  return IsPartial(note) || IsTruncated(note);
 }
 
 export function SetTitle(note, title) {
