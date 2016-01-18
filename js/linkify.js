@@ -109,7 +109,7 @@ window.linkify = (function() {
         // If no changes are made, we don't want to loop forever!
         link_last = link;
 
-        quote_end = link.substr(-1)
+        quote_end = link.substr(-1);
         quote_begin = quotes[quote_end];
 
         // Ending quote character?

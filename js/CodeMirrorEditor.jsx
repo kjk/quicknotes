@@ -51,7 +51,7 @@ export default class CodeMirrorEditor extends Component {
     <textarea ref="editorNode"
       defaultValue={ this.props.defaultValue }
       style={ this.props.textAreaStyle }
-      className={ this.props.textAreaClassNames } />
+      className={ this.props.textAreaClassName } />
     );
 
     return (
@@ -69,6 +69,7 @@ CodeMirrorEditor.propTypes = {
   onChange: PropTypes.func,
   onEditorCreated: PropTypes.func,
   readOnly: PropTypes.bool,
+  value: PropTypes.string,
   textAreaStyle: PropTypes.object,
   textAreaClassName: PropTypes.string,
 };
