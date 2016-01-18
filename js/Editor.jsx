@@ -14,6 +14,8 @@ import * as format from './format.js';
 import * as api from './api.js';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
+// https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js
+// https://github.com/lepture/editor
 
 const kDragBarDy = 11;
 
@@ -170,6 +172,113 @@ function didNoteChange(n1, n2) {
   return false;
 }
 
+// The state of CodeMirror at the given position.
+function getState(cm, pos) {
+  pos = pos || cm.getCursor('start');
+  var stat = cm.getTokenAt(pos);
+  if (!stat.type) return {};
+
+  var types = stat.type.split(' ');
+
+  var ret = {},
+    data, text;
+  for (var i = 0; i < types.length; i++) {
+    data = types[i];
+    if (data === 'strong') {
+      ret.bold = true;
+    } else if (data === 'variable-2') {
+      text = cm.getLine(pos.line);
+      if (/^\s*\d+\.\s/.test(text)) {
+        ret['ordered-list'] = true;
+      } else {
+        ret['unordered-list'] = true;
+      }
+    } else if (data === 'atom') {
+      ret.quote = true;
+    } else if (data === 'em') {
+      ret.italic = true;
+    } else if (data === 'quote') {
+      ret.quote = true;
+    } else if (data === 'strikethrough') {
+      ret.strikethrough = true;
+    } else if (data === 'comment') {
+      ret.code = true;
+    }
+  }
+  return ret;
+}
+
+function _toggleBlock(cm, type, start_chars, end_chars) {
+  end_chars = (typeof end_chars === 'undefined') ? start_chars : end_chars;
+  var stat = getState(cm);
+
+  var text;
+  var start = start_chars;
+  var end = end_chars;
+
+  var startPoint = cm.getCursor('start');
+  var endPoint = cm.getCursor('end');
+
+  if (stat[type]) {
+    text = cm.getLine(startPoint.line);
+    start = text.slice(0, startPoint.ch);
+    end = text.slice(startPoint.ch);
+    if (type == 'bold') {
+      start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, '');
+      end = end.replace(/(\*\*|__)/, '');
+    } else if (type == 'italic') {
+      start = start.replace(/(\*|_)(?![\s\S]*(\*|_))/, '');
+      end = end.replace(/(\*|_)/, '');
+    } else if (type == 'strikethrough') {
+      start = start.replace(/(\*\*|~~)(?![\s\S]*(\*\*|~~))/, '');
+      end = end.replace(/(\*\*|~~)/, '');
+    }
+    cm.replaceRange(start + end, {
+      line: startPoint.line,
+      ch: 0
+    }, {
+      line: startPoint.line,
+      ch: 99999999999999
+    });
+
+    if (type == 'bold' || type == 'strikethrough') {
+      startPoint.ch -= 2;
+      if (startPoint !== endPoint) {
+        endPoint.ch -= 2;
+      }
+    } else if (type == 'italic') {
+      startPoint.ch -= 1;
+      if (startPoint !== endPoint) {
+        endPoint.ch -= 1;
+      }
+    }
+  } else {
+    text = cm.getSelection();
+    if (type == 'bold') {
+      text = text.split('**').join('');
+      text = text.split('__').join('');
+    } else if (type == 'italic') {
+      text = text.split('*').join('');
+      text = text.split('_').join('');
+    } else if (type == 'strikethrough') {
+      text = text.split('~~').join('');
+    }
+    cm.replaceSelection(start + text + end);
+
+    startPoint.ch += start_chars.length;
+    endPoint.ch = startPoint.ch + text.length;
+  }
+
+  console.log('cm.setSelection: start=', startPoint, 'end=', endPoint);
+  cm.setSelection(startPoint, endPoint);
+  cm.focus();
+}
+
+function toggleBold(cm) {
+  console.log('toggleBold()');
+  _toggleBlock(cm, 'bold', '**');
+}
+
 export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
@@ -287,8 +396,8 @@ export default class Editor extends Component {
     }
   }
 
-  handleTextChanged(e) {
-    const s = e.target.value;
+  handleTextChanged(cm) {
+    const s = cm.getValue();
     let note = this.state.note;
     note.body = s;
     this.setState({
@@ -446,60 +555,51 @@ export default class Editor extends Component {
   }
 
   handleEditCmdBold(e) {
-    e.preventDefault();
     console.log('editCmdBold');
-    this.cmInsertAround('**', '**');
+    toggleBold(this.cm);
+    //this.cmInsertAround('**', '**');
   }
 
   handleEditCmdItalic(e) {
-    e.preventDefault();
     console.log('editCmdItalic');
     this.cmInsertAround('*', '*');
   }
 
   handleEditCmdLink(e) {
-    e.preventDefault();
     console.log('editCmdLink');
     this.cmInsertAround('[', '](http://)');
   }
 
   handleEditCmdQuote(e) {
-    e.preventDefault();
     console.log('editCmdQuote');
     this.cmInsertBefore('> ', 2);
   }
 
   handleEditCmdCode(e) {
-    e.preventDefault();
     console.log('editCmdCode');
     this.cmInsertAround('```\r\n', '\r\n```');
   }
 
   handleEditCmdListUnordered(e) {
-    e.preventDefault();
     console.log('editCmdListUnordered');
     this.cmInsertBefore('* ', 2);
   }
 
   handleEditCmdListOrdered(e) {
-    e.preventDefault();
     console.log('editCmdListOrdered');
     this.cmInsertBefore('1. ', 3);
   }
 
   handleEditCmdHeading(e) {
-    e.preventDefault();
     console.log('editCmdHeading');
   }
 
   handleEditCmdHr(e) {
-    e.preventDefault();
     console.log('editCmdHr');
     this.cmInsert('---');
   }
 
   handleEditCmdImage(e) {
-    e.preventDefault();
     this.cmInsertBefore('![](http://)', 2);
   }
 
@@ -750,7 +850,7 @@ export default class Editor extends Component {
               className="codemirror-div"
               textAreaClassName="cm-textarea"
               placeholder="Enter text here..."
-              value={ note.body }
+              defaultValue={ note.body }
               autofocus
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
@@ -823,7 +923,7 @@ export default class Editor extends Component {
               className="codemirror-div"
               textAreaClassName="cm-textarea"
               placeholder="Enter text here..."
-              value={ note.body }
+              defaultValue={ note.body }
               autofocus
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
@@ -901,7 +1001,7 @@ export default class Editor extends Component {
                   className="codemirror-div"
                   textAreaClassName="cm-textarea"
                   placeholder="Enter text here..."
-                  value={ note.body }
+                  defaultValue={ note.body }
                   autofocus
                   onChange={ this.handleTextChanged }
                   onEditorCreated={ this.handleEditorCreated } />
@@ -918,7 +1018,7 @@ export default class Editor extends Component {
   }
 
   render() {
-    //console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
+    console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
