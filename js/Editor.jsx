@@ -283,6 +283,7 @@ export default class Editor extends Component {
     if (node) {
       console.log('this.refs.editorWrapperNode=', node);
       node.style.height = editorHeight(y) + 'px';
+      this.cm.refresh();
     }
   }
 
@@ -530,7 +531,7 @@ export default class Editor extends Component {
     for (let i = 0; i < n; i++) {
       els.item(i).style.height = h + 'px';
     }
-    //this.cm.setSize(null, h);
+    this.cm.refresh();
     this.scheduleTimer();
   }
 
