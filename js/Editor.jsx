@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import marked from 'marked';
 import keymaster from 'keymaster';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
@@ -11,6 +12,8 @@ import { debounce } from './utils.js';
 import * as u from './utils.js';
 import * as format from './format.js';
 import * as api from './api.js';
+
+// https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
 
 const kDragBarDy = 11;
 
@@ -194,6 +197,10 @@ export default class Editor extends Component {
     this.handleEditCmdHeading = this.handleEditCmdHeading.bind(this);
     this.handleEditCmdHr = this.handleEditCmdHr.bind(this);
 
+    this.cmInsertAround = this.cmInsertAround.bind(this);
+    this.cmInsertBefore = this.cmInsertBefore.bind(this);
+    this.cmInsert = this.cmInsert.bind(this);
+
     this.editNewNote = this.editNewNote.bind(this);
     this.ctrlEnterPressed = this.ctrlEnterPressed.bind(this);
     this.editNote = this.editNote.bind(this);
@@ -205,12 +212,6 @@ export default class Editor extends Component {
     this.cm = null;
     this.top = getWindowMiddle();
     this.firstRender = true;
-    // markdown + preview
-    this.editorWrapperNode = null;
-    this.editorTextAreaWrapperNode = null;
-    // markdown, no preview
-    this.editorWrapperNode2 = null;
-    this.editorTextAreaWrapperNode2 = null;
 
     this.setFocusInUpdate = false;
     this.state = {
@@ -276,13 +277,12 @@ export default class Editor extends Component {
   }
 
   handleDragBarMoved(y) {
-    //console.log('Editor.handleDragBarMoved: y=', y, 'height=', height);
+    console.log('Editor.handleDragBarMoved: y=', y);
     this.top = y;
-    if (this.editorWrapperNode) {
-      this.editorWrapperNode.style.height = editorHeight(y) + 'px';
-    }
-    if (this.editorWrapperNode2) {
-      this.editorWrapperNode2.style.height = editorHeight(y) + 'px';
+    const node = ReactDOM.findDOMNode(this.refs.editorWrapperNode);
+    if (node) {
+      console.log('this.refs.editorWrapperNode=', node);
+      node.style.height = editorHeight(y) + 'px';
     }
   }
 
@@ -342,10 +342,13 @@ export default class Editor extends Component {
       },
       'Cmd-Enter': cm => {
         this.ctrlEnterPressed();
-      }
+      },
+      'Enter': 'newlineAndIndentContinueMarkdownList'
     });
+
     cm.setOption('lineWrapping', true);
     cm.setOption('lineNumbers', true);
+    cm.setOption('tabSize', 2);
   }
 
   startEditingNote(note) {
@@ -377,39 +380,110 @@ export default class Editor extends Component {
     }
   }
 
+  cmInsertAround(start, end) {
+    this.cm.focus();
+
+    const doc = this.cm.getDoc();
+    const cursor = doc.getCursor();
+
+    if (doc.somethingSelected()) {
+      const selection = doc.getSelection();
+      doc.replaceSelection(start + selection + end);
+    } else {
+      // If no selection then insert start and end args and set cursor position between the two.
+      doc.replaceRange(start + end, {
+        line: cursor.line,
+        ch: cursor.ch
+      });
+      doc.setCursor({
+        line: cursor.line,
+        ch: cursor.ch + start.length
+      });
+    }
+  }
+
+  cmInsertBefore(insertion, cursorOffset) {
+    this.cm.focus();
+    const doc = this.cm.getDoc();
+    const cursor = doc.getCursor();
+
+    if (doc.somethingSelected()) {
+      const selections = doc.listSelections();
+      selections.forEach(function(selection) {
+        const pos = [selection.head.line, selection.anchor.line].sort();
+        for (let i = pos[0]; i <= pos[1]; i++) {
+          doc.replaceRange(insertion, {
+            line: i,
+            ch: 0
+          });
+        }
+        doc.setCursor({
+          line: pos[0],
+          ch: cursorOffset || 0
+        });
+      });
+    } else {
+      doc.replaceRange(insertion, {
+        line: cursor.line,
+        ch: 0
+      });
+      doc.setCursor({
+        line: cursor.line,
+        ch: cursorOffset || 0
+      });
+    }
+  }
+
+  cmInsert(s) {
+    this.cm.focus();
+    const doc = this.cm.getDoc();
+    const cursor = doc.getCursor();
+    doc.replaceRange(s, {
+      line: cursor.line,
+      ch: cursor.ch
+    });
+  }
+
   handleEditCmdBold(e) {
     e.preventDefault();
     console.log('editCmdBold');
+    this.cmInsertAround('**', '**');
   }
 
   handleEditCmdItalic(e) {
     e.preventDefault();
     console.log('editCmdItalic');
+    this.cmInsertAround('*', '*');
   }
 
   handleEditCmdLink(e) {
     e.preventDefault();
     console.log('editCmdLink');
+    this.cmInsertAround('[', '](http://)');
   }
 
   handleEditCmdQuote(e) {
     e.preventDefault();
     console.log('editCmdQuote');
+    this.cmInsertBefore('> ', 2);
   }
 
   handleEditCmdCode(e) {
     e.preventDefault();
     console.log('editCmdCode');
+    this.cmInsertAround('```\r\n', '\r\n```');
   }
 
   handleEditCmdListUnordered(e) {
     e.preventDefault();
     console.log('editCmdListUnordered');
+    this.cmInsertBefore('* ', 2);
   }
 
   handleEditCmdListOrdered(e) {
     e.preventDefault();
     console.log('editCmdListOrdered');
+    this.cmInsertBefore('1. ', 3);
   }
 
   handleEditCmdHeading(e) {
@@ -420,6 +494,12 @@ export default class Editor extends Component {
   handleEditCmdHr(e) {
     e.preventDefault();
     console.log('editCmdHr');
+    this.cmInsert('---');
+  }
+
+  handleEditCmdImage(e) {
+    e.preventDefault();
+    this.cmInsertBefore('![](http://)', 2);
   }
 
   scheduleTimer() {
@@ -433,7 +513,7 @@ export default class Editor extends Component {
       this.scheduleTimer();
       return;
     }
-    const node = this.editorTextAreaWrapperNode || this.editorTextAreaWrapperNode2;
+    const node = ReactDOM.findDOMNode(this.refs.editorTextAreaWrapperNode);
     // if the node we monitor for size changes doesn't exist yet,
     // skip dependent updates but check back later
     if (!node) {
@@ -638,8 +718,6 @@ export default class Editor extends Component {
     const style = {
       height: editorHeight(y)
     };
-    const setEditorWrapperNode = node => this.editorWrapperNode2 = node;
-    const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode2 = node;
 
     const bottom = this.renderBottom(note);
 
@@ -653,7 +731,7 @@ export default class Editor extends Component {
         <div id="editor-wrapper"
           className="flex-col"
           style={ style }
-          ref={ setEditorWrapperNode }>
+          ref="editorWrapperNode">
           <div id="editor-top" className="flex-row">
             <input id="editor-title"
               className="editor-input"
@@ -666,7 +744,7 @@ export default class Editor extends Component {
               value={ note.tags }
               onChange={ this.handleTagsChanged } />
           </div>
-          <div id="cm-wrapper" ref={ setEditorTextAreaWrapperNode }>
+          <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
             <CodeMirrorEditor mode={ mode }
               className="codemirror-div"
               textAreaClassName="cm-textarea"
@@ -712,8 +790,6 @@ export default class Editor extends Component {
     const style = {
       height: editorHeight(y)
     };
-    const setEditorWrapperNode = node => this.editorWrapperNode2 = node;
-    const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode2 = node;
 
     const bottom = this.renderBottom(note);
 
@@ -727,7 +803,7 @@ export default class Editor extends Component {
         <div id="editor-wrapper"
           className="flex-col"
           style={ style }
-          ref={ setEditorWrapperNode }>
+          ref="editorWrapperNode">
           <div id="editor-top" className="flex-row">
             <input id="editor-title"
               className="editor-input"
@@ -741,7 +817,7 @@ export default class Editor extends Component {
               onChange={ this.handleTagsChanged } />
           </div>
           { this.renderMarkdownButtons() }
-          <div id="cm-wrapper" ref={ setEditorTextAreaWrapperNode }>
+          <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
             <CodeMirrorEditor mode={ mode }
               className="codemirror-div"
               textAreaClassName="cm-textarea"
@@ -791,9 +867,6 @@ export default class Editor extends Component {
       height: editorHeight(y)
     };
 
-    const setEditorWrapperNode = node => this.editorWrapperNode = node;
-    const setEditorTextAreaWrapperNode = node => this.editorTextAreaWrapperNode = node;
-
     const bottom = this.renderBottom(note);
 
     return (
@@ -806,7 +879,7 @@ export default class Editor extends Component {
         <div id="editor-wrapper"
           className="flex-col"
           style={ style }
-          ref={ setEditorWrapperNode }>
+          ref="editorWrapperNode">
           <div id="editor-top" className="flex-row">
             <input id="editor-title"
               className="editor-input"
@@ -822,7 +895,7 @@ export default class Editor extends Component {
           <div id="editor-text-with-preview" className="flex-row">
             <div id="editor-preview-with-buttons" className="flex-col">
               { this.renderMarkdownButtons() }
-              <div id="cm-wrapper" ref={ setEditorTextAreaWrapperNode }>
+              <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
                 <CodeMirrorEditor mode={ mode }
                   className="codemirror-div"
                   textAreaClassName="cm-textarea"
