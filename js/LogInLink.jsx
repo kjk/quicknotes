@@ -26,8 +26,13 @@ const LinkLoggedIn = (props) => {
         <i className="fa fa-chevron-down"></i>
         <div className="dropdown-content">
           <a href={ userUrl }>My notes</a>
+          {false ?
           <a href="#" onClick={ showSettings }>Settings</a>
+          :null}
+          {false ?
           <span className="divider"></span>
+          :null
+          }
           <a href="/import" onClick={ showImportSimpleNote }>Import from Simplenote</a>
           <span className="divider"></span>
           <a href={ url }>Sign Out</a>
