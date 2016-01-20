@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import CodeMirror from 'codemirror';
+import 'codemirror/mode/markdown/markdown';
 
 // some references
 // https://github.com/facebook/react/blob/master/docs/_js/live_editor.js
@@ -20,7 +21,7 @@ export default class CodeMirrorEditor extends Component {
 
   componentDidMount() {
     const node = ReactDOM.findDOMNode(this.refs.editorNode);
-    this.cm = CodeMirror.fromTextArea(node, this.props);
+    this.cm = CodeMirror.fromTextArea(node, this.props.cmOptions);
     this.cm.on('change', this.handleChange);
     this.props.onEditorCreated && this.props.onEditorCreated(this.cm);
   }
@@ -72,4 +73,5 @@ CodeMirrorEditor.propTypes = {
   value: PropTypes.string,
   textAreaStyle: PropTypes.object,
   textAreaClassName: PropTypes.string,
+  cmOptions: PropTypes.object
 };

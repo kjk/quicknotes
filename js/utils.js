@@ -163,4 +163,4 @@ export function escapeHtml(str) {
 ;
 
 window.runOnLoad = runOnLoad;
-console.log("iniialized window.runOnLoad");
+console.log('iniialized window.runOnLoad');
