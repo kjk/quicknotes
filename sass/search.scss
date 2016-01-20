@@ -1,12 +1,12 @@
 @import 'colors';
 
-#search-wrapper {
+#search-input-wrapper {
   width: 30%;
   position: relative;
   margin: 8px auto;
 }
 
-#search-wrapper {
+#search-input-wrapper {
   input {
     width: 90%;
     /*height: 22px;*/
@@ -18,22 +18,64 @@
   }
 }
 
-#search-results {
+#search-results-triangle-wrapper {
+  position: fixed;
+  top: 49px;
+  left: 38px;
+  right: 38px;
+  z-index: 5;
+}
+
+#search-results-triangle-wrapper:after,
+#search-results-triangle-wrapper:before {
+    left: 50%;
+    margin-left: -4px;
+}
+
+#search-results-triangle-wrapper:before {
+    top: -11px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 10px solid rgba(57,70,78,.25);
+    border-style: none double solid;
+}
+
+#search-results-triangle-wrapper:after,
+#search-results-triangle-wrapper:before {
+    display: block;
+    position: absolute;
+    right: 10px;
+    content: "";
+    width: 0;
+    height: 0;
+}
+
+#search-results-triangle-wrapper:after {
+    top: -10px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 10px solid #fff;
+    border-style: none double solid;
+}
+
+#search-results-wrapper {
   position: absolute;
   top: 48px;
   left: 64px;
   right: 64px;
   //bottom: 0;
-  z-index: 10;
+  // z-index: 10;
   background: #FFF;
-  overflow-y: auto;
-  max-height: calc(100% - 66px);
+  // max-height: calc(100% - 66px);
+  max-height: 95%;
   min-height: 160px;
-  border: 2px solid $col-blue;
+  border-radius: 8px;
+  border: 1px solid rgba(57,70,78,.25);
+  overflow: auto;
 }
 
 /*
-#search-results {
+#search-results-wrapper {
   position: absolute;
   top: 46px; left: 220px; right: 0; bottom: 0;
   z-index: 10;
@@ -42,13 +84,15 @@
 }
 */
 
-#search-results .box {
+#search-results-wrapper .box {
   text-align: center;
 }
 
 .search-results-list {
   width: 100%;
   height: 100%;
+  overflow: auto;
+  // background-color: lightblue;
 }
 
 .search-result-note {

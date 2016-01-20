@@ -1,4 +1,5 @@
 import React from 'react';
+import Overlay from './Overlay.jsx';
 
 const TypeTitle = 1;
 const TypeLine = 2;
@@ -24,24 +25,6 @@ Format of search results:
   ]
 }
 */
-
-const NoResults = (props) => {
-  return (
-    <div id="search-results">
-      <div className="box">
-        <p>
-          No results for&nbsp;
-          <b>{ props.term }</b>
-        </p>
-      </div>
-    </div>
-    );
-};
-
-NoResults.propTypes = {
-  term: React.PropTypes.string
-};
-
 
 export default class SearchResults extends React.Component {
   constructor(props, context) {
@@ -89,24 +72,38 @@ export default class SearchResults extends React.Component {
       );
   }
 
+  renderNoResults(term) {
+    return (
+      <div className="box">
+        <p>
+          No results for: <b>{ term }</b>
+        </p>
+      </div>
+      )
+  }
+
   render() {
     const searchResults = this.props.searchResults;
     const term = searchResults.Term;
     const results = searchResults.Results;
+    let inner;
     if (!results || (results.length === 0)) {
-      return <NoResults term={ term } />;
+      inner = this.renderNoResults(term);
+    } else {
+      inner = results.map((o) => {
+        return this.renderResultNote(o);
+      });
     }
 
-    const resultsHTML = results.map((o) => {
-      return this.renderResultNote(o);
-    });
-
     return (
-      <div id="search-results">
-        <div className="search-results-list">
-          { resultsHTML }
+      <Overlay>
+        <div id="search-results-wrapper">
+          <div id="search-results-triangle-wrapper"></div>
+          <div className="search-results-list">
+            { inner }
+          </div>
         </div>
-      </div>
+      </Overlay>
       );
   }
 }

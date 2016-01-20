@@ -742,7 +742,7 @@ hr.light2 {
 /* Media Queries
 ----------------------------------------------- */
 @media (max-width: 320px) {
-  #left-sidebar, #search-wrapper, #header #logo {
+  #left-sidebar, #search-input-wrapper, #header #logo {
     display: none;
   }
   #notes-list {

@@ -111,8 +111,6 @@ class Note {
     this.body = body;
     this.isPublic = isPublic;
     this.formatName = formatName;
-
-    this.getFormatId = this.getFormatId.bind(this);
   }
 
   getFormatId() {
