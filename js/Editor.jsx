@@ -184,6 +184,18 @@ function didNoteChange(n1, n2) {
   return false;
 }
 
+var insertTexts = {
+  link: ['[', '](http://)'],
+  image: ['![](http://', ')'],
+  table: ['', '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n'],
+  horizontalRule: ['', '\n\n-----\n\n']
+};
+
+var blockStyles = {
+  'bold': '**',
+  'italic': '*'
+};
+
 // The state of CodeMirror at the given position.
 function getState(cm, pos) {
   pos = pos || cm.getCursor('start');
@@ -218,6 +230,133 @@ function getState(cm, pos) {
     }
   }
   return ret;
+}
+
+function _replaceSelection(cm, active, startEnd) {
+  var text;
+  var start = startEnd[0];
+  var end = startEnd[1];
+  var startPoint = cm.getCursor('start');
+  var endPoint = cm.getCursor('end');
+  if (active) {
+    text = cm.getLine(startPoint.line);
+    start = text.slice(0, startPoint.ch);
+    end = text.slice(startPoint.ch);
+    cm.replaceRange(start + end, {
+      line: startPoint.line,
+      ch: 0
+    });
+  } else {
+    text = cm.getSelection();
+    cm.replaceSelection(start + text + end);
+
+    startPoint.ch += start.length;
+    if (startPoint !== endPoint) {
+      endPoint.ch += start.length;
+    }
+  }
+  cm.setSelection(startPoint, endPoint);
+  cm.focus();
+}
+
+function _toggleHeading(cm, direction, size) {
+  var startPoint = cm.getCursor('start');
+  var endPoint = cm.getCursor('end');
+  for (var i = startPoint.line; i <= endPoint.line; i++) {
+    (function(i) {
+      var text = cm.getLine(i);
+      var currHeadingLevel = text.search(/[^#]/);
+
+      if (direction !== undefined) {
+        if (currHeadingLevel <= 0) {
+          if (direction == 'bigger') {
+            text = '###### ' + text;
+          } else {
+            text = '# ' + text;
+          }
+        } else if (currHeadingLevel == 6 && direction == 'smaller') {
+          text = text.substr(7);
+        } else if (currHeadingLevel == 1 && direction == 'bigger') {
+          text = text.substr(2);
+        } else {
+          if (direction == 'bigger') {
+            text = text.substr(1);
+          } else {
+            text = '#' + text;
+          }
+        }
+      } else {
+        if (size == 1) {
+          if (currHeadingLevel <= 0) {
+            text = '# ' + text;
+          } else if (currHeadingLevel == size) {
+            text = text.substr(currHeadingLevel + 1);
+          } else {
+            text = '# ' + text.substr(currHeadingLevel + 1);
+          }
+        } else if (size == 2) {
+          if (currHeadingLevel <= 0) {
+            text = '## ' + text;
+          } else if (currHeadingLevel == size) {
+            text = text.substr(currHeadingLevel + 1);
+          } else {
+            text = '## ' + text.substr(currHeadingLevel + 1);
+          }
+        } else {
+          if (currHeadingLevel <= 0) {
+            text = '### ' + text;
+          } else if (currHeadingLevel == size) {
+            text = text.substr(currHeadingLevel + 1);
+          } else {
+            text = '### ' + text.substr(currHeadingLevel + 1);
+          }
+        }
+      }
+
+      cm.replaceRange(text, {
+        line: i,
+        ch: 0
+      }, {
+        line: i,
+        ch: 99999999999999
+      });
+    })(i);
+  }
+  cm.focus();
+}
+
+function _toggleLine(cm, name) {
+  var stat = getState(cm);
+  var startPoint = cm.getCursor('start');
+  var endPoint = cm.getCursor('end');
+  var repl = {
+    'quote': /^(\s*)\>\s+/,
+    'unordered-list': /^(\s*)(\*|\-|\+)\s+/,
+    'ordered-list': /^(\s*)\d+\.\s+/
+  };
+  var map = {
+    'quote': '> ',
+    'unordered-list': '* ',
+    'ordered-list': '1. '
+  };
+  for (var i = startPoint.line; i <= endPoint.line; i++) {
+    (function(i) {
+      var text = cm.getLine(i);
+      if (stat[name]) {
+        text = text.replace(repl[name], '$1');
+      } else {
+        text = map[name] + text;
+      }
+      cm.replaceRange(text, {
+        line: i,
+        ch: 0
+      }, {
+        line: i,
+        ch: 99999999999999
+      });
+    })(i);
+  }
+  cm.focus();
 }
 
 function _toggleBlock(cm, type, start_chars, end_chars) {
@@ -281,15 +420,57 @@ function _toggleBlock(cm, type, start_chars, end_chars) {
     endPoint.ch = startPoint.ch + text.length;
   }
 
-  console.log('cm.setSelection: start=', startPoint, 'end=', endPoint);
   cm.setSelection(startPoint, endPoint);
   cm.focus();
 }
 
 function toggleBold(cm) {
-  console.log('toggleBold()');
   _toggleBlock(cm, 'bold', '**');
 }
+
+function toggleItalic(cm) {
+  _toggleBlock(cm, 'italic', '*');
+}
+
+function toggleBlockquote(cm) {
+  _toggleLine(cm, 'quote');
+}
+
+function toggleUnorderedList(cm) {
+  _toggleLine(cm, 'unordered-list');
+}
+
+function toggleOrderedList(cm) {
+  _toggleLine(cm, 'ordered-list');
+}
+
+function toggleHeadingSmaller(cm) {
+  _toggleHeading(cm, 'smaller');
+}
+
+function toggleHeadingBigger(cm) {
+  _toggleHeading(cm, 'bigger');
+}
+
+function toggleCodeBlock(cm) {
+  _toggleBlock(cm, 'code', '```\r\n', '\r\n```');
+}
+
+function drawHorizontalRule(cm) {
+  var stat = getState(cm);
+  _replaceSelection(cm, stat.image, insertTexts.horizontalRule);
+}
+
+function drawLink(cm) {
+  var stat = getState(cm);
+  _replaceSelection(cm, stat.link, insertTexts.link);
+}
+
+function drawImage(cm) {
+  var stat = getState(cm);
+  _replaceSelection(cm, stat.image, insertTexts.image);
+}
+
 
 export default class Editor extends Component {
   constructor(props, context) {
@@ -309,6 +490,7 @@ export default class Editor extends Component {
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
 
     this.handleEditCmdBold = this.handleEditCmdBold.bind(this);
+    this.handleEditCmdImage = this.handleEditCmdImage.bind(this);
     this.handleEditCmdItalic = this.handleEditCmdItalic.bind(this);
     this.handleEditCmdLink = this.handleEditCmdLink.bind(this);
     this.handleEditCmdQuote = this.handleEditCmdQuote.bind(this);
@@ -317,10 +499,6 @@ export default class Editor extends Component {
     this.handleEditCmdListOrdered = this.handleEditCmdListOrdered.bind(this);
     this.handleEditCmdHeading = this.handleEditCmdHeading.bind(this);
     this.handleEditCmdHr = this.handleEditCmdHr.bind(this);
-
-    this.cmInsertAround = this.cmInsertAround.bind(this);
-    this.cmInsertBefore = this.cmInsertBefore.bind(this);
-    this.cmInsert = this.cmInsert.bind(this);
 
     this.editNewNote = this.editNewNote.bind(this);
     this.ctrlEnterPressed = this.ctrlEnterPressed.bind(this);
@@ -518,117 +696,44 @@ export default class Editor extends Component {
     }
   }
 
-  cmInsertAround(start, end) {
-    this.cm.focus();
-
-    const doc = this.cm.getDoc();
-    const cursor = doc.getCursor();
-
-    if (doc.somethingSelected()) {
-      const selection = doc.getSelection();
-      doc.replaceSelection(start + selection + end);
-    } else {
-      // If no selection then insert start and end args and set cursor position between the two.
-      doc.replaceRange(start + end, {
-        line: cursor.line,
-        ch: cursor.ch
-      });
-      doc.setCursor({
-        line: cursor.line,
-        ch: cursor.ch + start.length
-      });
-    }
-  }
-
-  cmInsertBefore(insertion, cursorOffset) {
-    this.cm.focus();
-    const doc = this.cm.getDoc();
-    const cursor = doc.getCursor();
-
-    if (doc.somethingSelected()) {
-      const selections = doc.listSelections();
-      selections.forEach(function(selection) {
-        const pos = [selection.head.line, selection.anchor.line].sort();
-        for (let i = pos[0]; i <= pos[1]; i++) {
-          doc.replaceRange(insertion, {
-            line: i,
-            ch: 0
-          });
-        }
-        doc.setCursor({
-          line: pos[0],
-          ch: cursorOffset || 0
-        });
-      });
-    } else {
-      doc.replaceRange(insertion, {
-        line: cursor.line,
-        ch: 0
-      });
-      doc.setCursor({
-        line: cursor.line,
-        ch: cursorOffset || 0
-      });
-    }
-  }
-
-  cmInsert(s) {
-    this.cm.focus();
-    const doc = this.cm.getDoc();
-    const cursor = doc.getCursor();
-    doc.replaceRange(s, {
-      line: cursor.line,
-      ch: cursor.ch
-    });
-  }
-
   handleEditCmdBold(e) {
-    console.log('editCmdBold');
     toggleBold(this.cm);
-    //this.cmInsertAround('**', '**');
   }
 
   handleEditCmdItalic(e) {
-    console.log('editCmdItalic');
-    this.cmInsertAround('*', '*');
+    toggleItalic(this.cm);
   }
 
   handleEditCmdLink(e) {
-    console.log('editCmdLink');
-    this.cmInsertAround('[', '](http://)');
+    drawLink(this.cm);
   }
 
   handleEditCmdQuote(e) {
-    console.log('editCmdQuote');
-    this.cmInsertBefore('> ', 2);
+    toggleBlockquote(this.cm);
   }
 
   handleEditCmdCode(e) {
-    console.log('editCmdCode');
-    this.cmInsertAround('```\r\n', '\r\n```');
+    toggleCodeBlock(this.cm);
   }
 
   handleEditCmdListUnordered(e) {
-    console.log('editCmdListUnordered');
-    this.cmInsertBefore('* ', 2);
+    toggleUnorderedList(this.cm);
   }
 
   handleEditCmdListOrdered(e) {
-    console.log('editCmdListOrdered');
-    this.cmInsertBefore('1. ', 3);
+    toggleOrderedList(this.cm);
   }
 
   handleEditCmdHeading(e) {
-    console.log('editCmdHeading');
+    toggleHeadingSmaller(this.cm);
   }
 
   handleEditCmdHr(e) {
-    console.log('editCmdHr');
-    this.cmInsert('---');
+    drawHorizontalRule(this.cm);
   }
 
   handleEditCmdImage(e) {
-    this.cmInsertBefore('![](http://)', 2);
+    drawImage(this.cm);
   }
 
   scheduleTimer() {
@@ -762,28 +867,28 @@ export default class Editor extends Component {
         <button className="btn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
-        <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
-          <i className="fa fa-link"></i>
+        <button className="btn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
+          <i className="fa fa-header"></i>
         </button>
+        <div className="editor-spacer"></div>
         <button className="btn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
           <i className="fa fa-quote-right"></i>
         </button>
         <button className="btn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
           <i className="fa fa-code"></i>
         </button>
-        <div className="editor-spacer"></div>
         <button className="btn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
           <i className="fa fa-list-ul"></i>
         </button>
         <button className="btn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
           <i className="fa fa-list-ol"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
-          <i className="fa fa-font"></i>
+        <div className="editor-spacer"></div>
+        <button className="btn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
+          <i className="fa fa-link"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdHr } title="Horizontal Rule (⌘⌥R)">
-          <i className="fa fa-minus"></i>
+        <button className="btn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
+          <i className="fa fa-picture-o"></i>
         </button>
       </div>
       );
