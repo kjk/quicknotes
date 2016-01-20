@@ -79,7 +79,7 @@ export default class SearchResults extends React.Component {
           No results for: <b>{ term }</b>
         </p>
       </div>
-      )
+      );
   }
 
   render() {
