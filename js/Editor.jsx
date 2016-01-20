@@ -32,6 +32,10 @@ const markedOpts = {
   smartypants: false
 };
 
+const cmOptions = {
+  'autofocus': true
+};
+
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
 renderer.link = function(href, title, text) {
@@ -107,12 +111,20 @@ class Note {
     this.body = body;
     this.isPublic = isPublic;
     this.formatName = formatName;
+
+    this.getFormatId = this.getFormatId.bind(this);
   }
+
+  getFormatId() {
+    return format.IdFromName(this.formatName);
+  }
+
   isText() {
-    return format.IdFromName(this.formatName) == format.TextId;
+    return this.getFormatId() == format.TextId;
   }
+
   isMarkdown() {
-    return format.IdFromName(this.foramtName) == format.MarkdownId;
+    return this.getFormatId() == format.MarkdownId;
   }
 }
 
@@ -316,6 +328,7 @@ export default class Editor extends Component {
     this.escPressed = this.escPressed.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
+    this.updateCodeMirrorMode = this.updateCodeMirrorMode.bind(this);
 
     this.initialNote = null;
     this.cm = null;
@@ -443,8 +456,22 @@ export default class Editor extends Component {
     });
   }
 
+  updateCodeMirrorMode() {
+    if (!this.cm) {
+      return;
+    }
+    const note = this.state.note;
+    let mode = 'text';
+    if (note.isText()) {
+      mode = 'text';
+    } else if (note.isMarkdown()) {
+      mode = 'markdown';
+    }
+    this.cm.setOption('mode', mode);
+    // console.log('updateCodeMirrorMode: mode=', mode);
+  }
+
   handleEditorCreated(cm) {
-    console.log('handleEditorCreated');
     this.cm = cm;
     cm.setOption('extraKeys', {
       'Ctrl-Enter': cm => {
@@ -459,6 +486,7 @@ export default class Editor extends Component {
     cm.setOption('lineWrapping', true);
     cm.setOption('lineNumbers', true);
     cm.setOption('tabSize', 2);
+    this.updateCodeMirrorMode();
   }
 
   startEditingNote(note) {
@@ -846,12 +874,11 @@ export default class Editor extends Component {
               onChange={ this.handleTagsChanged } />
           </div>
           <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-            <CodeMirrorEditor mode={ mode }
-              className="codemirror-div"
+            <CodeMirrorEditor className="codemirror-div"
               textAreaClassName="cm-textarea"
               placeholder="Enter text here..."
               defaultValue={ note.body }
-              autofocus
+              cmOptions={ cmOptions }
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
           </div>
@@ -862,7 +889,6 @@ export default class Editor extends Component {
   }
 
   renderEditorMarkdownNoPreview() {
-    const mode = 'text';
     const note = this.state.note;
 
     const styleFormat = {
@@ -919,12 +945,11 @@ export default class Editor extends Component {
           </div>
           { this.renderMarkdownButtons() }
           <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-            <CodeMirrorEditor mode={ mode }
-              className="codemirror-div"
+            <CodeMirrorEditor className="codemirror-div"
               textAreaClassName="cm-textarea"
               placeholder="Enter text here..."
               defaultValue={ note.body }
-              autofocus
+              cmOptions={ cmOptions }
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
           </div>
@@ -935,7 +960,6 @@ export default class Editor extends Component {
   }
 
   renderEditorMarkdownWithPreview() {
-    const mode = 'text';
     const note = this.state.note;
     const html = {
       __html: toHtml(note.body)
@@ -997,12 +1021,11 @@ export default class Editor extends Component {
             <div id="editor-preview-with-buttons" className="flex-col">
               { this.renderMarkdownButtons() }
               <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-                <CodeMirrorEditor mode={ mode }
-                  className="codemirror-div"
+                <CodeMirrorEditor className="codemirror-div"
                   textAreaClassName="cm-textarea"
                   placeholder="Enter text here..."
                   defaultValue={ note.body }
-                  autofocus
+                  cmOptions={ cmOptions }
                   onChange={ this.handleTextChanged }
                   onEditorCreated={ this.handleEditorCreated } />
               </div>
@@ -1023,6 +1046,7 @@ export default class Editor extends Component {
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
     }
+    this.updateCodeMirrorMode();
     const note = this.state.note;
     if (note.isText()) {
       return this.renderEditorText();

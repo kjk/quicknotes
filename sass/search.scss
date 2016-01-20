@@ -19,17 +19,17 @@
 }
 
 #search-results {
-    position: absolute;
-    top: 48px;
-    left: 64px;
-    right: 64px;
-    //bottom: 0;
-    z-index: 10;
-    background: #FFF;
-    overflow-y: auto;
-    max-height: calc(100% - 66px);
-    min-height: 160px;
-    border: 2px solid $col-blue;
+  position: absolute;
+  top: 48px;
+  left: 64px;
+  right: 64px;
+  //bottom: 0;
+  z-index: 10;
+  background: #FFF;
+  overflow-y: auto;
+  max-height: calc(100% - 66px);
+  min-height: 160px;
+  border: 2px solid $col-blue;
 }
 
 /*
