@@ -100,6 +100,7 @@ export default class AppUser extends Component {
   componentDidMount() {
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
+    action.onSetSearchTerm(this.handleSearchTermChanged, this);
   }
 
   componentWillUnmount() {
@@ -195,10 +196,7 @@ export default class AppUser extends Component {
 
     return (
       <div>
-        <Top isLoggedIn={ isLoggedIn }
-          loggedInUserHandle={ this.state.loggedInUserHandle }
-          notesUserHandle={ this.props.notesUserHandle }
-          onSearchTermChanged={ this.handleSearchTermChanged } />
+        <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ this.state.loggedInUserHandle } notesUserHandle={ this.props.notesUserHandle } />
         <LeftSidebar tags={ this.state.tags }
           isLoggedIn={ isLoggedIn }
           myNotes={ myNotes }
