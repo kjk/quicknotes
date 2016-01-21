@@ -249,15 +249,16 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Verbosef("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
-	if redir == "/" || redir == "" {
-		// TODO: url-escape user.Handle
-		redir = "/u/" + dbUser.Handle
-	}
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
-	// TODO: dbUserSetTwitterOauth(user, tokenCredJson)
+
+	// when coming from from main page, go to user's notes
+	if redir == "/" || redir == "" {
+		// TODO: url-escape user.Handle
+		redir = "/u/" + dbUser.Handle
+	}
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
@@ -307,11 +308,14 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	// extract redir from secret (added in handleLoginGitHub
 	redir := state[len(oauthSecretPrefix):]
 	if redir == "" {
-		log.Errorf("Missing 'redir' arg for /googleoauth2cb\n")
+		log.Errorf("missing 'redir' arg\n")
 		redir = "/"
 	}
+	log.Verbosef("url: '%s', state: '%s', redir: '%s'\n", r.URL, state, redir)
 
 	code := r.FormValue("code")
 	token, err := oauthGitHubConf.Exchange(oauth2.NoContext, code)
@@ -329,7 +333,7 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("Logged in as GitHub user: %s\n", *user.Login)
+	log.Infof("logged in as GitHub user: %s\n", *user.Login)
 	githubLogin := *user.Login
 	fullName := *user.Name
 
@@ -344,12 +348,17 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
+	log.Infof("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
-	// TODO: dbUserSetGithubOauth(user, tokenCredJson)
+
+	// when coming from from main page, go to user's notes
+	if redir == "/" || redir == "" {
+		// TODO: url-escape user.Handle
+		redir = "/u/" + dbUser.Handle
+	}
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
@@ -360,8 +369,10 @@ func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 		httpErrorf(w, "Missing 'redir' value for /logingithub")
 		return
 	}
-
-	uri := oauthGitHubConf.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
+	log.Verbosef("redir: '%s'\n", redir)
+	oauthCopy := oauthGitHubConf
+	// encode redir in state
+	uri := oauthCopy.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
@@ -374,7 +385,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// extract redir from secret (added in handleLoginGoogle())
+	// extract redir from secret (added in handleLoginGoogle)
 	redir := state[len(oauthSecretPrefix):]
 	if redir == "" {
 		log.Errorf("missing redir in state\n")
@@ -391,7 +402,6 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	oauthClient := oauthGoogleConf.Client(oauth2.NoContext, token)
-
 	service, err := goauth2.New(oauthClient)
 	if err != nil {
 		log.Errorf("goauth2.New() failed with %s\n", err)
@@ -425,7 +435,12 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
-	// TODO: dbUserSetGithubOauth(user, tokenCredJson)
+
+	// when coming from from main page, go to user's notes
+	if redir == "/" || redir == "" {
+		// TODO: url-escape user.Handle
+		redir = "/u/" + dbUser.Handle
+	}
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
@@ -433,16 +448,16 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
 	redir := strings.TrimSpace(r.FormValue("redir"))
 	if redir == "" {
-		httpErrorf(w, "missing 'redir' arg for /logingoogle")
+		httpErrorf(w, "Missing 'redir' arg for /logingoogle")
 		return
 	}
 	log.Verbosef("redir: '%s'\n", redir)
 	// login callback must be exactly as configured with Google so we can't
 	// encode redir as url param the way we do for Twitter login
 	// instead we'll encode redir inside state
-	oauthGoogleCopy := oauthGoogleConf
-	oauthGoogleCopy.RedirectURL = getMyHost(r) + "/logingooglecb"
-	uri := oauthGoogleCopy.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
+	oauthCopy := oauthGoogleConf
+	oauthCopy.RedirectURL = getMyHost(r) + "/logingooglecb"
+	uri := oauthCopy.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
 
