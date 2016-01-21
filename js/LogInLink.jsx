@@ -46,7 +46,10 @@ LinkLoggedIn.propTypes = {
 };
 
 const LinkLoggedOut = (props) => {
-  const twitterUrl = encodeURI('/logintwitter?redir=' + window.location);
+  const redir = encodeURIComponent(window.location.pathname);
+  const twitterUrl = '/logintwitter?redir=' + redir;
+  const googleUrl = '/logingoogle?redir=' + redir;
+  const githubUrl = '/logingithub?redir=' + redir;
   return (
     <div id="user">
       <span className="user">Sign in / Sign up</span>
@@ -58,10 +61,10 @@ const LinkLoggedOut = (props) => {
               <a className="twitter" href={ twitterUrl }>Sign in with Twitter</a>
             </li>
             <li>
-              <a className="google" href="/logingoogle?redir=%2F">Sign in with Google</a>
+              <a className="google" href={ googleUrl }>Sign in with Google</a>
             </li>
             <li>
-              <a className="github" href="/logingithub?redir=%2F">Sign in with GitHub</a>
+              <a className="github" href={ githubUrl }>Sign in with GitHub</a>
             </li>
           </ul>
         </div>
