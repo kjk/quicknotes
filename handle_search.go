@@ -31,7 +31,7 @@ type SearchResult struct {
 	Items     []SearchResultItem
 }
 
-// GET /api/searchusernotes.json
+// GET /api/searchusernotes
 // args:
 // - user : user handle
 // - term : search term

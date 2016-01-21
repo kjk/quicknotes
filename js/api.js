@@ -71,70 +71,70 @@ export function getNotesCompact(userHandle, cb, cbErr) {
   const args = {
     'user': userHandle
   };
-  get('/api/getnotescompact.json', args, cb, cbErr);
+  get('/api/getnotescompact', args, cb, cbErr);
 }
 
 export function getNoteCompact(noteId, cb, cbErr) {
   const args = {
     'id': noteId
   };
-  get('/api/getnotecompact.json', args, cb, cbErr);
+  get('/api/getnotecompact', args, cb, cbErr);
 }
 
 export function undeleteNote(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/undeletenote.json', args, cb, cbErr);
+  post('/api/undeletenote', args, cb, cbErr);
 }
 
 export function deleteNote(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/deletenote.json', args, cb, cbErr);
+  post('/api/deletenote', args, cb, cbErr);
 }
 
 export function permanentDeleteNote(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/permanentdeletenote.json', args, cb, cbErr);
+  post('/api/permanentdeletenote', args, cb, cbErr);
 }
 
 export function makeNotePrivate(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/makenoteprivate.json', args, cb, cbErr);
+  post('/api/makenoteprivate', args, cb, cbErr);
 }
 
 export function makeNotePublic(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/makenotepublic.json', args, cb, cbErr);
+  post('/api/makenotepublic', args, cb, cbErr);
 }
 
 export function starNote(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/starnote.json', args, cb, cbErr);
+  post('/api/starnoten', args, cb, cbErr);
 }
 
 export function unstarNote(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/unstarnote.json', args, cb, cbErr);
+  post('/api/unstarnote', args, cb, cbErr);
 }
 
 export function createOrUpdateNote(noteJSON, cb, cbErr) {
   const args = {
     'noteJSON': noteJSON
   };
-  post('/api/createorupdatenote.json', args, cb, cbErr);
+  post('/api/createorupdatenote', args, cb, cbErr);
 }
 
 export function searchUserNotes(userHandle, searchTerm, cb, cbErr) {
@@ -142,7 +142,7 @@ export function searchUserNotes(userHandle, searchTerm, cb, cbErr) {
     'user': userHandle,
     'term': searchTerm
   };
-  get('/api/searchusernotes.json', args, cb, cbErr);
+  get('/api/searchusernotes', args, cb, cbErr);
 }
 
 export function importSimpleNoteStart(email, pwd, cb, cbErr) {
