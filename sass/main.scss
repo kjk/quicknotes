@@ -696,9 +696,10 @@ pre.note-body {
   }
 }
 
-.dimmed {
+.note-footer {
   color: lightgray;
   font-size: 12px;
+  padding-bottom: 1em;
   a {
     color: lightgray;
     &:hover {

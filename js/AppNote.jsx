@@ -77,7 +77,7 @@ export default class AppNote extends Component {
             { this.renderBody() }
           </div>
           <hr className="light" />
-          <center className="dimmed">
+          <center className="note-footer">
             A note by&nbsp;
             <a href={ url }>
               { noteUser }
