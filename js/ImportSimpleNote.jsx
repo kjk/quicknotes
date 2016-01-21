@@ -104,10 +104,11 @@ export default class ImportSimpleNote extends Component {
       return;
     }
     const n = res.ImportedCount;
+    const n2 = res.SkippedDuplicateCount;
     let msg = `Imported ${n} notes from SimpleNote`;
     const isImporting = !res.IsFinished;
     if (res.IsFinished) {
-      msg = `Finished importing ${n} notes from SimpleNote`;
+      msg = `Finished importing ${n} notes from SimpleNote. Skipped ${n2} previously imported notes.`;
     }
     this.setState({
       finishedImporting: res.IsFinished,
@@ -123,7 +124,7 @@ export default class ImportSimpleNote extends Component {
   }
 
   checkStatus(importId) {
-    api.statusImportSimpleNote(importId, this.handleCheckStatusResp, this.handleCheckStatusResp);
+    api.importSimpleNoteStatus(importId, this.handleCheckStatusResp, this.handleCheckStatusResp);
   }
 
   handleImport(e) {
@@ -131,7 +132,7 @@ export default class ImportSimpleNote extends Component {
     e.preventDefault();
     const email = this.inputValues['email'] || '';
     const pwd = this.inputValues['password'] || '';
-    api.startfImportSimpleNote(email, pwd, res => {
+    api.importSimpleNoteStart(email, pwd, res => {
       const importId = res.ImportID;
       this.setState({
         importId: importId,

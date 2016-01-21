@@ -145,17 +145,17 @@ export function searchUserNotes(userHandle, searchTerm, cb, cbErr) {
   get('/api/searchusernotes.json', args, cb, cbErr);
 }
 
-export function startfImportSimpleNote(email, pwd, cb, cbErr) {
+export function importSimpleNoteStart(email, pwd, cb, cbErr) {
   const args = {
     'email': email,
     'password': pwd
   };
-  get('/api/startimportsimplenote.json', args, cb, cbErr);
+  get('/api/import_simplenote_start', args, cb, cbErr);
 }
 
-export function statusImportSimpleNote(importId, cb, cbErr) {
+export function importSimpleNoteStatus(importId, cb, cbErr) {
   const args = {
     'id': importId
   };
-  get('/api/statusimportsimplenote.json', args, cb, cbErr);
+  get('/api/import_simplenote_status', args, cb, cbErr);
 }

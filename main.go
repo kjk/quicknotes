@@ -18,6 +18,7 @@ var (
 	httpAddr = "127.0.0.1:5111"
 
 	flgIsLocal              bool // local means using local mysql database, production means google's cloud
+	flgVerbose              bool
 	flgProdDb               bool // if true, use gce db when running localy
 	flgDelDatabase          bool
 	flgRecreateDatabase     bool
@@ -79,6 +80,7 @@ func parseFlags() {
 	flag.StringVar(&flgSearchTerm, "search", "", "search notes for a given term")
 	flag.StringVar(&flgDbHost, "db-host", "127.0.0.1", "database host")
 	flag.StringVar(&flgDbPort, "db-port", "3306", "database port")
+	flag.BoolVar(&flgVerbose, "verbose", false, "enable verbose logging")
 	flag.Parse()
 	if flgIsLocal {
 		onlyLocalStorage = true
@@ -128,8 +130,11 @@ func main() {
 	var err error
 	parseFlags()
 	log.LogToStdout = true
+	if flgVerbose {
+		log.IncVerbosity()
+	}
+
 	verifyDirs()
-	log.IncVerbosity()
 	openLogFileMust()
 	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	initAppMust()
@@ -147,13 +152,13 @@ func main() {
 	}
 
 	if hasZipResources() {
-		log.Infof("using resources from embedded .zip\n")
+		log.Verbosef("using resources from embedded .zip\n")
 		err = loadResourcesFromEmbeddedZip()
 		if err != nil {
 			log.Fatalf("loadResourcesFromEmbeddedZip() failed with '%s'\n", err)
 		}
 	} else {
-		log.Infof("not using resources from embedded .zip\n")
+		log.Verbosef("not using resources from embedded .zip\n")
 	}
 
 	localStore, err = NewLocalStore(getLocalStoreDir())

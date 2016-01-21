@@ -702,8 +702,8 @@ func registerHTTPHandlers() {
 
 	//http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logout", handleLogout)
-	http.HandleFunc("/api/startimportsimplenote.json", handleStartImportSimpleNote)
-	http.HandleFunc("/api/statusimportsimplenote.json", handleStatusImportSimpleNotes)
+	http.HandleFunc("/api/import_simplenote_start", handleImportSimpleNoteStart)
+	http.HandleFunc("/api/import_simplenote_status", handleImportSimpleNotesStatus)
 	http.HandleFunc("/api/getnotescompact.json", handleAPIGetNotesCompact)
 	http.HandleFunc("/api/getnotecompact.json", handleAPIGetNoteCompact)
 	http.HandleFunc("/api/searchusernotes.json", handleSearchUserNotes)
