@@ -204,7 +204,8 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 
 // url: GET /logintwittercb?redir=${redirect}
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("handleOauthTwitterCallback() url: '%s'\n", r.URL)
+	redir := strings.TrimSpace(r.FormValue("redir"))
+	log.Verbosef("url: '%s', redir: '%s'\n", r.URL, redir)
 	tempCred := getTempCredentials(r.FormValue("oauth_token"))
 	if tempCred == nil {
 		http.Error(w, "Unknown oauth_token.", 500)
@@ -239,37 +240,35 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	// also might be useful:
 	// email
 	// avatar_url
-	userHandle := "twitter:" + twitterHandle
-	user, err := dbGetOrCreateUser(userHandle, fullName)
+	userLogin := "twitter:" + twitterHandle
+	user, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
-		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userHandle, fullName, err)
+		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("created user %d with handle '%s'\n", user.ID, userHandle)
+	log.Verbosef("got or created user %d, %s with handle '%s'\n", user.ID, user.Handle, userLogin)
+	if redir == "/" || redir == "" {
+		// TODO: url-escape user.Handle
+		redir = "/u/" + user.Handle
+	}
 	cookieVal := &SecureCookieValue{
 		UserID: user.ID,
 	}
 	setSecureCookie(w, cookieVal)
 	// TODO: dbUserSetTwitterOauth(user, tokenCredJson)
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
 // url: GET /logintwitter?redir=${redirect}
 func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("handleLoginTwitter() url: '%s'\n", r.URL)
-
 	redir := strings.TrimSpace(r.FormValue("redir"))
-	if redir == "" {
-		httpErrorf(w, "Missing 'redir' value for /logintwitter")
-		return
-	}
+	log.Verbosef("url: '%s', redir: '%s'\n", r.URL, redir)
 
 	q := url.Values{
 		"redir": {redir},
 	}.Encode()
-	fmt.Printf("handleLoginTwitter: url: %#v\n", r.URL)
 	scheme := r.URL.Scheme
 	if scheme == "" {
 		scheme = "http"
