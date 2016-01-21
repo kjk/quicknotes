@@ -901,7 +901,7 @@ export default class Editor extends Component {
         <button className="btn btn-primary" disabled={ saveDisabled } onClick={ this.handleSave }>
           Save
         </button>
-        <button className="btn btn-primary" onClick={ this.handleCancel }>
+        <button className="btn btn-cancel" onClick={ this.handleCancel }>
           Cancel
         </button>
         <div>
