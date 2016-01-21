@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/kjk/log"
 	"github.com/kjk/simplenote"
+	"github.com/kjk/u"
 )
 
 // TODO: don't import duplicates
@@ -27,13 +29,14 @@ var (
 
 // ImportStatus describes an import in progress
 type ImportStatus struct {
-	importID      int
-	userID        int
-	ImportedCount int
-	IsFinished    bool
-	Error         string `json:",omitempty"`
-	Duration      time.Duration
-	startedAt     time.Time
+	importID              int
+	userID                int
+	ImportedCount         int
+	SkippedDuplicateCount int
+	IsFinished            bool
+	Error                 string `json:",omitempty"`
+	Duration              time.Duration
+	startedAt             time.Time
 }
 
 func withLockedImport(id int, f func(*ImportStatus)) {
@@ -72,9 +75,10 @@ func findImportByID(id int) (ImportStatus, bool) {
 	return ImportStatus{}, false
 }
 
-func importSetCount(id int, nImported int) {
+func importSetCount(id, nImported, nDuplicate int) {
 	withLockedImport(id, func(status *ImportStatus) {
 		status.ImportedCount = nImported
+		status.SkippedDuplicateCount = nDuplicate
 		status.Duration = time.Since(status.startedAt)
 	})
 }
@@ -98,6 +102,7 @@ func isSimpleNoteUnothorizedError(s string) bool {
 	// a heuristic
 	return strings.Contains(s, "401") && strings.Contains(s, "/authorize/")
 }
+
 func importSimpleNote(id int, userID int, email, password string) {
 	client := simplenote.NewClient(simplenoteAPIKey, email, password)
 	notes, err := client.List()
@@ -111,6 +116,21 @@ func importSimpleNote(id int, userID int, email, password string) {
 		return
 	}
 
+	// to avoid importing duplicates we get sha1 of all note
+	// versions so that we can skip
+	versionsSha1, err := dbGetAllVersionsSha1ForUser(userID)
+	if err != nil {
+		log.Errorf("dbGetAllVersionsSha1ForUser failed with '%s'\n", err)
+		importSetError(id, err.Error())
+		return
+	}
+	versionSha1ToBool := make(map[string]bool)
+	for _, sha1Bytes := range versionsSha1 {
+		sha1Hex := hex.EncodeToString(sha1Bytes)
+		versionSha1ToBool[sha1Hex] = true
+	}
+
+	nDuplicate := 0
 	n := 0
 	for _, note := range notes {
 		newNote := NewNote{
@@ -125,6 +145,12 @@ func importSimpleNote(id int, userID int, email, password string) {
 			continue
 		}
 
+		contentSha1Hex := u.Sha1HexOfBytes(newNote.content)
+		if versionSha1ToBool[contentSha1Hex] {
+			nDuplicate++
+			importSetCount(id, n, nDuplicate)
+			continue
+		}
 		noteID, err := dbCreateOrUpdateNote(userID, &newNote)
 		if err != nil {
 			log.Errorf("dbCreateOrUpdateNote() failed with %s\n", err)
@@ -137,7 +163,7 @@ func importSimpleNote(id int, userID int, email, password string) {
 		}
 		log.Infof("%s", msg)
 		n++
-		importSetCount(id, n)
+		importSetCount(id, n, nDuplicate)
 	}
 	importMarkFinished(id)
 }

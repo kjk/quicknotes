@@ -802,6 +802,42 @@ LIMIT 10000`
 	return notes, nil
 }
 
+func dbGetAllVersionsSha1ForUser(userID int) ([][]byte, error) {
+	db := getDbMust()
+	q := `
+SELECT content_sha1
+FROM versions
+WHERE id IN
+  (SELECT id FROM notes WHERE user_id = $id);
+`
+	rows, err := db.Query(q, userID)
+	if err != nil {
+		log.Errorf("db.Query('%s') failed with %s\n", q, err)
+		return nil, err
+	}
+	var res [][]byte
+	defer rows.Close()
+	for rows.Next() {
+		var sha1 []byte
+		err = rows.Scan(&sha1)
+		if err != nil {
+			log.Errorf("rows.Scan() failed with '%s'\n", err)
+			return nil, err
+		}
+		if len(sha1) != 20 {
+			log.Errorf("content_sha1 is %d bytes, should be 20\n", len(sha1))
+			return nil, fmt.Errorf("content_sha1 is %d bytes (should be 20)", len(sha1))
+		}
+		res = append(res, sha1)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Errorf("rows.Err() for '%s' failed with %s\n", q, err)
+		return nil, err
+	}
+	return res, nil
+}
+
 func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	var notes []*Note
 	db := getDbMust()
