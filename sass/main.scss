@@ -773,6 +773,13 @@ hr.light2 {
   .note-content-wrapper {
     margin: 8px 16px;
 
+    pre {
+      /* reset.css sets that to auto which makes the content scroll
+      inside the note, which is not what I want.
+      */
+      overflow: visible;
+    }
+
     h1 {
       font-size: 1.4em;
     }
