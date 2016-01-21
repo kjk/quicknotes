@@ -192,7 +192,7 @@ result:
     Duration: "5 secs"
   }
 */
-func handleImportSimpleNotesStatus(w http.ResponseWriter, r *http.Request) {
+func handleAPIImportSimpleNotesStatus(w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL.Path)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
@@ -230,7 +230,7 @@ result:
     ImportID: 5
   }
 */
-func handleImportSimpleNoteStart(w http.ResponseWriter, r *http.Request) {
+func handleAPIImportSimpleNoteStart(w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL.Path)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {

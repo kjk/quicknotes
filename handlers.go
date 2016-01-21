@@ -328,7 +328,7 @@ func noteToCompact(n *Note) []interface{} {
 	return res
 }
 
-// /api/getnotecompact.json?id=${note_id_hash}
+// /api/getnotecompact?id=${note_id_hash}
 func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 	dbUser := getUserFromCookie(w, r)
 	noteIDHashStr := r.FormValue("id")
@@ -353,7 +353,7 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, r, v)
 }
 
-// /api/getnotescompact.json
+// /api/getnotescompact
 // Arguments:
 //  - user : userHandle
 //  - jsonp : jsonp wrapper, optional
@@ -394,7 +394,7 @@ func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJsonpCompact(w, r, v, jsonp)
 }
 
-// /api/getrecentnotes.json
+// /api/getrecentnotes
 // Arguments:
 //  - limit : max notes, to retrieve, 25 if not given
 //  - jsonp : jsonp wrapper, optional
@@ -457,7 +457,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	return &newNote
 }
 
-// POST /api/createorupdatenote.json
+// POST /api/createorupdatenote
 //  noteJSON : note serialized as json in array format
 func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 	log.Infof("url: '%s'\n", r.URL)
@@ -518,7 +518,7 @@ func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) 
 	return dbUser, noteID
 }
 
-// GET /api/deletenote.json
+// GET /api/deletenote
 // args:
 // - noteIdHash
 func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
@@ -541,7 +541,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// POST /api/permanentdeletenote.json
+// POST /api/permanentdeletenote
 // args:
 // - noteIdHash
 func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
@@ -564,7 +564,7 @@ func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// POST /api/undeletenote.json
+// POST /api/undeletenote
 // args:
 // - noteIdHash
 func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
@@ -587,7 +587,7 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// GET /api/makenoteprivate.json
+// GET /api/makenoteprivate
 // args:
 // - noteIdHash
 func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
@@ -610,7 +610,7 @@ func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// GET /api/makenotepublic.json
+// GET /api/makenotepublic
 // args:
 // - noteIdHash
 func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
@@ -633,7 +633,7 @@ func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// GET /api/starnote.json
+// GET /api/starnote
 // args:
 // - noteIdHash
 func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
@@ -656,7 +656,7 @@ func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// GET /api/unstarnote.json
+// GET /api/unstarnote
 // args:
 // - noteIdHash
 func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
@@ -679,14 +679,6 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, nil, v)
 }
 
-// GET /api/tohtml.json
-// args:
-// - content
-// - format
-func handleAPIToHTML(w http.ResponseWriter, r *http.Request) {
-	httpErrorWithJSONf(w, "NYI")
-}
-
 func registerHTTPHandlers() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
@@ -702,21 +694,20 @@ func registerHTTPHandlers() {
 
 	//http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logout", handleLogout)
-	http.HandleFunc("/api/import_simplenote_start", handleImportSimpleNoteStart)
-	http.HandleFunc("/api/import_simplenote_status", handleImportSimpleNotesStatus)
-	http.HandleFunc("/api/getnotescompact.json", handleAPIGetNotesCompact)
-	http.HandleFunc("/api/getnotecompact.json", handleAPIGetNoteCompact)
-	http.HandleFunc("/api/searchusernotes.json", handleSearchUserNotes)
-	http.HandleFunc("/api/createorupdatenote.json", handleAPICreateOrUpdateNote)
-	http.HandleFunc("/api/deletenote.json", handleAPIDeleteNote)
-	http.HandleFunc("/api/permanentdeletenote.json", handleAPIPermanentDeleteNote)
-	http.HandleFunc("/api/undeletenote.json", handleAPIUndeleteNote)
-	http.HandleFunc("/api/makenoteprivate.json", handleAPIMakeNotePrivate)
-	http.HandleFunc("/api/makenotepublic.json", handleAPIMakeNotePublic)
-	http.HandleFunc("/api/starnote.json", handleAPIStarNote)
-	http.HandleFunc("/api/unstarnote.json", handleAPIUnstarNote)
-	http.HandleFunc("/api/tohtml.json", handleAPIToHTML)
-	http.HandleFunc("/api/getrecentnotes.json", handleAPIGetRecentNotes)
+	http.HandleFunc("/api/import_simplenote_start", handleAPIImportSimpleNoteStart)
+	http.HandleFunc("/api/import_simplenote_status", handleAPIImportSimpleNotesStatus)
+	http.HandleFunc("/api/getnotescompact", handleAPIGetNotesCompact)
+	http.HandleFunc("/api/getnotecompact", handleAPIGetNoteCompact)
+	http.HandleFunc("/api/searchusernotes", handleSearchUserNotes)
+	http.HandleFunc("/api/createorupdatenote", handleAPICreateOrUpdateNote)
+	http.HandleFunc("/api/deletenote", handleAPIDeleteNote)
+	http.HandleFunc("/api/permanentdeletenote", handleAPIPermanentDeleteNote)
+	http.HandleFunc("/api/undeletenote", handleAPIUndeleteNote)
+	http.HandleFunc("/api/makenoteprivate", handleAPIMakeNotePrivate)
+	http.HandleFunc("/api/makenotepublic", handleAPIMakeNotePublic)
+	http.HandleFunc("/api/starnoten", handleAPIStarNote)
+	http.HandleFunc("/api/unstarnote", handleAPIUnstarNote)
+	http.HandleFunc("/api/getrecentnotes", handleAPIGetRecentNotes)
 }
 
 func startWebServer() {
