@@ -72,7 +72,7 @@ body {
   background-color: rgba(0,0,0,0.5); /*dim the background*/
 }
 
-.btn {
+.btn2 {
   background-image: none;
   border: 1px solid transparent;
   border-radius: 0;
@@ -94,13 +94,66 @@ body {
   }
 }
 
+.btn {
+  display: inline-block;
+  position: relative;
+  padding: 4px 8px;
+  color: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0);
+  text-align: center;
+  text-decoration: none;
+  // cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.4);
+  vertical-align: bottom;
+  white-space: nowrap;
+  user-select: none;
+  box-sizing: border-box;
+  border-radius: 999em;
+  letter-spacing: 0;
+  font-style: normal;
+  text-rendering: optimizeLegibility;
+  margin-right: 4px;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  &:hover:enabled {
+    color: rgba(0,0,0,0.8);
+    border: 1px solid rgba(0,0,0,0.8);
+  }
+
+  &:hover:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.btn-cancel {
+  margin-left: -4px;
+  border: 0;
+
+  &:hover {
+    color: rgba(255,0,0,0.8);
+    border: 0;
+    /* background-color: lightgray; */
+  }
+
+  &:hover:ENABLED {
+    color: rgba(255,0,0,0.8);
+    border: 0;
+    /* background-color: lightgray; */
+  }
+
+}
+
 $col-btn-bg: #2780e3;
 $col-btn-border: #2780e3;
 $col-btn-text: #fff;
 $col-btn-hover-bg: #1967be;
 $col-btn-hover-border: #1862b5;
 
-.btn-primary {
+.btn2-primary {
   background-color: $col-btn-bg;
   border-color: $col-btn-border;
   color: $col-btn-text;
