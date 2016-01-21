@@ -241,20 +241,20 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	// email
 	// avatar_url
 	userLogin := "twitter:" + twitterHandle
-	user, err := dbGetOrCreateUser(userLogin, fullName)
+	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
 		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)
 		// TODO: show error to the user
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Verbosef("got or created user %d, %s with handle '%s'\n", user.ID, user.Handle, userLogin)
+	log.Verbosef("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
 	if redir == "/" || redir == "" {
 		// TODO: url-escape user.Handle
-		redir = "/u/" + user.Handle
+		redir = "/u/" + dbUser.Handle
 	}
 	cookieVal := &SecureCookieValue{
-		UserID: user.ID,
+		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
 	// TODO: dbUserSetTwitterOauth(user, tokenCredJson)
@@ -367,7 +367,6 @@ func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 
 // logingooglecb
 func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url: %s", r.URL)
 	state := r.FormValue("state")
 	if !strings.HasPrefix(state, oauthSecretPrefix) {
 		log.Errorf("invalid oauth state, expected '%s*', got '%s'\n", oauthSecretPrefix, state)
@@ -375,11 +374,13 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// extract redir from secret (added in handleLoginGoogle())
 	redir := state[len(oauthSecretPrefix):]
 	if redir == "" {
-		log.Errorf("Missing 'redir' arg for /logingooglecb\n")
+		log.Errorf("missing redir in state\n")
 		redir = "/"
 	}
+	log.Verbosef("url: '%s', state: '%s', redir: '%s'\n", r.URL, state, redir)
 
 	code := r.FormValue("code")
 	token, err := oauthGoogleConf.Exchange(oauth2.NoContext, code)
@@ -406,7 +407,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//log.Infof("Logged in as Google user: %s\n", userInfo.Email)
+	log.Verbosef("logged in as Google user: '%s'\n", userInfo.Email)
 	fullName := userInfo.Name
 
 	// also might be useful:
@@ -419,7 +420,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("created user %d with login '%s' and handle '%s'\n", dbUser.ID, dbUser.Login, dbUser.Handle)
+	log.Infof("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
@@ -432,16 +433,15 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
 	redir := strings.TrimSpace(r.FormValue("redir"))
 	if redir == "" {
-		httpErrorf(w, "Missing 'redir' arg for /logingoogle")
+		httpErrorf(w, "missing 'redir' arg for /logingoogle")
 		return
 	}
-
-	cb := getMyHost(r) + "/logingooglecb"
+	log.Verbosef("redir: '%s'\n", redir)
+	// login callback must be exactly as configured with Google so we can't
+	// encode redir as url param the way we do for Twitter login
+	// instead we'll encode redir inside state
 	oauthGoogleCopy := oauthGoogleConf
-	oauthGoogleCopy.RedirectURL = cb
-	// oauth2 package has a way to add additional args to url (SetAuthURLParam)
-	// but google doesn't seem to send them back to callback url, so I encode
-	// redir inside secret
+	oauthGoogleCopy.RedirectURL = getMyHost(r) + "/logingooglecb"
 	uri := oauthGoogleCopy.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
 }
@@ -453,6 +453,7 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 		log.Errorf("Missing 'redir' arg for /logout\n")
 		redir = "/"
 	}
+	log.Verbosef("redir: '%s'\n", redir)
 	deleteSecureCookie(w)
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
