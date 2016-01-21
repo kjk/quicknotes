@@ -74,12 +74,13 @@ export function offAllForOwner(owner) {
 /* actions specific to an app */
 
 // keys for registeredActions
-const tagSelectedCmd = 'tagSelected';
-const reloadNotesCmd = 'reloadNotes';
-const showHideImportSimpleNoteCmd = 'showHideImportSimpleNote';
-const showHideSettingsCmd = 'showHideSettings';
-const editNewNoteCmd = 'editNewNote';
-const editNoteCmd = 'editNote';
+const tagSelectedCmd = 'tagSelectedCmd';
+const reloadNotesCmd = 'reloadNotesCmd';
+const showHideImportSimpleNoteCmd = 'showHideImportSimpleNoteCmd';
+const showHideSettingsCmd = 'showHideSettingsCmd';
+const editNewNoteCmd = 'editNewNoteCmd';
+const editNoteCmd = 'editNoteCmd';
+const clearSearchTermCmd = 'clearSearchTermCmd';
 
 /* --------------------- */
 export function tagSelected(tag) {
@@ -139,3 +140,15 @@ export function onEditNote(cb, owner) {
   return on(editNoteCmd, cb, owner);
 }
 
+/* --------------------- */
+export function setSearchTerm(s) {
+  broadcast(clearSearchTermCmd, s);
+}
+
+export function onSetSearchTerm(cb, owner) {
+  return on(clearSearchTermCmd, cb, owner);
+}
+
+export function clearSearchTerm() {
+  setSearchTerm('');
+}

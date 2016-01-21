@@ -1,6 +1,8 @@
 import React from 'react';
 import Overlay from './Overlay.jsx';
 
+import * as action from './action.js';
+
 const TypeTitle = 1;
 const TypeLine = 2;
 
@@ -29,12 +31,19 @@ Format of search results:
 export default class SearchResults extends React.Component {
   constructor(props, context) {
     super(props, context);
+
     this.handleClick = this.handleClick.bind(this);
+    this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
   handleClick(noteIDStr, e) {
     e.preventDefault();
     this.props.onSearchResultSelected(noteIDStr);
+  }
+
+  handleOverlayClick(e) {
+    e.preventDefault();
+    action.clearSearchTerm();
   }
 
   renderResultItem(noteID, i, n) {
@@ -96,7 +105,7 @@ export default class SearchResults extends React.Component {
     }
 
     return (
-      <Overlay>
+      <Overlay onClick={ this.handleOverlayClick }>
         <div id="search-results-wrapper">
           <div id="search-results-triangle-wrapper"></div>
           <div className="search-results-list">

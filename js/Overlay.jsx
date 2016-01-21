@@ -1,15 +1,27 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
-const Overlay = (props) => {
-  return (
-    <div className="modal-overlay">
-      { props.children }
-    </div>
-    );
-};
+export default class Overlay extends Component {
+
+  constructor(props, context) {
+    super(props, context);
+  }
+
+  /*
+    handleClick(e) {
+      this.props.onClick && this.props.onClick(e);
+    }
+  */
+
+  render() {
+    return (
+      <div className="modal-overlay" onClick={ this.props.onClick }>
+        { this.props.children }
+      </div>
+      );
+  }
+}
 
 Overlay.propTypes = {
-  children: PropTypes.array
+  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  onClick: PropTypes.func
 };
-
-export default Overlay;

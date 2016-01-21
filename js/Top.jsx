@@ -18,6 +18,7 @@ function keyFilter(event) {
 export default class Top extends Component {
   constructor(props, context) {
     super(props, context);
+
     this.handleEditNewNote = this.handleEditNewNote.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
@@ -42,12 +43,12 @@ export default class Top extends Component {
       e.preventDefault();
       e.target.blur();
       e.target.value = '';
-      this.props.onSearchTermChanged('');
+      action.clearSearchTerm();
     }
   }
 
   handleInputChange(e) {
-    this.props.onSearchTermChanged(e.target.value);
+    action.setSearchTerm(e.target.value);
   }
 
   renderSearchInput() {
@@ -55,7 +56,7 @@ export default class Top extends Component {
     if (userHandle === '') {
       return;
     }
-    let placeholder = 'Search notes by ' + userHandle + ' (Ctrl-F)';
+    let placeholder = 'Search public notes by ' + userHandle + ' (Ctrl-F)';
     if (userHandle == gLoggedInUserHandle) {
       placeholder = 'Search your notes (Ctrl-F)';
     }
@@ -104,7 +105,6 @@ export default class Top extends Component {
 }
 
 Top.propTypes = {
-  onSearchTermChanged: PropTypes.func,
   isLoggedIn: PropTypes.bool.isRequired,
   loggedInUserHandle: PropTypes.string,
   notesUserHandle: PropTypes.string
