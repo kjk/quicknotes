@@ -90,7 +90,7 @@ def main():
   verify_docker_running()
   ip = get_docker_machine_ip()
   start_container_if_needed(g_imageName, g_containerName, "7200:3306")
-  cmd = "./scripts/build_and_run.sh -db-host %s -db-port 7200" % ip
+  cmd = "./scripts/build_and_run.sh -verbose -db-host %s -db-port 7200" % ip
   run_cmd_show_progress(cmd)
 
 if __name__ == "__main__":

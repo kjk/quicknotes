@@ -27,7 +27,8 @@ var (
 	muImport sync.Mutex
 )
 
-// ImportStatus describes an import in progress
+// ImportStatus describes an import operation
+// returned by /api/
 type ImportStatus struct {
 	importID              int
 	userID                int
@@ -141,7 +142,7 @@ func importSimpleNote(id int, userID int, email, password string) {
 		newNote.isPublic, newNote.tags = tagsToPublicTags(note.Tags)
 		newNote.title, newNote.content = noteToTitleContent([]byte(note.Content))
 		if len(newNote.content) == 0 {
-			log.Infof("   skipping an empty note\n")
+			//log.Verbosef("   skipping an empty note\n")
 			continue
 		}
 
@@ -149,6 +150,7 @@ func importSimpleNote(id int, userID int, email, password string) {
 		if versionSha1ToBool[contentSha1Hex] {
 			nDuplicate++
 			importSetCount(id, n, nDuplicate)
+			//log.Verbosef("skipping duplicate note id: %s, title: %s\n", note.ID, newNote.title)
 			continue
 		}
 		noteID, err := dbCreateOrUpdateNote(userID, &newNote)
@@ -160,9 +162,10 @@ func importSimpleNote(id int, userID int, email, password string) {
 		msg := fmt.Sprintf("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
 		if newNote.isDeleted {
 			msg = fmt.Sprintf("deleted note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+		} else {
+			n++
 		}
-		log.Infof("%s", msg)
-		n++
+		log.Verbosef("%s", msg)
 		importSetCount(id, n, nDuplicate)
 	}
 	importMarkFinished(id)
@@ -178,7 +181,7 @@ func tagsToPublicTags(tags []string) (bool, []string) {
 	return false, tags
 }
 
-/* GET /importsimplenotestatus
+/* GET /api/import_simplenote_status
 args:
   id      : import id
 result:
@@ -189,8 +192,8 @@ result:
     Duration: "5 secs"
   }
 */
-func handleStatusImportSimpleNotes(w http.ResponseWriter, r *http.Request) {
-	log.Infof("handleImportSimpleNoteStatus(): url: '%s'\n", r.URL.Path)
+func handleImportSimpleNotesStatus(w http.ResponseWriter, r *http.Request) {
+	log.Verbosef("url: '%s'\n", r.URL.Path)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
 		httpErrorWithJSONf(w, "not logged in")
@@ -218,7 +221,7 @@ func handleStatusImportSimpleNotes(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, r, status)
 }
 
-/* GET /importsimplenote
+/* GET /api/import_simplenote_start
 args:
   email   : simplenote user e-email
   assword : simplenote user password
@@ -227,8 +230,8 @@ result:
     ImportID: 5
   }
 */
-func handleStartImportSimpleNote(w http.ResponseWriter, r *http.Request) {
-	log.Infof("handleImportSimpleNote(): url: '%s'\n", r.URL.Path)
+func handleImportSimpleNoteStart(w http.ResponseWriter, r *http.Request) {
+	log.Verbosef("url: '%s'\n", r.URL.Path)
 	dbUser := getUserFromCookie(w, r)
 	if dbUser == nil {
 		httpErrorWithJSONf(w, "not logged in")
@@ -240,7 +243,7 @@ func handleStartImportSimpleNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "Missing email or password.")
 		return
 	}
-	log.Infof("Importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login, email, password)
+	log.Verbosef("importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login, email, password)
 	id := newImportStatus(dbUser.ID)
 	go importSimpleNote(id, dbUser.ID, email, password)
 	v := struct {

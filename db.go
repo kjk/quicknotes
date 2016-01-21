@@ -808,7 +808,7 @@ func dbGetAllVersionsSha1ForUser(userID int) ([][]byte, error) {
 SELECT content_sha1
 FROM versions
 WHERE id IN
-  (SELECT id FROM notes WHERE user_id = $id);
+  (SELECT id FROM notes WHERE user_id = ?);
 `
 	rows, err := db.Query(q, userID)
 	if err != nil {
@@ -857,7 +857,7 @@ SELECT
 	v.snippet_sha1,
 	v.tags
 FROM notes n, versions v
-WHERE user_id=? AND v.id = n.curr_version_id`
+WHERE user_id = ? AND v.id = n.curr_version_id`
 	rows, err := db.Query(q, user.ID)
 	if err != nil {
 		log.Errorf("db.Query('%s') failed with %s\n", q, err)
