@@ -67,18 +67,18 @@ function post(url, args, cb, cbErr) {
   });
 }
 
-export function getNotesCompact(userHandle, cb, cbErr) {
+export function getNotes(userHandle, cb, cbErr) {
   const args = {
     'user': userHandle
   };
-  get('/api/getnotescompact', args, cb, cbErr);
+  get('/api/getnotes', args, cb, cbErr);
 }
 
-export function getNoteCompact(noteId, cb, cbErr) {
+export function getNote(noteId, cb, cbErr) {
   const args = {
     'id': noteId
   };
-  get('/api/getnotecompact', args, cb, cbErr);
+  get('/api/getnote', args, cb, cbErr);
 }
 
 export function undeleteNote(noteId, cb, cbErr) {

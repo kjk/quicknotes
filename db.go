@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kjk/log"
 	"github.com/kjk/u"
@@ -90,7 +89,7 @@ type DbUser struct {
 	CreatedAt        time.Time
 }
 
-// DbNote describes note as in database
+// DbNote describes note in database
 type DbNote struct {
 	id            int
 	userID        int
@@ -114,7 +113,6 @@ type Note struct {
 	Snippet     string
 	IsPartial   bool
 	IsTruncated bool
-	HumanSize   string
 	IDStr       string
 }
 
@@ -186,7 +184,6 @@ func (n *Note) SetSnippet() {
 // SetCalculatedProperties calculates some props
 func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
-	n.HumanSize = humanize.Bytes(uint64(n.Size))
 	n.IDStr = hashInt(n.id)
 	n.SetSnippet()
 }

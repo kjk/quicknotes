@@ -328,8 +328,8 @@ func noteToCompact(n *Note) []interface{} {
 	return res
 }
 
-// /api/getnotecompact?id=${note_id_hash}
-func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
+// /api/getnote?id=${note_id_hash}
+func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 	dbUser := getUserFromCookie(w, r)
 	noteIDHashStr := r.FormValue("id")
 	note, err := getNoteByIDHash(w, r, noteIDHashStr)
@@ -353,11 +353,11 @@ func handleAPIGetNoteCompact(w http.ResponseWriter, r *http.Request) {
 	httpOkWithJSON(w, r, v)
 }
 
-// /api/getnotescompact
+// /api/getnotes
 // Arguments:
 //  - user : userHandle
 //  - jsonp : jsonp wrapper, optional
-func handleAPIGetNotesCompact(w http.ResponseWriter, r *http.Request) {
+func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
 	log.Infof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
@@ -696,8 +696,8 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/api/import_simplenote_start", handleAPIImportSimpleNoteStart)
 	http.HandleFunc("/api/import_simplenote_status", handleAPIImportSimpleNotesStatus)
-	http.HandleFunc("/api/getnotescompact", handleAPIGetNotesCompact)
-	http.HandleFunc("/api/getnotecompact", handleAPIGetNoteCompact)
+	http.HandleFunc("/api/getnotes", handleAPIGetNotes)
+	http.HandleFunc("/api/getnotec", handleAPIGetNote)
 	http.HandleFunc("/api/searchusernotes", handleSearchUserNotes)
 	http.HandleFunc("/api/createorupdatenote", handleAPICreateOrUpdateNote)
 	http.HandleFunc("/api/deletenote", handleAPIDeleteNote)

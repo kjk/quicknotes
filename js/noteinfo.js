@@ -151,14 +151,14 @@ export function FetchContent(note, cb) {
   const noteID = IDStr(note);
   const res = note[noteContentIdx];
   if (res) {
-    console.log('getContent: already has it for note', noteID);
+    console.log('FetchContent: already has it for note', noteID);
     return res;
   }
-  console.log('getContent: starting to fetch content for note', noteID);
-  api.getNoteCompact(noteID, json => {
-    console.log('getContent: json=', json);
+  console.log('FetchContent: starting to fetch content for note', noteID);
+  api.getNote(noteID, json => {
+    console.log('FetchContent: json=', json);
     const content = json[noteContentIdx];
-    //console.log('getContent: content=', content);
+    //console.log('FetchContent: content=', content);
     SetContent(note, content);
     cb(note);
   });
