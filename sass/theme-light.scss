@@ -12,8 +12,11 @@
   border-right: 1px solid rgba(0,0,0,.1);
 }
 
-.theme-light #header #search-input-wrapper input {
+.theme-light #search-input {
   border: 1px solid rgba(0,0,0,.1);
+  &:focus {
+    border: 1px solid rgba(0,0,0,.8);
+  }
 }
 
 .theme-light #header #user .user {

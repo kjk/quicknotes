@@ -533,7 +533,6 @@ a {
 }
 
 .log-in-dropdown-content {
-  width: 200px;
   display: none;
   position: absolute;
   top: 40px; right: 0;
@@ -543,11 +542,14 @@ a {
   z-index: 20;
   background: white;
   box-sizing: content-box;
+  border: 1px solid lightgray;
 }
 
 ul.log-in {
   margin-top: 10px;
   list-style: none;
+  white-space: nowrap;
+  padding: 0px 8px;
 
   li {
     margin: 10px 0;
@@ -562,16 +564,29 @@ ul.log-in {
     border-radius: 3px;
     font-weight: bold;
 
+    padding: 2px 16px;
+
+    // used http://www.colorlookup.com/de6756 to get the lighter variants
+    // of colors (2nd tint)
     &.twitter {
       background: #55ACEE;
+      &:hover {
+        background: #77BCF0;
+      }
     }
 
     &.github {
       background: #829AA8;
+      &:hover {
+        background: #9AAEB8;
+      }
     }
 
     &.google {
       background: #D6432E;
+      &:hover {
+        background: #DE6756;
+      }
     }
   }
 }
@@ -803,7 +818,10 @@ hr.light2 {
 /* Media Queries
 ----------------------------------------------- */
 @media (max-width: 320px) {
-  #left-sidebar, #search-input-wrapper, #header #logo {
+  #search-input {
+    display: none
+  }
+  #left-sidebar, #header #logo {
     display: none;
   }
   #notes-list {

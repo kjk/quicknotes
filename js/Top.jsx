@@ -61,17 +61,14 @@ export default class Top extends Component {
       placeholder = 'Search your notes (Ctrl-F)';
     }
     return (
-      <div id="search-input-wrapper">
-        <input name="search"
-          id="search"
-          onKeyDown={ this.handleInputKeyDown }
-          onChange={ this.handleInputChange }
-          className="round-input input-not-focused"
-          type="text"
-          autoComplete="off"
-          autoCapitalize="off"
-          placeholder={ placeholder } />
-      </div>
+      <input name="search"
+        id="search-input"
+        onKeyDown={ this.handleInputKeyDown }
+        onChange={ this.handleInputChange }
+        type="text"
+        autoComplete="off"
+        autoCapitalize="off"
+        placeholder={ placeholder } />
       );
   }
 

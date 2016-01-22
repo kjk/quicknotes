@@ -1,21 +1,17 @@
 @import 'colors';
 
-#search-input-wrapper {
-  width: 30%;
-  position: relative;
-  margin: 8px auto;
-}
+#search-input {
+  position: absolute;
+  width: 320px;
+  left: calc(50% - 160px);
 
-#search-input-wrapper {
-  input {
-    width: 320px;
-    // height: 22px;
-    // font-size: 16px;
-    line-height: 23px;
-    padding: 2px 16px;
-    border-radius: 20px;
-    outline: none;
-  }
+  margin-top: 8px;
+  // height: 22px;
+  // font-size: 16px;
+  line-height: 23px;
+  padding: 2px 16px;
+  border-radius: 20px;
+  outline: none;
 }
 
 #search-results-triangle-wrapper {

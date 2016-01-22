@@ -92,7 +92,7 @@ export function dictInc(d, key) {
 // focus "search" input area at the top of the page
 export function focusSearch() {
   //console.log('focusSearch');
-  const el = document.getElementById('search');
+  const el = document.getElementById('search-input');
   el.focus();
 }
 
