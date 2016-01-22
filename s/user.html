@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="/s/dist/main.css">
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
   <script>
-    var gNotesUserHandle = "{{ .UserHandle }}";
+    var gNotesUserHandle = "{{.UserHandle}}";
+    var gLoggedInUserID = "{{.LoggedInUserID}}";
     var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
     var gInitialNotesJSON = null;
 
@@ -17,7 +18,7 @@
       gInitialNotesJSON = json;
     }
   </script>
-  <script src="/api/getnotes?jsonp=setInitialNotes&user={{ .UserHandle }}">
+  <script src="/api/getnotes?jsonp=setInitialNotes&user={{.UserID}}">
   </script>
 </head>
 
