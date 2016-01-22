@@ -137,7 +137,7 @@ export default class AppUser extends Component {
   reloadNotes() {
     const userHandle = this.props.notesUserHandle;
     console.log('reloadNotes: userHandle=', userHandle);
-    api.getNotesCompact(userHandle, json => {
+    api.getNotes(userHandle, json => {
       this.setNotes(json);
     });
   }
