@@ -173,23 +173,34 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// /u/{user_handle}
+// /u/${userId}/${whatever}
 func handleUser(w http.ResponseWriter, r *http.Request) {
-	userHandle := r.URL.Path[len("/u/"):]
-	i, err := getCachedUserInfoByHandle(userHandle)
-	if err != nil || i == nil {
-		log.Infof("no user '%s', url: '%s', err: %s\n", userHandle, r.URL, err)
+	userIDStr := r.URL.Path[len("/u/"):]
+	userIDStr = strings.Split(userIDStr, "/")[0]
+	userID, err := dehashInt(userIDStr)
+	if err != nil {
+		log.Errorf("invalid userID='%s'\n", userIDStr)
 		http.NotFound(w, r)
 		return
 	}
-	log.Infof("%d notes for user '%s'\n", len(i.notes), userHandle)
+	i, err := getCachedUserInfo(userID)
+	if err != nil || i == nil {
+		log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
+		http.NotFound(w, r)
+		return
+	}
+	log.Verbosef("%d notes for user '%d'\n", len(i.notes), userID)
 	model := struct {
-		UserHandle         string
+		LoggedInUserID     string
 		LoggedInUserHandle string
+		UserID             string
+		UserHandle         string
 		Notes              []*Note
 	}{
-		UserHandle: userHandle,
-		Notes:      i.notes,
+		LoggedInUserID: userIDStr,
+		UserID:         hashInt(i.user.ID),
+		UserHandle:     i.user.Handle,
+		Notes:          i.notes,
 	}
 	dbUser := getUserFromCookie(w, r)
 	if dbUser != nil {
@@ -355,18 +366,21 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 
 // /api/getnotes
 // Arguments:
-//  - user : userHandle
+//  - user : userID hashed
 //  - jsonp : jsonp wrapper, optional
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
-	userHandle := strings.TrimSpace(r.FormValue("user"))
+	userIDStr := strings.TrimSpace(r.FormValue("user"))
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
-	log.Verbosef("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
-	if userHandle == "" {
-		http.NotFound(w, r)
+	log.Verbosef("userIdStr: '%s', jsonp: '%s'\n", userIDStr, jsonp)
+	userID, err := dehashInt(userIDStr)
+	if err != nil {
+		log.Errorf("invalid userIDStr='%s'\n", userIDStr)
+		httpServerError(w, r)
 		return
 	}
-	i, err := getCachedUserInfoByHandle(userHandle)
+	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
+		log.Errorf("getCachedUserInfo('%d') failed with '%s'\n", userID, err)
 		httpServerError(w, r)
 		return
 	}
@@ -376,18 +390,20 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		loggedInUserHandle = dbUser.Handle
 	}
 
-	showPrivate := userHandle == loggedInUserHandle
+	showPrivate := userID == dbUser.ID
 	var notes [][]interface{}
 	for _, note := range i.notes {
 		if note.IsPublic || showPrivate {
 			notes = append(notes, noteToCompact(note))
 		}
 	}
-	log.Verbosef("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
+	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userID, i.user.Handle, loggedInUserHandle, showPrivate)
 	v := struct {
+		LoggedInUserID     string
 		LoggedInUserHandle string
 		Notes              [][]interface{}
 	}{
+		LoggedInUserID:     hashInt(i.user.ID),
 		LoggedInUserHandle: loggedInUserHandle,
 		Notes:              notes,
 	}
