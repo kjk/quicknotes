@@ -370,7 +370,10 @@ func handleLoginGitHub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Verbosef("redir: '%s'\n", redir)
+
 	oauthCopy := oauthGitHubConf
+	// GitHub seems to completely ignore Redir, so unfortunately we'll
+	// alwayas end up on quicknotes.io, which makes testing locally hard
 	// encode redir in state
 	uri := oauthCopy.AuthCodeURL(oauthSecretPrefix+redir, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, uri, http.StatusTemporaryRedirect)
@@ -452,6 +455,7 @@ func handleLoginGoogle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Verbosef("redir: '%s'\n", redir)
+
 	// login callback must be exactly as configured with Google so we can't
 	// encode redir as url param the way we do for Twitter login
 	// instead we'll encode redir inside state

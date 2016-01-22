@@ -37,6 +37,10 @@
 			"Rev": "5f171f42328bdd573211bb82bdee8f259c4c61ae"
 		},
 		{
+			"ImportPath": "github.com/kjk/log",
+			"Rev": "f6e28b4f1903eeebfcef3a9bd10c611bb18b9ca6"
+		},
+		{
 			"ImportPath": "github.com/kjk/simplenote",
 			"Rev": "25ee5bff6e64437402073561b4551adf182c0ee7"
 		},
