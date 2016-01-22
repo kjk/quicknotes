@@ -360,7 +360,7 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	userHandle := strings.TrimSpace(r.FormValue("user"))
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
-	log.Infof("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
+	log.Verbosef("userHandle: '%s', jsonp: '%s'\n", userHandle, jsonp)
 	if userHandle == "" {
 		http.NotFound(w, r)
 		return
@@ -383,7 +383,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 			notes = append(notes, noteToCompact(note))
 		}
 	}
-	log.Infof("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
+	log.Verbosef("%d notes of user '%s' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userHandle, i.user.Handle, loggedInUserHandle, showPrivate)
 	v := struct {
 		LoggedInUserHandle string
 		Notes              [][]interface{}
@@ -402,10 +402,13 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
 	limitStr := strings.TrimSpace(r.FormValue("limit"))
-	log.Infof("jsonp: '%s', limit: '%s'\n", jsonp, limitStr)
+	log.Verbosef("jsonp: '%s', limit: '%s'\n", jsonp, limitStr)
 	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit == 0 {
+	if err != nil || limit <= 0 {
 		limit = 25
+	}
+	if limit > 300 {
+		limit = 300
 	}
 	recentNotes, err := getRecentPublicNotesCached(limit)
 	if err != nil {
@@ -413,7 +416,11 @@ func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 		httpServerError(w, r)
 		return
 	}
-	httpOkWithJsonpCompact(w, r, recentNotes, jsonp)
+	var res [][]interface{}
+	for _, note := range recentNotes {
+		res = append(res, noteToCompact(&note))
+	}
+	httpOkWithJsonpCompact(w, r, res, jsonp)
 }
 
 // NewNoteFromBrowser represents format of the note sent by the browser

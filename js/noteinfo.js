@@ -13,6 +13,8 @@ const noteSnippetIdx = 6;
 const noteFormatIdx = 7;
 const noteCurrentVersionIdx = 8;
 const noteContentIdx = 9;
+// those are only for notes returned by recent notes
+const noteUserIdx = 10; // user that created the note TODO: not sure if will keep
 
 const flagStarredBit = 0;
 const flagDeletedBit = 1;
@@ -29,7 +31,7 @@ const formatNames = [
 ];
 
 // note properties that can be compared for equality with ==
-const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIdx, noteContentIdx];
+const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIdx, noteContentIdx, noteUserIdx];
 
 function arrEmpty(a) {
   return !a || (a.length === 0);
@@ -142,6 +144,14 @@ export function CurrentVersion(note) {
 export function Content(note, cb) {
   return note[noteContentIdx] || '';
 }
+
+/*
+// returns the creator of the note
+export function User(note) {
+  assert(noteUserIdx <= note.length);
+  return note[noteUserIdx];
+}
+*/
 
 // if has content, returns it
 // otherwise returns null, starts async fetch and

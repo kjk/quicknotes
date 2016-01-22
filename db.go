@@ -893,17 +893,8 @@ WHERE user_id = ? AND v.id = n.curr_version_id`
 	return notes, nil
 }
 
-// NoteSummary desribes a note for e.g. display on index page
-type NoteSummary struct {
-	id         int
-	IDStr      string
-	UserHandle string
-	Title      string
-	UpdatedAt  time.Time
-}
-
 var (
-	recentPublicNotesCached     []NoteSummary
+	recentPublicNotesCached     []Note
 	recentPublicNotesLastUpdate time.Time
 )
 
@@ -911,11 +902,11 @@ func timeExpired(t time.Time, dur time.Duration) bool {
 	return t.IsZero() || time.Now().Sub(t) > dur
 }
 
-func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
-	var res []NoteSummary
+func getRecentPublicNotesCached(limit int) ([]Note, error) {
+	var res []Note
 	mu.Lock()
-	if len(recentPublicNotesCached) >= limit && !timeExpired(recentPublicNotesLastUpdate, time.Minute) {
-		res = make([]NoteSummary, limit, limit)
+	if len(recentPublicNotesCached) >= limit && !timeExpired(recentPublicNotesLastUpdate, time.Minute*5) {
+		res = make([]Note, limit, limit)
 		for i := 0; i < limit; i++ {
 			res[i] = recentPublicNotesCached[i]
 		}
@@ -956,25 +947,24 @@ func getRecentPublicNotesCached(limit int) ([]NoteSummary, error) {
 		if err != nil {
 			return nil, err
 		}
-		var ns NoteSummary
-		ns.Title = note.Title
-		ns.UpdatedAt = note.UpdatedAt
-		ns.IDStr = note.IDStr
-		dbUser, err := dbGetUserByIDCached(note.userID)
-		if err != nil {
-			return nil, err
+
+		/*
+			dbUser, err := dbGetUserByIDCached(note.userID)
+			if err != nil {
+				return nil, err
+			}
+			ns.UserHandle = dbUser.Handle
+		*/
+		if note.Title == "" {
+			note.Title = getTitleFromBody(note)
 		}
-		ns.UserHandle = dbUser.Handle
-		if ns.Title == "" {
-			ns.Title = getTitleFromBody(note)
-		}
-		ns.Title = trimTitle(ns.Title, 60)
-		res = append(res, ns)
+		note.Title = trimTitle(note.Title, 60)
+		res = append(res, *note)
 	}
 
 	mu.Lock()
 	n := len(res)
-	recentPublicNotesCached = make([]NoteSummary, n, n)
+	recentPublicNotesCached = make([]Note, n, n)
 	for i := 0; i < n; i++ {
 		recentPublicNotesCached[i] = res[i]
 	}
