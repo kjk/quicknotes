@@ -697,7 +697,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/import_simplenote_start", handleAPIImportSimpleNoteStart)
 	http.HandleFunc("/api/import_simplenote_status", handleAPIImportSimpleNotesStatus)
 	http.HandleFunc("/api/getnotes", handleAPIGetNotes)
-	http.HandleFunc("/api/getnotec", handleAPIGetNote)
+	http.HandleFunc("/api/getnote", handleAPIGetNote)
 	http.HandleFunc("/api/searchusernotes", handleSearchUserNotes)
 	http.HandleFunc("/api/createorupdatenote", handleAPICreateOrUpdateNote)
 	http.HandleFunc("/api/deletenote", handleAPIDeleteNote)
