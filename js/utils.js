@@ -136,6 +136,9 @@ export function debounce(func, wait, immediate) {
   };
 }
 
+// TODO: make conditional on NODE_ENV['production'] so that it gets
+// optimized out in production build
+// TODO: also show in an alert?
 export function assert(cond) {
   if (!cond) {
     throw 'assert() failed';

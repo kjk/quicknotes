@@ -79,7 +79,7 @@ export default class NotesList extends React.Component {
 }
 
 NotesList.propTypes = {
-  notes: React.PropTypes.array, // TODO: more specific
+  notes: React.PropTypes.array,
   compact: React.PropTypes.bool,
   myNotes: React.PropTypes.bool
 };

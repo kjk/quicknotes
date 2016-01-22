@@ -102,7 +102,7 @@ export default class Settings extends React.Component {
     //console.log('Settings.render');
     if (!this.state.isShowing) {
       return (
-        <div id="no-import-simple-note" className="hidden">
+        <div id="settings" className="hidden">
         </div>
         );
     }
