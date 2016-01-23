@@ -68,7 +68,7 @@ func userSummaryFromDbUser(dbUser *DbUser) *UserSummary {
 	return &UserSummary{
 		id:       dbUser.ID,
 		HashedID: hashInt(dbUser.ID),
-		Handle:   dbUser.Handle,
+		Handle:   dbUser.GetHandle(),
 	}
 }
 
@@ -408,7 +408,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		loggedUserHandle = loggedUser.Handle
 		loggedUserID = loggedUser.id
 	}
-	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Handle, loggedUserID, loggedUserHandle, showPrivate)
+	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Login, loggedUserID, loggedUserHandle, showPrivate)
 	v := struct {
 		LoggedUser *UserSummary
 		Notes      [][]interface{}
@@ -543,7 +543,7 @@ func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) 
 		return nil, 0
 	}
 	if note.userID != dbUser.ID {
-		log.Errorf("note '%s' doesn't belong to user '%s'\n", noteIDHashStr, dbUser.Handle)
+		log.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteIDHashStr, dbUser.ID, dbUser.Login)
 		httpErrorWithJSONf(w, "note doesn't belong to this user")
 		return nil, 0
 	}
