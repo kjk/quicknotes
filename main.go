@@ -17,18 +17,18 @@ import (
 var (
 	httpAddr = "127.0.0.1:5111"
 
-	flgIsLocal              bool // local means using local mysql database, production means google's cloud
-	flgVerbose              bool
-	flgProdDb               bool // if true, use gce db when running localy
-	flgDelDatabase          bool
-	flgRecreateDatabase     bool
-	flgDbHost               string
-	flgDbPort               string
-	flgImportJSONUserHandle string
-	flgImportJSONFile       string
-	flgSearchTerm           string
-	flgListUsers            bool
-	flgImportStackOverflow  bool
+	flgIsLocal             bool // local means using local mysql database, production means google's cloud
+	flgVerbose             bool
+	flgProdDb              bool // if true, use gce db when running localy
+	flgDelDatabase         bool
+	flgRecreateDatabase    bool
+	flgDbHost              string
+	flgDbPort              string
+	flgImportJSONUserLogin string
+	flgImportJSONFile      string
+	flgSearchTerm          string
+	flgListUsers           bool
+	flgImportStackOverflow bool
 
 	localStore  *LocalStore
 	oauthClient = oauth.Client{
@@ -75,7 +75,7 @@ func parseFlags() {
 	flag.BoolVar(&flgRecreateDatabase, "recreatedb", false, "recreate database")
 	flag.BoolVar(&flgImportStackOverflow, "import-stack-overflow", false, "import stack overflow data")
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
-	flag.StringVar(&flgImportJSONUserHandle, "import-user", "", "handle of the user (users.handle) for which to import notes")
+	flag.StringVar(&flgImportJSONUserLogin, "import-user", "", "handle of the user (users.login) for which to import notes e.g. twitter:kjk")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
 	flag.StringVar(&flgSearchTerm, "search", "", "search notes for a given term")
 	flag.StringVar(&flgDbHost, "db-host", "127.0.0.1", "database host")
@@ -117,7 +117,7 @@ func listDbUsers() {
 	}
 	fmt.Printf("Number of users: %d\n", len(users))
 	for _, u := range users {
-		fmt.Printf("handle: '%s'\n", u.Handle)
+		fmt.Printf("login: '%s'\n", u.Login)
 	}
 }
 
@@ -167,7 +167,7 @@ func main() {
 	}
 
 	if flgImportJSONFile != "" {
-		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserHandle)
+		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserLogin)
 		return
 	}
 

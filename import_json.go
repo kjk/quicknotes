@@ -35,18 +35,19 @@ func noteJSONToNewNote(n *noteJSON) NewNote {
 	return res
 }
 
-func importNotesFromJSON(path, userHandle string) {
+// userLogin is "twitter:kjk"
+func importNotesFromJSON(path, userLogin string) {
 	var r io.Reader
-	if path == "" || userHandle == "" {
-		log.Fatalf("missing path ('%s') or user handle ('%s')\n", path, userHandle)
+	if path == "" || userLogin == "" {
+		log.Fatalf("missing path ('%s') or user handle ('%s')\n", path, userLogin)
 	}
 	isBlog := strings.Contains(path, "blog.json")
-	dbUser, err := dbGetUserByHandle(userHandle)
+	dbUser, err := dbGetUserByLogin(userLogin)
 	if err != nil && err != sql.ErrNoRows {
-		log.Fatalf("dbGetUserByHandle() failed with '%s'\n", err)
+		log.Fatalf("dbGetUserByLogin() failed with '%s'\n", err)
 	}
 	if dbUser == nil {
-		log.Fatalf("no user with handle '%s'\n", userHandle)
+		log.Fatalf("no user with handle '%s'\n", userLogin)
 	}
 	f, err := os.Open(path)
 	if err != nil {

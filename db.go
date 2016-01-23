@@ -80,13 +80,34 @@ type DbUser struct {
 	ID int
 	// TODO: less use of sql.NullString
 	Login            string         // e.g. 'google:kkowalczyk@gmail'
-	Handle           string         // e.g. 'kjk'
 	FullName         sql.NullString // e.g. 'Krzysztof Kowalczyk'
 	Email            sql.NullString
 	TwitterOauthJSON sql.NullString
 	GitHubOauthJSON  sql.NullString
 	GoogleOauthJSON  sql.NullString
 	CreatedAt        time.Time
+
+	handle string // e.g. 'kjk'
+}
+
+// GetHandle returns short user handle extracted from login
+func (u *DbUser) GetHandle() string {
+	if len(u.handle) > 0 {
+		return u.handle
+	}
+	parts := strings.SplitN(u.Login, ":", 2)
+	if len(parts) != 2 {
+		log.Errorf("invalid login '%s'\n", u.Login)
+		return ""
+	}
+	handle := parts[0]
+	// if this is an e-mail like kkowalczyk@gmail.com, only return
+	// the part before e-mail
+	parts = strings.SplitN(handle, "@", 2)
+	if len(parts) == 2 {
+		handle = parts[0]
+	}
+	return handle
 }
 
 // DbNote describes note in database
@@ -914,7 +935,7 @@ func getRecentPublicNotesCached(limit int) ([]Note, error) {
 			if err != nil {
 				return nil, err
 			}
-			ns.UserHandle = dbUser.Handle
+			ns.UserHandle = dbUser.GetHandle()
 		*/
 		if note.Title == "" {
 			note.Title = getTitleFromBody(note)
@@ -1015,7 +1036,7 @@ func dbGetNoteByID(id int) (*Note, error) {
 func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	var user DbUser
 	db := getDbMust()
-	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
+	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Login, &user.FullName, &user.Email, &user.CreatedAt)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			log.Infof("db.QueryRow('%s') failed with %s\n", q, err)
@@ -1044,23 +1065,18 @@ func dbGetUserByIDCached(userID int) (*DbUser, error) {
 }
 
 func dbGetUserByID(userID int) (*DbUser, error) {
-	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE id=?`
+	q := `SELECT id, login, full_name, email, created_at FROM users WHERE id=?`
 	return dbGetUserByQuery(q, userID)
 }
 
 func dbGetUserByLogin(login string) (*DbUser, error) {
-	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE login=?`
+	q := `SELECT id, login, full_name, email, created_at FROM users WHERE login=?`
 	return dbGetUserByQuery(q, login)
-}
-
-func dbGetUserByHandle(userHandle string) (*DbUser, error) {
-	q := `SELECT id, handle, full_name, email, created_at FROM users WHERE handle=?`
-	return dbGetUserByQuery(q, userHandle)
 }
 
 func dbGetAllUsers() ([]*DbUser, error) {
 	db := getDbMust()
-	q := `SELECT id, handle, full_name, email, created_at FROM users`
+	q := `SELECT id, login, full_name, email, created_at FROM users`
 	rows, err := db.Query(q)
 	if err != nil {
 		return nil, err
@@ -1070,7 +1086,7 @@ func dbGetAllUsers() ([]*DbUser, error) {
 	var res []*DbUser
 	for rows.Next() {
 		var user DbUser
-		err = rows.Scan(&user.ID, &user.Handle, &user.FullName, &user.Email, &user.CreatedAt)
+		err = rows.Scan(&user.ID, &user.Login, &user.FullName, &user.Email, &user.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -1079,46 +1095,16 @@ func dbGetAllUsers() ([]*DbUser, error) {
 	return res, nil
 }
 
-// given userLogin like "twitter:kjk", return unique userHandle
-// e.g. kjk, kjk1, kjk2
-// TODO: this needs to be protected with a mutex
-func dbGetUniqueHandleFromLogin(userLogin string) (string, error) {
-	parts := strings.SplitN(userLogin, ":", 2)
-	if len(parts) != 2 {
-		return "", fmt.Errorf("dbGetUniqueHandleFromLogin(): invalid userLogin '%s'", userLogin)
-	}
-	db := getDbMust()
-	q := `SELECT id FROM users WHERE handle=?`
-	handle := parts[1]
-	var id int
-	for i := 1; i < 10; i++ {
-		err := db.QueryRow(q, handle).Scan(&id)
-		if err != nil {
-			// if error is 'no more rows', this is a free handle
-			if err == sql.ErrNoRows {
-				return handle, nil
-			}
-			return "", err
-		}
-		handle = fmt.Sprintf("%s%d", parts[1], i)
-	}
-	return "", fmt.Errorf("couldn't generate unique handle for %s", userLogin)
-}
-
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
 	if user != nil {
 		u.PanicIfErr(err)
 		return user, nil
 	}
-	userHandle, err := dbGetUniqueHandleFromLogin(userLogin)
-	if err != nil {
-		return nil, err
-	}
 
 	db := getDbMust()
-	q := `INSERT INTO users (login, handle, fulL_name) VALUES (?, ?, ?)`
-	_, err = db.Exec(q, userLogin, userHandle, fullName)
+	q := `INSERT INTO users (login, fulL_name) VALUES (?, ?)`
+	_, err = db.Exec(q, userLogin, fullName)
 	if err != nil {
 		return nil, err
 	}

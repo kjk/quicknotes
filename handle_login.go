@@ -202,6 +202,18 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 	return json.Unmarshal(bodyData, data)
 }
 
+// if loggin from main page, go to user's notes
+func fixLoginRedir(redir string, u *DbUser) string {
+	if u != nil && (redir == "/" || redir == "") {
+		redir = "/u/" + hashInt(u.ID)
+		h := url.QueryEscape(u.GetHandle())
+		if h != "" {
+			redir += "/" + u.GetHandle()
+		}
+	}
+	return redir
+}
+
 // url: GET /logintwittercb?redir=${redirect}
 func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	redir := strings.TrimSpace(r.FormValue("redir"))
@@ -248,17 +260,13 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Verbosef("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
+	log.Verbosef("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
 
-	// when coming from from main page, go to user's notes
-	if redir == "/" || redir == "" {
-		// TODO: url-escape user.Handle
-		redir = "/u/" + dbUser.Handle
-	}
+	redir = fixLoginRedir(redir, dbUser)
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
@@ -348,17 +356,13 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
+	log.Infof("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
 
-	// when coming from from main page, go to user's notes
-	if redir == "/" || redir == "" {
-		// TODO: url-escape user.Handle
-		redir = "/u/" + dbUser.Handle
-	}
+	redir = fixLoginRedir(redir, dbUser)
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
@@ -433,17 +437,13 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("got or created user %d, handle: '%s', login: '%s'\n", dbUser.ID, dbUser.Handle, userLogin)
+	log.Infof("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
 	setSecureCookie(w, cookieVal)
 
-	// when coming from from main page, go to user's notes
-	if redir == "/" || redir == "" {
-		// TODO: url-escape user.Handle
-		redir = "/u/" + dbUser.Handle
-	}
+	redir = fixLoginRedir(redir, dbUser)
 	http.Redirect(w, r, redir, http.StatusTemporaryRedirect)
 }
 
