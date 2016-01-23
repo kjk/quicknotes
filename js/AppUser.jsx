@@ -74,12 +74,15 @@ export default class AppUser extends Component {
     let allNotes = [];
     let selectedNotes = [];
     let selectedTag = props.initialTag;
-    let loggedInUserHandle = '';
     let tags = {};
 
-    if (initialNotesJSON && initialNotesJSON.LoggedInUserHandle) {
-      loggedInUserHandle = initialNotesJSON.LoggedInUserHandle;
+    let loggedUserHandle = '';
+    let loggedUserHashedID = '';
+    if (gLoggedUser) {
+      loggedUserHandle = gLoggedUser.Handle;
+      loggedUserHashedID = gLoggedUser.HashedID;
     }
+
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
       selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
@@ -92,7 +95,10 @@ export default class AppUser extends Component {
       // TODO: should be an array this.props.initialTags
       selectedTag: selectedTag,
       tags: tags,
-      loggedInUserHandle: loggedInUserHandle,
+      notesUserHashedID: gNotesUser.HashedID,
+      notesUserHandle: gNotesUser.Handle,
+      loggedUserHashedID: loggedUserHashedID,
+      loggedUserHandle: loggedUserHandle,
       searchResults: null
     };
   }
@@ -130,24 +136,23 @@ export default class AppUser extends Component {
       selectedNotes: selectedNotes,
       tags: tags,
       selectedTag: selectedTag,
-      loggedInUserHandle: json.LoggedInUserHandle
     });
   }
 
   reloadNotes() {
-    const userHandle = this.props.notesUserHandle;
-    console.log('reloadNotes: userHandle=', userHandle);
-    api.getNotes(userHandle, json => {
+    const userID = this.state.notesUserHashedID;
+    console.log('reloadNotes: userID=', userID);
+    api.getNotes(userID, json => {
       this.setNotes(json);
     });
   }
 
-  startSearch(userHandle, searchTerm) {
+  startSearch(userID, searchTerm) {
     gCurrSearchTerm = searchTerm;
     if (searchTerm === '') {
       return;
     }
-    api.searchUserNotes(userHandle, searchTerm, json => {
+    api.searchUserNotes(userID, searchTerm, json => {
       console.log('finished search for ' + json.Term);
       if (json.Term != gCurrSearchTerm) {
         console.log('discarding search results because not for ' + gCurrSearchTerm);
@@ -175,7 +180,7 @@ export default class AppUser extends Component {
     }
     gSearchDelayTimerID = setTimeout(() => {
       console.log('starting search for ' + searchTerm);
-      this.startSearch(this.props.notesUserHandle, searchTerm);
+      this.startSearch(this.state.notesUserHashedID, searchTerm);
     }, 300);
   }
 
@@ -190,19 +195,16 @@ export default class AppUser extends Component {
   }
 
   render() {
-    const compact = false;
-    const isLoggedIn = this.state.loggedInUserHandle !== '';
-    const myNotes = isLoggedIn && (this.props.notesUserHandle == this.state.loggedInUserHandle);
+    const showingMyNotes = u.isLoggedIn() && (this.state.notesUserHashedID == this.state.loggedUserHashedID);
 
     return (
       <div>
-        <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ this.state.loggedInUserHandle } notesUserHandle={ this.props.notesUserHandle } />
+        <Top />
         <LeftSidebar tags={ this.state.tags }
-          isLoggedIn={ isLoggedIn }
-          myNotes={ myNotes }
+          showingMyNotes={ showingMyNotes }
           onTagSelected={ this.handleTagSelected }
           selectedTag={ this.state.selectedTag } />
-        <NotesList notes={ this.state.selectedNotes } myNotes={ myNotes } compact={ compact } />
+        <NotesList notes={ this.state.selectedNotes } showingMyNotes={ showingMyNotes } compact={ false } />
         <Settings />
         { this.state.searchResults ?
           <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } /> : null }
@@ -214,7 +216,6 @@ export default class AppUser extends Component {
 }
 
 AppUser.propTypes = {
-  notesUserHandle: PropTypes.string,
   initialTag: PropTypes.string,
   initialNotesJSON: PropTypes.object
 };
@@ -237,7 +238,7 @@ function appUserStart() {
   //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
 
   ReactDOM.render(
-    <AppUser notesUserHandle={ gNotesUserHandle } initialNotesJSON={ gInitialNotesJSON } initialTag={ initialTag } />,
+    <AppUser initialNotesJSON={ gInitialNotesJSON } initialTag={ initialTag } />,
     document.getElementById('root')
   );
 }

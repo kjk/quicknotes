@@ -11,19 +11,19 @@
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
 
   <script>
-    var gLoggedInUserHandle = "{{.LoggedInUserHandleJS}}";
-    var gNoteUserHandle = "{{.NoteUserHandleJS}}";
-    var gNoteBody = "{{.NoteBodyJS}}";
-    var gNoteFormat = "{{.NoteFormat}}";
-    var gNoteTitle = "{{.NoteTitleJS}}";
+    var gLoggedUser = {{.LoggedUser}};
+    var gNotesUser = null;
+
+    var gNoteUser = {{.NoteUser}};
+    var gNoteBody = {{.NoteBody}};
+    var gNoteFormat = {{.NoteFormat}};
+    var gNoteTitle = {{.NoteTitle}};
   </script>
 </head>
 
 <body class="theme-light">
 
-  <div id="root">
-
-  </div>
+  <div id="root"></div>
 
   <script src="/s/dist/bundle.js"></script>
   <script>

@@ -70,7 +70,7 @@ export default class NotesList extends React.Component {
               return <Note compact={ this.props.compact }
                        note={ note }
                        key={ key }
-                       myNotes={ this.props.myNotes } />;
+                       showingMyNotes={ this.props.showingMyNotes } />;
             }) }
         </div>
       </div>
@@ -79,7 +79,7 @@ export default class NotesList extends React.Component {
 }
 
 NotesList.propTypes = {
-  notes: React.PropTypes.array,
-  compact: React.PropTypes.bool,
-  myNotes: React.PropTypes.bool
+  notes: React.PropTypes.array.isRequired,
+  compact: React.PropTypes.bool.isRequired,
+  showingMyNotes: React.PropTypes.bool.isRequired
 };

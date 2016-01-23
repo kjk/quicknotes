@@ -220,7 +220,7 @@ export default class Note extends Component {
   }
 
   renderStarUnstar(note) {
-    if (!this.props.myNotes || ni.IsDeleted((note))) {
+    if (!this.props.showingMyNotes || ni.IsDeleted((note))) {
       return;
     }
 
@@ -270,7 +270,7 @@ export default class Note extends Component {
   }
 
   renderActions(note) {
-    if (this.props.myNotes) {
+    if (this.props.showingMyNotes) {
       return this.renderActionsIfMyNotes(note);
     } else {
       return this.renderActionsIfNotMyNotes(note);
@@ -301,7 +301,7 @@ export default class Note extends Component {
 }
 
 Note.propTypes = {
-  note: PropTypes.array,
-  compact: PropTypes.bool,
-  myNotes: PropTypes.bool
+  note: PropTypes.array.isRequired,
+  compact: PropTypes.bool.isRequired,
+  showingMyNotes: PropTypes.bool.isRequired
 };

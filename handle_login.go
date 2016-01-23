@@ -141,7 +141,7 @@ func getSecureCookie(w http.ResponseWriter, r *http.Request) *SecureCookieValue 
 	return &ret
 }
 
-func getUserFromCookie(w http.ResponseWriter, r *http.Request) *DbUser {
+func getDbUserFromCookie(w http.ResponseWriter, r *http.Request) *DbUser {
 	sc := getSecureCookie(w, r)
 	if sc == nil {
 		return nil

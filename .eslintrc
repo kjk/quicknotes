@@ -38,12 +38,12 @@
   },
   "globals": {
     "global": true,
-    "gLoggedInUserHandle": true,
+    "gLoggedUser": true,
+    "gNotesUser": true,
+    "gNoteUser": true,
     "gRecentNotesInitial": true,
-    "gNotesUserHandle": true,
     "gInitialNotesJSON": true,
     "gNoteTitle": true,
-    "gNoteUserHandle": true,
     "gNoteBody": true,
     "gNoteFormat": true,
     "linkify": true

@@ -33,15 +33,19 @@ type SearchResult struct {
 
 // GET /api/searchusernotes
 // args:
-// - user : user handle
+// - user : hashed user id
 // - term : search term
 // TODO: limit number of hits to some reasonable number e.g. 100?
 func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
-	userHandle := strings.TrimSpace(r.FormValue("user"))
-	if userHandle == "" {
-		log.Errorf("missing user arg in '%s'\n", r.URL)
+	hashedUserID := strings.TrimSpace(r.FormValue("user"))
+	if hashedUserID == "" {
+		log.Errorf("missing 'user' arg in '%s'\n", r.URL)
 		http.NotFound(w, r)
 		return
+	}
+	userID, err := dehashInt(hashedUserID)
+	if err != nil {
+		log.Errorf("invalid 'user' arg '%s' in '%s', err='%s'\n", hashedUserID, r.URL, err)
 	}
 	searchTerm := r.FormValue("term")
 	if searchTerm == "" {
@@ -49,16 +53,12 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 		httpServerError(w, r)
 		return
 	}
-	loggedInUserHandle := ""
-	dbUser := getUserFromCookie(w, r)
-	if dbUser != nil {
-		loggedInUserHandle = dbUser.Handle
-	}
-	searchPrivate := userHandle == loggedInUserHandle
+	loggedUser := getUserSummaryFromCookie(w, r)
+	searchPrivate := loggedUser != nil && userID == loggedUser.id
 
-	log.Infof("userHandle: '%s', term: '%s', private: %v, url: '%s'\n", userHandle, searchTerm, searchPrivate, r.URL)
+	log.Infof("userID: '%d', term: '%s', private: %v, url: '%s'\n", userID, searchTerm, searchPrivate, r.URL)
 
-	i, err := getCachedUserInfoByHandle(userHandle)
+	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
 		httpServerError(w, r)
 		return

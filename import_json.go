@@ -22,6 +22,19 @@ type noteJSON struct {
 	CreatedAt time.Time
 }
 
+func noteJSONToNewNote(n *noteJSON) NewNote {
+	res := NewNote{
+		title:     n.Title,
+		format:    n.Format,
+		content:   n.Content,
+		tags:      n.Tags,
+		createdAt: n.CreatedAt,
+		isDeleted: n.IsDeleted,
+		isPublic:  n.IsPublic,
+	}
+	return res
+}
+
 func importNotesFromJSON(path, userHandle string) {
 	var r io.Reader
 	if path == "" || userHandle == "" {
@@ -52,15 +65,7 @@ func importNotesFromJSON(path, userHandle string) {
 		if err != nil {
 			break
 		}
-		newNote := NewNote{
-			title:     n.Title,
-			format:    n.Format,
-			content:   n.Content,
-			tags:      n.Tags,
-			createdAt: n.CreatedAt,
-			isDeleted: n.IsDeleted,
-			isPublic:  n.IsPublic,
-		}
+		newNote := noteJSONToNewNote(&n)
 		if isBlog {
 			newNote.tags = append(newNote.tags, "blog")
 		}

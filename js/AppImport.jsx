@@ -3,11 +3,10 @@ import ReactDOM from 'react-dom';
 import Top from './Top.jsx';
 
 function appImportStart() {
-  console.log('appImportStart: gLoggedInUserHandle: ', gLoggedInUserHandle);
-  const isLoggedIn = gLoggedInUserHandle !== '';
+  console.log('appImportStart: gLoggedUser: ', gLoggedUser);
   const el = document.getElementById('header-top');
   ReactDOM.render(
-    <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />,
+    <Top />,
     el);
 }
 

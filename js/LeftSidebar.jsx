@@ -38,7 +38,7 @@ export default class LeftSidebar extends Component {
     }
     tagNames.sort();
 
-    if (this.props.myNotes) {
+    if (this.props.showingMyNotes) {
       // add special tags: all, public, deleted (in reverse order)
       if (showDeletedTag) {
         specialTagNames.unshift('__deleted');
@@ -65,6 +65,6 @@ export default class LeftSidebar extends Component {
 LeftSidebar.propTypes = {
   onTagSelected: PropTypes.func.isRequired,
   tags: PropTypes.object, // TODO: more specific
-  myNotes: PropTypes.bool,
+  showingMyNotes: PropTypes.bool.isRequired,
   selectedTag: PropTypes.string
 };

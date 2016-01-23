@@ -13,7 +13,8 @@ export default class NoteBody extends Component {
     };
   }
 
-  handleExpand() {
+  handleExpand(e) {
+    e.preventDefault();
     const note = this.state.note;
     console.log('expand note', ni.IDStr(note));
     ni.Expand(note);
@@ -29,7 +30,8 @@ export default class NoteBody extends Component {
     }
   }
 
-  handleCollapse() {
+  handleCollapse(e) {
+    e.preventDefault();
     const note = this.state.note;
     console.log('collapse note', ni.IDStr(note));
     ni.Collapse(note);
@@ -85,7 +87,7 @@ export default class NoteBody extends Component {
 }
 
 NoteBody.propTypes = {
-  note: PropTypes.array,
-  compact: PropTypes.bool
+  note: PropTypes.array.isRequired,
+  compact: PropTypes.bool.isRequired
 };
 
