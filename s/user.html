@@ -5,20 +5,19 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Notes of {{ .UserHandle }}</title>
+  <title>Notes by {{ .NotesUser.Handle }}</title>
   <link rel="stylesheet" href="/s/dist/main.css">
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
   <script>
-    var gNotesUserHandle = "{{.UserHandle}}";
-    var gLoggedInUserID = "{{.LoggedInUserID}}";
-    var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
+    var gLoggedUser = {{.LoggedUser}};
+    var gNotesUser = {{.NotesUser}};
     var gInitialNotesJSON = null;
 
     function setInitialNotes(json) {
       gInitialNotesJSON = json;
     }
   </script>
-  <script src="/api/getnotes?jsonp=setInitialNotes&user={{.UserID}}">
+  <script src="/api/getnotes?jsonp=setInitialNotes&user={{.NotesUser.HashedID}}">
   </script>
 </head>
 

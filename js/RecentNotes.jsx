@@ -17,7 +17,7 @@ export default class RecentNotes extends Component {
         <div>
           Recent notes:
         </div>
-        <NotesList notes={ notes } compact={ false } myNotes={ false } />
+        <NotesList notes={ notes } compact={ false } showingMyNotes={ false } />
       </div>
       );
   }

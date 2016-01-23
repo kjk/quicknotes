@@ -52,14 +52,16 @@ export default class Top extends Component {
   }
 
   renderSearchInput() {
-    const userHandle = this.props.notesUserHandle;
-    if (userHandle === '') {
+    if (!gNotesUser && !gLoggedUser) {
       return;
     }
-    let placeholder = 'Search public notes by ' + userHandle + ' (Ctrl-F)';
-    if (userHandle == gLoggedInUserHandle) {
-      placeholder = 'Search your notes (Ctrl-F)';
+    let placeholder = 'Search your notes (Ctrl-F)';
+    if (gNotesUser) {
+      if (!gLoggedUser || (gLoggedUser.HashedID != gNotesUser.HashedID)) {
+        placeholder = `Search public notes by ${gNotesUser.Handle} (Ctrl-F)`;
+      }
     }
+
     return (
       <input name="search"
         id="search-input"
@@ -79,7 +81,7 @@ export default class Top extends Component {
   }
 
   renderNewNote() {
-    if (this.props.isLoggedIn) {
+    if (u.isLoggedIn()) {
       return (
         <a id="new-note"
           title="Create new note (ctrl-n)"
@@ -95,14 +97,8 @@ export default class Top extends Component {
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
         { this.renderNewNote() }
         { this.renderSearchInput() }
-        <LogInLink isLoggedIn={ this.props.isLoggedIn } loggedInUserHandle={ this.props.loggedInUserHandle } />
+        <LogInLink />
       </div>
       );
   }
 }
-
-Top.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired,
-  loggedInUserHandle: PropTypes.string,
-  notesUserHandle: PropTypes.string
-};

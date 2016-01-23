@@ -163,7 +163,11 @@ export function escapeHtml(str) {
   div.appendChild(document.createTextNode(str));
   return div.innerHTML;
 }
-;
+
+export function isLoggedIn() {
+  const notLoggedIn = gLoggedUser == null || gLoggedUser == undefined;
+  return !notLoggedIn;
+}
 
 window.runOnLoad = runOnLoad;
 console.log('iniialized window.runOnLoad');

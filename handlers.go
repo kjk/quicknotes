@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -17,6 +16,13 @@ import (
 	"github.com/kjk/log"
 	"github.com/kjk/u"
 )
+
+// UserSummary describes logged-in user
+type UserSummary struct {
+	id       int
+	HashedID string
+	Handle   string
+}
 
 var (
 	// loaded only once at startup. maps a file path of the resource
@@ -53,6 +59,22 @@ func loadResourcesFromZipReader(zr *zip.Reader) error {
 		resourcesFromZip[name] = d
 	}
 	return nil
+}
+
+func userSummaryFromDbUser(dbUser *DbUser) *UserSummary {
+	if dbUser == nil {
+		return nil
+	}
+	return &UserSummary{
+		id:       dbUser.ID,
+		HashedID: hashInt(dbUser.ID),
+		Handle:   dbUser.Handle,
+	}
+}
+
+func getUserSummaryFromCookie(w http.ResponseWriter, r *http.Request) *UserSummary {
+	dbUser := getDbUserFromCookie(w, r)
+	return userSummaryFromDbUser(dbUser)
 }
 
 // call this only once at startup
@@ -109,13 +131,14 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 
 /*
 Big picture:
-/ - main page, tbd (show public notes, on-boarding for new users?)
+/ - main page, shows recent public notes, on-boarding for new users
 /latest - show latest public notes
 /s/{path} - static files
-/u/{name} - main page for a given user. Shows read-write UI if it's a logged-in
-            user. Show public messages of user if not this logged-in user
-/n/{note_id} - show a single note
-/api/*.json - api calls
+/u/{idHashed} - main page for a given user. Shows read-write UI if
+  it's a logged-in user. Shows only public if user's owner != logged in
+  user
+/n/${noteIdHashed} - show a single note
+/api/* - api calls
 */
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -124,7 +147,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	dbUser := getUserFromCookie(w, r)
+	loggedUser := getUserSummaryFromCookie(w, r)
 	/*
 		name := r.URL.Path[1:]
 		if strings.HasSuffix(name, ".html") {
@@ -135,19 +158,17 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			}
 		}*/
 
-	if dbUser != nil {
-		log.Infof("url: '%s', user: %d, login: '%s', handle: '%s'\n", uri, dbUser.ID, dbUser.Login, dbUser.Handle)
+	if loggedUser != nil {
+		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, loggedUser.id, loggedUser.HashedID, loggedUser.Handle)
 	} else {
-		log.Infof("url: '%s'\n", uri)
+		log.Verbosef("url: '%s'\n", uri)
 	}
-
-	model := struct {
-		LoggedInUserHandle string
-	}{}
-	if dbUser != nil {
-		model.LoggedInUserHandle = dbUser.Handle
+	v := struct {
+		LoggedUser *UserSummary
+	}{
+		LoggedUser: loggedUser,
 	}
-	execTemplate(w, tmplIndex, model)
+	execTemplate(w, tmplIndex, v)
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
@@ -175,11 +196,11 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 
 // /u/${userId}/${whatever}
 func handleUser(w http.ResponseWriter, r *http.Request) {
-	userIDStr := r.URL.Path[len("/u/"):]
-	userIDStr = strings.Split(userIDStr, "/")[0]
-	userID, err := dehashInt(userIDStr)
+	hashedUserIDStr := r.URL.Path[len("/u/"):]
+	hashedUserIDStr = strings.Split(hashedUserIDStr, "/")[0]
+	userID, err := dehashInt(hashedUserIDStr)
 	if err != nil {
-		log.Errorf("invalid userID='%s'\n", userIDStr)
+		log.Errorf("invalid userID='%s'\n", hashedUserIDStr)
 		http.NotFound(w, r)
 		return
 	}
@@ -189,22 +210,17 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	log.Verbosef("%d notes for user '%d'\n", len(i.notes), userID)
+	loggedUser := getUserSummaryFromCookie(w, r)
+	notesUser := *userSummaryFromDbUser(i.user)
+	log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, hashedUserIDStr)
 	model := struct {
-		LoggedInUserID     string
-		LoggedInUserHandle string
-		UserID             string
-		UserHandle         string
-		Notes              []*Note
+		LoggedUser *UserSummary
+		NotesUser  UserSummary
+		Notes      []*Note
 	}{
-		LoggedInUserID: userIDStr,
-		UserID:         hashInt(i.user.ID),
-		UserHandle:     i.user.Handle,
-		Notes:          i.notes,
-	}
-	dbUser := getUserFromCookie(w, r)
-	if dbUser != nil {
-		model.LoggedInUserHandle = dbUser.Handle
+		LoggedUser: loggedUser,
+		NotesUser:  notesUser,
+		Notes:      i.notes,
 	}
 	execTemplate(w, tmplUser, model)
 }
@@ -230,7 +246,7 @@ func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr strin
 	if err != nil {
 		return nil, err
 	}
-	dbUser := getUserFromCookie(w, r)
+	dbUser := getDbUserFromCookie(w, r)
 	// TODO: when we have sharing via secret link we'll have to check
 	// permissions
 	if !userCanAccessNote(dbUser, note) {
@@ -254,36 +270,27 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loggedInUserHandle := ""
-	dbUser := getUserFromCookie(w, r)
-	if dbUser != nil {
-		loggedInUserHandle = dbUser.Handle
-	}
+	loggedUser := getUserSummaryFromCookie(w, r)
 
 	dbNoteUser, err := dbGetUserByID(note.userID)
 	if err != nil {
 		httpErrorf(w, "dbGetUserByID(%d) failed with %s", note.userID, err)
 		return
 	}
-	noteUserHandle := ""
-	if dbNoteUser != nil {
-		noteUserHandle = dbNoteUser.Handle
-	}
+	noteUser := userSummaryFromDbUser(dbNoteUser)
 
 	model := struct {
-		NoteTitle            string
-		NoteTitleJS          string
-		NoteBodyJS           string
-		NoteFormat           string
-		LoggedInUserHandleJS string
-		NoteUserHandleJS     string
+		LoggedUser *UserSummary
+		NoteUser   *UserSummary
+		NoteTitle  string
+		NoteBody   string
+		NoteFormat string
 	}{
-		NoteTitle:            note.Title,
-		NoteTitleJS:          template.JSEscapeString(note.Title),
-		NoteBodyJS:           template.JSEscapeString(note.Content()),
-		NoteFormat:           formatNameFromID(note.Format),
-		LoggedInUserHandleJS: template.JSEscapeString(loggedInUserHandle),
-		NoteUserHandleJS:     template.JSEscapeString(noteUserHandle),
+		LoggedUser: loggedUser,
+		NoteUser:   noteUser,
+		NoteTitle:  note.Title,
+		NoteBody:   note.Content(),
+		NoteFormat: formatNameFromID(note.Format),
 	}
 	execTemplate(w, tmplNote, model)
 }
@@ -341,7 +348,7 @@ func noteToCompact(n *Note) []interface{} {
 
 // /api/getnote?id=${note_id_hash}
 func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
-	dbUser := getUserFromCookie(w, r)
+	dbUser := getDbUserFromCookie(w, r)
 	noteIDHashStr := r.FormValue("id")
 	note, err := getNoteByIDHash(w, r, noteIDHashStr)
 	if err != nil || note == nil {
@@ -384,11 +391,8 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		httpServerError(w, r)
 		return
 	}
-	loggedInUserHandle := ""
-	dbUser := getUserFromCookie(w, r)
-	if dbUser != nil {
-		loggedInUserHandle = dbUser.Handle
-	}
+	dbUser := getDbUserFromCookie(w, r)
+	loggedUser := userSummaryFromDbUser(dbUser)
 
 	showPrivate := userID == dbUser.ID
 	var notes [][]interface{}
@@ -397,15 +401,20 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 			notes = append(notes, noteToCompact(note))
 		}
 	}
-	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: '%s', showPrivate: %v\n", len(notes), userID, i.user.Handle, loggedInUserHandle, showPrivate)
+
+	loggedUserID := -1
+	loggedUserHandle := ""
+	if loggedUser != nil {
+		loggedUserHandle = loggedUser.Handle
+		loggedUserID = loggedUser.id
+	}
+	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Handle, loggedUserID, loggedUserHandle, showPrivate)
 	v := struct {
-		LoggedInUserID     string
-		LoggedInUserHandle string
-		Notes              [][]interface{}
+		LoggedUser *UserSummary
+		Notes      [][]interface{}
 	}{
-		LoggedInUserID:     hashInt(i.user.ID),
-		LoggedInUserHandle: loggedInUserHandle,
-		Notes:              notes,
+		LoggedUser: loggedUser,
+		Notes:      notes,
 	}
 	httpOkWithJsonpCompact(w, r, v, jsonp)
 }
@@ -484,7 +493,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 //  noteJSON : note serialized as json in array format
 func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
-	dbUser := getUserFromCookie(w, r)
+	dbUser := getDbUserFromCookie(w, r)
 	if dbUser == nil {
 		log.Errorf("not logged in\n")
 		httpErrorWithJSONf(w, "user not logged in")
@@ -512,7 +521,7 @@ func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) {
-	dbUser := getUserFromCookie(w, r)
+	dbUser := getDbUserFromCookie(w, r)
 	if dbUser == nil {
 		log.Errorf("not logged int\n")
 		httpErrorWithJSONf(w, "user not logged in")

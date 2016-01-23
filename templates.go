@@ -3,10 +3,10 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"text/template"
 )
 
 var (

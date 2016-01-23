@@ -11,12 +11,14 @@
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
 
   <script>
-    var gLoggedInUserHandle = "{{.LoggedInUserHandle}}";
+    var gLoggedUser = {{.LoggedUser}};
+    var gNotesUser = null;
     var gRecentNotesInitial = null;
 
     function setRecentNotesInitial(json) {
       gRecentNotesInitial = json;
     }
+
   </script>
   <script src="/api/getrecentnotes?jsonp=setRecentNotesInitial"></script>
 </head>

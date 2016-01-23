@@ -194,7 +194,7 @@ result:
 */
 func handleAPIImportSimpleNotesStatus(w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL.Path)
-	dbUser := getUserFromCookie(w, r)
+	dbUser := getDbUserFromCookie(w, r)
 	if dbUser == nil {
 		httpErrorWithJSONf(w, "not logged in")
 		return
@@ -232,7 +232,7 @@ result:
 */
 func handleAPIImportSimpleNoteStart(w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL.Path)
-	dbUser := getUserFromCookie(w, r)
+	dbUser := getDbUserFromCookie(w, r)
 	if dbUser == nil {
 		httpErrorWithJSONf(w, "not logged in")
 		return

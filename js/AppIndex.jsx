@@ -30,13 +30,12 @@ export default class AppIndex extends Component {
 */
 
   render() {
-    console.log('AppIndex: gLoggedInUserHandle: ', gLoggedInUserHandle);
+    console.log('AppIndex: gLoggedUser: ', gLoggedUser);
     const notes = this.state.notes;
-    const isLoggedIn = gLoggedInUserHandle !== '';
     return (
       <div>
-        <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
-        <NotesList notes={ notes } compact={ false } myNotes={ false } />
+        <Top />
+        <NotesList notes={ notes } compact={ false } showingMyNotes={ false } />
         <Settings />
         <ImportSimpleNote />
         <Editor />

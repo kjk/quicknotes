@@ -61,15 +61,14 @@ export default class AppNote extends Component {
     return <div dangerouslySetInnerHTML={ html }></div>;
   }
   render() {
-    console.log('appNoteStart: gLoggedInUserHandle: ', gLoggedInUserHandle);
-    const isLoggedIn = gLoggedInUserHandle !== '';
+    console.log('appNoteStart: gLoggedUser: ', gLoggedUser);
     const title = gNoteTitle;
-    const noteUser = gNoteUserHandle;
-    const url = '/u/' + noteUser;
+    const nu = gNoteUser;
+    const url = `/u/${nu.HashedID}/${nu.Handle}`;
     return (
       <div>
         <div id="note-top">
-          <Top isLoggedIn={ isLoggedIn } loggedInUserHandle={ gLoggedInUserHandle } notesUserHandle="" />
+          <Top />
         </div>
         <div id="full-note">
           <div className="note-content-wrapper">
@@ -80,7 +79,7 @@ export default class AppNote extends Component {
           <center className="note-footer">
             A note by&nbsp;
             <a href={ url }>
-              { noteUser }
+              { nu }
             </a>.
           </center>
         </div>

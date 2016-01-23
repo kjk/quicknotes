@@ -317,15 +317,6 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	return res, nil
 }
 
-// TODO: add withPrivateNotes
-func getCachedUserInfoByHandle(userHandle string) (*CachedUserInfo, error) {
-	user, err := dbGetUserByHandle(userHandle)
-	if err != nil {
-		return nil, err
-	}
-	return getCachedUserInfo(user.ID)
-}
-
 func ensureValidFormat(format int) {
 	if format >= formatText && format <= formatLast {
 		return
