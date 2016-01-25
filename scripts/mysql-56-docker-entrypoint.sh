@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# based on https://raw.githubusercontent.com/docker-library/mysql/master/5.5/docker-entrypoint.sh
+# based on https://raw.githubusercontent.com/docker-library/mysql/master/5.6/docker-entrypoint.sh
 
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
@@ -13,14 +13,15 @@ if [ "$1" = 'mysqld' ]; then
 	DATADIR="$("$@" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }')"
 
 	if [ ! -d "$DATADIR/mysql" ]; then
+
 		mkdir -p "$DATADIR"
 		chown -R mysql:mysql "$DATADIR"
 
 		echo 'Initializing database'
-		mysql_install_db --user=mysql --datadir="$DATADIR" --rpm --basedir=/usr/local/mysql
+		mysql_install_db --user=mysql --datadir="$DATADIR" --rpm --keep-my-cnf
 		echo 'Database initialized'
 
-		"$@" --skip-networking --basedir=/usr/local/mysql &
+		"$@" --skip-networking &
 		pid="$!"
 
 		mysql=( mysql --protocol=socket -uroot )
