@@ -101,7 +101,6 @@ type DbNote struct {
 	Title         string
 	Format        int
 	ContentSha1   []byte
-	SnippetSha1   []byte
 	Tags          []string `json:",omitempty"`
 	CreatedAt     time.Time
 }
@@ -127,7 +126,6 @@ type NewNote struct {
 	isDeleted   bool
 	isPublic    bool
 	contentSha1 []byte
-	snippetSha1 []byte
 }
 
 func newNoteFromNote(n *Note) (*NewNote, error) {
@@ -140,7 +138,6 @@ func newNoteFromNote(n *Note) (*NewNote, error) {
 		isDeleted:   n.IsDeleted,
 		isPublic:    n.IsPublic,
 		contentSha1: n.ContentSha1,
-		snippetSha1: n.SnippetSha1,
 	}
 	nn.content, err = getCachedContent(nn.contentSha1)
 	return nn, err
@@ -183,7 +180,7 @@ func (n *Note) SetSnippet() {
 
 // SetCalculatedProperties calculates some props
 func (n *Note) SetCalculatedProperties() {
-	n.IsPartial = !bytes.Equal(n.ContentSha1, n.SnippetSha1)
+	n.IsPartial = len(n.ContentSha1) > snippetSizeThreshold
 	n.IDStr = hashInt(n.id)
 	n.SetSnippet()
 }
@@ -275,7 +272,7 @@ func getCachedContent(sha1 []byte) ([]byte, error) {
 }
 
 func getNoteSnippet(note *Note) ([]byte, error) {
-	return getCachedContent(note.SnippetSha1)
+	return localStore.GetSnippet(note.ContentSha1)
 }
 
 func getNoteContent(note *Note) ([]byte, error) {
@@ -386,41 +383,25 @@ func deserializeTags(s string) []string {
 	return strings.Split(s, tagSepStr)
 }
 
-func saveContentOne(d []byte) ([]byte, error) {
+// save to local store and google storage
+// we only save snippets locally
+func saveContent(d []byte) ([]byte, error) {
 	sha1, err := localStore.PutContent(d)
 	if err != nil {
 		return nil, err
 	}
-	return sha1, err
-}
-
-// save to local store and google storage
-// we only save snippets locally
-func saveContent(d []byte) ([]byte, []byte, error) {
-	sha1, err := saveContentOne(d)
-	if err != nil {
-		return nil, nil, err
-	}
 	err = saveNoteToGoogleStorage(sha1, d)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	snippetSha1 := sha1
 	if len(d) <= snippetSizeThreshold {
-		return sha1, snippetSha1, nil
+		return sha1, nil
 	}
 
 	snippet := d[:snippetSizeThreshold]
-	snippetSha1, err = saveContentOne(snippet)
-	if err != nil {
-		return nil, nil, err
-	}
-	err = saveNoteToGoogleStorage(snippetSha1, snippet)
-	if err != nil {
-		return nil, nil, err
-	}
-	return sha1, snippetSha1, nil
+	err = localStore.PutSnippet(sha1, snippet)
+	return sha1, err
 }
 
 func loadContent(sha1 []byte) ([]byte, error) {
@@ -449,7 +430,6 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	}()
 
 	fatalif(note.contentSha1 == nil, "note.contentSha1 is nil")
-	fatalif(note.snippetSha1 == nil, "note.snippetSha1 is nil")
 
 	// for non-imported notes use current time as note creation time
 	if note.createdAt.IsZero() {
@@ -469,8 +449,8 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		return 0, err
 	}
 	serilizedTags := serializeTags(note.tags)
-	q = `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
+	q = `INSERT INTO versions (note_id, size, format, title, content_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, serilizedTags, note.createdAt)
 	if err != nil {
 		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
@@ -565,8 +545,8 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	if needNewVersion {
 		//log.Infof("inserting new version of note %d\n", noteID)
 		serilizedTags := serializeTags(note.tags)
-		q := `INSERT INTO versions (note_id, size, format, title, content_sha1, snippet_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-		res, err := tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, note.snippetSha1, serilizedTags, note.createdAt)
+		q := `INSERT INTO versions (note_id, size, format, title, content_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
+		res, err := tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, serilizedTags, note.createdAt)
 		if err != nil {
 			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 			return 0, err
@@ -607,7 +587,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	if len(note.content) == 0 {
 		return 0, errors.New("empty note content")
 	}
-	note.contentSha1, note.snippetSha1, err = saveContent(note.content)
+	note.contentSha1, err = saveContent(note.content)
 	if err != nil {
 		log.Errorf("saveContent() failed with %s\n", err)
 		return 0, err
@@ -741,7 +721,6 @@ SELECT
 	v.format,
 	v.title,
 	v.content_sha1,
-	v.snippet_sha1,
 	v.tags
 FROM notes n, versions v
 WHERE v.id = n.curr_version_id
@@ -767,7 +746,6 @@ LIMIT 10000`
 			&n.Format,
 			&n.Title,
 			&n.ContentSha1,
-			&n.SnippetSha1,
 			&tagsSerialized)
 		if err != nil {
 			return nil, err
@@ -836,7 +814,6 @@ SELECT
 	v.format,
 	v.title,
 	v.content_sha1,
-	v.snippet_sha1,
 	v.tags
 FROM notes n, versions v
 WHERE user_id = ? AND v.id = n.curr_version_id`
@@ -861,7 +838,6 @@ WHERE user_id = ? AND v.id = n.curr_version_id`
 			&n.Format,
 			&n.Title,
 			&n.ContentSha1,
-			&n.SnippetSha1,
 			&tagsSerialized)
 		if err != nil {
 			return nil, err
@@ -1011,7 +987,6 @@ func dbGetNoteByID(id int) (*Note, error) {
 		v.format,
 		v.title,
 		v.content_sha1,
-		v.snippet_sha1,
 		v.tags
 	FROM notes n, versions v
 	WHERE n.id=? AND v.id = n.curr_version_id`
@@ -1028,7 +1003,6 @@ func dbGetNoteByID(id int) (*Note, error) {
 		&n.Format,
 		&n.Title,
 		&n.ContentSha1,
-		&n.SnippetSha1,
 		&tagsSerialized)
 	if err != nil {
 		return nil, err
