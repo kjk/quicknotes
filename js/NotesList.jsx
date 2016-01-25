@@ -7,7 +7,7 @@ import * as ni from './noteinfo.js';
 const maxInitialNotes = 50;
 
 function truncateNotes(notes) {
-  if (maxInitialNotes != -1 && notes.length >= maxInitialNotes) {
+  if (maxInitialNotes != -1 && notes && notes.length >= maxInitialNotes) {
     return notes.slice(0, maxInitialNotes);
   }
   return notes;
@@ -19,7 +19,7 @@ export default class NotesList extends React.Component {
     this.handleScroll = this.handleScroll.bind(this);
 
     this.state = {
-      notes: truncateNotes(props.notes)
+      notes: truncateNotes(props.notes) || []
     };
   }
 
@@ -79,7 +79,7 @@ export default class NotesList extends React.Component {
 }
 
 NotesList.propTypes = {
-  notes: React.PropTypes.array.isRequired,
+  notes: React.PropTypes.array,
   compact: React.PropTypes.bool.isRequired,
   showingMyNotes: React.PropTypes.bool.isRequired
 };
