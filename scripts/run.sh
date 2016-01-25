@@ -2,8 +2,8 @@
 
 import sys, os, os.path, time, subprocess
 
-g_imageName = "quicknotes/mysql-55"
-g_containerName = "mysql-55-for-quicknotes"
+g_imageName = "quicknotes/mysql-56"
+g_containerName = "mysql-56-for-quicknotes"
 
 kStatusRunning = "running"
 kStatusExited = "exited"
