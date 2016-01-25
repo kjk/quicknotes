@@ -346,12 +346,6 @@ func getCreateDbStatementsMust() []string {
 	return strings.Split(string(d), "\n\n")
 }
 
-func upgradeDbMust(db *sql.DB) {
-	//q := `SELECT 1 FROM dbmigrations WHERE version = ?`
-	//q := `INSERT INTO dbmigrations (version) VALUES (?)``
-	// TODO: implement me
-}
-
 func createDatabaseMust() *sql.DB {
 	log.Verbosef("trying to create the database\n")
 	db, err := sql.Open("mysql", getSQLConnectionRoot())
@@ -1175,11 +1169,11 @@ func recreateDatabaseMust() {
 // note: no locking. the presumption is that this is called at startup and
 // available throughout the lifetime of the program
 func getDbMust() *sql.DB {
+	sqlDbMu.Lock()
+	defer sqlDbMu.Unlock()
 	if sqlDb != nil {
 		return sqlDb
 	}
-	sqlDbMu.Lock()
-	defer sqlDbMu.Unlock()
 	db, err := sql.Open("mysql", getSQLConnection())
 	if err != nil {
 		log.Fatalf("sql.Open() failed with %s", err)
@@ -1194,7 +1188,10 @@ func getDbMust() *sql.DB {
 			log.Fatalf("db.Ping() failed with %s\n", err)
 		}
 	} else {
-		upgradeDbMust(db)
+		err = upgradeDb(db)
+		if err != nil {
+			log.Fatalf("upgradeDb() failed with '%s'\n", err)
+		}
 	}
 	sqlDb = db
 	return sqlDb
