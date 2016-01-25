@@ -31,16 +31,18 @@ High-level overview:
 */
 
 const (
-	DefaultMaxSegmentSize           = 1024 * 1024 * 1024 * 1 // 1 GB
-	DefaultFileSizeSegmentThreshold = 1024 * 1024 * 1        // 1 MB, bigger than this will be saved to a separate file
+	defaultMaxSegmentSize           = 1024 * 1024 * 1024 * 1 // 1 GB
+	defaultFileSizeSegmentThreshold = 1024 * 1024 * 1        // 1 MB, bigger than this will be saved to a separate file
 )
 
 var (
-	dbKeyPrefixSha1 = []byte("sha1:")
-
+	dbKeyPrefixSha1        = []byte("sha1:")
+	dbKeyPrefixSnippetSha1 = []byte("snippet:sha1:")
+	// ErrInvalidSegmentFilePath describes an error about invalid segment file
 	ErrInvalidSegmentFilePath = errors.New("invalid segment file path")
 )
 
+// LocalStore describes a store
 type LocalStore struct {
 	mu                  sync.Mutex
 	dataDir             string
@@ -64,6 +66,7 @@ func closeFilePtr(filePtr **os.File) (err error) {
 	return err
 }
 
+// NewLocalStore creates a new store in a given directory
 func NewLocalStore(dir string) (*LocalStore, error) {
 	filesDir := filepath.Join(dir, "files")
 	err := u.CreateDirIfNotExists(filesDir)
@@ -76,8 +79,8 @@ func NewLocalStore(dir string) (*LocalStore, error) {
 		db:                       db,
 		dataDir:                  dir,
 		filesDir:                 filesDir,
-		MaxSegmentSize:           DefaultMaxSegmentSize,
-		FileSizeSegmentThreshold: DefaultFileSizeSegmentThreshold,
+		MaxSegmentSize:           defaultMaxSegmentSize,
+		FileSizeSegmentThreshold: defaultFileSizeSegmentThreshold,
 	}
 	return store, nil
 }
@@ -198,21 +201,30 @@ func (store *LocalStore) saveToSegmentFile(d []byte) ([]byte, error) {
 	return []byte(name), nil
 }
 
-func dbKeyForContentSha1(sha1 []byte) []byte {
-	key := make([]byte, 0, len(dbKeyPrefixSha1)+len(sha1))
-	key = append(key, dbKeyPrefixSha1...)
-	return append(key, sha1...)
+func dbKey(keyPrefix, keySuffix []byte) []byte {
+	key := make([]byte, 0, len(keyPrefix)+len(keySuffix))
+	key = append(key, keyPrefix...)
+	return append(key, keySuffix...)
 }
 
-// returns sha1 of d
+func dbKeyForContentSha1(sha1 []byte) []byte {
+	return dbKey(dbKeyPrefixSha1, sha1)
+}
+
+// sha1 is of the full content
+func dbKeyForSnippetSha1(sha1 []byte) []byte {
+	return dbKey(dbKeyPrefixSnippetSha1, sha1)
+}
+
+// PutContent returns sha1 of d
 func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 	sha1 := u.Sha1OfBytes(d)
 	var val []byte
 	size := len(d)
 
 	key := dbKeyForContentSha1(sha1)
-	_, err := store.db.Get(key, nil)
-	if err == nil {
+	has, err := store.db.Has(key, nil)
+	if err == nil && has {
 		return sha1, nil
 	}
 	store.mu.Lock()
@@ -235,6 +247,27 @@ func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 		return nil, err
 	}
 	return sha1, nil
+}
+
+// PutSnippet writes snippet to the database
+func (store *LocalStore) PutSnippet(sha1Content, d []byte) error {
+	key := dbKeyForSnippetSha1(sha1Content)
+	has, err := store.db.Has(key, nil)
+	if err != nil {
+		return err
+	}
+	if has {
+		return nil
+	}
+	err = store.db.Put(key, d, nil)
+	return err
+}
+
+// GetSnippet reads snippet from the database
+func (store *LocalStore) GetSnippet(sha1Content []byte) ([]byte, error) {
+	key := dbKeyForSnippetSha1(sha1Content)
+	d, err := store.db.Get(key, nil)
+	return d, err
 }
 
 func readFromFile(file *os.File, offset, size int) ([]byte, error) {

@@ -28,7 +28,6 @@ CREATE TABLE versions (
   format          INT NOT NULL,
   title           VARCHAR(512),
   content_sha1    VARBINARY(20),
-  snippet_sha1    VARBINARY(20),
   tags            VARCHAR(512),
   PRIMARY KEY (id),
   INDEX (note_id)
