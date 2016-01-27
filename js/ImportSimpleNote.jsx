@@ -103,12 +103,14 @@ export default class ImportSimpleNote extends Component {
       action.reloadNotes();
       return;
     }
-    const n = res.ImportedCount;
-    const n2 = res.SkippedDuplicateCount;
+    const importedCount = res.ImportedCount;
+    const updatedCount = res.UpdatedCount;
+    const skippedCount = res.SkippedCount;
+    const n = importedCount + updatedCount;
     let msg = `Imported ${n} notes from SimpleNote`;
     const isImporting = !res.IsFinished;
     if (res.IsFinished) {
-      msg = `Finished importing ${n} notes from SimpleNote. Skipped ${n2} previously imported notes.`;
+      msg = `Import from SimpleNote finished. ${importedCount} new notes, ${updatedCount} updated notes, ${skippedCount} skipped previously imported notes.`;
     }
     this.setState({
       finishedImporting: res.IsFinished,
