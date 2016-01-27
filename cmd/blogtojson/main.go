@@ -16,14 +16,6 @@ import (
 	"github.com/kjk/u"
 )
 
-const (
-	formatInvalid  = 0
-	formatText     = 1
-	formatMarkdown = 2
-	formatHTML     = 3
-	formatLast     = formatHTML
-)
-
 // this programs converts my blog posts into .json format that can be
 // imported into quicknotes for testing
 
@@ -31,7 +23,7 @@ const (
 type Note struct {
 	Title     string
 	Content   []byte
-	Format    int
+	Format    string
 	Tags      []string `json:",omitempty"`
 	IsPublic  bool
 	IsDeleted bool
@@ -52,19 +44,19 @@ func parseTags(s string) []string {
 	return tags
 }
 
-func parseFormat(s string) int {
+func parseFormat(s string) string {
 	s = strings.ToLower(s)
 	switch s {
 	case "html":
-		return formatHTML
+		return "html"
 	case "textile":
-		return formatInvalid
+		return "txt"
 	case "markdown", "md":
-		return formatMarkdown
+		return "md"
 	case "text":
-		return formatText
+		return "txt"
 	default:
-		return formatInvalid
+		return "txt"
 	}
 }
 
@@ -117,12 +109,7 @@ func readNote(path string) *Note {
 		case "tags":
 			n.Tags = parseTags(v)
 		case "format":
-			f := parseFormat(v)
-			if f == formatInvalid {
-				log.Printf("unsupported format '%s'", v)
-				return nil
-			}
-			n.Format = f
+			n.Format = parseFormat(v)
 		case "date":
 			d, err := parseDate(v)
 			u.PanicIfErr(err)

@@ -5,9 +5,10 @@ CREATE TABLE users (
   # for twitter, deduced from 'name'
   full_name           VARCHAR(255),
   email               VARCHAR(255),
-  twitter_oauth_json  VARCHAR(2048),
-  github_oauth_json   VARCHAR(2048),
-  google_oauth_json   VARCHAR(2048),
+  # 0 - not even eligible, 1 - can be pro, 2 - is pro
+  pro_state           TINYINT(1) NOT NULL,
+  # oauth token from latest login
+  oauth_json          VARCHAR(2048),
   created_at          TIMESTAMP NOT NULL,
   INDEX (login),
   INDEX (email)
@@ -22,7 +23,10 @@ CREATE TABLE versions (
   format          VARCHAR(128) NOT NULL,
   title           VARCHAR(512),
   tags            VARCHAR(512),
-  INDEX (note_id)
+  INDEX (note_id),
+  FOREIGN KEY fk_note(note_id)
+    REFERENCES notes(id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE notes (

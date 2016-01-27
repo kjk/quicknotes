@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	notenikBucket = "notenik"
+	quicknotesBucket = "notenik"
 )
 
 var (
@@ -66,7 +66,7 @@ func testListObjects() {
 	nTotal := 0
 	timeStart := time.Now()
 	for {
-		objects, err := storage.ListObjects(ctx, notenikBucket, query)
+		objects, err := storage.ListObjects(ctx, quicknotesBucket, query)
 		if err != nil {
 			log.Errorf("storage.ListObjects() failed with %s\n", err)
 			return
@@ -96,9 +96,9 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 	timeStart := time.Now()
 	path := noteGoogleStoragePath(sha1)
 	ctx := getGoogleStorageContext()
-	_, err := storage.StatObject(ctx, notenikBucket, path)
+	_, err := storage.StatObject(ctx, quicknotesBucket, path)
 	if err == nil {
-		// alreadyexists
+		// already exists
 		return nil
 	}
 	if err != nil {
@@ -107,7 +107,7 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 			return err
 		}
 	}
-	w := storage.NewWriter(ctx, notenikBucket, path)
+	w := storage.NewWriter(ctx, quicknotesBucket, path)
 	w.ContentType = "text/plain"
 	_, err = w.Write(d)
 	if err != nil {
@@ -132,7 +132,7 @@ func readNoteFromGoogleStorage(sha1 []byte) ([]byte, error) {
 	path := noteGoogleStoragePath(sha1)
 	ctx := getGoogleStorageContext()
 
-	r, err := storage.NewReader(ctx, notenikBucket, path)
+	r, err := storage.NewReader(ctx, quicknotesBucket, path)
 	if err != nil {
 		return nil, err
 	}

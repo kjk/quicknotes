@@ -290,7 +290,7 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		NoteUser:   noteUser,
 		NoteTitle:  note.Title,
 		NoteBody:   note.Content(),
-		NoteFormat: formatNameFromID(note.Format),
+		NoteFormat: note.Format,
 	}
 	execTemplate(w, tmplNote, model)
 }
@@ -452,7 +452,7 @@ func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 type NewNoteFromBrowser struct {
 	IDStr    string
 	Title    string
-	Format   int
+	Format   string
 	Content  string
 	Tags     []string
 	IsPublic bool
@@ -473,7 +473,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	}
 	//log.Infof("note: %s\n", noteJSON)
 	if !isValidFormat(note.Format) {
-		log.Errorf("invalid format %d\n", note.Format)
+		log.Errorf("invalid format %s\n", note.Format)
 		return nil
 	}
 	newNote.idStr = note.IDStr

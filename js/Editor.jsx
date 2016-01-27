@@ -10,7 +10,6 @@ import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
 import * as u from './utils.js';
-import * as format from './format.js';
 import * as api from './api.js';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
@@ -113,16 +112,12 @@ class Note {
     this.formatName = formatName;
   }
 
-  getFormatId() {
-    return format.IdFromName(this.formatName);
-  }
-
   isText() {
-    return this.getFormatId() == format.TextId;
+    return this.formatName === ni.formatText;
   }
 
   isMarkdown() {
-    return this.getFormatId() == format.MarkdownId;
+    return this.formatName === ni.formatMarkdown;
   }
 }
 
@@ -133,8 +128,7 @@ function noteFromCompact(noteCompact) {
   const tagsStr = tagsToText(tags);
   const body = ni.Content(noteCompact);
   const isPublic = ni.IsPublic(noteCompact);
-  const formatId = ni.Format(noteCompact);
-  const formatName = format.NameFromId(formatId);
+  const formatName = ni.Format(noteCompact);
   return new Note(id, title, tagsStr, body, isPublic, formatName);
 }
 
@@ -152,7 +146,7 @@ function toNewNoteJSON(note) {
   var n = {};
   n.IDStr = note.id;
   n.Title = note.title;
-  n.Format = format.IdFromName(note.formatName);
+  n.Format = note.formatName;
   n.Content = note.body.trim() + '\n';
   n.Tags = textToTags(note.tags);
   n.IsPublic = note.isPublic;
@@ -160,7 +154,7 @@ function toNewNoteJSON(note) {
 }
 
 function newEmptyNote() {
-  return new Note(null, '', '', '', false, format.MarkdownName);
+  return new Note(null, '', '', '', false, ni.formatMarkdown);
 }
 
 function didNoteChange(n1, n2) {
@@ -894,7 +888,8 @@ export default class Editor extends Component {
 
   renderBottom(note) {
     const saveDisabled = !didNoteChange(note, this.initialNote);
-    const formatSelect = this.renderFormatSelect(format.FormatNames, note.formatName);
+    const formatNames = [ni.FormatText, ni.FormatMarkdown];
+    const formatSelect = this.renderFormatSelect(formatNames, note.formatName);
     const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
     return (
       <div id="editor-bottom" className="flex-row">

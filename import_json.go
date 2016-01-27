@@ -15,7 +15,7 @@ import (
 type noteJSON struct {
 	Title     string
 	Content   []byte
-	Format    int
+	Format    string
 	Tags      []string `json:",omitempty"`
 	IsPublic  bool
 	IsDeleted bool

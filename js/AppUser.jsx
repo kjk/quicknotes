@@ -9,7 +9,6 @@ import Top from './Top.jsx';
 import Settings from './Settings.jsx';
 import Editor from './Editor.jsx';
 import * as u from './utils.js';
-import * as format from './format.js';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
 import * as api from './api.js';

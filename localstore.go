@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -36,8 +37,7 @@ const (
 )
 
 var (
-	dbKeyPrefixSha1        = []byte("sha1:")
-	dbKeyPrefixSnippetSha1 = []byte("snippet:sha1:")
+	dbKeyPrefixSha1 = []byte("sha1:")
 	// ErrInvalidSegmentFilePath describes an error about invalid segment file
 	ErrInvalidSegmentFilePath = errors.New("invalid segment file path")
 )
@@ -211,11 +211,6 @@ func dbKeyForContentSha1(sha1 []byte) []byte {
 	return dbKey(dbKeyPrefixSha1, sha1)
 }
 
-// sha1 is of the full content
-func dbKeyForSnippetSha1(sha1 []byte) []byte {
-	return dbKey(dbKeyPrefixSnippetSha1, sha1)
-}
-
 // PutContent returns sha1 of d
 func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 	sha1 := u.Sha1OfBytes(d)
@@ -249,25 +244,9 @@ func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 	return sha1, nil
 }
 
-// PutSnippet writes snippet to the database
-func (store *LocalStore) PutSnippet(sha1Content, d []byte) error {
-	key := dbKeyForSnippetSha1(sha1Content)
-	has, err := store.db.Has(key, nil)
-	if err != nil {
-		return err
-	}
-	if has {
-		return nil
-	}
-	err = store.db.Put(key, d, nil)
-	return err
-}
-
 // GetSnippet reads snippet from the database
 func (store *LocalStore) GetSnippet(sha1Content []byte) ([]byte, error) {
-	key := dbKeyForSnippetSha1(sha1Content)
-	d, err := store.db.Get(key, nil)
-	return d, err
+	return store.getContentBySha1Limited(sha1Content, snippetSizeThreshold)
 }
 
 func readFromFile(file *os.File, offset, size int) ([]byte, error) {
@@ -289,7 +268,7 @@ func readFromFilePath(path string, offset, size int) ([]byte, error) {
 
 // TODO: could cache N fds to segment file to save the cost of opening the file
 // not sure if that's important
-func (store *LocalStore) readFromSegmentFile(fileName string) ([]byte, error) {
+func (store *LocalStore) readFromSegmentFileLimited(fileName string, limit int) ([]byte, error) {
 	parts := strings.Split(fileName, ":")
 	if len(parts) != 3 {
 		log.Errorf("invalid segment file path '%s'\n", fileName)
@@ -307,10 +286,13 @@ func (store *LocalStore) readFromSegmentFile(fileName string) ([]byte, error) {
 		return nil, ErrInvalidSegmentFilePath
 	}
 	path := filepath.Join(store.filesDir, fileName)
+	if limit != -1 && size > limit {
+		size = limit
+	}
 	return readFromFilePath(path, offset, size)
 }
 
-func (store *LocalStore) GetContentBySha1(sha1 []byte) ([]byte, error) {
+func (store *LocalStore) getContentBySha1Limited(sha1 []byte, limit int) ([]byte, error) {
 	key := dbKeyForContentSha1(sha1)
 	name, err := store.db.Get(key, nil)
 	if err != nil {
@@ -318,15 +300,46 @@ func (store *LocalStore) GetContentBySha1(sha1 []byte) ([]byte, error) {
 	}
 	fileName := string(name)
 	if strings.HasPrefix(fileName, "segment.") {
-		return store.readFromSegmentFile(fileName)
+		return store.readFromSegmentFileLimited(fileName, limit)
 	}
-	return ioutil.ReadFile(store.pathForSha1(sha1))
+	path := store.pathForSha1(sha1)
+	if -1 == limit {
+		return ioutil.ReadFile(path)
+	}
+	return readFileLimited(path, limit)
 }
 
+// GetContentBySha1 reads the content by sha1
+func (store *LocalStore) GetContentBySha1(sha1 []byte) ([]byte, error) {
+	return store.getContentBySha1Limited(sha1, -1)
+}
+
+// Close closes the store
 func (store *LocalStore) Close() {
 	if store.db != nil {
 		store.db.Close()
 		store.db = nil
 	}
 	closeFilePtr(&store.currSegmentFile)
+}
+
+func readFileLimited(path string, limit int) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	n := int64(limit)
+
+	if fi, err := f.Stat(); err == nil {
+		// Don't preallocate a huge buffer, just in case.
+		if size := fi.Size(); size < n {
+			n = size
+		}
+	}
+
+	buf := bytes.NewBuffer(make([]byte, 0, n))
+	_, err = buf.ReadFrom(f)
+	return buf.Bytes(), err
 }
