@@ -14,21 +14,6 @@ CREATE TABLE users (
   INDEX (email)
 );
 
-CREATE TABLE versions (
-  id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  created_at      TIMESTAMP NOT NULL,
-  note_id         INT NOT NULL,
-  size            INT NOT NULL,
-  content_sha1    BINARY(20) NOT NULL,
-  format          VARCHAR(128) NOT NULL,
-  title           VARCHAR(512),
-  tags            VARCHAR(512),
-  INDEX (note_id),
-  FOREIGN KEY fk_note(note_id)
-    REFERENCES notes(id)
-    ON DELETE CASCADE
-);
-
 CREATE TABLE notes (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   user_id           INT NOT NULL ,
@@ -41,7 +26,25 @@ CREATE TABLE notes (
   is_public         TINYINT(1) NOT NULL,
   is_starred        TINYINT(1) NOT NULL,
   versions_count    INT NOT NULL,
-  INDEX (user_id)
+  INDEX (user_id),
+  FOREIGN KEY fk_notes_users(user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE versions (
+  id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  created_at      TIMESTAMP NOT NULL,
+  note_id         INT NOT NULL,
+  size            INT NOT NULL,
+  content_sha1    BINARY(20) NOT NULL,
+  format          VARCHAR(128) NOT NULL,
+  title           VARCHAR(512),
+  tags            VARCHAR(512),
+  INDEX (note_id),
+  FOREIGN KEY fk_versions_note(note_id)
+    REFERENCES notes(id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE tag_names (
@@ -50,16 +53,16 @@ CREATE TABLE tag_names (
   INDEX (tag)
 );
 
-CREATE_TABLE tag_note {
-  tag_id INT NOT NULL PRIMARY KEY,
-  note_id INT NOT NULL,
+CREATE TABLE tag_note (
+  tag_id      INT NOT NULL PRIMARY KEY,
+  note_id     INT NOT NULL,
   INDEX (note_id),
   FOREIGN KEY fk_tag(tag_id)
     REFERENCES tag_names(id),
-  FOREIGN KEY fk_note(note_id)
+  FOREIGN KEY fk_tag_note_note(note_id)
     REFERENCES notes(id)
     ON DELETE CASCADE
-};
+);
 
 CREATE TABLE db_migrations (
 	version int NOT NULL
