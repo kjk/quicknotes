@@ -20,8 +20,6 @@ var (
 	flgIsLocal             bool // local means using local mysql database, production means google's cloud
 	flgVerbose             bool
 	flgProdDb              bool // if true, use gce db when running localy
-	flgDelDatabase         bool
-	flgRecreateDatabase    bool
 	flgDbHost              string
 	flgDbPort              string
 	flgImportJSONUserLogin string
@@ -71,8 +69,6 @@ func getLocalStoreDir() string {
 func parseFlags() {
 	flag.BoolVar(&flgIsLocal, "local", false, "running locally?")
 	flag.BoolVar(&flgProdDb, "proddb", false, "use production database when running locally")
-	flag.BoolVar(&flgDelDatabase, "deldb", false, "completely delete the database? dangerous!")
-	flag.BoolVar(&flgRecreateDatabase, "recreatedb", false, "recreate database")
 	flag.BoolVar(&flgImportStackOverflow, "import-stack-overflow", false, "import stack overflow data")
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
 	flag.StringVar(&flgImportJSONUserLogin, "import-user", "", "handle of the user (users.login) for which to import notes e.g. twitter:kjk")
@@ -168,16 +164,6 @@ func main() {
 
 	if flgImportJSONFile != "" {
 		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserLogin)
-		return
-	}
-
-	if flgDelDatabase {
-		deleteDatabaseMust()
-		return
-	}
-
-	if flgRecreateDatabase {
-		recreateDatabaseMust()
 		return
 	}
 

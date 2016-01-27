@@ -1124,21 +1124,6 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	return dbGetUserByLogin(userLogin)
 }
 
-func deleteDatabaseMust() {
-	log.Verbosef("trying to delete the database\n")
-	db, err := sql.Open("mysql", getSQLConnectionRoot())
-	fatalIfErr(err, "sql.Open()")
-	err = db.Ping()
-	fatalIfErr(err, "db.Ping()")
-	execMust(db, `DROP DATABASE IF EXISTS quicknotes`)
-	db.Close()
-}
-
-func recreateDatabaseMust() {
-	deleteDatabaseMust()
-	createDatabaseMust()
-}
-
 // note: no locking. the presumption is that this is called at startup and
 // available throughout the lifetime of the program
 func getDbMust() *sql.DB {
