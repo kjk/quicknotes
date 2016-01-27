@@ -150,6 +150,16 @@ func dbIsUserMe(userID int) bool {
 	return false
 }
 
+// other system tags: published, pinned
+func isSimpleNoteMarkdown(n *simplenote.Note) bool {
+	for _, tag := range n.SystemTags {
+		if tag == "markdown" {
+			return true
+		}
+	}
+	return false
+}
+
 func importSimpleNote(id int, userID int, email, password string) {
 	shouldConvertPublic := dbIsUserMe(userID)
 	client := simplenote.NewClient(simplenoteAPIKey, email, password)
@@ -184,7 +194,10 @@ func importSimpleNote(id int, userID int, email, password string) {
 		newNote := NewNote{
 			format:    formatText,
 			createdAt: note.CreationDate,
-			isDeleted: note.Deleted,
+			isDeleted: note.IsDeleted,
+		}
+		if isSimpleNoteMarkdown(note) {
+			newNote.format = formatMarkdown
 		}
 		if shouldConvertPublic {
 			newNote.isPublic, newNote.tags = tagsToPublicTags(note.Tags)
