@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	quicknotesBucket = "notenik"
+	quicknotesBucket = "quicknotes"
 )
 
 var (
