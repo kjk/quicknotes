@@ -253,6 +253,7 @@ func handleOauthTwitterCallback(w http.ResponseWriter, r *http.Request) {
 	// email
 	// avatar_url
 	userLogin := "twitter:" + twitterHandle
+	// TODO: oauthJSON
 	dbUser, err := dbGetOrCreateUser(userLogin, fullName)
 	if err != nil {
 		log.Errorf("dbGetOrCreateUser('%s', '%s') failed with '%s'\n", userLogin, fullName, err)

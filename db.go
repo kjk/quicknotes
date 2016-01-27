@@ -25,17 +25,23 @@ const (
 	cachedContentSizeThresholed = 1024 * 1024 // 1 MB
 )
 
+// must match noteinfo.js
 const (
-	formatInvalid  = 0
-	formatFirst    = 1
-	formatText     = 1
-	formatMarkdown = 2
-	formatHTML     = 3
-	formatLast     = formatHTML
+	formatText       = "txt"
+	formatMarkdown   = "md"
+	formatHTML       = "html"
+	formatCodePrefix = "code:"
+)
+
+// DbUser.ProState
+const (
+	NotProEligible = iota
+	CanBePro
+	IsPro
 )
 
 var (
-	formatNames         = []string{"invalid", "text", "markdown", "html"}
+	formatNames         = []string{formatText, formatMarkdown, formatHTML, formatCodePrefix}
 	sqlDb               *sql.DB
 	sqlDbMu             sync.Mutex
 	tagSepStr           = string([]byte{30})
@@ -65,8 +71,16 @@ func getSQLConnection() string {
 	return getSQLConnectionRoot() + "quicknotes?parseTime=true"
 }
 
-func isValidFormat(format int) bool {
-	return format >= formatFirst && format <= formatLast
+func isValidFormat(s string) bool {
+	if strings.HasPrefix(s, formatCodePrefix) {
+		return true
+	}
+	for _, fn := range formatNames {
+		if fn == s {
+			return true
+		}
+	}
+	return false
 }
 
 // CachedContentInfo is content with time when it was cached
@@ -79,13 +93,12 @@ type CachedContentInfo struct {
 type DbUser struct {
 	ID int
 	// TODO: less use of sql.NullString
-	Login            string         // e.g. 'google:kkowalczyk@gmail'
-	FullName         sql.NullString // e.g. 'Krzysztof Kowalczyk'
-	Email            sql.NullString
-	TwitterOauthJSON sql.NullString
-	GitHubOauthJSON  sql.NullString
-	GoogleOauthJSON  sql.NullString
-	CreatedAt        time.Time
+	Login     string         // e.g. 'google:kkowalczyk@gmail'
+	FullName  sql.NullString // e.g. 'Krzysztof Kowalczyk'
+	ProState  int
+	Email     sql.NullString
+	OauthJSON sql.NullString
+	CreatedAt time.Time
 
 	handle string // e.g. 'kjk'
 }
@@ -120,7 +133,7 @@ type DbNote struct {
 	IsStarred     bool
 	Size          int
 	Title         string
-	Format        int
+	Format        string
 	ContentSha1   []byte
 	Tags          []string `json:",omitempty"`
 	CreatedAt     time.Time
@@ -140,7 +153,7 @@ type Note struct {
 type NewNote struct {
 	idStr       string
 	title       string
-	format      int
+	format      string
 	content     []byte
 	tags        []string
 	createdAt   time.Time
@@ -204,13 +217,6 @@ func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = len(n.ContentSha1) > snippetSizeThreshold
 	n.IDStr = hashInt(n.id)
 	n.SetSnippet()
-}
-
-func formatNameFromID(id int) string {
-	if id >= 0 && id < len(formatNames) {
-		return formatNames[id]
-	}
-	return "invalid"
 }
 
 func getShortSnippet(d []byte) ([]byte, bool) {
@@ -335,13 +341,6 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	return res, nil
 }
 
-func ensureValidFormat(format int) {
-	if format >= formatText && format <= formatLast {
-		return
-	}
-	log.Fatalf("invalid format: %d\n", format)
-}
-
 func execMust(db *sql.DB, q string, args ...interface{}) {
 	log.Verbosef("db.Exec(): %s\n", q)
 	_, err := db.Exec(q, args...)
@@ -419,9 +418,6 @@ func saveContent(d []byte) ([]byte, error) {
 	if len(d) <= snippetSizeThreshold {
 		return sha1, nil
 	}
-
-	snippet := d[:snippetSizeThreshold]
-	err = localStore.PutSnippet(sha1, snippet)
 	return sha1, err
 }
 
@@ -608,13 +604,14 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	if len(note.content) == 0 {
 		return 0, errors.New("empty note content")
 	}
+	if !isValidFormat(note.format) {
+		return 0, fmt.Errorf("invalid format %s", note.format)
+	}
+
 	note.contentSha1, err = saveContent(note.content)
 	if err != nil {
 		log.Errorf("saveContent() failed with %s\n", err)
 		return 0, err
-	}
-	if !isValidFormat(note.format) {
-		return 0, fmt.Errorf("invalid format %d", note.format)
 	}
 
 	var noteID int
@@ -1033,15 +1030,29 @@ func dbGetNoteByID(id int) (*Note, error) {
 	return &n, nil
 }
 
+func isValidProState(proState int) bool {
+	switch proState {
+	case NotProEligible, CanBePro, IsPro:
+		return true
+	default:
+		return false
+	}
+}
+
+// id, login, full_name, email, created_at, pro_state
 func dbGetUserByQuery(q string, args ...interface{}) (*DbUser, error) {
 	var user DbUser
 	db := getDbMust()
-	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Login, &user.FullName, &user.Email, &user.CreatedAt)
+	err := db.QueryRow(q, args...).Scan(&user.ID, &user.Login, &user.FullName, &user.Email, &user.CreatedAt, &user.ProState)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			log.Infof("db.QueryRow('%s') failed with %s\n", q, err)
+			log.Errorf("db.QueryRow('%s', %v) failed with '%s'\n", q, args, err)
+			return nil, err
 		}
-		return nil, err
+		return nil, nil
+	}
+	if !isValidProState(user.ProState) {
+		return nil, fmt.Errorf("invalid ProState '%d' for user from query '%s'", user.ProState, q)
 	}
 	return &user, nil
 }
@@ -1065,18 +1076,18 @@ func dbGetUserByIDCached(userID int) (*DbUser, error) {
 }
 
 func dbGetUserByID(userID int) (*DbUser, error) {
-	q := `SELECT id, login, full_name, email, created_at FROM users WHERE id=?`
+	q := `SELECT id, login, full_name, email, created_at, pro_state FROM users WHERE id=?`
 	return dbGetUserByQuery(q, userID)
 }
 
 func dbGetUserByLogin(login string) (*DbUser, error) {
-	q := `SELECT id, login, full_name, email, created_at FROM users WHERE login=?`
+	q := `SELECT id, login, full_name, email, created_at, pro_state FROM users WHERE login=?`
 	return dbGetUserByQuery(q, login)
 }
 
 func dbGetAllUsers() ([]*DbUser, error) {
 	db := getDbMust()
-	q := `SELECT id, login, full_name, email, created_at FROM users`
+	q := `SELECT id, login, full_name, email, created_at, pro_state FROM users`
 	rows, err := db.Query(q)
 	if err != nil {
 		return nil, err
@@ -1095,6 +1106,7 @@ func dbGetAllUsers() ([]*DbUser, error) {
 	return res, nil
 }
 
+// TODO: also insert oauthJSON
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
 	if user != nil {
@@ -1103,11 +1115,12 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	}
 
 	db := getDbMust()
-	q := `INSERT INTO users (login, fulL_name) VALUES (?, ?)`
-	_, err = db.Exec(q, userLogin, fullName)
+	q := `INSERT INTO users (login, fulL_name, pro_state) VALUES (?, ?, ?)`
+	_, err = db.Exec(q, userLogin, fullName, NotProEligible)
 	if err != nil {
 		return nil, err
 	}
+	// TODO: insert default notes
 	return dbGetUserByLogin(userLogin)
 }
 
