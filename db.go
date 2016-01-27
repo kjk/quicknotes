@@ -358,9 +358,13 @@ func getCreateDbSQLMust() []byte {
 	return d
 }
 
+func dbSplitMultiStatements(s string) []string {
+	return strings.Split(s, "\n\n")
+}
+
 func getCreateDbStatementsMust() []string {
 	d := getCreateDbSQLMust()
-	return strings.Split(string(d), "\n\n")
+	return dbSplitMultiStatements(string(d))
 }
 
 func createDatabaseMust() *sql.DB {
