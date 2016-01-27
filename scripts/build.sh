@@ -12,4 +12,3 @@ echo "./node_modules/.bin/gulp default"
 
 gdep go build -o quicknotes
 #gdep go build -race
-
