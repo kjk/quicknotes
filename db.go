@@ -1096,7 +1096,6 @@ func dbGetAllUsers() ([]*DbUser, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 	var res []*DbUser
 	for rows.Next() {
@@ -1107,7 +1106,7 @@ func dbGetAllUsers() ([]*DbUser, error) {
 		}
 		res = append(res, &user)
 	}
-	return res, nil
+	return res, rows.Err()
 }
 
 // TODO: also insert oauthJSON

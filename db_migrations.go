@@ -12,7 +12,7 @@ CREATE TABLE simplenote_imports (
   note_id             INT NOT NULL PRIMARY KEY,
   user_id             INT NOT NULL,
   simplenote_id       VARCHAR(128) NOT NULL,
-  simplenote_version  VARCHAR(128) NOT NULL,
+  simplenote_version  INT NOT NULL,
   INDEX(user_id),
   FOREIGN KEY fk_user_ud(user_id)
     REFERENCES users(id)

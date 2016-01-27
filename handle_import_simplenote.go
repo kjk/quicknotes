@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/kjk/log"
 	"github.com/kjk/simplenote"
-	"github.com/kjk/u"
 )
 
 // TODO: don't import duplicates
@@ -30,14 +28,15 @@ var (
 // ImportStatus describes an import operation
 // returned by /api/
 type ImportStatus struct {
-	importID              int
-	userID                int
-	ImportedCount         int
-	SkippedDuplicateCount int
-	IsFinished            bool
-	Error                 string `json:",omitempty"`
-	Duration              time.Duration
-	startedAt             time.Time
+	importID      int
+	userID        int
+	ImportedCount int
+	SkippedCount  int
+	UpdatedCount  int
+	IsFinished    bool
+	Error         string `json:",omitempty"`
+	Duration      time.Duration
+	startedAt     time.Time
 }
 
 func withLockedImport(id int, f func(*ImportStatus)) {
@@ -76,10 +75,11 @@ func findImportByID(id int) (ImportStatus, bool) {
 	return ImportStatus{}, false
 }
 
-func importSetCount(id, nImported, nDuplicate int) {
+func importSetCount(id, nImported, nUpdated, nSkipped int) {
 	withLockedImport(id, func(status *ImportStatus) {
 		status.ImportedCount = nImported
-		status.SkippedDuplicateCount = nDuplicate
+		status.UpdatedCount = nUpdated
+		status.SkippedCount = nSkipped
 		status.Duration = time.Since(status.startedAt)
 	})
 }
@@ -104,7 +104,54 @@ func isSimpleNoteUnothorizedError(s string) bool {
 	return strings.Contains(s, "401") && strings.Contains(s, "/authorize/")
 }
 
+// SimpleNoteImport describes an import of simplenote note
+type SimpleNoteImport struct {
+	NoteID            int
+	SimpleNoteID      string
+	SimpleNoteVersion int
+}
+
+func getSimpleNoteImportsForUser(userID int) (map[string]SimpleNoteImport, error) {
+	db := getDbMust()
+	q := `SELECT note_id, simplenote_id, simplenote_version FROM simplenote_imports WHERE user_id = ?`
+	rows, err := db.Query(q, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var arr []SimpleNoteImport
+	for rows.Next() {
+		var sni SimpleNoteImport
+		err = rows.Scan(&sni.NoteID, &sni.SimpleNoteID, &sni.SimpleNoteVersion)
+		if err != nil {
+			return nil, err
+		}
+		arr = append(arr, sni)
+	}
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+	res := make(map[string]SimpleNoteImport)
+	for _, sni := range arr {
+		res[sni.SimpleNoteID] = sni
+	}
+	return res, nil
+}
+
+func dbIsUserMe(userID int) bool {
+	userDb, err := dbGetUserByIDCached(userID)
+	if err != nil {
+		return false
+	}
+	switch userDb.Login {
+	case "twitter:kjk", "github:kjk", "google:kkowalczyk@gmail.com":
+		return true
+	}
+	return false
+}
+
 func importSimpleNote(id int, userID int, email, password string) {
+	shouldConvertPublic := dbIsUserMe(userID)
 	client := simplenote.NewClient(simplenoteAPIKey, email, password)
 	notes, err := client.List()
 	if err != nil {
@@ -117,56 +164,59 @@ func importSimpleNote(id int, userID int, email, password string) {
 		return
 	}
 
-	// to avoid importing duplicates we get sha1 of all note
-	// versions so that we can skip
-	versionsSha1, err := dbGetAllVersionsSha1ForUser(userID)
+	alreadyImported, err := getSimpleNoteImportsForUser(userID)
 	if err != nil {
-		log.Errorf("dbGetAllVersionsSha1ForUser failed with '%s'\n", err)
+		log.Errorf("getSimpleNoteImportsForUser() failed with '%s'\n", err)
 		importSetError(id, err.Error())
 		return
 	}
-	versionSha1ToBool := make(map[string]bool)
-	for _, sha1Bytes := range versionsSha1 {
-		sha1Hex := hex.EncodeToString(sha1Bytes)
-		versionSha1ToBool[sha1Hex] = true
-	}
 
-	nDuplicate := 0
-	n := 0
+	nImported := 0
+	nUpdated := 0
+	nSkipped := 0
 	for _, note := range notes {
+		sni, ok := alreadyImported[note.ID]
+		if ok && note.Version == sni.SimpleNoteVersion {
+			nSkipped++
+			log.Verbosef("skipping already imported simplenote %s, %d\n", note.ID, note.Version)
+			continue
+		}
 		newNote := NewNote{
 			format:    formatText,
 			createdAt: note.CreationDate,
 			isDeleted: note.Deleted,
 		}
-		newNote.isPublic, newNote.tags = tagsToPublicTags(note.Tags)
+		if shouldConvertPublic {
+			newNote.isPublic, newNote.tags = tagsToPublicTags(note.Tags)
+		}
+		if ok {
+			newNote.idStr = hashInt(sni.NoteID)
+			log.Verbosef("updating simplenote %d, %s, %d => %d\n", sni.NoteID, note.ID, sni.SimpleNoteVersion, note.Version)
+		}
+
 		newNote.title, newNote.content = noteToTitleContent([]byte(note.Content))
 		if len(newNote.content) == 0 {
 			//log.Verbosef("   skipping an empty note\n")
 			continue
 		}
 
-		contentSha1Hex := u.Sha1HexOfBytes(newNote.content)
-		if versionSha1ToBool[contentSha1Hex] {
-			nDuplicate++
-			importSetCount(id, n, nDuplicate)
-			//log.Verbosef("skipping duplicate note id: %s, title: %s\n", note.ID, newNote.title)
-			continue
-		}
 		noteID, err := dbCreateOrUpdateNote(userID, &newNote)
 		if err != nil {
 			log.Errorf("dbCreateOrUpdateNote() failed with %s\n", err)
 			importSetError(id, fmt.Sprintf("dbCreateOrUpdateNote() failed with %s", err))
 			return
 		}
-		msg := fmt.Sprintf("note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
 		if newNote.isDeleted {
-			msg = fmt.Sprintf("deleted note %d, modTime: %s, title: '%s', noteId: %d\n", n, newNote.createdAt, newNote.title, noteID)
+			log.Verbosef("deleted note %d, modTime: %s, title: '%s', noteId: %d\n", nImported, newNote.createdAt, newNote.title, noteID)
 		} else {
-			n++
+			log.Verbosef("note %d, modTime: %s, title: '%s', noteId: %d\n", nImported, newNote.createdAt, newNote.title, noteID)
 		}
-		log.Verbosef("%s", msg)
-		importSetCount(id, n, nDuplicate)
+		if ok {
+			nUpdated++
+		} else {
+			nImported++
+		}
+		importSetCount(id, nImported, nUpdated, nSkipped)
 	}
 	importMarkFinished(id)
 }
