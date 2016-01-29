@@ -16,8 +16,10 @@ export default class NoteBody extends Component {
   }
 
   getBodyIfNeeded(note) {
-    const needsBody = ni.IsPartial(note) && ni.IsExpanded(note);
-    if (!needsBody) {
+    if (!ni.IsExpanded(note)) {
+      return;
+    }
+    if (!ni.NeedsExpansion(note)) {
       return;
     }
     ni.FetchLatestContent(note, (note, body) => {
