@@ -2,16 +2,16 @@ import * as api from './api.js';
 import { assert } from './utils.js';
 import filesize from 'filesize';
 
-const noteHashIDIdx = 0;
+// must match handlers.go
+const noteIDVerIdx = 0;
 const noteTitleIdx = 1;
 const noteSizeIdx = 2;
 const noteFlagsIdx = 3;
 const noteCreatedAtIdx = 4;
-//noteUpdatedAtIdx
-const noteTagsIdx = 5;
-const noteSnippetIdx = 6;
-const noteFormatIdx = 7;
-const noteCurrentVersionIdx = 8;
+const noteUpdatedAtIdx = 5;
+const noteFormatIdx = 6;
+const noteTagsIdx = 7;
+const noteSnippetIdx = 8;
 const noteContentIdx = 9;
 // those are only for notes returned by recent notes
 const noteUserIdx = 10; // user that created the note TODO: not sure if will keep
@@ -31,7 +31,7 @@ const formatCodePrefix = 'code:';
 const formatNames = [formatText, formatMarkdown, formatHTML, formatCodePrefix];
 
 // note properties that can be compared for equality with ==
-const simpleProps = [noteHashIDIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteCurrentVersionIdx, noteContentIdx, noteUserIdx];
+const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx, noteUserIdx];
 
 function arrEmpty(a) {
   return !a || (a.length === 0);
@@ -109,8 +109,18 @@ function clearFlagBit(note, nBit) {
   note[noteFlagsIdx] = clearBit(flags, nBit);
 }
 
+export function IDVer(note) {
+  return note[noteIDVerIdx];
+}
+
 export function HashID(note) {
-  return note[noteHashIDIdx];
+  const s = note[noteIDVerIdx];
+  return s.split('-')[0];
+}
+
+export function Version(note) {
+  const s = note[noteIDVerIdx];
+  return s.split('-')[1];
 }
 
 export function Title(note) {
@@ -122,7 +132,13 @@ export function Size(note) {
 }
 
 export function CreatedAt(note) {
-  return note[noteCreatedAtIdx];
+  const epochMs = note[noteCreatedAtIdx];
+  return new Date(epochMs);
+}
+
+export function UpdatedAt(note) {
+  const epochMs = note[noteUpdatedAtIdx];
+  return new Date(epochMs);
 }
 
 export function Tags(note) {
@@ -138,11 +154,42 @@ export function Format(note) {
 }
 
 export function CurrentVersion(note) {
-  return note[noteCurrentVersionIdx];
+  const s = note[noteIDVerIdx];
+  return s.split('-')[1];
 }
 
-export function Content(note, cb) {
-  return note[noteContentIdx] || '';
+// the key is id, the value is [idVer, content]
+// TODO: cache in local storage
+let contentCache = {};
+
+function getCachedVersion(note) {
+  const id = HashID(note);
+  const verContent = contentCache[id];
+  if (verContent === undefined) {
+    return null;
+  }
+  const [idVer, content] = verContent;
+  if (idVer === IDVer(note)) {
+    return content;
+  }
+  return null;
+}
+
+function setCachedVersion(note) {
+  const noteID = HashID(note);
+  const idVer = IDVer(note);
+  const content = note[noteContentIdx];
+  // this over-writes other versions of this note
+  contentCache[noteID] = [idVer, content];
+  return content;
+}
+
+// returns content if already has it or null
+export function Content(note) {
+  if (!IsPartial(note)) {
+    return Snippet(note);
+  }
+  return getCachedVersion(note);
 }
 
 /*
@@ -153,26 +200,24 @@ export function User(note) {
 }
 */
 
-// if has content, returns it
-// otherwise returns null, starts async fetch and
-// will call cb when finished fetching content
-// TODO: always call callback
-export function FetchContent(note, cb) {
-  const noteID = HashID(note);
-  const res = note[noteContentIdx];
-  if (res) {
-    console.log('FetchContent: already has it for note', noteID);
-    return res;
+// gets the latest version of content of a given note.
+// Call cb(note, content) on success
+// Note: it gets the latest version, not the version on noteOrig
+export function FetchLatestContent(noteOrig, cb) {
+  const noteID = HashID(noteOrig);
+  const content = Content(noteOrig);
+  if (content !== null) {
+    console.log('FetchLatestContent: already has it for note', IDVer(noteOrig));
+    cb(noteOrig, content);
   }
-  console.log('FetchContent: starting to fetch content for note', noteID);
-  api.getNote(noteID, json => {
-    console.log('FetchContent: json=', json);
-    const content = json[noteContentIdx];
-    //console.log('FetchContent: content=', content);
-    SetContent(note, content);
-    cb(note);
+  console.log('FetchLatestContent: starting to fetch content for note', noteID);
+  api.getNote(noteID, note => {
+    console.log('FetchLatestContent: json=', note);
+    // version might be newer than in noteOrig
+    let content = setCachedVersion(note);
+    //console.log('FetchLatestContent: content=', content);
+    cb(note, content);
   });
-  return null;
 }
 
 export function HumanSize(note) {
@@ -224,10 +269,6 @@ export function SetFormat(note, format) {
   note[noteFormatIdx] = format;
 }
 
-export function SetContent(note, content) {
-  note[noteContentIdx] = content;
-}
-
 /* locally manage expanded/collapsed state of notes */
 
 let expandedNotes = {};
@@ -250,4 +291,3 @@ export function Collapse(note) {
   const id = HashID(note);
   delete expandedNotes[id];
 }
-

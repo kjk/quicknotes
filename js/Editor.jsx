@@ -121,12 +121,11 @@ class Note {
   }
 }
 
-function noteFromCompact(noteCompact) {
+function noteFromCompact(noteCompact, body) {
   const id = ni.HashID(noteCompact);
   const title = ni.Title(noteCompact);
   const tags = ni.Tags(noteCompact);
   const tagsStr = tagsToText(tags);
-  const body = ni.Content(noteCompact);
   const isPublic = ni.IsPublic(noteCompact);
   const formatName = ni.Format(noteCompact);
   return new Note(id, title, tagsStr, body, isPublic, formatName);
@@ -676,16 +675,12 @@ export default class Editor extends Component {
     this.startEditingNote(newEmptyNote());
   }
 
-  editNote(noteCompact) {
+  editNote(noteCompactInitial) {
     //console.log('Editor.editNote: noteCompact=', noteCompact);
-    let s = ni.FetchContent(noteCompact, () => {
-      const note = noteFromCompact(noteCompact);
+    ni.FetchLatestContent(noteCompactInitial, (noteCompact, body) => {
+      const note = noteFromCompact(noteCompact, body);
       this.startEditingNote(note);
     });
-    if (s !== null) {
-      const note = noteFromCompact(noteCompact);
-      this.startEditingNote(note);
-    }
   }
 
   handleEditCmdBold(e) {

@@ -6,11 +6,26 @@ export default class NoteBody extends Component {
     super(props, context);
     this.handleCollapse = this.handleCollapse.bind(this);
     this.handleExpand = this.handleExpand.bind(this);
-    this.handleFetchedContent = this.handleFetchedContent.bind(this);
+    this.getBodyIfNeeded = this.getBodyIfNeeded.bind(this);
 
     this.state = {
-      note: props.note
+      note: props.note,
+      body: '',
     };
+    this.getBodyIfNeeded(props.note);
+  }
+
+  getBodyIfNeeded(note) {
+    const needsBody = ni.IsPartial(note) && ni.IsExpanded(note);
+    if (!needsBody) {
+      return;
+    }
+    ni.FetchLatestContent(note, (note, body) => {
+      this.setState({
+        note: note,
+        body: body
+      });
+    });
   }
 
   handleExpand(e) {
@@ -18,16 +33,7 @@ export default class NoteBody extends Component {
     const note = this.state.note;
     console.log('expand note', ni.HashID(note));
     ni.Expand(note);
-    const content = ni.FetchContent(note, this.handleFetchedContent);
-    // if has content, change the state immediately.
-    // if doesn't have content, it'll be changed in handleFetchedContent.
-    // if we always do it and there is no content, we'll get an ugly flash
-    // due to 2 updates in quick succession.
-    if (content) {
-      this.setState({
-        note: note
-      });
-    }
+    this.getBodyIfNeeded(note);
   }
 
   handleCollapse(e) {
@@ -57,18 +63,13 @@ export default class NoteBody extends Component {
       );
   }
 
-  handleFetchedContent(note) {
-    console.log('NoteBody.handleFetchedContent');
-    this.setState({
-      note: note
-    });
-  }
-
   renderContent(note) {
+    const body = this.state.body;
     if (ni.IsCollapsed(note)) {
       return <pre className="note-body">{ ni.Snippet(note) }</pre>;
     }
-    return <pre className="note-body">{ ni.Content(note, this.handleFetchedContent) }</pre>;
+    // TODO: set a reasonable limit
+    return <pre className="note-body">{ body }</pre>;
   }
 
   render() {
