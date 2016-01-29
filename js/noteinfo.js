@@ -23,12 +23,10 @@ const flagPartialBit = 3;
 const flagTruncatedBit = 4;
 
 // must match db.go
-const formatText = 'txt';
-const formatMarkdown = 'md';
+export const formatText = 'txt';
+export const formatMarkdown = 'md';
 const formatHTML = 'html';
 const formatCodePrefix = 'code:';
-
-const formatNames = [formatText, formatMarkdown, formatHTML, formatCodePrefix];
 
 // note properties that can be compared for equality with ==
 const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx, noteUserIdx];

@@ -35,6 +35,26 @@ const cmOptions = {
   'autofocus': true
 };
 
+function formatPrettyName(fmt) {
+  if (fmt === ni.formatText) {
+    return "text";
+  }
+  if (fmt === ni.formatMarkdown) {
+    return "markdown";
+  }
+  return fmt;
+}
+
+function formatShortName(fmt) {
+  if (fmt === "text") {
+    return ni.formatText;
+  }
+  if (fmt === "markdown") {
+    return ni.formatMarkdown;
+  }
+  return fmt;
+}
+
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
 renderer.link = function(href, title, text) {
@@ -758,7 +778,7 @@ export default class Editor extends Component {
   handleFormatChanged(e) {
     const v = e.target.value;
     let note = this.state.note;
-    note.formatName = v;
+    note.formatName = formatShortName(v);
     this.setFocusInUpdate = true;
     this.setState({
       note: note
@@ -812,21 +832,22 @@ export default class Editor extends Component {
     });
   }
 
-  renderFormatSelect(formats, selected) {
+  renderFormatSelect(formatSelected) {
     const style = {
       marginLeft: 8,
       marginRight: 16,
       width: 108
     };
-
-    const options = formats.map(function(format) {
+    const formatsPretty = ["text", "markdown"];
+    formatSelected = formatPrettyName(formatSelected);
+    const options = formatsPretty.map(function(format) {
       return <option key={ format } value={ format }>
                { format }
              </option>;
     });
     return (
       <div className="editor-select-wrapper" style={ style }>
-        <select value={ selected } onChange={ this.handleFormatChanged }>
+        <select value={ formatSelected } onChange={ this.handleFormatChanged }>
           { options }
         </select>
         <span></span>
@@ -883,8 +904,7 @@ export default class Editor extends Component {
 
   renderBottom(note) {
     const saveDisabled = !didNoteChange(note, this.initialNote);
-    const formatNames = [ni.FormatText, ni.FormatMarkdown];
-    const formatSelect = this.renderFormatSelect(formatNames, note.formatName);
+    const formatSelect = this.renderFormatSelect(note.formatName);
     const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
     return (
       <div id="editor-bottom" className="flex-row">

@@ -6,6 +6,7 @@ import Top from './Top.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
 import Editor from './Editor.jsx';
 import { escapeHtml } from './utils.js';
+import * as ni from './noteinfo.js';
 
 const renderer = new marked.Renderer();
 
@@ -47,7 +48,7 @@ export default class AppNote extends Component {
   renderBody() {
     const body = gNoteBody;
     const fmtName = gNoteFormat;
-    const isTxt = fmtName == 'text';
+    const isTxt = fmtName == ni.formatText;
     if (isTxt) {
       const html = {
         __html: linkify2(body)
@@ -79,7 +80,7 @@ export default class AppNote extends Component {
           <center className="note-footer">
             A note by&nbsp;
             <a href={ url }>
-              { nu }
+              { nu.Handle }
             </a>.
           </center>
         </div>
