@@ -104,6 +104,7 @@ type DbUser struct {
 }
 
 // GetHandle returns short user handle extracted from login
+// "twitter:kjk" => "kjk"
 func (u *DbUser) GetHandle() string {
 	if len(u.handle) > 0 {
 		return u.handle
@@ -113,7 +114,7 @@ func (u *DbUser) GetHandle() string {
 		log.Errorf("invalid login '%s'\n", u.Login)
 		return ""
 	}
-	handle := parts[0]
+	handle := parts[1]
 	// if this is an e-mail like kkowalczyk@gmail.com, only return
 	// the part before e-mail
 	parts = strings.SplitN(handle, "@", 2)
@@ -456,13 +457,11 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	if note.createdAt.IsZero() {
 		note.createdAt = time.Now()
 	}
-	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count, is_starred) VALUES (?, ?, ?, ?, ?, 1, false)`
+	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count, is_starred, is_encrypted) VALUES (?, ?, ?, ?, ?, 1, false, false)`
 	res, err := tx.Exec(q, userID, 0, note.createdAt, note.isDeleted, note.isPublic)
 	if err != nil {
 		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
-		//TODO: ignore for now
-		//return 0, err
-		return 0, nil
+		return 0, err
 	}
 	noteID, err := res.LastInsertId()
 	if err != nil {
@@ -470,8 +469,8 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		return 0, err
 	}
 	serilizedTags := serializeTags(note.tags)
-	q = `INSERT INTO versions (note_id, size, format, title, content_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-	res, err = tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, serilizedTags, note.createdAt)
+	q = `INSERT INTO versions (note_id, size, created_at, content_sha1, format, title, tags) VALUES (?, ?, ?, ?, ?, ?, ?)`
+	res, err = tx.Exec(q, noteID, len(note.content), note.createdAt, note.contentSha1, note.format, note.title, serilizedTags)
 	if err != nil {
 		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
@@ -1148,11 +1147,10 @@ func getDbMust() *sql.DB {
 		} else {
 			log.Fatalf("db.Ping() failed with %s\n", err)
 		}
-	} else {
-		err = upgradeDb(db)
-		if err != nil {
-			log.Fatalf("upgradeDb() failed with '%s'\n", err)
-		}
+	}
+	err = upgradeDb(db)
+	if err != nil {
+		log.Fatalf("upgradeDb() failed with '%s'\n", err)
 	}
 	sqlDb = db
 	return sqlDb

@@ -7,16 +7,18 @@ CREATE TABLE users (
   email               VARCHAR(255),
   # 0 - not even eligible, 1 - can be pro, 2 - is pro
   pro_state           TINYINT(1) NOT NULL,
+  created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  # used to verify the password for encrypted passwords
+  encrypted_sample    VARBINARY(2048),
   # oauth token from latest login
   oauth_json          VARCHAR(2048),
-  created_at          TIMESTAMP NOT NULL,
   INDEX (login),
   INDEX (email)
 );
 
 CREATE TABLE notes (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  user_id           INT NOT NULL ,
+  user_id           INT NOT NULL,
   curr_version_id   INT NOT NULL,
   # cached for speed, this is versions.created_at of the first version
   # updated_at is versions.created_at of the curr_version_id but we don't
@@ -25,6 +27,7 @@ CREATE TABLE notes (
   is_deleted        TINYINT(1) NOT NULL,
   is_public         TINYINT(1) NOT NULL,
   is_starred        TINYINT(1) NOT NULL,
+  is_encrypted      TINYINT(1) NOT NULL,
   versions_count    INT NOT NULL,
   INDEX (user_id),
   FOREIGN KEY fk_notes_users(user_id)
@@ -34,9 +37,9 @@ CREATE TABLE notes (
 
 CREATE TABLE versions (
   id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  created_at      TIMESTAMP NOT NULL,
   note_id         INT NOT NULL,
   size            INT NOT NULL,
+  created_at      TIMESTAMP NOT NULL,
   content_sha1    BINARY(20) NOT NULL,
   format          VARCHAR(128) NOT NULL,
   title           VARCHAR(512),

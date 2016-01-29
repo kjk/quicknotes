@@ -122,7 +122,10 @@ func importSetError(importID int, err string) {
 }
 
 func importMarkFinished(importID int) {
-	importSetError(importID, "")
+	withLockedImport(importID, func(status *SimpleNoteImport) {
+		status.IsFinished = true
+		status.Duration = time.Since(status.startedAt)
+	})
 }
 
 func isSimpleNoteUnothorizedError(s string) bool {
@@ -255,7 +258,6 @@ func importSingleNote(state *SimpleNoteImport, note *simplenote.Note) error {
 	noteID, err := dbCreateOrUpdateNote(state.userID, &newNote)
 	if err != nil {
 		log.Errorf("dbCreateOrUpdateNote() failed with %s\n", err)
-		importSetError(state.importID, fmt.Sprintf("dbCreateOrUpdateNote() failed with %s", err))
 		return err
 	}
 	if newNote.isDeleted {
@@ -335,8 +337,12 @@ func importSimpleNote(state *SimpleNoteImport, email, password string) {
 			break
 		}
 	}
-	importUpdateCounts(state.importID, state.counts)
-	importMarkFinished(id)
+	importUpdateCounts(id, state.counts)
+	if err == nil {
+		importMarkFinished(id)
+	} else {
+		importSetError(id, err.Error())
+	}
 	// free up large resources
 	state.client = nil
 	state.alreadyImported = nil
