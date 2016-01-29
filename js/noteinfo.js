@@ -290,18 +290,6 @@ export function Collapse(note) {
   delete expandedNotes[id];
 }
 
-function cmpAscByField(n1, n2, idx) {
-  const v1 = n1[idx];
-  const v2 = n2[idx];
-  if (v1 < v2) {
-    return -1;
-  }
-  if (v1 > v2) {
-    return 1;
-  }
-  return 0;
-}
-
 function cmpDescByField(n1, n2, idx) {
   const v1 = n1[idx];
   const v2 = n2[idx];
@@ -312,6 +300,10 @@ function cmpDescByField(n1, n2, idx) {
     return -1;
   }
   return 0;
+}
+
+function cmpAscByField(n1, n2, idx) {
+  return -cmpDescByField(n1, n2, idx);
 }
 
 export function sortNotesByUpdatedAt(notes) {
