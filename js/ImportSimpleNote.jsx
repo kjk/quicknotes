@@ -110,7 +110,7 @@ export default class ImportSimpleNote extends Component {
     let msg = `Imported ${n} notes from SimpleNote`;
     const isImporting = !res.IsFinished;
     if (res.IsFinished) {
-      msg = `Import from SimpleNote finished. ${importedCount} new notes, ${updatedCount} updated notes, ${skippedCount} skipped previously imported notes.`;
+      msg = `Finished importing from SimpleNote. Imported ${importedCount} new notes, ${updatedCount} updated notes. Skipped ${skippedCount} previously imported notes.`;
     }
     this.setState({
       finishedImporting: res.IsFinished,
@@ -237,12 +237,24 @@ export default class ImportSimpleNote extends Component {
           <td></td>
           <td>
             <button className="btn btn-primary right no-margin-x" onClick={ this.handleCloseFinished }>
-              Got It
+              Ok
             </button>
           </td>
         </tr>
         );
     }
+
+    if (this.state.isImporting) {
+      return (
+        <tr>
+          <td></td>
+          <td>
+            <i className="fa fa-spinner fa-pulse right" style={ styleSpinner }></i>
+          </td>
+        </tr>
+        );
+    }
+
     return (
       <tr>
         <td></td>
@@ -250,9 +262,9 @@ export default class ImportSimpleNote extends Component {
           <button className="btn btn-primary right no-margin-x" onClick={ this.handleImport }>
             Import
           </button>
-          { this.state.isImporting ?
-            <i className="fa fa-spinner fa-pulse right" style={ styleSpinner }></i>
-            : null }
+          <button className="btn btn-cancel right" onClick={ this.handleClose }>
+            Cancel
+          </button>
         </td>
       </tr>
       );
