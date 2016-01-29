@@ -295,19 +295,19 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplNote, model)
 }
 
+// must match noteinfo.js
 const (
-	noteHashIDIdx = iota
-	noteTitleIdx
-	noteSizeIdx
-	noteFlagsIdx
-	noteCreatedAtIdx
-	noteTagsIdx
-	noteSnippetIdx
-	noteFormatIdx
-	noteCurrentVersionIDIdx
-	noteContentIdx
-	//noteUpdatedAtIdx
-	noteFieldsCount
+	noteIDVerIdx     = 0
+	noteTitleIdx     = 1
+	noteSizeIdx      = 2
+	noteFlagsIdx     = 3
+	noteCreatedAtIdx = 4
+	noteUpdatedAtIdx = 5
+	noteFormatIdx    = 6
+	noteTagsIdx      = 7
+	noteSnippetIdx   = 8
+	noteFieldsCount  = 9
+	noteContentIdx   = 9
 )
 
 func boolToInt(b bool) int {
@@ -331,22 +331,25 @@ func isBitSet(flags int, nBit uint) bool {
 	return flags&(1<<nBit) != 0
 }
 
-func noteToCompact(n *Note) []interface{} {
-	res := make([]interface{}, noteFieldsCount, noteFieldsCount)
-	res[noteHashIDIdx] = n.HashID
+func noteToCompact(n *Note, withContent bool) []interface{} {
+	nFields := noteFieldsCount
+	if withContent {
+		nFields++
+	}
+	res := make([]interface{}, nFields, nFields)
+	res[noteIDVerIdx] = fmt.Sprintf(n.HashID, n.CurrVersionID)
 	res[noteTitleIdx] = n.Title
 	res[noteSizeIdx] = n.Size
 	res[noteFlagsIdx] = encodeNoteFlags(n)
-	res[noteCreatedAtIdx] = n.CreatedAt
-	//res[noteUpdatedAtIdx] = n.CreatedAt // TODO: UpdatedAt
+	res[noteCreatedAtIdx] = n.CreatedAt.Unix() * 1000
+	res[noteUpdatedAtIdx] = n.UpdatedAt.Unix() * 1000
+	res[noteFormatIdx] = n.Format
 	res[noteTagsIdx] = n.Tags
 	res[noteSnippetIdx] = n.Snippet
-	res[noteFormatIdx] = n.Format
-	res[noteCurrentVersionIDIdx] = n.CurrVersionID
 	return res
 }
 
-// /api/getnote?id=${note_id_hash}
+// /api/getnote?id=${noteHashID}
 func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 	dbUser := getDbUserFromCookie(w, r)
 	noteIDHashStr := r.FormValue("id")
@@ -366,7 +369,7 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, "/api/getnote.json: getCachedContent() failed with %s", err)
 		return
 	}
-	v := noteToCompact(note)
+	v := noteToCompact(note, true)
 	v[noteContentIdx] = string(content)
 	httpOkWithJSON(w, r, v)
 }
@@ -398,7 +401,7 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 	var notes [][]interface{}
 	for _, note := range i.notes {
 		if note.IsPublic || showPrivate {
-			notes = append(notes, noteToCompact(note))
+			notes = append(notes, noteToCompact(note, false))
 		}
 	}
 
@@ -443,7 +446,7 @@ func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 	}
 	var res [][]interface{}
 	for _, note := range recentNotes {
-		res = append(res, noteToCompact(&note))
+		res = append(res, noteToCompact(&note, false))
 	}
 	httpOkWithJsonpCompact(w, r, res, jsonp)
 }
