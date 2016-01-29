@@ -337,7 +337,7 @@ func noteToCompact(n *Note, withContent bool) []interface{} {
 		nFields++
 	}
 	res := make([]interface{}, nFields, nFields)
-	res[noteIDVerIdx] = fmt.Sprintf(n.HashID, n.CurrVersionID)
+	res[noteIDVerIdx] = fmt.Sprintf("%s-%d", n.HashID, n.CurrVersionID)
 	res[noteTitleIdx] = n.Title
 	res[noteSizeIdx] = n.Size
 	res[noteFlagsIdx] = encodeNoteFlags(n)
