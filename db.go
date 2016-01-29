@@ -587,7 +587,7 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 
 	// TODO: could combine with the above update in some cases
 	if note.isPublic != existingNote.IsPublic {
-		log.Infof("changing is_public status of note %d to %v\n", noteID, note.isPublic)
+		log.Verbosef("changing is_public status of note %d to %v\n", noteID, note.isPublic)
 		q := `UPDATE notes SET is_public=? WHERE id=?`
 		_, err = tx.Exec(q, note.isPublic, noteID)
 		if err != nil {
