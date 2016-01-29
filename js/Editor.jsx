@@ -37,19 +37,19 @@ const cmOptions = {
 
 function formatPrettyName(fmt) {
   if (fmt === ni.formatText) {
-    return "text";
+    return 'text';
   }
   if (fmt === ni.formatMarkdown) {
-    return "markdown";
+    return 'markdown';
   }
   return fmt;
 }
 
 function formatShortName(fmt) {
-  if (fmt === "text") {
+  if (fmt === 'text') {
     return ni.formatText;
   }
-  if (fmt === "markdown") {
+  if (fmt === 'markdown') {
     return ni.formatMarkdown;
   }
   return fmt;
@@ -838,7 +838,7 @@ export default class Editor extends Component {
       marginRight: 16,
       width: 108
     };
-    const formatsPretty = ["text", "markdown"];
+    const formatsPretty = ['text', 'markdown'];
     formatSelected = formatPrettyName(formatSelected);
     const options = formatsPretty.map(function(format) {
       return <option key={ format } value={ format }>
