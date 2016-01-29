@@ -23,11 +23,6 @@ export default class AppIndex extends Component {
     //action.offAllForOwner(this);
   }
 
-  /*
-    <div id="tagline">
-      <h1>QuickNotes is the fastest way to take notes</h1>
-    </div>
-*/
 
   render() {
     console.log('AppIndex: gLoggedUser: ', gLoggedUser);
@@ -35,6 +30,9 @@ export default class AppIndex extends Component {
     return (
       <div>
         <Top />
+        <div id="tagline">
+          <h1>QuickNotes is the fastest way to take notes</h1>
+        </div>
         <NotesList notes={ notes } compact={ false } showingMyNotes={ false } />
         <Settings />
         <ImportSimpleNote />
