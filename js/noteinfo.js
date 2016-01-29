@@ -289,3 +289,45 @@ export function Collapse(note) {
   const id = HashID(note);
   delete expandedNotes[id];
 }
+
+function cmpAscByField(n1, n2, idx) {
+  const v1 = n1[idx];
+  const v2 = n2[idx];
+  if (v1 < v2) {
+    return -1;
+  }
+  if (v1 > v2) {
+    return 1;
+  }
+  return 0;
+}
+
+function cmpDescByField(n1, n2, idx) {
+  const v1 = n1[idx];
+  const v2 = n2[idx];
+  if (v1 < v2) {
+    return 1;
+  }
+  if (v1 > v2) {
+    return -1;
+  }
+  return 0;
+}
+
+export function sortNotesByUpdatedAt(notes) {
+  return notes.sort(function(n1, n2) {
+    return cmpDescByField(n1, n2, noteUpdatedAtIdx);
+  });
+}
+
+export function sortNotesByCreatedAt(notes) {
+  return notes.sort(function(n1, n2) {
+    return cmpDescByField(n1, n2, noteCreatedAtIdx);
+  });
+}
+
+export function sortNotesBySize(notes) {
+  return notes.sort(function(n1, n2) {
+    return cmpDescByField(n1, n2, noteSizeIdx);
+  });
+}

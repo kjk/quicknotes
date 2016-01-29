@@ -84,6 +84,7 @@ export default class AppUser extends Component {
 
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
+      ni.sortNotesByUpdatedAt(allNotes);
       selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
       tags = tagsFromNotes(allNotes);
     }
