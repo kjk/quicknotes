@@ -215,7 +215,7 @@ func removePublicTag(tags []string) (bool, []string) {
 	return false, tags
 }
 
-func importSingleNote(state *SimpleNoteImport, note *simplenote.Note) error {
+func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
 	defer func(s *SimpleNoteImport) {
 		importUpdateCounts(s.importID, s.counts)
 	}(state)
@@ -292,7 +292,7 @@ func importPreviousVersions(state *SimpleNoteImport, noteLastVer *simplenote.Not
 			// sometimes a version is not present in SimpleNote
 			continue
 		}
-		err = importSingleNote(state, note)
+		err = importOneNote(state, note)
 		if err != nil {
 			return err
 		}
@@ -332,7 +332,7 @@ func importSimpleNote(state *SimpleNoteImport, email, password string) {
 				break
 			}
 		}
-		err = importSingleNote(state, note)
+		err = importOneNote(state, note)
 		if err != nil {
 			break
 		}
