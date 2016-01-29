@@ -235,7 +235,7 @@ func importSingleNote(state *SimpleNoteImport, note *simplenote.Note) error {
 	noteID := findNoteIDForSimpleNoteID(state.alreadyImported, snID)
 	if noteID != -1 {
 		log.Verbosef("updating %d with %s\n", noteID, snFullID)
-		newNote.idStr = hashInt(noteID)
+		newNote.hashID = hashInt(noteID)
 	}
 	if isSimpleNoteMarkdown(note) {
 		newNote.format = formatMarkdown

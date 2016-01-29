@@ -19,9 +19,9 @@ import (
 
 // UserSummary describes logged-in user
 type UserSummary struct {
-	id       int
-	HashedID string
-	Handle   string
+	id     int
+	HashID string
+	Handle string
 }
 
 var (
@@ -66,9 +66,9 @@ func userSummaryFromDbUser(dbUser *DbUser) *UserSummary {
 		return nil
 	}
 	return &UserSummary{
-		id:       dbUser.ID,
-		HashedID: hashInt(dbUser.ID),
-		Handle:   dbUser.GetHandle(),
+		id:     dbUser.ID,
+		HashID: hashInt(dbUser.ID),
+		Handle: dbUser.GetHandle(),
 	}
 }
 
@@ -159,7 +159,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		}*/
 
 	if loggedUser != nil {
-		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, loggedUser.id, loggedUser.HashedID, loggedUser.Handle)
+		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, loggedUser.id, loggedUser.HashID, loggedUser.Handle)
 	} else {
 		log.Verbosef("url: '%s'\n", uri)
 	}
@@ -196,11 +196,11 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 
 // /u/${userId}/${whatever}
 func handleUser(w http.ResponseWriter, r *http.Request) {
-	hashedUserIDStr := r.URL.Path[len("/u/"):]
-	hashedUserIDStr = strings.Split(hashedUserIDStr, "/")[0]
-	userID, err := dehashInt(hashedUserIDStr)
+	userHashID := r.URL.Path[len("/u/"):]
+	userHashID = strings.Split(userHashID, "/")[0]
+	userID, err := dehashInt(userHashID)
 	if err != nil {
-		log.Errorf("invalid userID='%s'\n", hashedUserIDStr)
+		log.Errorf("invalid userID='%s'\n", userHashID)
 		http.NotFound(w, r)
 		return
 	}
@@ -212,7 +212,7 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	}
 	loggedUser := getUserSummaryFromCookie(w, r)
 	notesUser := *userSummaryFromDbUser(i.user)
-	log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, hashedUserIDStr)
+	log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, userHashID)
 	model := struct {
 		LoggedUser *UserSummary
 		NotesUser  UserSummary
@@ -333,7 +333,7 @@ func isBitSet(flags int, nBit uint) bool {
 
 func noteToCompact(n *Note) []interface{} {
 	res := make([]interface{}, noteFieldsCount, noteFieldsCount)
-	res[noteHashIDIdx] = n.IDStr
+	res[noteHashIDIdx] = n.HashID
 	res[noteTitleIdx] = n.Title
 	res[noteSizeIdx] = n.Size
 	res[noteFlagsIdx] = encodeNoteFlags(n)
@@ -376,12 +376,12 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 //  - user : userID hashed
 //  - jsonp : jsonp wrapper, optional
 func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
-	userIDStr := strings.TrimSpace(r.FormValue("user"))
+	userHashID := strings.TrimSpace(r.FormValue("user"))
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
-	log.Verbosef("userIdStr: '%s', jsonp: '%s'\n", userIDStr, jsonp)
-	userID, err := dehashInt(userIDStr)
+	log.Verbosef("userHashID: '%s', jsonp: '%s'\n", userHashID, jsonp)
+	userID, err := dehashInt(userHashID)
 	if err != nil {
-		log.Errorf("invalid userIDStr='%s'\n", userIDStr)
+		log.Errorf("invalid userHashID='%s'\n", userHashID)
 		httpServerError(w, r)
 		return
 	}
@@ -450,7 +450,7 @@ func handleAPIGetRecentNotes(w http.ResponseWriter, r *http.Request) {
 
 // NewNoteFromBrowser represents format of the note sent by the browser
 type NewNoteFromBrowser struct {
-	IDStr    string
+	HashID   string
 	Title    string
 	Format   string
 	Content  string
@@ -476,7 +476,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 		log.Errorf("invalid format %s\n", note.Format)
 		return nil
 	}
-	newNote.idStr = note.IDStr
+	newNote.hashID = note.HashID
 	newNote.title = note.Title
 	newNote.content = []byte(note.Content)
 	newNote.format = note.Format
@@ -513,9 +513,9 @@ func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := struct {
-		IDStr string
+		HashID string
 	}{
-		IDStr: hashInt(noteID),
+		HashID: hashInt(noteID),
 	}
 	httpOkWithJSON(w, nil, v)
 }

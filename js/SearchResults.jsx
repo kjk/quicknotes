@@ -15,7 +15,7 @@ Format of search results:
   Term: "foo",
   Results: [
     {
-      NoteIDStr: "1XRy",
+      NoteHashID: "1XRy",
       Items: [
         {
           Type: 1,
@@ -36,9 +36,9 @@ export default class SearchResults extends React.Component {
     this.handleOverlayClick = this.handleOverlayClick.bind(this);
   }
 
-  handleClick(noteIDStr, e) {
+  handleClick(noteHashID, e) {
     e.preventDefault();
-    this.props.onSearchResultSelected(noteIDStr);
+    this.props.onSearchResultSelected(noteHashID);
   }
 
   handleOverlayClick(e) {
@@ -67,7 +67,7 @@ export default class SearchResults extends React.Component {
   }
 
   renderResultNote(o) {
-    const noteID = o.NoteIDStr;
+    const noteID = o.NoteHashID;
     const cb = this.handleClick.bind(this, noteID);
     let n = 0;
     const children = o.Items.map((i) => {

@@ -122,7 +122,7 @@ class Note {
 }
 
 function noteFromCompact(noteCompact) {
-  const id = ni.IDStr(noteCompact);
+  const id = ni.HashID(noteCompact);
   const title = ni.Title(noteCompact);
   const tags = ni.Tags(noteCompact);
   const tagsStr = tagsToText(tags);
@@ -134,7 +134,7 @@ function noteFromCompact(noteCompact) {
 
 /* convert Note note to
 type NewNoteFromBrowser struct {
-	IDStr    string
+	HashID   string
 	Title    string
 	Format   int
 	Content  string
@@ -144,7 +144,7 @@ type NewNoteFromBrowser struct {
 */
 function toNewNoteJSON(note) {
   var n = {};
-  n.IDStr = note.id;
+  n.HashID = note.id;
   n.Title = note.title;
   n.Format = note.formatName;
   n.Content = note.body.trim() + '\n';

@@ -76,10 +76,10 @@ export default class AppUser extends Component {
     let tags = {};
 
     let loggedUserHandle = '';
-    let loggedUserHashedID = '';
+    let loggedUserHashID = '';
     if (gLoggedUser) {
       loggedUserHandle = gLoggedUser.Handle;
-      loggedUserHashedID = gLoggedUser.HashedID;
+      loggedUserHashID = gLoggedUser.HashID;
     }
 
     if (initialNotesJSON && initialNotesJSON.Notes) {
@@ -94,9 +94,9 @@ export default class AppUser extends Component {
       // TODO: should be an array this.props.initialTags
       selectedTag: selectedTag,
       tags: tags,
-      notesUserHashedID: gNotesUser.HashedID,
+      notesUserHashID: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
-      loggedUserHashedID: loggedUserHashedID,
+      loggedUserHashID: loggedUserHashID,
       loggedUserHandle: loggedUserHandle,
       searchResults: null
     };
@@ -139,7 +139,7 @@ export default class AppUser extends Component {
   }
 
   reloadNotes() {
-    const userID = this.state.notesUserHashedID;
+    const userID = this.state.notesUserHashID;
     console.log('reloadNotes: userID=', userID);
     api.getNotes(userID, json => {
       this.setNotes(json);
@@ -179,14 +179,14 @@ export default class AppUser extends Component {
     }
     gSearchDelayTimerID = setTimeout(() => {
       console.log('starting search for ' + searchTerm);
-      this.startSearch(this.state.notesUserHashedID, searchTerm);
+      this.startSearch(this.state.notesUserHashID, searchTerm);
     }, 300);
   }
 
-  handleSearchResultSelected(noteIDStr) {
-    console.log('search note selected: ' + noteIDStr);
+  handleSearchResultSelected(noteHashID) {
+    console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
-    const url = '/n/' + noteIDStr;
+    const url = '/n/' + noteHashID;
     const win = window.open(url, '_blank');
     win.focus();
     // TODO: clear search field and focus it
@@ -194,7 +194,7 @@ export default class AppUser extends Component {
   }
 
   render() {
-    const showingMyNotes = u.isLoggedIn() && (this.state.notesUserHashedID == this.state.loggedUserHashedID);
+    const showingMyNotes = u.isLoggedIn() && (this.state.notesUserHashID == this.state.loggedUserHashID);
 
     return (
       <div>
