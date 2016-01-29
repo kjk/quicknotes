@@ -16,7 +16,7 @@ export default class NoteBody extends Component {
   handleExpand(e) {
     e.preventDefault();
     const note = this.state.note;
-    console.log('expand note', ni.IDStr(note));
+    console.log('expand note', ni.HashID(note));
     ni.Expand(note);
     const content = ni.FetchContent(note, this.handleFetchedContent);
     // if has content, change the state immediately.
@@ -33,7 +33,7 @@ export default class NoteBody extends Component {
   handleCollapse(e) {
     e.preventDefault();
     const note = this.state.note;
-    console.log('collapse note', ni.IDStr(note));
+    console.log('collapse note', ni.HashID(note));
     ni.Collapse(note);
     this.setState({
       note: note
@@ -76,7 +76,7 @@ export default class NoteBody extends Component {
       return;
     }
     const note = this.state.note;
-    //console.log("NoteBody.render() note: ", ni.IDStr(note), "collapsed:", ni.IsCollapsed(note));
+    //console.log("NoteBody.render() note: ", ni.HashID(note), "collapsed:", ni.IsCollapsed(note));
     return (
       <div className="note-content">
         { this.renderContent(note) }

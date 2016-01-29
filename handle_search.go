@@ -27,8 +27,8 @@ type SearchResultItem struct {
 
 // SearchResult has search results sent to client
 type SearchResult struct {
-	NoteIDStr string
-	Items     []SearchResultItem
+	NoteHashID string
+	Items      []SearchResultItem
 }
 
 // GET /api/searchusernotes
@@ -81,8 +81,8 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 			items = items[:maxHitsPerNote]
 		}
 		sr := SearchResult{
-			NoteIDStr: match.note.IDStr,
-			Items:     items,
+			NoteHashID: match.note.HashID,
+			Items:      items,
 		}
 		res = append(res, sr)
 		if len(res) >= maxSearchResults {

@@ -82,7 +82,7 @@ export default class Note extends Component {
   handleDelUndel(e) {
     e.preventDefault();
     const note = this.props.note;
-    const noteId = ni.IDStr(note);
+    const noteId = ni.HashID(note);
     if (ni.IsDeleted(note)) {
       api.undeleteNote(noteId, () => {
         action.reloadNotes();
@@ -97,7 +97,7 @@ export default class Note extends Component {
   handlePermanentDelete(e) {
     e.preventDefault();
     const note = this.props.note;
-    const noteId = ni.IDStr(note);
+    const noteId = ni.HashID(note);
     api.permanentDeleteNote(noteId, () => {
       action.reloadNotes();
     });
@@ -107,7 +107,7 @@ export default class Note extends Component {
     e.preventDefault();
     const note = this.props.note;
     console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
-    const noteId = ni.IDStr(note);
+    const noteId = ni.HashID(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, () => {
         action.reloadNotes();
@@ -168,7 +168,7 @@ export default class Note extends Component {
     if (title.length > 0) {
       title = '-' + urlifyTitle(title);
     }
-    const url = '/n/' + ni.IDStr(note) + title;
+    const url = '/n/' + ni.HashID(note) + title;
     return (
       <a className="note-action"
         href={ url }
@@ -207,7 +207,7 @@ export default class Note extends Component {
   handleStarUnstarNote(e) {
     const note = this.props.note;
     console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
-    const noteId = ni.IDStr(note);
+    const noteId = ni.HashID(note);
     if (ni.IsStarred(note)) {
       api.unstarNote(noteId, () => {
         action.reloadNotes();

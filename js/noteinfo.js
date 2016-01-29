@@ -109,7 +109,7 @@ function clearFlagBit(note, nBit) {
   note[noteFlagsIdx] = clearBit(flags, nBit);
 }
 
-export function IDStr(note) {
+export function HashID(note) {
   return note[noteHashIDIdx];
 }
 
@@ -158,7 +158,7 @@ export function User(note) {
 // will call cb when finished fetching content
 // TODO: always call callback
 export function FetchContent(note, cb) {
-  const noteID = IDStr(note);
+  const noteID = HashID(note);
   const res = note[noteContentIdx];
   if (res) {
     console.log('FetchContent: already has it for note', noteID);
@@ -233,7 +233,7 @@ export function SetContent(note, content) {
 let expandedNotes = {};
 
 export function IsExpanded(note) {
-  const id = IDStr(note);
+  const id = HashID(note);
   return expandedNotes.hasOwnProperty(id);
 }
 
@@ -242,12 +242,12 @@ export function IsCollapsed(note) {
 }
 
 export function Expand(note) {
-  const id = IDStr(note);
+  const id = HashID(note);
   expandedNotes[id] = true;
 }
 
 export function Collapse(note) {
-  const id = IDStr(note);
+  const id = HashID(note);
   delete expandedNotes[id];
 }
 

@@ -146,12 +146,12 @@ type Note struct {
 	Snippet     string
 	IsPartial   bool
 	IsTruncated bool
-	IDStr       string
+	HashID      string
 }
 
 // NewNote describes a new note to be inserted into a database
 type NewNote struct {
-	idStr       string
+	hashID      string
 	title       string
 	format      string
 	content     []byte
@@ -215,7 +215,7 @@ func (n *Note) SetSnippet() {
 // SetCalculatedProperties calculates some props
 func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = len(n.ContentSha1) > snippetSizeThreshold
-	n.IDStr = hashInt(n.id)
+	n.HashID = hashInt(n.id)
 	n.SetSnippet()
 }
 
@@ -523,7 +523,7 @@ func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
 }
 
 func dbUpdateNote(userID int, note *NewNote) (int, error) {
-	noteID, err := dehashInt(note.idStr)
+	noteID, err := dehashInt(note.hashID)
 	if err != nil {
 		return 0, err
 	}
@@ -619,9 +619,9 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	}
 
 	var noteID int
-	if note.idStr == "" {
+	if note.hashID == "" {
 		noteID, err = dbCreateNewNote(userID, note)
-		note.idStr = hashInt(noteID)
+		note.hashID = hashInt(noteID)
 	} else {
 		noteID, err = dbUpdateNote(userID, note)
 	}

@@ -64,7 +64,7 @@ export default class AppNote extends Component {
     console.log('appNoteStart: gLoggedUser: ', gLoggedUser);
     const title = gNoteTitle;
     const nu = gNoteUser;
-    const url = `/u/${nu.HashedID}/${nu.Handle}`;
+    const url = `/u/${nu.HashID}/${nu.Handle}`;
     return (
       <div>
         <div id="note-top">

@@ -57,7 +57,7 @@ export default class Top extends Component {
     }
     let placeholder = 'Search your notes (Ctrl-F)';
     if (gNotesUser) {
-      if (!gLoggedUser || (gLoggedUser.HashedID != gNotesUser.HashedID)) {
+      if (!gLoggedUser || (gLoggedUser.HashID != gNotesUser.HashID)) {
         placeholder = `Search public notes by ${gNotesUser.Handle} (Ctrl-F)`;
       }
     }

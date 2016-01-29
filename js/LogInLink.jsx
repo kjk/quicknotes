@@ -26,7 +26,7 @@ export default class LogInLink extends Component {
   renderLoggedIn() {
     const url = encodeURI('/logout?redir=' + window.location);
     const u = gLoggedUser;
-    const userUrl = '/u/' + u.HashedID + '/' + u.Handle;
+    const userUrl = '/u/' + u.HashID + '/' + u.Handle;
     return (
       <div id="user">
         <a href={ userUrl } className="user">

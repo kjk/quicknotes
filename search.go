@@ -155,7 +155,7 @@ func sprintNoteID(n *Note, shown *bool) string {
 	if *shown {
 		return ""
 	}
-	return fmt.Sprintf("\nNote id: %s\n", n.IDStr)
+	return fmt.Sprintf("\nNote id: %s\n", n.HashID)
 }
 
 func newTitleSearchResultItem(s string) SearchResultItem {
