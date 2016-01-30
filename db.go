@@ -203,7 +203,7 @@ func (n *Note) SetSnippet() {
 		return
 	}
 
-	snippet, err := getNoteSnippet(n)
+	snippet, err := localStore.GetSnippet(n.ContentSha1)
 	if err != nil {
 		return
 	}
@@ -298,10 +298,6 @@ func getCachedContent(sha1 []byte) ([]byte, error) {
 	}
 	mu.Unlock()
 	return d, nil
-}
-
-func getNoteSnippet(note *Note) ([]byte, error) {
-	return localStore.GetSnippet(note.ContentSha1)
 }
 
 func getNoteContent(note *Note) ([]byte, error) {
