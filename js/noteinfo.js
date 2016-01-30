@@ -207,6 +207,7 @@ export function FetchLatestContent(noteOrig, cb) {
   if (content !== null) {
     console.log('FetchLatestContent: already has it for note', IDVer(noteOrig));
     cb(noteOrig, content);
+    return;
   }
   console.log('FetchLatestContent: starting to fetch content for note', noteID);
   api.getNote(noteID, note => {
