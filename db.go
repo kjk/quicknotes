@@ -225,6 +225,7 @@ func getShortSnippet(d []byte) ([]byte, bool) {
 	maxLines := 10
 	sizeLeft := 512
 	prevWasEmpty := false
+	d = bytes.TrimSpace(d)
 	for len(d) > 0 && sizeLeft > 0 && len(lines) < maxLines {
 		advance, line, err := bufio.ScanLines(d, false)
 		if err != nil {
