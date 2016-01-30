@@ -359,27 +359,22 @@ result:
     Duration: "5 secs"
   }
 */
-func handleAPIImportSimpleNotesStatus(w http.ResponseWriter, r *http.Request) {
+func handleAPIImportSimpleNotesStatus(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL.Path)
-	dbUser := getDbUserFromCookie(w, r)
-	if dbUser == nil {
-		httpErrorWithJSONf(w, "not logged in")
-		return
-	}
 	idStr := strings.TrimSpace(r.FormValue("id"))
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		httpErrorWithJSONf(w, "missing or invalid id value ('%s')", idStr)
+		httpErrorWithJSONf(w, r, "missing or invalid id value ('%s')", idStr)
 		return
 	}
 	status, ok := getImportStateCopyByID(id)
 	if !ok {
-		httpErrorWithJSONf(w, "no ipmort with id %d", id)
+		httpErrorWithJSONf(w, r, "no ipmort with id %d", id)
 		return
 	}
-	if status.userID != dbUser.ID {
-		log.Errorf("status.userID=%d, dbUser.ID=%d\n", status.userID, dbUser.ID)
-		httpErrorWithJSONf(w, "not the right user")
+	if status.userID != ctx.User.id {
+		log.Errorf("status.userID=%d, ctx.Usser.id=%d\n", status.userID, ctx.User.id)
+		httpErrorWithJSONf(w, r, "not the right user")
 		return
 	}
 	if !status.IsFinished {
@@ -397,21 +392,16 @@ result:
     ImportID: 5
   }
 */
-func handleAPIImportSimpleNoteStart(w http.ResponseWriter, r *http.Request) {
+func handleAPIImportSimpleNoteStart(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL.Path)
-	dbUser := getDbUserFromCookie(w, r)
-	if dbUser == nil {
-		httpErrorWithJSONf(w, "not logged in")
-		return
-	}
 	email := strings.TrimSpace(r.FormValue("email"))
 	password := strings.TrimSpace(r.FormValue("password"))
 	if email == "" || password == "" {
-		httpErrorWithJSONf(w, "Missing email or password.")
+		httpErrorWithJSONf(w, r, "Missing email or password.")
 		return
 	}
-	log.Verbosef("importing for user: %s, email: '%s', pwd: '%s'\n", dbUser.Login, email, password)
-	state := startNewImport(dbUser.ID)
+	log.Verbosef("importing for user: %s (%d), email: '%s', pwd: '%s'\n", ctx.User.Handle, ctx.User.id, email, password)
+	state := startNewImport(ctx.User.id)
 	id := state.importID
 	go importSimpleNote(state, email, password)
 	v := struct {

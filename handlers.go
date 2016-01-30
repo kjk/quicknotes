@@ -17,11 +17,100 @@ import (
 	"github.com/kjk/u"
 )
 
+// HandlerWithCtxFunc is like http.HandlerFunc but with additional ReqContext argument
+type HandlerWithCtxFunc func(*ReqContext, http.ResponseWriter, *http.Request)
+
+// ReqOpts is a set of flags passed to withCtx
+type ReqOpts uint
+
+const (
+	// OnlyGet tells to reject non-GET requests
+	OnlyGet ReqOpts = 1 << iota
+	// OnlyPost tells to reject non-POST requests
+	OnlyPost
+	// OnlyLoggedIn means the user must be logged in
+	OnlyLoggedIn
+	// OnlyAdmin means the user must be logged in and an admin
+	OnlyAdmin
+	// IsJSON denotes a handler that is serving JSON requests and should send
+	// errors as { "error": "error message" }
+	IsJSON
+)
+
 // UserSummary describes logged-in user
 type UserSummary struct {
 	id     int
 	HashID string
 	Handle string
+}
+
+// Timing describes how long did it take to execute a piece of code
+type Timing struct {
+	What      string
+	TimeStart time.Time
+	Duration  time.Duration
+}
+
+// Start marks a start of an event
+func (t *Timing) Start(what string) {
+	t.What = what
+	t.TimeStart = time.Now()
+}
+
+// Finished marks an end of an event
+func (t *Timing) Finished() {
+	t.Duration = time.Since(t.TimeStart)
+}
+
+// ReqContext contains data that is useful to access in every http handler
+type ReqContext struct {
+	User    *UserSummary // nil if not logged in
+	Timings []*Timing
+}
+
+// NewTimingf starts to time a new event
+func (ctx *ReqContext) NewTimingf(format string, args ...interface{}) *Timing {
+	t := &Timing{}
+	t.Start(fmt.Sprintf(format, args...))
+	ctx.Timings = append(ctx.Timings, t)
+	return t
+}
+
+func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		uri := r.URL.Path
+		ctx := &ReqContext{}
+		timing := ctx.NewTimingf("uri: %s", uri)
+		defer timing.Finished()
+		ctx.User = getUserSummaryFromCookie(w, r)
+
+		isJSON := opts&IsJSON != 0
+		onlyLoggedIn := opts&OnlyLoggedIn != 0
+		onlyGet := opts&OnlyGet != 0
+		onlyPost := opts&OnlyPost != 0
+
+		if onlyLoggedIn && ctx.User == nil {
+			serveError(w, r, isJSON, "not logged in")
+			return
+		}
+
+		method := strings.ToUpper(r.Method)
+		if onlyGet && method != "GET" {
+			serveError(w, r, isJSON, fmt.Sprintf("%s %s is not GET", method, uri))
+			return
+		}
+
+		if onlyPost && method != "POST" {
+			serveError(w, r, isJSON, fmt.Sprintf("%s %s is not POST", method, uri))
+			return
+		}
+
+		f(ctx, w, r)
+		timing.Finished()
+		if timing.Duration > time.Millisecond*500 {
+			log.Infof("slow handler: '%s' took %s\n", r.RequestURI, timing.Duration)
+		}
+	}
 }
 
 var (
@@ -141,13 +230,12 @@ Big picture:
 /api/* - api calls
 */
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
+func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	uri := r.URL.Path
 	if uri != "/" {
 		http.NotFound(w, r)
 		return
 	}
-	loggedUser := getUserSummaryFromCookie(w, r)
 	/*
 		name := r.URL.Path[1:]
 		if strings.HasSuffix(name, ".html") {
@@ -158,15 +246,15 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			}
 		}*/
 
-	if loggedUser != nil {
-		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, loggedUser.id, loggedUser.HashID, loggedUser.Handle)
+	if ctx.User != nil {
+		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, ctx.User.id, ctx.User.HashID, ctx.User.Handle)
 	} else {
 		log.Verbosef("url: '%s'\n", uri)
 	}
 	v := struct {
 		LoggedUser *UserSummary
 	}{
-		LoggedUser: loggedUser,
+		LoggedUser: ctx.User,
 	}
 	execTemplate(w, tmplIndex, v)
 }
@@ -225,17 +313,17 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplUser, model)
 }
 
-func userCanAccessNote(dbUser *DbUser, note *Note) bool {
+func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
 	if note.IsPublic {
 		return true
 	}
-	if dbUser == nil {
+	if loggedUser == nil {
 		return false
 	}
-	return dbUser.ID == note.userID
+	return loggedUser.id == note.userID
 }
 
-func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr string) (*Note, error) {
+func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
 	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
 	noteID, err := dehashInt(noteIDHashStr)
 	if err != nil {
@@ -246,31 +334,28 @@ func getNoteByIDHash(w http.ResponseWriter, r *http.Request, noteIDHashStr strin
 	if err != nil {
 		return nil, err
 	}
-	dbUser := getDbUserFromCookie(w, r)
 	// TODO: when we have sharing via secret link we'll have to check
 	// permissions
-	if !userCanAccessNote(dbUser, note) {
+	if !userCanAccessNote(ctx.User, note) {
 		return nil, fmt.Errorf("no access to note '%s'", noteIDHashStr)
 	}
 	return note, nil
 }
 
 // /n/{note_id_hash}-rest
-func handleNote(w http.ResponseWriter, r *http.Request) {
+func handleNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	noteIDHashStr := r.URL.Path[len("/n/"):]
 	// remove optional part after -, which is constructed from note title
 	if idx := strings.Index(noteIDHashStr, "-"); idx != -1 {
 		noteIDHashStr = noteIDHashStr[:idx]
 	}
 
-	note, err := getNoteByIDHash(w, r, noteIDHashStr)
+	note, err := getNoteByIDHash(ctx, noteIDHashStr)
 	if err != nil || note == nil {
 		log.Error(err)
 		http.NotFound(w, r)
 		return
 	}
-
-	loggedUser := getUserSummaryFromCookie(w, r)
 
 	dbNoteUser, err := dbGetUserByID(note.userID)
 	if err != nil {
@@ -286,7 +371,7 @@ func handleNote(w http.ResponseWriter, r *http.Request) {
 		NoteBody   string
 		NoteFormat string
 	}{
-		LoggedUser: loggedUser,
+		LoggedUser: ctx.User,
 		NoteUser:   noteUser,
 		NoteTitle:  note.Title,
 		NoteBody:   note.Content(),
@@ -350,23 +435,22 @@ func noteToCompact(n *Note, withContent bool) []interface{} {
 }
 
 // /api/getnote?id=${noteHashID}
-func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
-	dbUser := getDbUserFromCookie(w, r)
+func handleAPIGetNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	noteIDHashStr := r.FormValue("id")
-	note, err := getNoteByIDHash(w, r, noteIDHashStr)
+	note, err := getNoteByIDHash(ctx, noteIDHashStr)
 	if err != nil || note == nil {
 		log.Error(err)
-		httpErrorWithJSONf(w, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
+		httpErrorWithJSONf(w, r, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
 		return
 	}
-	if !userCanAccessNote(dbUser, note) {
-		httpErrorWithJSONf(w, "/api/getnote.json access denied")
+	if !userCanAccessNote(ctx.User, note) {
+		httpErrorWithJSONf(w, r, "/api/getnote.json access denied")
 		return
 	}
 	content, err := getCachedContent(note.ContentSha1)
 	if err != nil {
 		log.Errorf("getCachedContent() failed with %s\n", err)
-		httpErrorWithJSONf(w, "/api/getnote.json: getCachedContent() failed with %s", err)
+		httpErrorWithJSONf(w, r, "/api/getnote.json: getCachedContent() failed with %s", err)
 		return
 	}
 	v := noteToCompact(note, true)
@@ -378,7 +462,9 @@ func handleAPIGetNote(w http.ResponseWriter, r *http.Request) {
 // Arguments:
 //  - user : userID hashed
 //  - jsonp : jsonp wrapper, optional
-func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
+// Returns notes that belong to a given user. We return private notes only
+// if logged in user is the same as user.
+func handleAPIGetNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	userHashID := strings.TrimSpace(r.FormValue("user"))
 	jsonp := strings.TrimSpace(r.FormValue("jsonp"))
 	log.Verbosef("userHashID: '%s', jsonp: '%s'\n", userHashID, jsonp)
@@ -394,10 +480,8 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 		httpServerError(w, r)
 		return
 	}
-	dbUser := getDbUserFromCookie(w, r)
-	loggedUser := userSummaryFromDbUser(dbUser)
 
-	showPrivate := userID == dbUser.ID
+	showPrivate := userID == ctx.User.id
 	var notes [][]interface{}
 	for _, note := range i.notes {
 		if note.IsPublic || showPrivate {
@@ -407,16 +491,16 @@ func handleAPIGetNotes(w http.ResponseWriter, r *http.Request) {
 
 	loggedUserID := -1
 	loggedUserHandle := ""
-	if loggedUser != nil {
-		loggedUserHandle = loggedUser.Handle
-		loggedUserID = loggedUser.id
+	if ctx.User != nil {
+		loggedUserHandle = ctx.User.Handle
+		loggedUserID = ctx.User.id
 	}
 	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Login, loggedUserID, loggedUserHandle, showPrivate)
 	v := struct {
 		LoggedUser *UserSummary
 		Notes      [][]interface{}
 	}{
-		LoggedUser: loggedUser,
+		LoggedUser: ctx.User,
 		Notes:      notes,
 	}
 	httpOkWithJsonpCompact(w, r, v, jsonp)
@@ -499,20 +583,20 @@ func handleAPICreateOrUpdateNote(w http.ResponseWriter, r *http.Request) {
 	dbUser := getDbUserFromCookie(w, r)
 	if dbUser == nil {
 		log.Errorf("not logged in\n")
-		httpErrorWithJSONf(w, "user not logged in")
+		httpErrorWithJSONf(w, r, "user not logged in")
 		return
 	}
 	note := newNoteFromArgs(r)
 	if note == nil {
 		log.Errorf("newNoteFromArgs() returned nil\n")
-		httpErrorWithJSONf(w, "newNoteFromArgs() returned nil")
+		httpErrorWithJSONf(w, r, "newNoteFromArgs() returned nil")
 		return
 	}
 
 	noteID, err := dbCreateOrUpdateNote(dbUser.ID, note)
 	if err != nil {
 		log.Errorf("dbCreateNewNote() failed with %s\n", err)
-		httpErrorWithJSONf(w, "dbCreateNewNot() failed with '%s'", err)
+		httpErrorWithJSONf(w, r, "dbCreateNewNot() failed with '%s'", err)
 		return
 	}
 	v := struct {
@@ -527,7 +611,7 @@ func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) 
 	dbUser := getDbUserFromCookie(w, r)
 	if dbUser == nil {
 		log.Errorf("not logged int\n")
-		httpErrorWithJSONf(w, "user not logged in")
+		httpErrorWithJSONf(w, r, "user not logged in")
 		return nil, 0
 	}
 
@@ -535,19 +619,19 @@ func getUserNoteFromArgs(w http.ResponseWriter, r *http.Request) (*DbUser, int) 
 	noteID, err := dehashInt(noteIDHashStr)
 	if err != nil {
 		log.Error(err)
-		httpErrorWithJSONf(w, "ivalid note id '%s'", noteIDHashStr)
+		httpErrorWithJSONf(w, r, "ivalid note id '%s'", noteIDHashStr)
 		return nil, 0
 	}
 	log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		log.Error(err)
-		httpErrorWithJSONf(w, "note doesn't exist")
+		httpErrorWithJSONf(w, r, "note doesn't exist")
 		return nil, 0
 	}
 	if note.userID != dbUser.ID {
 		log.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteIDHashStr, dbUser.ID, dbUser.Login)
-		httpErrorWithJSONf(w, "note doesn't belong to this user")
+		httpErrorWithJSONf(w, r, "note doesn't belong to this user")
 		return nil, 0
 	}
 	return dbUser, noteID
@@ -564,7 +648,7 @@ func handleAPIDeleteNote(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbDeleteNote(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to delete note with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to delete note with '%s'", err)
 		return
 	}
 	log.Verbosef("deleted note %d\n", noteID)
@@ -587,7 +671,7 @@ func handleAPIPermanentDeleteNote(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbPermanentDeleteNote(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to permanently delete note with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to permanently delete note with '%s'", err)
 		return
 	}
 	log.Verbosef("permanently deleted note %d\n", noteID)
@@ -610,7 +694,7 @@ func handleAPIUndeleteNote(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbUndeleteNote(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to undelete note with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to undelete note with '%s'", err)
 		return
 	}
 	log.Verbosef("undeleted note %d\n", noteID)
@@ -633,7 +717,7 @@ func handleAPIMakeNotePrivate(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbMakeNotePrivate(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to make note private with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to make note private with '%s'", err)
 		return
 	}
 	log.Verbosef("made note %d private\n", noteID)
@@ -656,7 +740,7 @@ func handleAPIMakeNotePublic(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbMakeNotePublic(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to make note public with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to make note public with '%s'", err)
 		return
 	}
 	log.Infof("made note %d public\n", noteID)
@@ -679,7 +763,7 @@ func handleAPIStarNote(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbStarNote(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to star note with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to star note with '%s'", err)
 		return
 	}
 	log.Verbosef("starred note %d\n", noteID)
@@ -702,7 +786,7 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 	}
 	err := dbUnstarNote(dbUser.ID, noteID)
 	if err != nil {
-		httpErrorWithJSONf(w, "failed to unstar note with '%s'", err)
+		httpErrorWithJSONf(w, r, "failed to unstar note with '%s'", err)
 		return
 	}
 	log.Verbosef("unstarred note %d\n", noteID)
@@ -715,11 +799,11 @@ func handleAPIUnstarNote(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerHTTPHandlers() {
-	http.HandleFunc("/", handleIndex)
+	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
 	http.HandleFunc("/u/", handleUser)
-	http.HandleFunc("/n/", handleNote)
+	http.HandleFunc("/n/", withCtx(handleNote, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
 	http.HandleFunc("/logingithub", handleLoginGitHub)
@@ -727,13 +811,12 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logingooglecb", handleOauthGoogleCallback)
 
-	//http.HandleFunc("/logingoogle", handleLoginGoogle)
 	http.HandleFunc("/logout", handleLogout)
-	http.HandleFunc("/api/import_simplenote_start", handleAPIImportSimpleNoteStart)
-	http.HandleFunc("/api/import_simplenote_status", handleAPIImportSimpleNotesStatus)
-	http.HandleFunc("/api/getnotes", handleAPIGetNotes)
-	http.HandleFunc("/api/getnote", handleAPIGetNote)
-	http.HandleFunc("/api/searchusernotes", handleSearchUserNotes)
+	http.HandleFunc("/api/import_simplenote_start", withCtx(handleAPIImportSimpleNoteStart, OnlyLoggedIn|IsJSON))
+	http.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
+	http.HandleFunc("/api/getnotes", withCtx(handleAPIGetNotes, IsJSON))
+	http.HandleFunc("/api/getnote", withCtx(handleAPIGetNote, IsJSON))
+	http.HandleFunc("/api/searchusernotes", withCtx(handleSearchUserNotes, IsJSON))
 	http.HandleFunc("/api/createorupdatenote", handleAPICreateOrUpdateNote)
 	http.HandleFunc("/api/deletenote", handleAPIDeleteNote)
 	http.HandleFunc("/api/permanentdeletenote", handleAPIPermanentDeleteNote)
