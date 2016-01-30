@@ -184,7 +184,7 @@ function setCachedVersion(note) {
 
 // returns content if already has it or null
 export function Content(note) {
-  if (!IsPartial(note)) {
+  if (!IsPartial(note) && !IsTruncated(note)) {
     return Snippet(note);
   }
   return getCachedVersion(note);
