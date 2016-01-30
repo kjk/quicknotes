@@ -125,6 +125,7 @@ export default class AppUser extends Component {
 
   setNotes(json) {
     const allNotes = json.Notes || [];
+    ni.sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
     let selectedTag = this.state.selectedTag;
     if (!(selectedTag in tags)) {
