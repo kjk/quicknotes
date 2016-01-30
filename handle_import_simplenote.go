@@ -220,6 +220,13 @@ func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
 		importUpdateCounts(s.importID, s.counts)
 	}(state)
 
+	// skip empty notes
+	content := strings.TrimSpace(note.Content)
+	if len(content) == 0 {
+		state.SkippedCount++
+		return nil
+	}
+
 	snID := note.ID
 	snVer := note.Version
 	snFullID := snKey(snID, snVer)
@@ -250,7 +257,7 @@ func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
 	}
 	newNote.tags = append(newNote.tags, "from-simplenote")
 
-	newNote.title, newNote.content = noteToTitleContent([]byte(note.Content))
+	newNote.title, newNote.content = noteToTitleContent([]byte(content))
 	if len(newNote.content) == 0 {
 		//log.Verbosef("   skipping an empty note\n")
 		return nil
