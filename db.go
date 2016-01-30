@@ -215,7 +215,7 @@ func (n *Note) SetSnippet() {
 
 // SetCalculatedProperties calculates some props
 func (n *Note) SetCalculatedProperties() {
-	n.IsPartial = len(n.ContentSha1) > snippetSizeThreshold
+	n.IsPartial = n.Size > snippetSizeThreshold
 	n.HashID = hashInt(n.id)
 	n.SetSnippet()
 }
@@ -416,13 +416,6 @@ func saveContent(d []byte) ([]byte, error) {
 		return nil, err
 	}
 	err = saveNoteToGoogleStorage(sha1, d)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(d) <= snippetSizeThreshold {
-		return sha1, nil
-	}
 	return sha1, err
 }
 
