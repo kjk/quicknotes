@@ -239,6 +239,7 @@ func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
 	if noteID != -1 {
 		log.Verbosef("updating %d with %s\n", noteID, snFullID)
 		newNote.hashID = hashInt(noteID)
+		newNote.createdAt = note.ModificationDate
 	}
 	if isSimpleNoteMarkdown(note) {
 		newNote.format = formatMarkdown
