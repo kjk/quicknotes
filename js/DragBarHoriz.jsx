@@ -74,14 +74,14 @@ export default class DragBarHoriz extends Component {
 
   render() {
     const style = this.props.style || {
-        position: 'fixed',
-        backgroundColor: '#377CE4',
-        minWidth: '100%',
-        height: 3,
-        cursor: 'row-resize',
-        zIndex: 3,
-        top: this.y
-      };
+      position: 'fixed',
+      backgroundColor: '#377CE4',
+      minWidth: '100%',
+      height: 3,
+      cursor: 'row-resize',
+      zIndex: 3,
+      top: this.y
+    };
 
     return (
       <div style={ style } onMouseDown={ this.handleMouseDown }>

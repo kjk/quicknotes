@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/kjk/log"
 )
@@ -36,7 +34,8 @@ type SearchResult struct {
 // - user : hashed user id
 // - term : search term
 // TODO: limit number of hits to some reasonable number e.g. 100?
-func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
+// TODO: return errors as JSON?
+func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	hashedUserID := strings.TrimSpace(r.FormValue("user"))
 	if hashedUserID == "" {
 		log.Errorf("missing 'user' arg in '%s'\n", r.URL)
@@ -53,10 +52,9 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 		httpServerError(w, r)
 		return
 	}
-	loggedUser := getUserSummaryFromCookie(w, r)
-	searchPrivate := loggedUser != nil && userID == loggedUser.id
+	searchPrivate := ctx.User != nil && userID == ctx.User.id
 
-	log.Infof("userID: '%d', term: '%s', private: %v, url: '%s'\n", userID, searchTerm, searchPrivate, r.URL)
+	log.Verbosef("userID: '%d', term: '%s', private: %v, url: '%s'\n", userID, searchTerm, searchPrivate, r.URL)
 
 	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
@@ -70,9 +68,10 @@ func handleSearchUserNotes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	timeStart := time.Now()
+	timing := ctx.NewTimingf("searching %d notes for '%s'", len(notes), searchTerm)
 	matches := searchNotes(searchTerm, notes)
-	fmt.Printf("searchNotes('%s') of %d notes took %s\n", searchTerm, len(matches), time.Since(timeStart))
+	timing.Finished()
+	log.Verbosef("searchNotes('%s') of %d notes took %s\n", searchTerm, len(matches), timing.Duration)
 
 	var res []SearchResult
 	for _, match := range matches {

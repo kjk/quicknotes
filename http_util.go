@@ -84,14 +84,23 @@ func httpOkWithJsonpCompact(w http.ResponseWriter, r *http.Request, v interface{
 	}
 }
 
-func httpErrorWithJSONf(w http.ResponseWriter, format string, arg ...interface{}) {
+func httpErrorWithJSONf(w http.ResponseWriter, r *http.Request, format string, arg ...interface{}) {
 	msg := fmt.Sprintf(format, arg...)
 	model := struct {
-		Error string
+		Error string `json:"error"`
 	}{
 		Error: msg,
 	}
-	httpOkWithJSON(w, nil, model)
+	httpOkWithJSON(w, r, model)
+}
+
+func serveError(w http.ResponseWriter, r *http.Request, isJSON bool, errMsg string) {
+	log.Errorf("uri: '%s', err: '%s', isJSON: %v\n", r.RequestURI, errMsg, isJSON)
+	if isJSON {
+		httpErrorWithJSONf(w, r, errMsg)
+	} else {
+		http.NotFound(w, r)
+	}
 }
 
 func httpServerError(w http.ResponseWriter, r *http.Request) {
