@@ -1,5 +1,5 @@
 import * as api from './api.js';
-import { assert } from './utils.js';
+import { assert, isUndefined } from './utils.js';
 import filesize from 'filesize';
 
 // must match handlers.go
@@ -163,7 +163,7 @@ let contentCache = {};
 function getCachedVersion(note) {
   const id = HashID(note);
   const verContent = contentCache[id];
-  if (verContent === undefined) {
+  if (isUndefined(verContent)) {
     return null;
   }
   const [idVer, content] = verContent;

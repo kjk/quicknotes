@@ -1,5 +1,9 @@
 import * as ni from './noteinfo.js';
 
+export function isUndefined(v) {
+  return typeof v === "undefined";
+}
+
 export function noteHasTag(note, tag) {
   const tags = ni.Tags(note);
   if (!tags) {
@@ -165,7 +169,7 @@ export function escapeHtml(str) {
 }
 
 export function isLoggedIn() {
-  const notLoggedIn = gLoggedUser == null || gLoggedUser == undefined;
+  const notLoggedIn = isUndefined(gLoggedUser) || gLoggedUser == null;
   return !notLoggedIn;
 }
 
