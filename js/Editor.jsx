@@ -9,7 +9,7 @@ import DragBarHoriz from './DragBarHoriz.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
-import * as u from './utils.js';
+import {isUndefined, deepCloneObject, strArrRemoveDups} from './utils.js';
 import * as api from './api.js';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
@@ -115,7 +115,7 @@ function textToTags(s) {
       tags.push(tag);
     }
   });
-  return u.strArrRemoveDups(tags);
+  return strArrRemoveDups(tags);
 }
 
 function editorHeight(y) {
@@ -278,7 +278,7 @@ function _toggleHeading(cm, direction, size) {
       var text = cm.getLine(i);
       var currHeadingLevel = text.search(/[^#]/);
 
-      if (direction !== undefined) {
+      if (isUndefined(direction)) {
         if (currHeadingLevel <= 0) {
           if (direction == 'bigger') {
             text = '###### ' + text;
@@ -371,7 +371,7 @@ function _toggleLine(cm, name) {
 }
 
 function _toggleBlock(cm, type, start_chars, end_chars) {
-  end_chars = (typeof end_chars === 'undefined') ? start_chars : end_chars;
+  end_chars = isUndefined(end_chars) ? start_chars : end_chars;
   var stat = getState(cm);
 
   var text;
@@ -680,7 +680,7 @@ export default class Editor extends Component {
 
   startEditingNote(note) {
     this.firstRender = true;
-    this.initialNote = u.deepCloneObject(note);
+    this.initialNote = deepCloneObject(note);
     this.setState({
       isShowing: true,
       note: note
