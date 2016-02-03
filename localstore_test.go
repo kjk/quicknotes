@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 )
 
@@ -16,10 +17,10 @@ type ContentId struct {
 
 func TestLocalStore(t *testing.T) {
 	if false {
-		IncLogVerbosity()
-		defer DecLogVerbosity()
+		log.IncVerbosity()
+		defer log.DecVerbosity()
 	}
-	logToStdout = true
+	log.LogToStdout = true
 	dir := u.ExpandTildeInPath("~/data/test_localstore")
 	os.RemoveAll(dir)
 	u.CreateDirMust(dir)

@@ -244,6 +244,7 @@ func getShortSnippet(d []byte) ([]byte, bool) {
 		}
 		d = d[advance:]
 	}
+	d = bytes.TrimSpace(d)
 	truncated := len(d) > 0
 	res := bytes.Join(lines, []byte{'\n'})
 	return res, truncated
