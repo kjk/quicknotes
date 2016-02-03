@@ -57,7 +57,34 @@ func loadSimpleNotes() []*SimpleNoteTest {
 	return res
 }
 
+type MatchWithSimpleNote struct {
+	match *Match
+	note  *SimpleNoteTest
+	title string
+	body  string
+}
+
 func TestSearch(t *testing.T) {
 	notes := loadSimpleNotes()
 	fmt.Printf("%d simple note notes\n", len(notes))
+	term := "quicknotes"
+	var matches []*MatchWithSimpleNote
+	for _, note := range notes {
+		title, body := noteToTitleContent([]byte(note.Content))
+		match := searchTitleAndBody(term, title, string(body))
+		if match != nil {
+			m := &MatchWithSimpleNote{
+				match: match,
+				note:  note,
+				title: title,
+				body:  string(body),
+			}
+			matches = append(matches, m)
+		}
+	}
+	fmt.Printf("%d mathes\n", len(matches))
+	for _, m := range matches {
+		s := noteMatchToString2(term, m.title, m.body, m.note.ID, m.match)
+		fmt.Printf("%s\n", s)
+	}
 }
