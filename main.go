@@ -25,6 +25,7 @@ var (
 	flgImportJSONUserLogin string
 	flgImportJSONFile      string
 	flgSearchTerm          string
+	flgSearchLocalTerm     string
 	flgListUsers           bool
 	flgImportStackOverflow bool
 
@@ -74,6 +75,7 @@ func parseFlags() {
 	flag.StringVar(&flgImportJSONUserLogin, "import-user", "", "handle of the user (users.login) for which to import notes e.g. twitter:kjk")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
 	flag.StringVar(&flgSearchTerm, "search", "", "search notes for a given term")
+	flag.StringVar(&flgSearchLocalTerm, "search-local", "", "search local notes for a given term")
 	flag.StringVar(&flgDbHost, "db-host", "127.0.0.1", "database host")
 	flag.StringVar(&flgDbPort, "db-port", "3306", "database port")
 	flag.BoolVar(&flgVerbose, "verbose", false, "enable verbose logging")
@@ -134,6 +136,11 @@ func main() {
 	openLogFileMust()
 	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	initAppMust()
+
+	if flgSearchLocalTerm != "" {
+		searchLocalNotes(flgSearchLocalTerm)
+		return
+	}
 
 	if flgImportStackOverflow {
 		localStore, err = NewLocalStore(getLocalStoreDir())
