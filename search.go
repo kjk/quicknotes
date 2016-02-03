@@ -3,9 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
-
-	"github.com/kjk/u"
 )
 
 const (
@@ -251,19 +248,4 @@ func noteMatchToString(term string, match *Match) string {
 	body := n.Content()
 	noteID := n.HashID
 	return noteMatchToString2(term, title, body, noteID, match)
-}
-
-func searchAllNotesTest(term string) {
-	timeStart := time.Now()
-	notes, err := dbGetAllNotes()
-	u.PanicIfErr(err)
-	fmt.Printf("got %d notes in %s\n", len(notes), time.Since(timeStart))
-
-	timeStart = time.Now()
-
-	matches := searchNotes(term, notes)
-	for _, match := range matches {
-		fmt.Print(noteMatchToString(term, match))
-	}
-	fmt.Printf("found %d matching notes in %s\n", len(matches), time.Since(timeStart))
 }
