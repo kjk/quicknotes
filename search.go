@@ -50,14 +50,13 @@ func decorate(s string, termLen int, matchPositions []int) string {
 	return res
 }
 
-func searchNote(term string, note *Note) *Match {
-	if note.IsDeleted {
-		return nil
-	}
+func searchTitleAndBody(term, title, body string) *Match {
+	title = strings.ToLower(title)
+	body = strings.ToLower(body)
+
 	var match Match
-	match.note = note
 	termLen := len(term)
-	s := strings.ToLower(note.Title)
+	s := title
 	currOff := 0
 	for {
 		idx := strings.Index(s, term)
@@ -69,7 +68,7 @@ func searchNote(term string, note *Note) *Match {
 		currOff += idx + termLen
 	}
 
-	s = strings.ToLower(note.Content())
+	s = body
 	currOff = 0
 	for {
 		idx := strings.Index(s, term)
@@ -84,6 +83,19 @@ func searchNote(term string, note *Note) *Match {
 		return &match
 	}
 	return nil
+
+}
+
+func searchNote(term string, note *Note) *Match {
+	if note.IsDeleted {
+		return nil
+	}
+
+	match := searchTitleAndBody(term, note.Title, note.Content())
+	if match != nil {
+		match.note = note
+	}
+	return match
 }
 
 // LineMatch represents a match in the line
@@ -151,11 +163,11 @@ func searchNotes(term string, notes []*Note) []*Match {
 	return matches
 }
 
-func sprintNoteID(n *Note, shown *bool) string {
+func sprintNoteID(noteID string, shown *bool) string {
 	if *shown {
 		return ""
 	}
-	return fmt.Sprintf("\nNote id: %s\n", n.HashID)
+	return fmt.Sprintf("\nNote id: %s\n", noteID)
 }
 
 func newTitleSearchResultItem(s string) SearchResultItem {
@@ -212,19 +224,17 @@ func noteMatchToSearchResults(term string, match *Match) []SearchResultItem {
 	return res
 }
 
-func noteMatchToString(term string, match *Match) string {
-	n := match.note
-
+func noteMatchToString2(term, title, body, noteID string, match *Match) string {
 	shownID := false
 	var res string
 	if len(match.titleMatchPos) > 0 {
-		res += sprintNoteID(n, &shownID)
-		s := decorate(n.Title, len(term), match.titleMatchPos)
+		res += sprintNoteID(noteID, &shownID)
+		s := decorate(title, len(term), match.titleMatchPos)
 		res += fmt.Sprintf("Title: %s\n", s)
 	}
 	if len(match.bodyMatchPos) > 0 {
-		res += sprintNoteID(n, &shownID)
-		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
+		res += sprintNoteID(noteID, &shownID)
+		lineMatches := matchToLines([]byte(body), match.bodyMatchPos)
 		lineMatches = collapseSameLines(lineMatches)
 		for _, lm := range lineMatches {
 			s := decorate(lm.line, len(term), lm.matches)
@@ -233,6 +243,14 @@ func noteMatchToString(term string, match *Match) string {
 		}
 	}
 	return res
+}
+
+func noteMatchToString(term string, match *Match) string {
+	n := match.note
+	title := n.Title
+	body := n.Content()
+	noteID := n.HashID
+	return noteMatchToString2(term, title, body, noteID, match)
 }
 
 func searchAllNotesTest(term string) {
