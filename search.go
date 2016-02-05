@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -19,6 +20,61 @@ type Match struct {
 	note          *Note
 	titleMatchPos []int
 	bodyMatchPos  []int
+}
+
+// ByMatchScore is for sorting search results by score
+type ByMatchScore []*Match
+
+func (m ByMatchScore) Len() int {
+	fmt.Printf("len: %d\n", len(m))
+	return len(m)
+}
+
+func (m ByMatchScore) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
+func matchLess2(m1, m2 *Match) bool {
+	n1 := len(m1.titleMatchPos) + len(m1.bodyMatchPos)
+	n2 := len(m2.titleMatchPos) + len(m2.bodyMatchPos)
+	return n1 < n2
+}
+
+// this is really a reverse compare since we want the "largest"
+// results first
+func matchLess(m1, m2 *Match) bool {
+	n1, n2 := len(m1.titleMatchPos), len(m2.titleMatchPos)
+	if n1 != n2 {
+		return n1 > n2
+	}
+	n1, n2 = len(m1.bodyMatchPos), len(m2.bodyMatchPos)
+	if n1 != n2 {
+		return n1 > n2
+	}
+	// TODO: compare sizes of title
+	return false
+}
+
+func (m ByMatchScore) Less(i, j int) bool {
+	m1, m2 := m[i], m[j]
+	return matchLess(m1, m2)
+}
+
+// BySimpleMatchScore is for sorting
+type BySimpleMatchScore []*MatchWithSimpleNote
+
+func (m BySimpleMatchScore) Len() int {
+	fmt.Printf("len: %d\n", len(m))
+	return len(m)
+}
+
+func (m BySimpleMatchScore) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
+func (m BySimpleMatchScore) Less(i, j int) bool {
+	m1, m2 := m[i].match, m[j].match
+	return matchLess(m1, m2)
 }
 
 func decorate(s string, termLen int, matchPositions []int) string {
@@ -142,7 +198,6 @@ func collapseSameLines(lineMatches []*LineMatch) []*LineMatch {
 	return res
 }
 
-// TODO: sort results by score
 // TODO: break term by space and use it as AND filter (e.g. "foo bar" is where
 // both "foo" and "bar" are present)
 func searchNotes(term string, notes []*Note) []*Match {
@@ -157,14 +212,9 @@ func searchNotes(term string, notes []*Note) []*Match {
 			matches = append(matches, match)
 		}
 	}
+	fmt.Printf("About to call sort.Sort()\n")
+	sort.Sort(ByMatchScore(matches))
 	return matches
-}
-
-func sprintNoteID(noteID string, shown *bool) string {
-	if *shown {
-		return ""
-	}
-	return fmt.Sprintf("\nNote id: %s\n", noteID)
 }
 
 func newTitleSearchResultItem(s string) SearchResultItem {
@@ -219,33 +269,4 @@ func noteMatchToSearchResults(term string, match *Match) []SearchResultItem {
 		}
 	}
 	return res
-}
-
-func noteMatchToString2(term, title, body, noteID string, match *Match) string {
-	shownID := false
-	var res string
-	if len(match.titleMatchPos) > 0 {
-		res += sprintNoteID(noteID, &shownID)
-		s := decorate(title, len(term), match.titleMatchPos)
-		res += fmt.Sprintf("Title: %s\n", s)
-	}
-	if len(match.bodyMatchPos) > 0 {
-		res += sprintNoteID(noteID, &shownID)
-		lineMatches := matchToLines([]byte(body), match.bodyMatchPos)
-		lineMatches = collapseSameLines(lineMatches)
-		for _, lm := range lineMatches {
-			s := decorate(lm.line, len(term), lm.matches)
-			s = trimSpaceLineRight(s)
-			res += fmt.Sprintf("%d: %s\n", lm.lineNo+1, s)
-		}
-	}
-	return res
-}
-
-func noteMatchToString(term string, match *Match) string {
-	n := match.note
-	title := n.Title
-	body := n.Content()
-	noteID := n.HashID
-	return noteMatchToString2(term, title, body, noteID, match)
 }

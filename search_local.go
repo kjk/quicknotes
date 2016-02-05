@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/kjk/u"
@@ -82,7 +83,50 @@ func searchSimpleNotes(term string) []*MatchWithSimpleNote {
 			matches = append(matches, m)
 		}
 	}
+	sort.Sort(BySimpleMatchScore(matches))
 	return matches
+}
+
+func sprintNoteID(noteID string, shown *bool) string {
+	if *shown {
+		return ""
+	}
+	*shown = true
+	return fmt.Sprintf("\nNote id: %s\n", noteID)
+}
+
+func noteMatchToString2(term, title, body, noteID string, match *Match) string {
+	shownID := false
+	var res string
+	if len(match.titleMatchPos) > 0 {
+		res += sprintNoteID(noteID, &shownID)
+		s := decorate(title, len(term), match.titleMatchPos)
+		res += fmt.Sprintf("Title: %s\n", s)
+	}
+	if len(match.bodyMatchPos) > 0 {
+		res += sprintNoteID(noteID, &shownID)
+		lineMatches := matchToLines([]byte(body), match.bodyMatchPos)
+		lineMatches = collapseSameLines(lineMatches)
+		for _, lm := range lineMatches {
+			s := decorate(lm.line, len(term), lm.matches)
+			s = trimSpaceLineRight(s)
+			res += fmt.Sprintf("%d: %s\n", lm.lineNo+1, s)
+		}
+	}
+
+	//res += fmt.Sprintf("title matches: %d %v\n", len(match.titleMatchPos), match.titleMatchPos)
+	//res += fmt.Sprintf("body  matches: %d %v\n", len(match.bodyMatchPos), match.bodyMatchPos)
+	//res += fmt.Sprintf("total matches: %d\n", len(match.titleMatchPos)+len(match.bodyMatchPos))
+
+	return res
+}
+
+func noteMatchToString(term string, match *Match) string {
+	n := match.note
+	title := n.Title
+	body := n.Content()
+	noteID := n.HashID
+	return noteMatchToString2(term, title, body, noteID, match)
 }
 
 func printSearchResults(term string, matches []*MatchWithSimpleNote) {
