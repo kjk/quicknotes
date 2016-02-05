@@ -67,26 +67,6 @@ func loadSimpleNotes() []*SimpleNoteTest {
 	return res
 }
 
-func searchSimpleNotes(term string) []*MatchWithSimpleNote {
-	notes := loadSimpleNotes()
-	var matches []*MatchWithSimpleNote
-	for _, note := range notes {
-		title, body := noteToTitleContent([]byte(note.Content))
-		match := searchTitleAndBody(term, title, string(body))
-		if match != nil {
-			m := &MatchWithSimpleNote{
-				match: match,
-				note:  note,
-				title: title,
-				body:  string(body),
-			}
-			matches = append(matches, m)
-		}
-	}
-	sort.Sort(BySimpleMatchScore(matches))
-	return matches
-}
-
 func sprintNoteID(noteID string, shown *bool) string {
 	if *shown {
 		return ""
@@ -137,12 +117,7 @@ func printSearchResults(term string, matches []*MatchWithSimpleNote) {
 	}
 }
 
-func searchLocalNotes(term string) {
-	matches := searchSimpleNotes(term)
-	printSearchResults(term, matches)
-}
-
-func searchAllNotesTest(term string) {
+func searchAllNotesTest(term string, maxResults int) {
 	timeStart := time.Now()
 	notes, err := dbGetAllNotes()
 	u.PanicIfErr(err)
@@ -150,9 +125,37 @@ func searchAllNotesTest(term string) {
 
 	timeStart = time.Now()
 
-	matches := searchNotes(term, notes)
+	matches := searchNotes(term, notes, maxResults)
 	for _, match := range matches {
 		fmt.Print(noteMatchToString(term, match))
 	}
 	fmt.Printf("found %d matching notes in %s\n", len(matches), time.Since(timeStart))
+}
+
+func searchSimpleNotes(term string, maxResults int) []*MatchWithSimpleNote {
+	notes := loadSimpleNotes()
+	var matches []*MatchWithSimpleNote
+	for _, note := range notes {
+		title, body := noteToTitleContent([]byte(note.Content))
+		match := searchTitleAndBody(term, title, string(body), 16)
+		if match != nil {
+			m := &MatchWithSimpleNote{
+				match: match,
+				note:  note,
+				title: title,
+				body:  string(body),
+			}
+			matches = append(matches, m)
+			if maxResults != -1 && len(matches) >= maxResults {
+				break
+			}
+		}
+	}
+	sort.Sort(BySimpleMatchScore(matches))
+	return matches
+}
+
+func searchLocalNotes(term string, maxResults int) {
+	matches := searchSimpleNotes(term, maxResults)
+	printSearchResults(term, matches)
 }

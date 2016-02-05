@@ -69,7 +69,7 @@ func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Reque
 	}
 
 	timing := ctx.NewTimingf("searching %d notes for '%s'", len(notes), searchTerm)
-	matches := searchNotes(searchTerm, notes)
+	matches := searchNotes(searchTerm, notes, defaultMaxResults)
 	timing.Finished()
 	log.Verbosef("searchNotes('%s') of %d notes took %s\n", searchTerm, len(matches), timing.Duration)
 
