@@ -103,7 +103,7 @@ func decorate(s string, termLen int, matchPositions []int) string {
 	return res
 }
 
-func searchTitleAndBody(term, title, body string) *Match {
+func searchTitleAndBody(term, title, body string, maxMatches int) *Match {
 	title = strings.ToLower(title)
 	body = strings.ToLower(body)
 
@@ -121,6 +121,10 @@ func searchTitleAndBody(term, title, body string) *Match {
 		currOff += idx + termLen
 	}
 
+	if maxMatches != -1 && len(match.titleMatchPos) >= maxMatches {
+		return &match
+	}
+
 	s = body
 	currOff = 0
 	for {
@@ -129,6 +133,11 @@ func searchTitleAndBody(term, title, body string) *Match {
 			break
 		}
 		match.bodyMatchPos = append(match.bodyMatchPos, idx+currOff)
+		if maxMatches != -1 {
+			if len(match.titleMatchPos)+len(match.bodyMatchPos) >= maxMatches {
+				return &match
+			}
+		}
 		s = s[idx+termLen:]
 		currOff += idx + termLen
 	}
@@ -139,12 +148,12 @@ func searchTitleAndBody(term, title, body string) *Match {
 
 }
 
-func searchNote(term string, note *Note) *Match {
+func searchNote(term string, note *Note, maxMatches int) *Match {
 	if note.IsDeleted {
 		return nil
 	}
 
-	match := searchTitleAndBody(term, note.Title, note.Content())
+	match := searchTitleAndBody(term, note.Title, note.Content(), maxMatches)
 	if match != nil {
 		match.note = note
 	}
@@ -200,16 +209,19 @@ func collapseSameLines(lineMatches []*LineMatch) []*LineMatch {
 
 // TODO: break term by space and use it as AND filter (e.g. "foo bar" is where
 // both "foo" and "bar" are present)
-func searchNotes(term string, notes []*Note) []*Match {
+func searchNotes(term string, notes []*Note, maxResults int) []*Match {
 	if len(term) == 0 {
 		return nil
 	}
 	term = strings.ToLower(term)
 	var matches []*Match
 	for _, n := range notes {
-		match := searchNote(term, n)
+		match := searchNote(term, n, 16)
 		if match != nil {
 			matches = append(matches, match)
+			if maxResults != -1 && len(matches) >= maxResults {
+				break
+			}
 		}
 	}
 	fmt.Printf("About to call sort.Sort()\n")

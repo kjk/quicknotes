@@ -14,6 +14,10 @@ import (
 	"github.com/kjk/u"
 )
 
+const (
+	defaultMaxResults = 64
+)
+
 var (
 	httpAddr = "127.0.0.1:5111"
 
@@ -138,7 +142,7 @@ func main() {
 	initAppMust()
 
 	if flgSearchLocalTerm != "" {
-		searchLocalNotes(flgSearchLocalTerm)
+		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)
 		return
 	}
 
@@ -182,7 +186,7 @@ func main() {
 	getDbMust()
 
 	if flgSearchTerm != "" {
-		searchAllNotesTest(flgSearchTerm)
+		searchAllNotesTest(flgSearchTerm, defaultMaxResults)
 		return
 	}
 
