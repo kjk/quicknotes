@@ -145,6 +145,8 @@ func searchSimpleNotes(term string, maxResults int) []*MatchWithSimpleNote {
 				title: title,
 				body:  string(body),
 			}
+			match.note = &Note{}
+			match.note.Title = title
 			matches = append(matches, m)
 			if maxResults != -1 && len(matches) >= maxResults {
 				break

@@ -51,8 +51,16 @@ func matchLess(m1, m2 *Match) bool {
 	if n1 != n2 {
 		return n1 > n2
 	}
-	// TODO: compare sizes of title
-	return false
+	n1, n2 = len(m1.note.Title), len(m2.note.Title)
+	// notes with shorter title should show up first
+	// (match is a bigger percentage of the text)
+	if n1 != n2 {
+		return n1 < n2
+	}
+
+	// TODO: compare sizes of bodies
+
+	return true
 }
 
 func (m ByMatchScore) Less(i, j int) bool {
