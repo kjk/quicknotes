@@ -25,5 +25,4 @@ func TestSearch(t *testing.T) {
 			t.Fatalf("expected: %s, got: %s", expID, gotID)
 		}
 	}
-	printSearchResults(term, matches)
 }
