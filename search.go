@@ -112,11 +112,11 @@ func decorate(s string, matchPositions []PosLen) string {
 	prevEnd := 0
 	positions := ""
 	if flgPositions {
+		res += fmt.Sprintf("s: %s\n", s)
 		for _, pl := range matchPositions {
 			positions += fmt.Sprintf("[%d %d] ", pl.Pos, pl.Len)
 		}
-		fmt.Printf("s: %s\n", s)
-		fmt.Printf("pos: %s\n", positions)
+		res += fmt.Sprintf("pos: %s\n", positions)
 	}
 
 	for _, pl := range matchPositions {
@@ -294,7 +294,6 @@ func searchNotes(term string, notes []*Note, maxResults int) []*Match {
 			}
 		}
 	}
-	fmt.Printf("About to call sort.Sort()\n")
 	sort.Sort(ByMatchScore(matches))
 	return matches
 }
