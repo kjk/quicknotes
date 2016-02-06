@@ -32,7 +32,6 @@ type Match struct {
 type ByMatchScore []*Match
 
 func (m ByMatchScore) Len() int {
-	fmt.Printf("len: %d\n", len(m))
 	return len(m)
 }
 
@@ -78,7 +77,6 @@ func (m ByMatchScore) Less(i, j int) bool {
 type BySimpleMatchScore []*MatchWithSimpleNote
 
 func (m BySimpleMatchScore) Len() int {
-	fmt.Printf("len: %d\n", len(m))
 	return len(m)
 }
 
@@ -168,19 +166,33 @@ func searchTitleAndBody(term, title, body string, maxMatches int) *Match {
 		return &match
 	}
 	return nil
-
 }
 
-func searchNote(term string, note *Note, maxMatches int) *Match {
+func appendMatch(m *Match, toAppend *Match) {
+	m.titleMatchPos = append(m.titleMatchPos, toAppend.titleMatchPos...)
+	m.bodyMatchPos = append(m.bodyMatchPos, toAppend.bodyMatchPos...)
+}
+
+// search a note for list of terms. This is AND search i.e. all terms
+// must be found
+func searchNote(terms []string, note *Note, maxMatches int) *Match {
 	if note.IsDeleted {
 		return nil
 	}
-
-	match := searchTitleAndBody(term, note.Title, note.Content(), maxMatches)
-	if match != nil {
+	var res *Match
+	for _, term := range terms {
+		match := searchTitleAndBody(term, note.Title, note.Content(), maxMatches)
+		if match == nil {
+			return nil
+		}
 		match.note = note
+		if res == nil {
+			res = match
+		} else {
+			appendMatch(res, match)
+		}
 	}
-	return match
+	return res
 }
 
 // LineMatch represents a match in the line
@@ -235,16 +247,22 @@ func collapseSameLines(lineMatches []*LineMatch) []*LineMatch {
 	return res
 }
 
-// TODO: break term by space and use it as AND filter (e.g. "foo bar" is where
-// both "foo" and "bar" are present)
+func splitTerm(term string) []string {
+	term = strings.ToLower(term)
+	term = strings.Map(wsToSpace, term)
+	terms := strings.Split(term, " ")
+	return strArrRemoveEmpty(terms)
+}
+
 func searchNotes(term string, notes []*Note, maxResults int) []*Match {
-	if len(term) == 0 {
+	terms := splitTerm(term)
+	if len(terms) == 0 {
 		return nil
 	}
-	term = strings.ToLower(term)
+
 	var matches []*Match
 	for _, n := range notes {
-		match := searchNote(term, n, 16)
+		match := searchNote(terms, n, 16)
 		if match != nil {
 			matches = append(matches, match)
 			if maxResults != -1 && len(matches) >= maxResults {

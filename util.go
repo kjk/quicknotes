@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/kjk/u"
 	"github.com/speps/go-hashids"
@@ -153,4 +154,33 @@ func strArrEqual(a1, a2 []string) bool {
 		}
 	}
 	return true
+}
+
+// convert all whitespace characters to a regular space
+func wsToSpace(c rune) rune {
+	if unicode.IsSpace(c) {
+		return ' '
+	}
+	return c
+}
+
+func strArrRemoveEmptyAlwaysAlloc(a []string) []string {
+	n := len(a)
+	res := make([]string, 0, n)
+	for _, el := range a {
+		if len(el) > 0 {
+			res = append(res, el)
+		}
+	}
+	return res
+}
+
+// return array with empty strings removed
+func strArrRemoveEmpty(a []string) []string {
+	for _, el := range a {
+		if len(el) == 0 {
+			return strArrRemoveEmptyAlwaysAlloc(a)
+		}
+	}
+	return a
 }

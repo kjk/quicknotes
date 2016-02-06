@@ -110,7 +110,7 @@ func noteMatchToString(term string, match *Match) string {
 }
 
 func printSearchResults(term string, matches []*MatchWithSimpleNote) {
-	fmt.Printf("%d matches\n", len(matches))
+	fmt.Printf("%d matches for '%s'\n", len(matches), term)
 	for _, m := range matches {
 		s := noteMatchToString2(term, m.title, m.body, m.note.ID, m.match)
 		fmt.Printf("%s\n", s)
@@ -132,25 +132,45 @@ func searchAllNotesTest(term string, maxResults int) {
 	fmt.Printf("found %d matching notes in %s\n", len(matches), time.Since(timeStart))
 }
 
+// Maybe: combine with searchNotes by using interfaces to
+// abstract Note
 func searchSimpleNotes(term string, maxResults int) []*MatchWithSimpleNote {
+	terms := splitTerm(term)
+	if len(terms) == 0 {
+		return nil
+	}
 	notes := loadSimpleNotes()
 	var matches []*MatchWithSimpleNote
 	for _, note := range notes {
-		title, body := noteToTitleContent([]byte(note.Content))
-		match := searchTitleAndBody(term, title, string(body), 16)
-		if match != nil {
-			m := &MatchWithSimpleNote{
-				match: match,
-				note:  note,
-				title: title,
-				body:  string(body),
-			}
-			match.note = &Note{}
-			match.note.Title = title
-			matches = append(matches, m)
-			if maxResults != -1 && len(matches) >= maxResults {
+		var res *Match
+		title, bodyBytes := noteToTitleContent([]byte(note.Content))
+		body := string(bodyBytes)
+		for _, term := range terms {
+			match := searchTitleAndBody(term, title, body, 16)
+			if match == nil {
+				res = nil
 				break
 			}
+			if res == nil {
+				res = match
+			} else {
+				appendMatch(res, match)
+			}
+		}
+		if res == nil {
+			continue
+		}
+		m := &MatchWithSimpleNote{
+			match: res,
+			note:  note,
+			title: title,
+			body:  body,
+		}
+		res.note = &Note{}
+		res.note.Title = title
+		matches = append(matches, m)
+		if maxResults != -1 && len(matches) >= maxResults {
+			break
 		}
 	}
 	sort.Sort(BySimpleMatchScore(matches))
