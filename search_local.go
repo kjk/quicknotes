@@ -80,7 +80,7 @@ func noteMatchToString2(term, title, body, noteID string, match *Match) string {
 	var res string
 	if len(match.titleMatchPos) > 0 {
 		res += sprintNoteID(noteID, &shownID)
-		s := decorate(title, len(term), match.titleMatchPos)
+		s := decorate(title, match.titleMatchPos)
 		res += fmt.Sprintf("Title: %s\n", s)
 	}
 	if len(match.bodyMatchPos) > 0 {
@@ -88,7 +88,7 @@ func noteMatchToString2(term, title, body, noteID string, match *Match) string {
 		lineMatches := matchToLines([]byte(body), match.bodyMatchPos)
 		lineMatches = collapseSameLines(lineMatches)
 		for _, lm := range lineMatches {
-			s := decorate(lm.line, len(term), lm.matches)
+			s := decorate(lm.line, lm.matches)
 			s = trimSpaceLineRight(s)
 			res += fmt.Sprintf("%d: %s\n", lm.lineNo+1, s)
 		}
