@@ -89,6 +89,21 @@ func (m BySimpleMatchScore) Less(i, j int) bool {
 	return matchLess(m1, m2)
 }
 
+type PosLenByPos []PosLen
+
+func (a PosLenByPos) Len() int {
+	return len(a)
+}
+
+func (a PosLenByPos) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a PosLenByPos) Less(i, j int) bool {
+	pl1, pl2 := a[i], a[j]
+	return pl1.Pos < pl2.Pos
+}
+
 func decorate(s string, matchPositions []PosLen) string {
 	if len(matchPositions) == 0 {
 		return s
@@ -173,6 +188,14 @@ func appendMatch(m *Match, toAppend *Match) {
 	m.bodyMatchPos = append(m.bodyMatchPos, toAppend.bodyMatchPos...)
 }
 
+func sortMatchPositions(m *Match) {
+	if m == nil {
+		return
+	}
+	sort.Sort(PosLenByPos(m.titleMatchPos))
+	sort.Sort(PosLenByPos(m.bodyMatchPos))
+}
+
 // search a note for list of terms. This is AND search i.e. all terms
 // must be found
 func searchNote(terms []string, note *Note, maxMatches int) *Match {
@@ -192,6 +215,7 @@ func searchNote(terms []string, note *Note, maxMatches int) *Match {
 			appendMatch(res, match)
 		}
 	}
+	sortMatchPositions(res)
 	return res
 }
 
@@ -291,19 +315,22 @@ func newLineSearchResultItem(s string, lineNo int) SearchResultItem {
 	}
 }
 
+// TODO: need to html-escape <, > etc.
 func decorateHTML(s string, matchPositions []PosLen) string {
 	if len(matchPositions) == 0 {
 		return s
 	}
 	res := ""
 	prevEnd := 0
+	spanBefore := `<span class="s-h">`
+	spanAfter := `</span>`
 	for _, pl := range matchPositions {
 		pos := pl.Pos
 		res += s[prevEnd:pos]
-		res += `<span class="s-h">`
+		res += spanBefore
 		prevEnd = pos + pl.Len
 		res += s[pos:prevEnd]
-		res += `</span>`
+		res += spanAfter
 	}
 	res += s[prevEnd:len(s)]
 	return res

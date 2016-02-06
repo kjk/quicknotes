@@ -160,6 +160,7 @@ func searchSimpleNotes(term string, maxResults int) []*MatchWithSimpleNote {
 		if res == nil {
 			continue
 		}
+		sortMatchPositions(res)
 		m := &MatchWithSimpleNote{
 			match: res,
 			note:  note,
