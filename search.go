@@ -15,11 +15,17 @@ var (
 	flgPositions bool
 )
 
+// PosLen represents position and length (of a match)
+type PosLen struct {
+	Pos int
+	Len int
+}
+
 // Match describes matches in the note
 type Match struct {
 	note          *Note
-	titleMatchPos []int
-	bodyMatchPos  []int
+	titleMatchPos []PosLen
+	bodyMatchPos  []PosLen
 }
 
 // ByMatchScore is for sorting search results by score
@@ -85,7 +91,7 @@ func (m BySimpleMatchScore) Less(i, j int) bool {
 	return matchLess(m1, m2)
 }
 
-func decorate(s string, termLen int, matchPositions []int) string {
+func decorate(s string, matchPositions []PosLen) string {
 	if len(matchPositions) == 0 {
 		return s
 	}
@@ -93,17 +99,18 @@ func decorate(s string, termLen int, matchPositions []int) string {
 	prevEnd := 0
 	positions := ""
 	if flgPositions {
-		for _, pos := range matchPositions {
-			positions += fmt.Sprintf("[%d %d] ", pos, termLen)
+		for _, pl := range matchPositions {
+			positions += fmt.Sprintf("[%d %d] ", pl.Pos, pl.Len)
 		}
 		fmt.Printf("s: %s\n", s)
 		fmt.Printf("pos: %s\n", positions)
 	}
 
-	for _, pos := range matchPositions {
+	for _, pl := range matchPositions {
+		pos := pl.Pos
 		res += s[prevEnd:pos]
 		res += colorMatch
-		prevEnd = pos + termLen
+		prevEnd = pos + pl.Len
 		res += s[pos:prevEnd]
 		res += colorReset
 	}
@@ -124,7 +131,11 @@ func searchTitleAndBody(term, title, body string, maxMatches int) *Match {
 		if idx == -1 {
 			break
 		}
-		match.titleMatchPos = append(match.titleMatchPos, idx+currOff)
+		pl := PosLen{
+			Pos: idx + currOff,
+			Len: termLen,
+		}
+		match.titleMatchPos = append(match.titleMatchPos, pl)
 		s = s[idx+termLen:]
 		currOff += idx + termLen
 	}
@@ -140,7 +151,11 @@ func searchTitleAndBody(term, title, body string, maxMatches int) *Match {
 		if idx == -1 {
 			break
 		}
-		match.bodyMatchPos = append(match.bodyMatchPos, idx+currOff)
+		pl := PosLen{
+			Pos: idx + currOff,
+			Len: termLen,
+		}
+		match.bodyMatchPos = append(match.bodyMatchPos, pl)
 		if maxMatches != -1 {
 			if len(match.titleMatchPos)+len(match.bodyMatchPos) >= maxMatches {
 				return &match
@@ -172,18 +187,23 @@ func searchNote(term string, note *Note, maxMatches int) *Match {
 type LineMatch struct {
 	lineNo  int
 	line    string
-	matches []int // can be empty
+	matches []PosLen // can be empty
 }
 
-func findLineForPos(linesInfo *LinesInfo, pos int) *LineMatch {
+func findLineForPos(linesInfo *LinesInfo, pl PosLen) *LineMatch {
+	pos := pl.Pos
 	for i := 0; i < linesInfo.LineCount(); i++ {
 		lineStart, lineLen := linesInfo.PosLen(i)
 		if pos >= lineStart && pos < lineStart+lineLen {
 			d := linesInfo.d
+			plRes := PosLen{
+				Pos: pos - lineStart,
+				Len: pl.Len,
+			}
 			res := &LineMatch{
 				lineNo:  i,
 				line:    string(d[lineStart : lineStart+lineLen]),
-				matches: []int{pos - lineStart},
+				matches: []PosLen{plRes},
 			}
 			return res
 		}
@@ -191,11 +211,11 @@ func findLineForPos(linesInfo *LinesInfo, pos int) *LineMatch {
 	return nil
 }
 
-func matchToLines(d []byte, matchPos []int) []*LineMatch {
+func matchToLines(d []byte, matchPos []PosLen) []*LineMatch {
 	linesInfo := detectLines(d)
 	var res []*LineMatch
-	for _, pos := range matchPos {
-		m := findLineForPos(linesInfo, pos)
+	for _, pl := range matchPos {
+		m := findLineForPos(linesInfo, pl)
 		res = append(res, m)
 	}
 	return res
@@ -253,16 +273,17 @@ func newLineSearchResultItem(s string, lineNo int) SearchResultItem {
 	}
 }
 
-func decorateHTML(s string, termLen int, matchPositions []int) string {
+func decorateHTML(s string, matchPositions []PosLen) string {
 	if len(matchPositions) == 0 {
 		return s
 	}
 	res := ""
 	prevEnd := 0
-	for _, pos := range matchPositions {
+	for _, pl := range matchPositions {
+		pos := pl.Pos
 		res += s[prevEnd:pos]
 		res += `<span class="s-h">`
-		prevEnd = pos + termLen
+		prevEnd = pos + pl.Len
 		res += s[pos:prevEnd]
 		res += `</span>`
 	}
@@ -274,7 +295,7 @@ func noteMatchToSearchResults(term string, match *Match) []SearchResultItem {
 	var res []SearchResultItem
 	n := match.note
 	if len(match.titleMatchPos) > 0 {
-		s := decorateHTML(n.Title, len(term), match.titleMatchPos)
+		s := decorateHTML(n.Title, match.titleMatchPos)
 		res = append(res, newTitleSearchResultItem(s))
 	} else {
 		res = append(res, newTitleSearchResultItem(n.Title))
@@ -283,7 +304,7 @@ func noteMatchToSearchResults(term string, match *Match) []SearchResultItem {
 		lineMatches := matchToLines([]byte(n.Content()), match.bodyMatchPos)
 		lineMatches = collapseSameLines(lineMatches)
 		for _, lm := range lineMatches {
-			s := decorateHTML(lm.line, len(term), lm.matches)
+			s := decorateHTML(lm.line, lm.matches)
 			s = trimSpaceLineRight(s)
 			res = append(res, newLineSearchResultItem(s, lm.lineNo+1))
 		}

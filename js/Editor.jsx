@@ -9,7 +9,7 @@ import DragBarHoriz from './DragBarHoriz.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
-import {isUndefined, deepCloneObject, strArrRemoveDups} from './utils.js';
+import { isUndefined, deepCloneObject, strArrRemoveDups } from './utils.js';
 import * as api from './api.js';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js

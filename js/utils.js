@@ -1,7 +1,7 @@
 import * as ni from './noteinfo.js';
 
 export function isUndefined(v) {
-  return typeof v === "undefined";
+  return typeof v === 'undefined';
 }
 
 export function noteHasTag(note, tag) {
