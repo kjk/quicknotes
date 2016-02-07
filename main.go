@@ -30,6 +30,7 @@ var (
 	flgImportJSONFile      string
 	flgSearchTerm          string
 	flgSearchLocalTerm     string
+	flgShowNote            string
 	flgListUsers           bool
 	flgImportStackOverflow bool
 
@@ -83,6 +84,7 @@ func parseFlags() {
 	flag.StringVar(&flgDbHost, "db-host", "127.0.0.1", "database host")
 	flag.StringVar(&flgDbPort, "db-port", "3306", "database port")
 	flag.BoolVar(&flgVerbose, "verbose", false, "enable verbose logging")
+	flag.StringVar(&flgShowNote, "show-note", "", "show a note with a given hashed id")
 	flag.Parse()
 	if flgIsLocal {
 		onlyLocalStorage = true
@@ -128,6 +130,14 @@ func openLogFileMust() {
 	fatalIfErr(err, "openLogFileMust")
 }
 
+func debugShowNote(hashedNoteID string) {
+	noteID, err := dehashInt(hashedNoteID)
+	u.PanicIfErr(err)
+	note, err := dbGetNoteByID(noteID)
+	u.PanicIfErr(err)
+	fmt.Printf("Note: %v\n", *note)
+}
+
 func main() {
 	var err error
 	parseFlags()
@@ -153,6 +163,8 @@ func main() {
 		return
 	}
 
+	getDbMust()
+
 	if flgListUsers {
 		listDbUsers()
 		return
@@ -173,6 +185,11 @@ func main() {
 		log.Fatalf("NewLocalStore() failed with %s\n", err)
 	}
 
+	if flgShowNote != "" {
+		debugShowNote(flgShowNote)
+		return
+	}
+
 	if flgImportJSONFile != "" {
 		importNotesFromJSON(flgImportJSONFile, flgImportJSONUserLogin)
 		return
@@ -182,8 +199,6 @@ func main() {
 		testListObjects()
 		return
 	}
-
-	getDbMust()
 
 	if flgSearchTerm != "" {
 		searchAllNotesTest(flgSearchTerm, defaultMaxResults)
