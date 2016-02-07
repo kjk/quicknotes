@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kjk/log"
@@ -199,6 +200,7 @@ func (s notesByCreatedAt) Less(i, j int) bool {
 // SetSnippet sets a short version of note (if is big)
 func (n *Note) SetSnippet() {
 	var snippetBytes []byte
+	// skip if we've already calculated it
 	if n.Snippet != "" {
 		return
 	}
@@ -224,24 +226,21 @@ func getShortSnippet(d []byte) ([]byte, bool) {
 	var lines [][]byte
 	maxLines := 10
 	sizeLeft := 512
-	prevWasEmpty := false
+	prevLineWasEmpty := false
 	d = bytes.TrimSpace(d)
 	for len(d) > 0 && sizeLeft > 0 && len(lines) < maxLines {
-		advance, line, err := bufio.ScanLines(d, false)
-		if err != nil {
+		advance, line, err := bufio.ScanLines(d, true)
+		if err != nil || advance == 0 {
 			break
 		}
-
-		skip := len(line) == 0 && prevWasEmpty
+		line = bytes.TrimRightFunc(line, unicode.IsSpace)
+		lineIsEmpty := len(line) == 0
+		skip := lineIsEmpty && prevLineWasEmpty
 		if !skip {
 			lines = append(lines, line)
 			sizeLeft -= len(line)
 		}
-		prevWasEmpty = len(line) == 0
-		if advance == 0 {
-			lines = append(lines, d)
-			break
-		}
+		prevLineWasEmpty = lineIsEmpty
 		d = d[advance:]
 	}
 	d = bytes.TrimSpace(d)
