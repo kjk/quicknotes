@@ -12,7 +12,11 @@ export default class NoteBody extends Component {
       note: props.note,
       body: '',
     };
-    this.getBodyIfNeeded(props.note);
+  }
+
+  componentDidMount() {
+    const note = this.props.note;
+    this.getBodyIfNeeded(note);
   }
 
   getBodyIfNeeded(note) {
