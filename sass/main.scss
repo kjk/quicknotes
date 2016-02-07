@@ -325,7 +325,6 @@ a {
   #user {
     position: absolute;
     top: 0; right: 0;
-    padding-left: 4px;
 
     .user {
       float: left;
@@ -335,7 +334,7 @@ a {
       height: 45px;
       line-height: 45px;
       display: block;
-      padding: 0 0 0 10px;
+      padding: 0 0 0 16px;
       font-weight: bold;
     }
 
