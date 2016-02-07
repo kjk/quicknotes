@@ -1,7 +1,9 @@
 import React from 'react';
+
 import Overlay from './Overlay.jsx';
 
 import * as action from './action.js';
+import * as api from './api.js';
 
 const TypeTitle = 1;
 const TypeLine = 2;
@@ -34,15 +36,76 @@ export default class SearchResults extends React.Component {
 
     this.handleClick = this.handleClick.bind(this);
     this.handleOverlayClick = this.handleOverlayClick.bind(this);
+    this.handleStartSearchDelayed = this.handleStartSearchDelayed.bind(this);
+    this.handleClearSearchTerm = this.handleClearSearchTerm.bind(this);
+    this.startSearch = this.startSearch.bind(this);
+
+    this.currSearchTerm = null;
+    this.searchDelayTimerID = null;
+    this.state = {
+      searchResults: null
+    };
+  }
+
+  componentDidMount() {
+    action.onStartSearchDelayed(this.handleStartSearchDelayed, this);
+    action.onClearSearchTerm(this.handleClearSearchTerm, this);
+  }
+
+  componentWillUnmount() {
+    action.offAllForOwner(this);
+  }
+
+  startSearch(userID, searchTerm) {
+    this.currSearchTerm = searchTerm;
+    if (searchTerm === '') {
+      return;
+    }
+    api.searchUserNotes(userID, searchTerm, json => {
+      console.log('finished search for ' + json.Term);
+      if (json.Term != this.currSearchTerm) {
+        console.log('discarding search results because not for ' + this.currSearchTerm);
+        return;
+      }
+      this.setState({
+        searchResults: json
+      });
+    });
+  }
+
+  handleClearSearchTerm() {
+    // user cancelled the search
+    this.currSearchTerm = '';
+    clearTimeout(this.searchDelayTimerID);
+    this.setState({
+      searchResults: null
+    });
+  }
+
+  handleStartSearchDelayed(userHashID, searchTerm) {
+    this.currSearchTerm = searchTerm;
+    // start search query with a delay to not hammer the server too much
+    if (this.searchDelayTimerID) {
+      clearTimeout(this.searchDelayTimerID);
+    }
+    this.searchDelayTimerID = setTimeout(() => {
+      console.log('starting search for ' + searchTerm);
+      this.startSearch(userHashID, searchTerm);
+    }, 300);
   }
 
   handleClick(noteHashID, e) {
-    e.preventDefault();
     this.props.onSearchResultSelected(noteHashID);
+    this.setState({
+      searchResults: null
+    });
+    action.clearSearchTerm();
   }
 
   handleOverlayClick(e) {
-    e.preventDefault();
+    this.setState({
+      searchResults: null
+    });
     action.clearSearchTerm();
   }
 
@@ -92,7 +155,11 @@ export default class SearchResults extends React.Component {
   }
 
   render() {
-    const searchResults = this.props.searchResults;
+    const searchResults = this.state.searchResults;
+    if (searchResults == null) {
+	     return null;
+    }
+
     const term = searchResults.Term;
     const results = searchResults.Results;
     let inner;
@@ -118,7 +185,5 @@ export default class SearchResults extends React.Component {
 }
 
 SearchResults.propTypes = {
-  term: React.PropTypes.string,
   onSearchResultSelected: React.PropTypes.func,
-  searchResults: React.PropTypes.object, // TODO: more specific
 };

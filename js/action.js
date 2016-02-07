@@ -80,6 +80,7 @@ const showHideImportSimpleNoteCmd = 'showHideImportSimpleNoteCmd';
 const showHideSettingsCmd = 'showHideSettingsCmd';
 const editNewNoteCmd = 'editNewNoteCmd';
 const editNoteCmd = 'editNoteCmd';
+const startSearchDelayedCmd = 'startSearchDelayedCmd';
 const clearSearchTermCmd = 'clearSearchTermCmd';
 
 /* --------------------- */
@@ -141,14 +142,19 @@ export function onEditNote(cb, owner) {
 }
 
 /* --------------------- */
-export function setSearchTerm(s) {
-  broadcast(clearSearchTermCmd, s);
+export function startSearchDelayed(userHashID, term) {
+  broadcast(startSearchDelayedCmd, userHashID, term);
 }
 
-export function onSetSearchTerm(cb, owner) {
-  return on(clearSearchTermCmd, cb, owner);
+export function onStartSearchDelayed(cb, owner) {
+  return on(startSearchDelayedCmd, cb, owner);
 }
 
+/* --------------------- */
 export function clearSearchTerm() {
-  setSearchTerm('');
+  broadcast(clearSearchTermCmd);
+}
+
+export function onClearSearchTerm(cb, owner) {
+  return on(clearSearchTermCmd, cb, owner);
 }
