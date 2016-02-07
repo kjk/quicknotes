@@ -135,7 +135,19 @@ func debugShowNote(hashedNoteID string) {
 	u.PanicIfErr(err)
 	note, err := dbGetNoteByID(noteID)
 	u.PanicIfErr(err)
-	fmt.Printf("Note: %v\n", *note)
+	body := note.Content()
+	snippet := note.Snippet
+	fmt.Printf(`Note id: %d (%s), partial: %v, truncated: %v
+title: '%s'
+tags: %v
+body:
+%s
+-----
+snippet:
+%s
+-----
+
+`, note.id, note.HashID, note.IsPartial, note.IsTruncated, note.Title, note.Tags, body, snippet)
 }
 
 func main() {
