@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+
 import marked from 'marked';
 import './linkify.js';
-import Top from './Top.jsx';
-import ImportSimpleNote from './ImportSimpleNote.jsx';
+
 import Editor from './Editor.jsx';
+import ImportSimpleNote from './ImportSimpleNote.jsx';
+import SearchResults from './SearchResults.jsx';
+import Settings from './Settings.jsx';
+import Top from './Top.jsx';
+
 import { escapeHtml } from './utils.js';
 import * as ni from './noteinfo.js';
 
@@ -43,6 +48,16 @@ function linkify2(s) {
 export default class AppNote extends Component {
   constructor(props, context) {
     super(props, context);
+
+    this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
+  }
+
+  handleSearchResultSelected(noteHashID) {
+    console.log('search note selected: ' + noteHashID);
+    // TODO: probably should display in-line
+    const url = '/n/' + noteHashID;
+    const win = window.open(url, '_blank');
+    win.focus();
   }
 
   renderBody() {
@@ -61,6 +76,7 @@ export default class AppNote extends Component {
 
     return <div dangerouslySetInnerHTML={ html }></div>;
   }
+
   render() {
     console.log('appNoteStart: gLoggedUser: ', gLoggedUser);
     const title = gNoteTitle;
@@ -84,6 +100,8 @@ export default class AppNote extends Component {
             </a>.
           </center>
         </div>
+        <Settings />
+        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
         <Editor />
       </div>

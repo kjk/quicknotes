@@ -19,12 +19,22 @@ export default class Top extends Component {
   constructor(props, context) {
     super(props, context);
 
+    this.handleClearSearchTerm = this.handleClearSearchTerm.bind(this);
     this.handleEditNewNote = this.handleEditNewNote.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
+    this.renderSearchInput = this.renderSearchInput.bind(this);
+
+    this.searchNotesUser = null;
+
+    this.state = {
+      searchTerm: ''
+    };
   }
 
   componentDidMount() {
+    action.onClearSearchTerm(this.handleClearSearchTerm, this);
+
     keymaster.filter = keyFilter;
     keymaster('ctrl+f', u.focusSearch);
     keymaster('ctrl+n', () => action.editNewNote());
@@ -32,9 +42,17 @@ export default class Top extends Component {
   }
 
   componentWillUnmount() {
+    action.offAllForOwner(this);
+
     keymaster.unbind('ctrl+f');
     keymaster.unbind('ctrl+n');
     //keymaster.unbind('ctrl+e');
+  }
+
+  handleClearSearchTerm() {
+    this.setState({
+      searchTerm: ''
+    });
   }
 
   handleInputKeyDown(e) {
@@ -42,13 +60,21 @@ export default class Top extends Component {
     if (e.keyCode == 27) {
       e.preventDefault();
       e.target.blur();
-      e.target.value = '';
       action.clearSearchTerm();
     }
   }
 
   handleInputChange(e) {
-    action.setSearchTerm(e.target.value);
+    const user = this.searchNotesUser;
+    const searchTerm = e.target.value;
+    this.setState({
+      searchTerm: searchTerm
+    });
+    if (searchTerm === '') {
+      action.clearSearchTerm();
+    } else {
+      action.startSearchDelayed(user, searchTerm);
+    }
   }
 
   renderSearchInput() {
@@ -59,12 +85,17 @@ export default class Top extends Component {
     if (gNotesUser) {
       if (!gLoggedUser || (gLoggedUser.HashID != gNotesUser.HashID)) {
         placeholder = `Search public notes by ${gNotesUser.Handle} (Ctrl-F)`;
+        this.searchNotesUser = gNotesUser.HashID;
       }
+    }
+    if (!this.searchNotesUser) {
+      this.searchNotesUser = gLoggedUser.HashID;
     }
 
     return (
       <input name="search"
         id="search-input"
+        value={this.state.searchTerm}
         onKeyDown={ this.handleInputKeyDown }
         onChange={ this.handleInputChange }
         type="text"

@@ -1,13 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+
+import Editor from './Editor.jsx';
+import ImportSimpleNote from './ImportSimpleNote.jsx';
 import LeftSidebar from './LeftSidebar.jsx';
 import NotesList from './NotesList.jsx';
 import Router from './Router.js';
 import SearchResults from './SearchResults.jsx';
-import ImportSimpleNote from './ImportSimpleNote.jsx';
-import Top from './Top.jsx';
 import Settings from './Settings.jsx';
-import Editor from './Editor.jsx';
+import Top from './Top.jsx';
+
 import * as u from './utils.js';
 import * as ni from './noteinfo.js';
 import * as action from './action.js';
@@ -55,17 +57,11 @@ function tagsFromNotes(notes) {
   return tags;
 }
 
-let gSearchDelayTimerID = null; // TODO: make it variable on AppUser
-// if search is in progress, this is the search term
-let gCurrSearchTerm = '';
-
-// TODO: make it variable on AppUser
-
 export default class AppUser extends Component {
   constructor(props, context) {
     super(props, context);
+
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
-    this.handleSearchTermChanged = this.handleSearchTermChanged.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.reloadNotes = this.reloadNotes.bind(this);
 
@@ -98,15 +94,13 @@ export default class AppUser extends Component {
       notesUserHashID: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
       loggedUserHashID: loggedUserHashID,
-      loggedUserHandle: loggedUserHandle,
-      searchResults: null
+      loggedUserHandle: loggedUserHandle
     };
   }
 
   componentDidMount() {
     action.onTagSelected(this.handleTagSelected, this);
     action.onReloadNotes(this.reloadNotes, this);
-    action.onSetSearchTerm(this.handleSearchTermChanged, this);
   }
 
   componentWillUnmount() {
@@ -148,51 +142,12 @@ export default class AppUser extends Component {
     });
   }
 
-  startSearch(userID, searchTerm) {
-    gCurrSearchTerm = searchTerm;
-    if (searchTerm === '') {
-      return;
-    }
-    api.searchUserNotes(userID, searchTerm, json => {
-      console.log('finished search for ' + json.Term);
-      if (json.Term != gCurrSearchTerm) {
-        console.log('discarding search results because not for ' + gCurrSearchTerm);
-        return;
-      }
-      this.setState({
-        searchResults: json
-      });
-    });
-  }
-
-  handleSearchTermChanged(searchTerm) {
-    gCurrSearchTerm = searchTerm;
-    if (searchTerm === '') {
-      // user cancelled the search
-      clearTimeout(gSearchDelayTimerID);
-      this.setState({
-        searchResults: null
-      });
-      return;
-    }
-    // start search query with a delay to not hammer the server too much
-    if (gSearchDelayTimerID) {
-      clearTimeout(gSearchDelayTimerID);
-    }
-    gSearchDelayTimerID = setTimeout(() => {
-      console.log('starting search for ' + searchTerm);
-      this.startSearch(this.state.notesUserHashID, searchTerm);
-    }, 300);
-  }
-
   handleSearchResultSelected(noteHashID) {
     console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
     const win = window.open(url, '_blank');
     win.focus();
-    // TODO: clear search field and focus it
-    this.handleSearchTermChanged(''); // hide search results
   }
 
   render() {
@@ -207,8 +162,7 @@ export default class AppUser extends Component {
           selectedTag={ this.state.selectedTag } />
         <NotesList notes={ this.state.selectedNotes } showingMyNotes={ showingMyNotes } compact={ false } />
         <Settings />
-        { this.state.searchResults ?
-          <SearchResults searchResults={ this.state.searchResults } onSearchResultSelected={ this.handleSearchResultSelected } /> : null }
+        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
         <Editor />
       </div>
