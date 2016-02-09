@@ -12,6 +12,7 @@ CREATE TABLE users (
   encrypted_sample    VARBINARY(2048),
   # oauth token from latest login
   oauth_json          VARCHAR(2048),
+
   INDEX (login),
   INDEX (email)
 );
@@ -20,49 +21,45 @@ CREATE TABLE notes (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   user_id           INT NOT NULL,
   curr_version_id   INT NOT NULL,
-  # cached for speed, this is versions.created_at of the first version
-  # updated_at is versions.created_at of the curr_version_id but we don't
-  # cache it because we read that anyway
-  created_at        TIMESTAMP NOT NULL,
-  is_deleted        TINYINT(1) NOT NULL,
-  is_public         TINYINT(1) NOT NULL,
-  is_starred        TINYINT(1) NOT NULL,
-  is_encrypted      TINYINT(1) NOT NULL,
   versions_count    INT NOT NULL,
+  # cached values from the latest version in versions table
+  # versions.created_at from the first version
+  created_at        TIMESTAMP NOT NULL,
+  # versions.created_at from the latest version
+  updated_at        TIMESTAMP NOT NULL,
+  content_sha1      BINARY(20) NOT NULL,
+  size              INT NOT NULL,
+  format            VARCHAR(128) NOT NULL,
+  title             VARCHAR(512),
+  tags              VARCHAR(512),
+  is_deleted        BOOL NOT NULL,
+  is_public         BOOL NOT NULL,
+  is_starred        BOOL NOT NULL,
+  is_encrypted      BOOL NOT NULL,
+
   INDEX (user_id),
+  INDEX (updated_at),
   FOREIGN KEY fk_notes_users(user_id)
     REFERENCES users(id)
     ON DELETE CASCADE
 );
 
 CREATE TABLE versions (
-  id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  note_id         INT NOT NULL,
-  size            INT NOT NULL,
-  created_at      TIMESTAMP NOT NULL,
-  content_sha1    BINARY(20) NOT NULL,
-  format          VARCHAR(128) NOT NULL,
-  title           VARCHAR(512),
-  tags            VARCHAR(512),
+  id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  note_id           INT NOT NULL,
+  created_at        TIMESTAMP NOT NULL,
+  content_sha1      BINARY(20) NOT NULL,
+  size              INT NOT NULL,
+  format            VARCHAR(128) NOT NULL,
+  title             VARCHAR(512),
+  tags              VARCHAR(512),
+  is_deleted        BOOL NOT NULL,
+  is_public         BOOL NOT NULL,
+  is_starred        BOOL NOT NULL,
+  is_encrypted      BOOL NOT NULL,
+
   INDEX (note_id),
   FOREIGN KEY fk_versions_note(note_id)
-    REFERENCES notes(id)
-    ON DELETE CASCADE
-);
-
-CREATE TABLE tag_names (
-  id    INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  tag   VARCHAR(64) NOT NULL,
-  INDEX (tag)
-);
-
-CREATE TABLE tag_note (
-  tag_id      INT NOT NULL PRIMARY KEY,
-  note_id     INT NOT NULL,
-  INDEX (note_id),
-  FOREIGN KEY fk_tag(tag_id)
-    REFERENCES tag_names(id),
-  FOREIGN KEY fk_tag_note_note(note_id)
     REFERENCES notes(id)
     ON DELETE CASCADE
 );

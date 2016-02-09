@@ -157,7 +157,7 @@ export default class SearchResults extends React.Component {
   render() {
     const searchResults = this.state.searchResults;
     if (searchResults == null) {
-	     return null;
+      return null;
     }
 
     const term = searchResults.Term;

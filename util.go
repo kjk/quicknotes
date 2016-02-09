@@ -164,6 +164,26 @@ func wsToSpace(c rune) rune {
 	return c
 }
 
+func isWs(c byte) bool {
+	switch c {
+	case ' ', '\t', '\n':
+		return true
+	}
+	return false
+}
+
+// trim from the right all non-whitespace chars
+func nonWhitespaceRightTrim(s string) string {
+	n := len(s) - 1
+	for ; n >= 0 && !isWs(s[n]); n-- {
+	}
+	if n < 15 {
+		return s
+	}
+	s = s[:n]
+	return s + "..."
+}
+
 func strArrRemoveEmptyAlwaysAlloc(a []string) []string {
 	n := len(a)
 	res := make([]string, 0, n)
