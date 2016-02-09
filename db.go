@@ -356,10 +356,6 @@ func getCreateDbSQLMust() []byte {
 	return d
 }
 
-func dbSplitMultiStatements(s string) []string {
-	return strings.Split(s, "\n\n")
-}
-
 func getCreateDbStatementsMust() []string {
 	d := getCreateDbSQLMust()
 	return dbSplitMultiStatements(string(d))
@@ -442,27 +438,53 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	}()
 
 	fatalif(note.contentSha1 == nil, "note.contentSha1 is nil")
+	serializedTags := serializeTags(note.tags)
 
 	// for non-imported notes use current time as note creation time
 	if note.createdAt.IsZero() {
 		note.createdAt = time.Now()
 	}
-	q := `INSERT INTO notes (user_id, curr_version_id, created_at, is_deleted, is_public, versions_count, is_starred, is_encrypted) VALUES (?, ?, ?, ?, ?, 1, false, false)`
-	res, err := tx.Exec(q, userID, 0, note.createdAt, note.isDeleted, note.isPublic)
+	vals := NewDbVals("notes", 8)
+	vals.Add("user_id", userID)
+	vals.Add("curr_version_id", 0)
+	vals.Add("versions_count", 1)
+	vals.Add("created_at", note.createdAt)
+	vals.Add("updated_at", note.createdAt)
+	vals.Add("content_sha1", note.contentSha1)
+	vals.Add("size", len(note.content))
+	vals.Add("format", note.format)
+	vals.Add("title", note.title)
+	vals.Add("tags", serializedTags)
+	vals.Add("is_deleted", note.isDeleted)
+	vals.Add("is_public", note.isPublic)
+	vals.Add("is_starred", false)
+	vals.Add("is_encrypted", false)
+	res, err := vals.TxInsert(tx)
 	if err != nil {
-		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
+		log.Errorf("tx.Exec('%s') failed with %s\n", vals.Query, err)
 		return 0, err
 	}
+
 	noteID, err := res.LastInsertId()
 	if err != nil {
 		log.Errorf("res.LastInsertId() of noteID failed with %s\n", err)
 		return 0, err
 	}
-	serilizedTags := serializeTags(note.tags)
-	q = `INSERT INTO versions (note_id, size, created_at, content_sha1, format, title, tags) VALUES (?, ?, ?, ?, ?, ?, ?)`
-	res, err = tx.Exec(q, noteID, len(note.content), note.createdAt, note.contentSha1, note.format, note.title, serilizedTags)
+	vals = NewDbVals("versions", 11)
+	vals.Add("note_id", noteID)
+	vals.Add("created_at", note.createdAt)
+	vals.Add("content_sha1", note.contentSha1)
+	vals.Add("size", len(note.content))
+	vals.Add("format", note.format)
+	vals.Add("title", note.title)
+	vals.Add("tags", serializedTags)
+	vals.Add("is_deleted", note.isDeleted)
+	vals.Add("is_public", note.isPublic)
+	vals.Add("is_starred", false)
+	vals.Add("is_encrypted", false)
+	res, err = vals.TxInsert(tx)
 	if err != nil {
-		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
+		log.Errorf("tx.Exec('%s') failed with %s\n", vals.Query, err)
 		return 0, err
 	}
 	versionID, err := res.LastInsertId()
@@ -470,7 +492,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
 		return 0, err
 	}
-	q = `UPDATE notes SET curr_version_id=? WHERE id=?`
+	q := `UPDATE notes SET curr_version_id=? WHERE id=?`
 	_, err = tx.Exec(q, versionID, noteID)
 	if err != nil {
 		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
@@ -511,6 +533,29 @@ func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
 	})
 }
 
+func needsNewNoteVersion(note *NewNote, existingNote *Note) bool {
+	if !bytes.Equal(note.contentSha1, existingNote.ContentSha1) {
+		return true
+	}
+	if note.format != existingNote.Format {
+		return true
+	}
+	if note.title != existingNote.Title {
+		return true
+	}
+	if !strArrEqual(note.tags, existingNote.Tags) {
+		return true
+	}
+	if note.isDeleted != existingNote.IsDeleted {
+		return true
+	}
+	if note.isPublic != existingNote.IsPublic {
+		return true
+	}
+	// TODO: add checks for is_starred
+	return false
+}
+
 func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	noteID, err := dehashInt(note.hashID)
 	if err != nil {
@@ -523,6 +568,12 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	if existingNote.userID != userID {
 		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
 	}
+
+	// don't create new versions if not necessary
+	if !needsNewNoteVersion(note, existingNote) {
+		return noteID, nil
+	}
+
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -538,51 +589,62 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 		note.createdAt = time.Now()
 	}
 
-	needNewVersion := false
-	if !bytes.Equal(note.contentSha1, existingNote.ContentSha1) {
-		needNewVersion = true
-	}
-	if note.format != existingNote.Format {
-		needNewVersion = true
-	}
-	if note.title != existingNote.Title {
-		needNewVersion = true
-	}
-	if !strArrEqual(note.tags, existingNote.Tags) {
-		needNewVersion = true
-	}
+	noteSize := len(note.content)
 
-	if needNewVersion {
-		//log.Infof("inserting new version of note %d\n", noteID)
-		serilizedTags := serializeTags(note.tags)
-		q := `INSERT INTO versions (note_id, size, format, title, content_sha1, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
-		res, err := tx.Exec(q, noteID, len(note.content), note.format, note.title, note.contentSha1, serilizedTags, note.createdAt)
-		if err != nil {
-			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
-			return 0, err
-		}
-		versionID, err := res.LastInsertId()
-		if err != nil {
-			log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
-			return 0, err
-		}
-		q = `UPDATE notes SET curr_version_id=?, versions_count = versions_count + 1 WHERE id=?`
-		_, err = tx.Exec(q, versionID, noteID)
-		if err != nil {
-			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
-			return 0, err
-		}
-	}
+	//log.Infof("inserting new version of note %d\n", noteID)
+	serializedTags := serializeTags(note.tags)
+	vals := NewDbVals("versions", 11)
+	vals.Add("note_id", noteID)
+	vals.Add("size", noteSize)
+	vals.Add("created_at", note.createdAt)
+	vals.Add("content_sha1", note.contentSha1)
+	vals.Add("format", note.format)
+	vals.Add("title", note.title)
+	vals.Add("tags", serializedTags)
+	vals.Add("is_deleted", note.isDeleted)
+	vals.Add("is_public", note.isPublic)
+	vals.Add("is_starred", false)
+	vals.Add("is_encrypted", false)
 
-	// TODO: could combine with the above update in some cases
-	if note.isPublic != existingNote.IsPublic {
-		log.Verbosef("changing is_public status of note %d to %v\n", noteID, note.isPublic)
-		q := `UPDATE notes SET is_public=? WHERE id=?`
-		_, err = tx.Exec(q, note.isPublic, noteID)
-		if err != nil {
-			log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
-			return 0, err
-		}
+	res, err := vals.TxInsert(tx)
+	if err != nil {
+		log.Errorf("tx.Exec('%s') failed with %s\n", vals.Query, err)
+		return 0, err
+	}
+	versionID, err := res.LastInsertId()
+	if err != nil {
+		log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
+		return 0, err
+	}
+	//Maybe: could get versions_count as:
+	//q := `SELECT count(*) FROM versions WHERE note_id=?`
+	q := `
+UPDATE notes SET
+  updated_at=?,
+  content_sha1=?,
+  size=?,
+  format=?,
+  title=?,
+  tags=?,
+  is_public=?,
+  is_deleted=?,
+  curr_version_id=?,
+  versions_count = versions_count + 1
+WHERE id=?`
+	_, err = tx.Exec(q,
+		note.createdAt,
+		note.contentSha1,
+		noteSize,
+		note.format,
+		note.title,
+		serializedTags,
+		note.isPublic,
+		note.isDeleted,
+		versionID,
+		noteID)
+	if err != nil {
+		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
+		return 0, err
 	}
 
 	err = tx.Commit()
@@ -597,6 +659,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	if len(note.content) == 0 {
 		return 0, errors.New("empty note content")
 	}
+
 	if !isValidFormat(note.format) {
 		return 0, fmt.Errorf("invalid format %s", note.format)
 	}
@@ -635,16 +698,15 @@ func dbPermanentDeleteNote(userID, noteID int) error {
 		}
 	}()
 	q := `
-	   DELETE FROM notes
-	   WHERE id=?`
+DELETE FROM notes
+WHERE id=?`
 	_, err = db.Exec(q, noteID)
 	if err != nil {
 		return err
 	}
 	q = `
-		DELETE FROM versions
-		WHERE note_id=?
-	`
+DELETE FROM versions
+WHERE note_id=?`
 	_, err = db.Exec(q, noteID)
 	if err != nil {
 		return err
@@ -721,21 +783,21 @@ func dbGetAllNotes() ([]*Note, error) {
 	db := getDbMust()
 	q := `
 SELECT
-	n.id,
-	n.user_id,
-	n.curr_version_id,
-	n.is_deleted,
-	n.is_public,
-	n.is_starred,
-	n.created_at,
-	v.created_at,
-	v.size,
-	v.format,
-	v.title,
-	v.content_sha1,
-	v.tags
-FROM notes n, versions v
-WHERE v.id = n.curr_version_id
+	id,
+	user_id,
+	curr_version_id,
+	is_deleted,
+	is_public,
+	is_starred,
+	created_at,
+	updated_at,
+	size,
+	format,
+	title,
+	content_sha1,
+	tags
+FROM notes
+ORDER BY updated_at DESC
 LIMIT 10000`
 	rows, err := db.Query(q)
 	if err != nil {
@@ -816,21 +878,20 @@ func dbGetNotesForUser(user *DbUser) ([]*Note, error) {
 	db := getDbMust()
 	q := `
 SELECT
-	n.id,
-	n.user_id,
-	n.curr_version_id,
-	n.is_deleted,
-	n.is_public,
-	n.is_starred,
-	n.created_at,
-	v.created_at,
-	v.size,
-	v.format,
-	v.title,
-	v.content_sha1,
-	v.tags
-FROM notes n, versions v
-WHERE user_id = ? AND v.id = n.curr_version_id`
+	id,
+	curr_version_id,
+	is_deleted,
+	is_public,
+	is_starred,
+	created_at,
+	updated_at,
+	size,
+	format,
+	title,
+	content_sha1,
+	tags
+FROM notes
+WHERE user_id = ?`
 	rows, err := db.Query(q, user.ID)
 	if err != nil {
 		log.Errorf("db.Query('%s') failed with %s\n", q, err)
@@ -842,7 +903,6 @@ WHERE user_id = ? AND v.id = n.curr_version_id`
 		var tagsSerialized string
 		err = rows.Scan(
 			&n.id,
-			&n.userID,
 			&n.CurrVersionID,
 			&n.IsDeleted,
 			&n.IsPublic,
@@ -857,6 +917,7 @@ WHERE user_id = ? AND v.id = n.curr_version_id`
 		if err != nil {
 			return nil, err
 		}
+		n.userID = user.ID
 		n.Tags = deserializeTags(tagsSerialized)
 		n.SetCalculatedProperties()
 		notes = append(notes, &n)
@@ -880,72 +941,80 @@ func timeExpired(t time.Time, dur time.Duration) bool {
 
 func getRecentPublicNotesCached(limit int) ([]Note, error) {
 	var res []Note
+
 	mu.Lock()
-	if len(recentPublicNotesCached) >= limit && !timeExpired(recentPublicNotesLastUpdate, time.Minute*5) {
+	defer mu.Unlock()
+	needsRefreshFromDB := limit > len(recentPublicNotesCached) || timeExpired(recentPublicNotesLastUpdate, time.Minute*5)
+	if !needsRefreshFromDB {
 		res = make([]Note, limit, limit)
 		for i := 0; i < limit; i++ {
 			res[i] = recentPublicNotesCached[i]
 		}
 	}
-	mu.Unlock()
 	if len(res) == limit {
 		return res, nil
 	}
+
 	db := getDbMust()
 	q := `
-		SELECT DISTINCT id
-		FROM notes
-		WHERE is_public=true
-		ORDER BY id DESC
-		LIMIT %d
-	`
+SELECT
+  id,
+  user_id,
+	curr_version_id,
+	is_deleted,
+	is_public,
+	is_starred,
+	created_at,
+	updated_at,
+	size,
+	format,
+	title,
+	content_sha1,
+	tags
+FROM notes
+WHERE is_public=true
+ORDER BY updated_at DESC
+LIMIT %d`
 	rows, err := db.Query(fmt.Sprintf(q, limit))
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	var ids []int
-	var noteID int
 	for rows.Next() {
-		err = rows.Scan(&noteID)
-		ids = append(ids, noteID)
-	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-	if len(ids) == 0 {
-		return res, nil
-	}
-
-	for _, noteID := range ids {
-		// TODO: add and use dbGetNoteByIDCached
-		note, err := dbGetNoteByID(noteID)
+		var n Note
+		var tagsSerialized string
+		err = rows.Scan(
+			&n.id,
+			&n.userID,
+			&n.CurrVersionID,
+			&n.IsDeleted,
+			&n.IsPublic,
+			&n.IsStarred,
+			&n.CreatedAt,
+			&n.UpdatedAt,
+			&n.Size,
+			&n.Format,
+			&n.Title,
+			&n.ContentSha1,
+			&tagsSerialized)
 		if err != nil {
 			return nil, err
 		}
-
-		/*
-			dbUser, err := dbGetUserByIDCached(note.userID)
-			if err != nil {
-				return nil, err
-			}
-			ns.UserHandle = dbUser.GetHandle()
-		*/
-		if note.Title == "" {
-			note.Title = getTitleFromBody(note)
-		}
-		note.Title = trimTitle(note.Title, 60)
-		res = append(res, *note)
+		n.Tags = deserializeTags(tagsSerialized)
+		n.SetCalculatedProperties()
+		res = append(res, n)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Errorf("rows.Err() for '%s' failed with %s\n", q, err)
+		return nil, err
 	}
 
-	mu.Lock()
 	n := len(res)
 	recentPublicNotesCached = make([]Note, n, n)
 	for i := 0; i < n; i++ {
 		recentPublicNotesCached[i] = res[i]
 	}
 	recentPublicNotesLastUpdate = time.Now()
-	mu.Unlock()
 	return res, nil
 }
 
@@ -964,47 +1033,27 @@ func getTitleFromBody(note *Note) string {
 	return string(getFirstLine(content))
 }
 
-func isWs(c byte) bool {
-	switch c {
-	case ' ', '\t', '\n':
-		return true
-	}
-	return false
-}
-
-// trim from the right all non-whitespace chars
-func nonWhitespaceRightTrim(s string) string {
-	n := len(s) - 1
-	for ; n >= 0 && !isWs(s[n]); n-- {
-	}
-	if n < 15 {
-		return s
-	}
-	s = s[:n]
-	return s + "..."
-}
-
 func dbGetNoteByID(id int) (*Note, error) {
 	var n Note
 	var tagsSerialized string
 	db := getDbMust()
 	q := `
-	SELECT
-		n.id,
-		n.user_id,
-		n.curr_version_id,
-		n.is_deleted,
-		n.is_public,
-		n.is_starred,
-		n.created_at,
-		v.created_at,
-		v.size,
-		v.format,
-		v.title,
-		v.content_sha1,
-		v.tags
-	FROM notes n, versions v
-	WHERE n.id=? AND v.id = n.curr_version_id`
+SELECT
+  id,
+  user_id,
+  curr_version_id,
+  is_deleted,
+  is_public,
+  is_starred,
+  created_at,
+  updated_at,
+  size,
+  format,
+  title,
+  content_sha1,
+  tags
+FROM notes
+WHERE id=?`
 	err := db.QueryRow(q, id).Scan(
 		&n.id,
 		&n.userID,
@@ -1111,8 +1160,11 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	}
 
 	db := getDbMust()
-	q := `INSERT INTO users (login, fulL_name, pro_state) VALUES (?, ?, ?)`
-	_, err = db.Exec(q, userLogin, fullName, NotProEligible)
+	vals := NewDbVals("users", 3)
+	vals.Add("login", userLogin)
+	vals.Add("full_name", fullName)
+	vals.Add("pro_state", NotProEligible)
+	_, err = vals.Insert(db)
 	if err != nil {
 		return nil, err
 	}

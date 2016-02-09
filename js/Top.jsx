@@ -95,7 +95,7 @@ export default class Top extends Component {
     return (
       <input name="search"
         id="search-input"
-        value={this.state.searchTerm}
+        value={ this.state.searchTerm }
         onKeyDown={ this.handleInputKeyDown }
         onChange={ this.handleInputChange }
         type="text"
