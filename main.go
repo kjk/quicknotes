@@ -221,6 +221,9 @@ func main() {
 		runGulpAsync()
 	}
 
+	_, err = dbGetOrCreateUser("email:quicknotes@quicknotes.io", "QuickNotes")
+	fatalIfErr(err, "dbGetOrCreateUser")
+
 	startWebServer()
 	// TODO: this isn't actually called
 	localStore.Close()

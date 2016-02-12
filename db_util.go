@@ -3,6 +3,12 @@ package main
 import (
 	"database/sql"
 	"strings"
+
+	"github.com/kjk/log"
+)
+
+var (
+	questionMarks = [...]string{"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?"}
 )
 
 // DbVals represents list of column names and their values
@@ -25,38 +31,41 @@ func NewDbVals(tableName string, n int) *DbVals {
 }
 
 // Add adds a new name/value pair
+// Note: supports up to 16 (len(questionMarks)) columns
 func (v *DbVals) Add(name string, val interface{}) *DbVals {
 	v.ColNames = append(v.ColNames, name)
 	v.ColValues = append(v.ColValues, val)
 	return v
 }
 
+// generates INSERT INTO foo (col1, col2, col3, ...) VALUES (?, ?, ?, ...)
 func (v *DbVals) genInsertQuery() string {
 	n := len(v.ColNames)
 	s := "INSERT INTO " + v.TableName + "\n("
 	s += strings.Join(v.ColNames, ", ")
 	s += ")\nVALUES\n("
-	for i := 0; i < n; i++ {
-		if i == n-1 {
-			s += "?"
-		} else {
-			s += "?, "
-		}
-	}
-	s += ")\n"
-	return s
+	s += strings.Join(questionMarks[:n], ", ")
+	return s + ")\n"
 }
 
 // TxInsert executes an insert within a transaction
 func (v *DbVals) TxInsert(tx *sql.Tx) (sql.Result, error) {
 	v.Query = v.genInsertQuery()
-	return tx.Exec(v.Query, v.ColValues...)
+	res, err := tx.Exec(v.Query, v.ColValues...)
+	if err != nil {
+		log.Errorf("tx.Exec('%s', %v) failed with '%s'\n", v.Query, v.ColValues, err)
+	}
+	return res, err
 }
 
 // Insert executes an insert
 func (v *DbVals) Insert(db *sql.DB) (sql.Result, error) {
 	v.Query = v.genInsertQuery()
-	return db.Exec(v.Query, v.ColValues...)
+	res, err := db.Exec(v.Query, v.ColValues...)
+	if err != nil {
+		log.Errorf("db.Exec('%s', %v) failed with '%s'\n", v.Query, v.ColValues, err)
+	}
+	return res, err
 }
 
 func dbSplitMultiStatements(s string) []string {
