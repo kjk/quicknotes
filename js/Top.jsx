@@ -106,18 +106,15 @@ export default class Top extends Component {
   }
 
   handleEditNewNote(e) {
-    e.preventDefault();
     console.log('Top.handleEditNewNote');
+    e.preventDefault();
     action.editNewNote();
   }
 
   renderNewNote() {
     if (u.isLoggedIn()) {
       return (
-        <a id="new-note"
-          title="Create new note (ctrl-n)"
-          href="#"
-          onClick={ this.handleEditNewNote }><i className="icn-plus"></i></a>
+        <button className="btn btn-new-note" onClick={ this.handleEditNewNote }>New note</button>
         );
     }
   }
