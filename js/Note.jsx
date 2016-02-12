@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';
 import NoteBody from './NoteBody.jsx';

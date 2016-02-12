@@ -1,3 +1,5 @@
+'use strict';
+
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 import React from 'react';
 import ReactDOM from 'react-dom';

@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount.jsx';
 import * as u from './utils.js';

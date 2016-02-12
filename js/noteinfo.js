@@ -1,3 +1,5 @@
+'use strict';
+
 import * as api from './api.js';
 import { assert, isUndefined } from './utils.js';
 import filesize from 'filesize';
