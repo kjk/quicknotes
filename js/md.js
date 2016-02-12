@@ -50,7 +50,7 @@ const markdownIt = new MarkdownIt();
 
 function toHtmlMarkdownIt(s) {
   s = s.trim();
-  const html = markdownIt(s);
+  const html = markdownIt.render(s);
   return html;
 }
 
