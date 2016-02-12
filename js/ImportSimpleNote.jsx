@@ -119,10 +119,9 @@ export default class ImportSimpleNote extends Component {
     });
     if (res.IsFinished) {
       action.reloadNotes();
-    } else {
-      const importId = this.state.importId;
-      this.scheduleCheckStatus(importId);
+      return;
     }
+    this.scheduleCheckStatus(this.state.importId);
   }
 
   checkStatus(importId) {

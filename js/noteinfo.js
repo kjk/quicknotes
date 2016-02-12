@@ -16,6 +16,7 @@ const noteContentIdx = 9;
 // those are only for notes returned by recent notes
 const noteUserIdx = 10; // user that created the note TODO: not sure if will keep
 
+// must match handlers.go
 const flagStarredBit = 0;
 const flagDeletedBit = 1;
 const flagPublicBit = 2;

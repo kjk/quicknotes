@@ -380,8 +380,8 @@ func handleAPIImportSimpleNotesStatus(ctx *ReqContext, w http.ResponseWriter, r 
 		httpErrorWithJSONf(w, r, "no ipmort with id %d", id)
 		return
 	}
-	if status.userID != ctx.User.id {
-		log.Errorf("status.userID=%d, ctx.Usser.id=%d\n", status.userID, ctx.User.id)
+	if ctx.User != nil && status.userID != ctx.User.id {
+		log.Errorf("status.userID=%d, ctx.User.id=%d\n", status.userID, ctx.User.id)
 		httpErrorWithJSONf(w, r, "not the right user")
 		return
 	}
