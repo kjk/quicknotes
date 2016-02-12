@@ -114,7 +114,7 @@ export default class Top extends Component {
   renderNewNote() {
     if (u.isLoggedIn()) {
       return (
-        <button className="btn btn-new-note" onClick={ this.handleEditNewNote }>New note</button>
+        <button className="btn btn-new-note hint--bottom" data-hint="Ctrl-N" onClick={ this.handleEditNewNote }>New note</button>
         );
     }
   }
