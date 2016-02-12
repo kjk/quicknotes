@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import marked from 'marked';
 import keymaster from 'keymaster';
 import CodeMirrorEditor from './CodeMirrorEditor.jsx';
 
@@ -9,6 +8,7 @@ import DragBarHoriz from './DragBarHoriz.jsx';
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
+import { toHtml } from './md.js';
 import { isUndefined, deepCloneObject, strArrRemoveDups } from './utils.js';
 import * as api from './api.js';
 
@@ -17,19 +17,6 @@ import * as api from './api.js';
 // https://github.com/lepture/editor
 
 const kDragBarDy = 11;
-
-const renderer = new marked.Renderer();
-
-const markedOpts = {
-  renderer: renderer,
-  gfm: true,
-  tables: true,
-  breaks: true,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: false
-};
 
 const cmOptions = {
   'autofocus': true
@@ -53,36 +40,6 @@ function formatShortName(fmt) {
     return ni.formatMarkdown;
   }
   return fmt;
-}
-
-// like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
-// but adds target="_blank"
-renderer.link = function(href, title, text) {
-  if (this.options.sanitize) {
-    try {
-      var prot = decodeURIComponent(unescape(href))
-        .replace(/[^\w:]/g, '')
-        .toLowerCase();
-    } catch (e) {
-      return '';
-    }
-    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0) {
-      return '';
-    }
-  }
-  var out = '<a href="' + href + '"';
-  if (title) {
-    out += ' title="' + title + '"';
-  }
-  out += 'target="_blank" rel="nofollow"';
-  out += '>' + text + '</a>';
-  return out;
-};
-
-function toHtml(s) {
-  s = s.trim();
-  const html = marked(s, markedOpts);
-  return html;
 }
 
 function getWindowMiddle() {
