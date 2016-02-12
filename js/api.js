@@ -1,4 +1,4 @@
-import ajax from './nanoajax.js';
+import ajax from 'nanoajax';
 
 // TODO: audit for error handling
 
