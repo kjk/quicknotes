@@ -1,3 +1,5 @@
+'use strict';
+
 import * as ni from './noteinfo.js';
 
 export function isUndefined(v) {

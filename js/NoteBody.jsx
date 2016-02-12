@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { PropTypes, Component } from 'react';
 import * as ni from './noteinfo.js';
 

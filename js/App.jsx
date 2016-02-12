@@ -1,3 +1,5 @@
+'use strict';
+
 import React from 'react';
 
 import AppUser from './AppUser.jsx';

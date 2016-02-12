@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { Component } from 'react';
 import * as action from './action.js';
 import * as api from './api.js';

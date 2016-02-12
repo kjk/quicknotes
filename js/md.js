@@ -1,18 +1,9 @@
+'use strict';
+
 import marked from 'marked';
+import MarkdownIt from 'markdown-it';
 
 const renderer = new marked.Renderer();
-
-const markedOpts = {
-  renderer: renderer,
-  gfm: true,
-  tables: true,
-  breaks: true,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: false
-};
-
 
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
@@ -38,12 +29,31 @@ renderer.link = function(href, title, text) {
   return out;
 };
 
+const markedOpts = {
+  renderer: renderer,
+  gfm: true,
+  tables: true,
+  breaks: true,
+  pedantic: false,
+  sanitize: true,
+  smartLists: true,
+  smartypants: false
+};
+
 function toHtmlMarked(s) {
   s = s.trim();
   const html = marked(s, markedOpts);
   return html;
 }
 
+const markdownIt = new MarkdownIt();
+
+function toHtmlMarkdownIt(s) {
+  s = s.trim();
+  const html = markdownIt(s);
+  return html;
+}
+
 export function toHtml(s) {
-  return toHtmlMarked(s);
+  return toHtmlMarkdownIt(s);
 }
