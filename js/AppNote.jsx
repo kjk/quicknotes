@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import marked from 'marked';
+import { toHtml } from './md.js';
 import './linkify.js';
 
 import Editor from './Editor.jsx';
@@ -12,25 +12,6 @@ import Top from './Top.jsx';
 
 import { escapeHtml } from './utils.js';
 import * as ni from './noteinfo.js';
-
-const renderer = new marked.Renderer();
-
-const markedOpts = {
-  renderer: renderer,
-  gfm: true,
-  tables: true,
-  breaks: true,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: false
-};
-
-function toHtml(s) {
-  s = s.trim();
-  const html = marked(s, markedOpts);
-  return html;
-}
 
 function linkifyCb(s, href) {
   if (!href) {
