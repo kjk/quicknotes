@@ -319,10 +319,7 @@ func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
 	if note.IsPublic {
 		return true
 	}
-	if loggedUser == nil {
-		return false
-	}
-	return loggedUser.id == note.userID
+	return loggedUser != nil && loggedUser.id == note.userID
 }
 
 func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
@@ -397,6 +394,15 @@ const (
 	noteContentIdx   = 9
 )
 
+// must match noteinfo.js
+const (
+	flagStarredBit   = 0
+	flagDeletedBit   = 1
+	flagPublicBit    = 2
+	flagPartialBit   = 3
+	flagTruncatedBit = 4
+)
+
 func boolToInt(b bool) int {
 	if b {
 		return 1
@@ -406,11 +412,11 @@ func boolToInt(b bool) int {
 
 // encode multiple bool flags as a single int
 func encodeNoteFlags(n *Note) int {
-	res := 1 * boolToInt(n.IsStarred)
-	res += 2 * boolToInt(n.IsDeleted)
-	res += 4 * boolToInt(n.IsPublic)
-	res += 8 * boolToInt(n.IsPartial)
-	res += 16 * boolToInt(n.IsTruncated)
+	res := (1 << flagStarredBit) * boolToInt(n.IsStarred)
+	res += (1 << flagDeletedBit) * boolToInt(n.IsDeleted)
+	res += (1 << flagPublicBit) * boolToInt(n.IsPublic)
+	res += (1 << flagPartialBit) * boolToInt(n.IsPartial)
+	res += (1 << flagTruncatedBit) * boolToInt(n.IsTruncated)
 	return res
 }
 
@@ -483,7 +489,7 @@ func handleAPIGetNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	showPrivate := userID == ctx.User.id
+	showPrivate := ctx.User != nil && userID == ctx.User.id
 	var notes [][]interface{}
 	for _, note := range i.notes {
 		if note.IsPublic || showPrivate {
