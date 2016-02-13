@@ -49,7 +49,7 @@ export default class CodeMirrorEditor extends Component {
   }
 
   render() {
-    console.log('CodeMirrorEditor.render');
+    // console.log('CodeMirrorEditor.render');
     const editor = (
     <textarea ref="editorNode"
       defaultValue={ this.props.defaultValue }
