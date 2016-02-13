@@ -1022,7 +1022,7 @@ export default class Editor extends Component {
           ref="editorWrapperNode">
 
           <div id="editor-top" className="flex-row">
-            <button className="btn btn-primary" disabled={ saveDisabled } onClick={ this.handleSave }>
+            <button className="btn btn-primary hint--bottom" disabled={ saveDisabled } onClick={ this.handleSave } data-hint="Ctrl-Enter">
               Save
             </button>
             <button className="btn btn-cancel" onClick={ this.handleCancel }>
