@@ -456,6 +456,7 @@ export default class Editor extends Component {
     this.handlePublicOrPrivateChanged = this.handlePublicOrPrivateChanged.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleShowPreview = this.handleShowPreview.bind(this);
+    this.handleTogglePreview = this.handleTogglePreview.bind(this);
     this.handleTagsChanged = this.handleTagsChanged.bind(this);
     this.handleTextChanged = this.handleTextChanged.bind(this);
     this.handleTimer = this.handleTimer.bind(this);
@@ -777,6 +778,14 @@ export default class Editor extends Component {
     });
   }
 
+  handleTogglePreview(e) {
+    e.preventDefault();
+    const isShowing = !this.state.isShowingPreview;
+    this.setState({
+      isShowingPreview: isShowing
+    });
+  }
+
   renderFormatSelect(formatSelected) {
     const formats = ['text', 'markdown'];
     const formatPretty = formatPrettyName(formatSelected);
@@ -809,7 +818,7 @@ export default class Editor extends Component {
         <button className="ebtn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
           <i className="fa fa-header"></i>
         </button>
-        <div className="editor-spacer"></div>
+        <div className="editor-btn-spacer"></div>
         <button className="ebtn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
           <i className="fa fa-quote-right"></i>
         </button>
@@ -822,12 +831,16 @@ export default class Editor extends Component {
         <button className="ebtn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
           <i className="fa fa-list-ol"></i>
         </button>
-        <div className="editor-spacer"></div>
+        <div className="editor-btn-spacer"></div>
         <button className="ebtn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
           <i className="fa fa-link"></i>
         </button>
         <button className="ebtn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
           <i className="fa fa-picture-o"></i>
+        </button>
+        <div className="editor-btn-spacer"></div>
+        <button className="ebtn" onClick={ this.handleTogglePreview } title="Toggle Preview (F9)">
+          <i className="fa fa-columns"></i>
         </button>
       </div>
       );
@@ -991,6 +1004,9 @@ export default class Editor extends Component {
     };
 
     const bottom = this.renderBottom(note);
+    const saveDisabled = !didNoteChange(note, this.initialNote);
+    const formatSelect = this.renderFormatSelect(note.formatName);
+    const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
 
     return (
       <Overlay>
@@ -1004,18 +1020,37 @@ export default class Editor extends Component {
           className="flex-col"
           style={ style }
           ref="editorWrapperNode">
+
           <div id="editor-top" className="flex-row">
+            <button className="btn btn-primary" disabled={ saveDisabled } onClick={ this.handleSave }>
+              Save
+            </button>
+            <button className="btn btn-cancel" onClick={ this.handleCancel }>
+              Cancel
+            </button>
+
+            { publicSelect }
+            { formatSelect }&nbsp;&nbsp;
+
             <input id="editor-title"
               className="editor-input"
               placeholder="title goes here..."
               value={ note.title }
               onChange={ this.handleTitleChanged } />
+
             <input id="editor-tags"
               className="editor-input"
               placeholder="#enter #tags"
               value={ note.tags }
               onChange={ this.handleTagsChanged } />
+
+            <div className="editor-spacer2"></div>
+            <button className="ebtn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
+              <i className="fa fa-expand"></i>
+            </button>
+
           </div>
+
           { this.renderMarkdownButtons() }
 
           <div id="editor-text-with-preview" className="flex-row">
@@ -1032,7 +1067,6 @@ export default class Editor extends Component {
               <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
             </div>
           </div>
-          { bottom }
         </div>
       </Overlay>
       );
