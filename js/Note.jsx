@@ -52,7 +52,7 @@ export default class Note extends Component {
       return;
     }
     const tagEls = tags.map(tag => {
-      //tag = '#' + tag;
+      tag = '#' + tag;
       return (
         <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
         );
