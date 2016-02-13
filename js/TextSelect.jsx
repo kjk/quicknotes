@@ -18,7 +18,7 @@ export default class TextSelect extends Component {
   render() {
     const {values, selectedIdx, className} = this.props;
 
-    let classes = 'textselect';
+    let classes = 'text-select';
     if (className) {
       classes += ' ' + className;
     }
@@ -33,7 +33,7 @@ export default class TextSelect extends Component {
     return (
       <div className={ classes }>
         { selected }
-        <select className='textselect-select' onChange={ this.handleChange } value={ selectedIdx }>
+        <select className='text-select-select' onChange={ this.handleChange } value={ selectedIdx }>
           { vals }
         </select>
       </div>

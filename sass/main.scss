@@ -386,7 +386,7 @@ a {
     white-space: nowrap; // size it to content
     display: none;
     position: absolute;
-    top: 40px; right: 0;
+    top: 36px; right: 0;
     padding: 8px 16px;
     line-height: 20px;
     border-radius: 2px;
@@ -950,45 +950,60 @@ button.close {
 }
 
 // based on https://github.com/javierbyte/react-textselect
-.textselect {
-    border-bottom: 1px solid rgba(0, 0, 0, .33);
-    overflow: hidden;
-    display: inline-block;
-    padding-right: 1em;
-    margin-left: 0.5em;
-    margin-right: .17em;
-    cursor: pointer;
-    position: relative;
+.text-select {
+  overflow: hidden;
+  display: inline-block;
+  padding-right: 1em;
+  margin-left: 0.5em;
+  margin-right: .17em;
+  cursor: pointer;
+  position: relative;
+  // border-bottom: 1px solid rgba(0, 0, 0, .33);
 
-    &::after {
-        position: absolute;
-        top: 50%;
-        right: 0;
-        display: block;
-        content: '';
-        height: 0;
-        width: 0;
-        border: .33em solid transparent;
-        border-top: .33em solid rgba(0, 0, 0, .33);
-        margin-top: -.17em;
-    }
+  &:after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    display: block;
+    content: '';
+    height: 0;
+    width: 0;
+    border: .33em solid transparent;
+    border-top: .33em solid rgba(0, 0, 0, .33);
+    margin-top: -.17em;
+  }
 
-    &-select {
-        font-size: 1.2em;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        opacity: 0;
-        z-index: 1;
-    }
+  &-select {
+    font-size: 1.2em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    opacity: 0;
+    z-index: 1;
+  }
 
-    &.bright {
-      &::after {
-          border-top: .33em solid rgba(255, 255, 255, .33);
-      }
+  &.bright {
+    &:after {
+      border-top: .33em solid rgba(255, 255, 255, .33);
     }
+  }
+}
+
+.drag-bar-horiz {
+  position: absolute;
+  left: 0;
+  right: 0;
+  //width: 100%;
+  cursor: row-resize;
+  z-index: 20; // higher than overlay
+  overflow: hidden;
+  background-color: #f0f0f0;
+
+  &:hover {
+    background-color: #d0d0d0;
+  }
 }
 
 @import 'editor';
