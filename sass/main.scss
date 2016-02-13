@@ -951,7 +951,6 @@ button.close {
 
 // based on https://github.com/javierbyte/react-textselect
 .text-select {
-  border-bottom: 1px solid rgba(0, 0, 0, .33);
   overflow: hidden;
   display: inline-block;
   padding-right: 1em;
@@ -959,6 +958,7 @@ button.close {
   margin-right: .17em;
   cursor: pointer;
   position: relative;
+  // border-bottom: 1px solid rgba(0, 0, 0, .33);
 
   &:after {
     position: absolute;
