@@ -756,8 +756,7 @@ export default class Editor extends Component {
 
   renderPublicOrPrivateSelect(isPublic) {
     const style = {
-      marginLeft: 8,
-      width: 108
+      marginLeft: 8
     };
     const values = ['public', 'private'];
     const selected = isPublic ? values[0] : values[1];
@@ -768,12 +767,15 @@ export default class Editor extends Component {
              </option>;
     });
     return (
-      <div className="editor-select-wrapper" style={ style }>
-        <select value={ selected } onChange={ this.handlePublicOrPrivateChanged }>
-          { options }
+      <span className="editor-select-wrapper" style={ style }>
+        { selected }
+        <select className="editor-select-wrapper-input"
+          value={ selected }
+          onChange={ this.handlePublicOrPrivateChanged }
+        >
+        { options }
         </select>
-        <span></span>
-      </div>
+      </span>
       );
   }
 
@@ -793,9 +795,7 @@ export default class Editor extends Component {
 
   renderFormatSelect(formatSelected) {
     const style = {
-      marginLeft: 8,
-      marginRight: 16,
-      width: 108
+      marginLeft: 8
     };
     const formatsPretty = ['text', 'markdown'];
     formatSelected = formatPrettyName(formatSelected);
@@ -805,12 +805,12 @@ export default class Editor extends Component {
              </option>;
     });
     return (
-      <div className="editor-select-wrapper" style={ style }>
-        <select value={ formatSelected } onChange={ this.handleFormatChanged }>
+      <span className="editor-select-wrapper" style={ style }>
+        {formatSelected}
+        <select className="editor-select-wrapper-input" value={ formatSelected } onChange={ this.handleFormatChanged }>
           { options }
         </select>
-        <span></span>
-      </div>
+      </span>
       );
   }
 
@@ -873,14 +873,7 @@ export default class Editor extends Component {
         <button className="btn btn-cancel" onClick={ this.handleCancel }>
           Cancel
         </button>
-        <div>
-          Format:
-        </div>
-        { formatSelect }
-        <div>
-          Visibility:
-        </div>
-        { publicSelect }
+        A { publicSelect }, { formatSelect }&nbsp;note.
         <div className="flex-spacer">
           &nbsp;
         </div>
