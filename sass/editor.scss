@@ -7,27 +7,48 @@
     display: inline-block;
 }
 
-#editor-button-bar .btn {
-  border: none;
-  color: #222;
-  font-weight: normal;
-  /*background: #e9e9e9;*/
-  background-color: white;
-  display: inline-block;
-  margin: 0;
-  padding: 6px 12px;
-  font-weight: 500;
-  font-size: 1em;
-  text-align: center;
-  cursor: pointer;
-  transition: all .25s;
+#editor-buttons {
+  background-color: lightblue;
+  // background-color: white;
+  padding-top: 2px;
+  padding-left: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid lightgray;
 
-  line-height: 10px;
+  button {
+    display: inline-block;
+    position: relative;
+    padding: 4px 8px;
+    color: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.4);
+    vertical-align: bottom;
+    white-space: nowrap;
+    user-select: none;
+    box-sizing: border-box;
+    border-radius: 999em;
+    letter-spacing: 0;
+    font-style: normal;
+    text-rendering: optimizeLegibility;
+    margin-right: 4px;
+  }
 
-  &:hover {
-    background-color: lightgray;
+  .ebtn {
+    border: 0;
+    padding: 2px 4px;
+    padding-bottom: 8px;
+    margin: 0;
+
+    &:hover {
+      border: 0;
+      background-color: #eee;
+    }
   }
 }
+
 
 #editor-wrapper {
   position: absolute;
@@ -35,6 +56,8 @@
   bottom: 0px;
   width: 100%;
   /* background-color: lightgray; */
+  left: 8px;
+  right: 8px;
   background-color: white;
 }
 
@@ -60,11 +83,6 @@
 #editor-preview-with-buttons {
   width: 50%;
   padding: 0px 8px;
-}
-
-#editor-button-bar {
-  flex-wrap: nowrap;
-  padding: 2px 4px;
 }
 
 #cm-wrapper {

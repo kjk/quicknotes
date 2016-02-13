@@ -799,34 +799,34 @@ export default class Editor extends Component {
 
   renderMarkdownButtons() {
     return (
-      <div id="editor-button-bar" className="flex-row">
-        <button className="btn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
+      <div id="editor-buttons" className="flex-row">
+        <button className="ebtn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
+        <button className="ebtn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
+        <button className="ebtn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
           <i className="fa fa-header"></i>
         </button>
         <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
+        <button className="ebtn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
           <i className="fa fa-quote-right"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
+        <button className="ebtn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
           <i className="fa fa-code"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
+        <button className="ebtn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
           <i className="fa fa-list-ul"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
+        <button className="ebtn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
           <i className="fa fa-list-ol"></i>
         </button>
         <div className="editor-spacer"></div>
-        <button className="btn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
+        <button className="ebtn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
           <i className="fa fa-link"></i>
         </button>
-        <button className="btn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
+        <button className="ebtn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
           <i className="fa fa-picture-o"></i>
         </button>
       </div>
@@ -1016,18 +1016,17 @@ export default class Editor extends Component {
               value={ note.tags }
               onChange={ this.handleTagsChanged } />
           </div>
+          { this.renderMarkdownButtons() }
+
           <div id="editor-text-with-preview" className="flex-row">
-            <div id="editor-preview-with-buttons" className="flex-col">
-              { this.renderMarkdownButtons() }
-              <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-                <CodeMirrorEditor className="codemirror-div"
-                  textAreaClassName="cm-textarea"
-                  placeholder="Enter text here..."
-                  defaultValue={ note.body }
-                  cmOptions={ cmOptions }
-                  onChange={ this.handleTextChanged }
-                  onEditorCreated={ this.handleEditorCreated } />
-              </div>
+            <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
+              <CodeMirrorEditor className="codemirror-div"
+                textAreaClassName="cm-textarea"
+                placeholder="Enter text here..."
+                defaultValue={ note.body }
+                cmOptions={ cmOptions }
+                onChange={ this.handleTextChanged }
+                onEditorCreated={ this.handleEditorCreated } />
             </div>
             <div id="editor-preview">
               <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
