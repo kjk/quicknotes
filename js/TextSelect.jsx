@@ -31,7 +31,12 @@ export default class TextSelect extends Component {
         );
     });
     return (
-      <span className={ classes }>{ selected } <select className='textselect-select' onChange={ this.handleChange } value={ selectedIdx }> { vals } </select></span>
+      <div className={ classes }>
+        { selected }
+        <select className='textselect-select' onChange={ this.handleChange } value={ selectedIdx }>
+          { vals }
+        </select>
+      </div>
       );
   }
 }

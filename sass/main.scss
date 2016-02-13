@@ -953,6 +953,7 @@ button.close {
 .textselect {
     border-bottom: 1px solid rgba(0, 0, 0, .33);
     overflow: hidden;
+    display: inline-block;
     padding-right: 1em;
     margin-left: 0.5em;
     margin-right: .17em;
