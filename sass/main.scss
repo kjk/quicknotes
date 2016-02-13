@@ -949,6 +949,47 @@ button.close {
   }
 }
 
+// based on https://github.com/javierbyte/react-textselect
+.textselect {
+    border-bottom: 1px solid rgba(0, 0, 0, .33);
+    overflow: hidden;
+    padding-right: 1em;
+    margin-left: 0.5em;
+    margin-right: .17em;
+    cursor: pointer;
+    position: relative;
+
+    &::after {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        display: block;
+        content: '';
+        height: 0;
+        width: 0;
+        border: .33em solid transparent;
+        border-top: .33em solid rgba(0, 0, 0, .33);
+        margin-top: -.17em;
+    }
+
+    &-select {
+        font-size: 1.2em;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        opacity: 0;
+        z-index: 1;
+    }
+
+    &.bright {
+      &::after {
+          border-top: .33em solid rgba(255, 255, 255, .33);
+      }
+    }
+}
+
 @import 'editor';
 @import 'theme-light';
 @import 'theme-dark';

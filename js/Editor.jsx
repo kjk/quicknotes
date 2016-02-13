@@ -7,6 +7,8 @@ import CodeMirrorEditor from './CodeMirrorEditor.jsx';
 
 import Overlay from './Overlay.jsx';
 import DragBarHoriz from './DragBarHoriz.jsx';
+import TextSelect from './TextSelect.jsx';
+
 import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
@@ -441,7 +443,6 @@ function drawImage(cm) {
   _replaceSelection(cm, stat.image, insertTexts.image);
 }
 
-
 export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
@@ -734,20 +735,18 @@ export default class Editor extends Component {
     this.scheduleTimer();
   }
 
-  handleFormatChanged(e) {
-    const v = e.target.value;
+  handleFormatChanged(e, valIdx, val) {
     let note = this.state.note;
-    note.formatName = formatShortName(v);
+    note.formatName = formatShortName(val);
     this.setFocusInUpdate = true;
     this.setState({
       note: note
     });
   }
 
-  handlePublicOrPrivateChanged(e) {
-    const v = e.target.value;
+  handlePublicOrPrivateChanged(e, valIdx, v) {
     let note = this.state.note;
-    note.isPublic = v == 'public';
+    note.isPublic = valIdx == 0;
     this.setFocusInUpdate = true;
     this.setState({
       note: note
@@ -755,27 +754,11 @@ export default class Editor extends Component {
   }
 
   renderPublicOrPrivateSelect(isPublic) {
-    const style = {
-      marginLeft: 8
-    };
     const values = ['public', 'private'];
-    const selected = isPublic ? values[0] : values[1];
+    const selectedIdx = isPublic ? 0 : 1;
 
-    const options = values.map(v => {
-      return <option key={ v } value={ v }>
-               { v }
-             </option>;
-    });
     return (
-      <span className="editor-select-wrapper" style={ style }>
-        { selected }
-        <select className="editor-select-wrapper-input"
-          value={ selected }
-          onChange={ this.handlePublicOrPrivateChanged }
-        >
-        { options }
-        </select>
-      </span>
+      <TextSelect values={ values } selectedIdx={ selectedIdx } onChange={ this.handlePublicOrPrivateChanged } />
       );
   }
 
@@ -794,23 +777,11 @@ export default class Editor extends Component {
   }
 
   renderFormatSelect(formatSelected) {
-    const style = {
-      marginLeft: 8
-    };
-    const formatsPretty = ['text', 'markdown'];
-    formatSelected = formatPrettyName(formatSelected);
-    const options = formatsPretty.map(function(format) {
-      return <option key={ format } value={ format }>
-               { format }
-             </option>;
-    });
+    const formats = ['text', 'markdown'];
+    const formatPretty = formatPrettyName(formatSelected);
+    const selectedIdx = formats.indexOf(formatPretty);
     return (
-      <span className="editor-select-wrapper" style={ style }>
-        {formatSelected}
-        <select className="editor-select-wrapper-input" value={ formatSelected } onChange={ this.handleFormatChanged }>
-          { options }
-        </select>
-      </span>
+      <TextSelect values={ formats } selectedIdx={ selectedIdx } onChange={ this.handleFormatChanged } />
       );
   }
 
@@ -873,7 +844,9 @@ export default class Editor extends Component {
         <button className="btn btn-cancel" onClick={ this.handleCancel }>
           Cancel
         </button>
-        A { publicSelect }, { formatSelect }&nbsp;note.
+        A
+        { publicSelect },
+        { formatSelect }&nbsp;note.
         <div className="flex-spacer">
           &nbsp;
         </div>
