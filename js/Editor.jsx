@@ -20,7 +20,8 @@ import * as api from './api.js';
 // https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js
 // https://github.com/lepture/editor
 
-const kDragBarDy = 11;
+const kDragBarDy = 8;
+const kDragBarMin = 64;
 
 const cmOptions = {
   'autofocus': true
@@ -865,22 +866,8 @@ export default class Editor extends Component {
     };
 
     const y = this.top;
-    const dragBarStyle = {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: window.innerHeight - y - kDragBarDy,
-      //width: '100%',
-      cursor: 'row-resize',
-      height: kDragBarDy,
-      zIndex: 20, // higher than overlay
-      overflow: 'hidden',
-      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px',
-      backgroundColor: '#f0f0f0'
-    };
 
     const dragBarMax = window.innerHeight - 320;
-    const dragBarMin = 64;
 
     const style = {
       height: editorHeight(y)
@@ -890,10 +877,11 @@ export default class Editor extends Component {
 
     return (
       <Overlay>
-        <DragBarHoriz style={ dragBarStyle }
+        <DragBarHoriz
           initialY={ y }
-          min={ dragBarMin }
+          min={ kDragBarMin }
           max={ dragBarMax }
+          dy={ kDragBarDy}
           onPosChanged={ this.handleDragBarMoved } />
         <div id="editor-wrapper"
           className="flex-col"
@@ -935,22 +923,8 @@ export default class Editor extends Component {
     };
 
     const y = this.top;
-    const dragBarStyle = {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: window.innerHeight - y - kDragBarDy,
-      //width: '100%',
-      cursor: 'row-resize',
-      height: kDragBarDy,
-      zIndex: 20, // higher than overlay
-      overflow: 'hidden',
-      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px',
-      backgroundColor: '#f0f0f0'
-    };
 
     const dragBarMax = window.innerHeight - 320;
-    const dragBarMin = 64;
 
     const style = {
       height: editorHeight(y)
@@ -960,10 +934,11 @@ export default class Editor extends Component {
 
     return (
       <Overlay>
-        <DragBarHoriz style={ dragBarStyle }
+        <DragBarHoriz
           initialY={ y }
-          min={ dragBarMin }
+          min={ kDragBarMin }
           max={ dragBarMax }
+          dy={ kDragBarDy }
           onPosChanged={ this.handleDragBarMoved } />
         <div id="editor-wrapper"
           className="flex-col"
@@ -1009,22 +984,7 @@ export default class Editor extends Component {
     };
 
     const y = this.top;
-    const dragBarStyle = {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: window.innerHeight - y - kDragBarDy,
-      //width: '100%',
-      cursor: 'row-resize',
-      height: kDragBarDy,
-      zIndex: 20, // higher than overlay
-      overflow: 'hidden',
-      background: 'url(/s/img/grippie-d28a6f65e22c0033dcf0d63883bcc590.png) white no-repeat center 3px',
-      backgroundColor: '#f0f0f0'
-    };
-
     const dragBarMax = window.innerHeight - 320;
-    const dragBarMin = 64;
 
     const style = {
       height: editorHeight(y)
@@ -1034,9 +994,10 @@ export default class Editor extends Component {
 
     return (
       <Overlay>
-        <DragBarHoriz style={ dragBarStyle }
+        <DragBarHoriz
           initialY={ y }
-          min={ dragBarMin }
+          dy={ kDragBarDy }
+          min={ kDragBarMin }
           max={ dragBarMax }
           onPosChanged={ this.handleDragBarMoved } />
         <div id="editor-wrapper"
