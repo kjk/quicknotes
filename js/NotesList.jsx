@@ -26,6 +26,14 @@ export default class NotesList extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // TODO: must be more sophisticated.
+    // Sometimes (e.g. selecting a tag) we want
+    // to reset the scrolling.
+    // Sometimes (e.g. deleting a note) we want to preserve
+    // the current scrolling state
+    // If we can only have one, it's better to reset scroll
+    // Maybe add 'resetScrolling' arg to action.reloadNotes()
+    // that would be passed in here
     let node = ReactDOM.findDOMNode(this);
     node.scrollTop = 0;
     this.setState({
