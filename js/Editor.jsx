@@ -453,6 +453,7 @@ export default class Editor extends Component {
     this.handleEditorCreated = this.handleEditorCreated.bind(this);
     this.handleFormatChanged = this.handleFormatChanged.bind(this);
     this.handleHidePreview = this.handleHidePreview.bind(this);
+    this.handleOpenInNewWindow = this.handleOpenInNewWindow.bind(this);
     this.handlePublicOrPrivateChanged = this.handlePublicOrPrivateChanged.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleShowPreview = this.handleShowPreview.bind(this);
@@ -786,6 +787,10 @@ export default class Editor extends Component {
     });
   }
 
+  handleOpenInNewWindow(e) {
+    e.preventDefault();
+  }
+
   renderFormatSelect(formatSelected) {
     const formats = ['text', 'markdown'];
     const formatPretty = formatPrettyName(formatSelected);
@@ -806,7 +811,10 @@ export default class Editor extends Component {
     }
   }
 
-  renderMarkdownButtons() {
+  renderMarkdownButtons(isText) {
+    if (isText) {
+      return;
+    }
     return (
       <div id="editor-buttons" className="flex-row">
         <button className="ebtn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
@@ -846,247 +854,116 @@ export default class Editor extends Component {
       );
   }
 
-  renderBottom(note) {
-    const saveDisabled = !didNoteChange(note, this.initialNote);
-    const formatSelect = this.renderFormatSelect(note.formatName);
-    const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
-    return (
-      <div id="editor-bottom" className="flex-row">
-        <button className="btn btn-primary" disabled={ saveDisabled } onClick={ this.handleSave }>
-          Save
-        </button>
-        <button className="btn btn-cancel" onClick={ this.handleCancel }>
-          Cancel
-        </button>
-        A
-        { publicSelect },
-        { formatSelect }&nbsp;note.
-        <div className="flex-spacer">
-          &nbsp;
-        </div>
-        { this.renderShowHidePreview(note) }
-      </div>
-      );
-  }
-
-  renderEditorText() {
-    const mode = 'text';
-    const note = this.state.note;
-
-    const styleFormat = {
-      display: 'inline-block',
-      paddingTop: 8,
-    };
-
-    const y = this.top;
-
-    const dragBarMax = window.innerHeight - 320;
-
-    const style = {
-      height: editorHeight(y)
-    };
-
-    const bottom = this.renderBottom(note);
-
-    return (
-      <Overlay>
-        <DragBarHoriz
-          initialY={ y }
-          min={ kDragBarMin }
-          max={ dragBarMax }
-          dy={ kDragBarDy}
-          onPosChanged={ this.handleDragBarMoved } />
-        <div id="editor-wrapper"
-          className="flex-col"
-          style={ style }
-          ref="editorWrapperNode">
-          <div id="editor-top" className="flex-row">
-            <input id="editor-title"
-              className="editor-input"
-              placeholder="title goes here..."
-              value={ note.title }
-              onChange={ this.handleTitleChanged } />
-            <input id="editor-tags"
-              className="editor-input"
-              placeholder="#enter #tags"
-              value={ note.tags }
-              onChange={ this.handleTagsChanged } />
-          </div>
-          <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-            <CodeMirrorEditor className="codemirror-div"
-              textAreaClassName="cm-textarea"
-              placeholder="Enter text here..."
-              defaultValue={ note.body }
-              cmOptions={ cmOptions }
-              onChange={ this.handleTextChanged }
-              onEditorCreated={ this.handleEditorCreated } />
-          </div>
-          { bottom }
-        </div>
-      </Overlay>
-      );
-  }
-
-  renderEditorMarkdownNoPreview() {
-    const note = this.state.note;
-
-    const styleFormat = {
-      display: 'inline-block',
-      paddingTop: 8,
-    };
-
-    const y = this.top;
-
-    const dragBarMax = window.innerHeight - 320;
-
-    const style = {
-      height: editorHeight(y)
-    };
-
-    const bottom = this.renderBottom(note);
-
-    return (
-      <Overlay>
-        <DragBarHoriz
-          initialY={ y }
-          min={ kDragBarMin }
-          max={ dragBarMax }
-          dy={ kDragBarDy }
-          onPosChanged={ this.handleDragBarMoved } />
-        <div id="editor-wrapper"
-          className="flex-col"
-          style={ style }
-          ref="editorWrapperNode">
-          <div id="editor-top" className="flex-row">
-            <input id="editor-title"
-              className="editor-input"
-              placeholder="title goes here..."
-              value={ note.title }
-              onChange={ this.handleTitleChanged } />
-            <input id="editor-tags"
-              className="editor-input"
-              placeholder="#enter #tags"
-              value={ note.tags }
-              onChange={ this.handleTagsChanged } />
-          </div>
-          { this.renderMarkdownButtons() }
-          <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-            <CodeMirrorEditor className="codemirror-div"
-              textAreaClassName="cm-textarea"
-              placeholder="Enter text here..."
-              defaultValue={ note.body }
-              cmOptions={ cmOptions }
-              onChange={ this.handleTextChanged }
-              onEditorCreated={ this.handleEditorCreated } />
-          </div>
-          { bottom }
-        </div>
-      </Overlay>
-      );
-  }
-
-  renderEditorMarkdownWithPreview() {
-    const note = this.state.note;
-    const html = {
-      __html: toHtml(note.body)
-    };
-
-    const styleFormat = {
-      display: 'inline-block',
-      paddingTop: 8,
-    };
-
-    const y = this.top;
-    const dragBarMax = window.innerHeight - 320;
-
-    const style = {
-      height: editorHeight(y)
-    };
-
-    const bottom = this.renderBottom(note);
-    const saveDisabled = !didNoteChange(note, this.initialNote);
-    const formatSelect = this.renderFormatSelect(note.formatName);
-    const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
-
-    return (
-      <Overlay>
-        <DragBarHoriz
-          initialY={ y }
-          dy={ kDragBarDy }
-          min={ kDragBarMin }
-          max={ dragBarMax }
-          onPosChanged={ this.handleDragBarMoved } />
-        <div id="editor-wrapper"
-          className="flex-col"
-          style={ style }
-          ref="editorWrapperNode">
-
-          <div id="editor-top" className="flex-row">
-            <button className="btn btn-primary hint--bottom" disabled={ saveDisabled } onClick={ this.handleSave } data-hint="Ctrl-Enter">
-              Save
-            </button>
-            <button className="btn btn-cancel" onClick={ this.handleCancel }>
-              Cancel
-            </button>
-
-            { publicSelect }
-            { formatSelect }&nbsp;&nbsp;
-
-            <input id="editor-title"
-              className="editor-input"
-              placeholder="title goes here..."
-              value={ note.title }
-              onChange={ this.handleTitleChanged } />
-
-            <input id="editor-tags"
-              className="editor-input"
-              placeholder="#enter #tags"
-              value={ note.tags }
-              onChange={ this.handleTagsChanged } />
-
-            <div className="editor-spacer2"></div>
-            <button className="ebtn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
-              <i className="fa fa-expand"></i>
-            </button>
-
-          </div>
-
-          { this.renderMarkdownButtons() }
-
-          <div id="editor-text-with-preview" className="flex-row">
-            <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-              <CodeMirrorEditor className="codemirror-div"
-                textAreaClassName="cm-textarea"
-                placeholder="Enter text here..."
-                defaultValue={ note.body }
-                cmOptions={ cmOptions }
-                onChange={ this.handleTextChanged }
-                onEditorCreated={ this.handleEditorCreated } />
-            </div>
-            <div id="editor-preview">
-              <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
-            </div>
-          </div>
-        </div>
-      </Overlay>
-      );
-  }
-
   render() {
-    console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
+    // console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
       return <div className="hidden"></div>;
     }
     this.updateCodeMirrorMode();
+
     const note = this.state.note;
-    if (note.isText()) {
-      return this.renderEditorText();
-    }
-    if (this.state.isShowingPreview) {
-      return this.renderEditorMarkdownWithPreview();
+    const isText = note.isText();
+    const isShowingPreview = this.state.isShowingPreview;
+
+    const styleFormat = {
+      display: 'inline-block',
+      paddingTop: 8,
+    };
+
+    const y = this.top;
+    const dragBarMax = window.innerHeight - 320;
+
+    const saveDisabled = !didNoteChange(note, this.initialNote);
+    const formatSelect = this.renderFormatSelect(note.formatName);
+    const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
+    let editor;
+    if (isText || !isShowingPreview) {
+      const style = {
+        width: '100%',
+        flexGrow: 8
+      };
+      editor = (
+        <div id="cm-wrapper" ref="editorTextAreaWrapperNode" style={ style }>
+          <CodeMirrorEditor className="codemirror-div"
+            textAreaClassName="cm-textarea"
+            placeholder="Enter text here..."
+            defaultValue={ note.body }
+            cmOptions={ cmOptions }
+            onChange={ this.handleTextChanged }
+            onEditorCreated={ this.handleEditorCreated } />
+        </div>
+      );
     } else {
-      return this.renderEditorMarkdownNoPreview();
+      const html = {
+        __html: toHtml(note.body)
+      };
+
+      editor = (
+        <div id="editor-text-with-preview" className="flex-row">
+          <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
+            <CodeMirrorEditor className="codemirror-div"
+              textAreaClassName="cm-textarea"
+              placeholder="Enter text here..."
+              defaultValue={ note.body }
+              cmOptions={ cmOptions }
+              onChange={ this.handleTextChanged }
+              onEditorCreated={ this.handleEditorCreated } />
+          </div>
+          <div id="editor-preview">
+            <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
+          </div>
+        </div>
+      );
     }
+
+    const style = {
+      height: editorHeight(y)
+    };
+
+    return (
+      <Overlay>
+        <DragBarHoriz initialY={ y }
+          dy={ kDragBarDy }
+          min={ kDragBarMin }
+          max={ dragBarMax }
+          onPosChanged={ this.handleDragBarMoved } />
+        <div id="editor-wrapper"
+          className="flex-col"
+          style={ style }
+          ref="editorWrapperNode">
+          <div id="editor-top" className="flex-row">
+            <button className="btn btn-primary hint--bottom"
+              disabled={ saveDisabled }
+              onClick={ this.handleSave }
+              data-hint="Ctrl-Enter">
+              Save
+            </button>
+            <button className="btn btn-cancel" onClick={ this.handleCancel }>
+              Cancel
+            </button>
+            { publicSelect }
+            { formatSelect }&nbsp;&nbsp;
+            <input id="editor-title"
+              className="editor-input"
+              placeholder="title here..."
+              value={ note.title }
+              onChange={ this.handleTitleChanged } />
+            <input id="editor-tags"
+              className="editor-input"
+              placeholder="#enter #tags"
+              value={ note.tags }
+              onChange={ this.handleTagsChanged } />
+            <div className="editor-spacer2"></div>
+            <button className="ebtn" onClick={ this.handleOpenInNewWindow } title="Insert Image (Ctrl+Alt+I)">
+              <i className="fa fa-expand"></i>
+            </button>
+          </div>
+          { this.renderMarkdownButtons(isText) }
+          { editor }
+        </div>
+      </Overlay>
+      );
   }
+
 }

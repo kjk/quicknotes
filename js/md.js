@@ -46,7 +46,14 @@ function toHtmlMarked(s) {
   return html;
 }
 
-const markdownIt = new MarkdownIt();
+const markdownItOpts = {
+  html: false,
+  linkify: true,
+  breaks: false, // Convert '\n' in paragraphs into <br>
+  typographer: false
+};
+
+const markdownIt = new MarkdownIt(markdownItOpts);
 
 function toHtmlMarkdownIt(s) {
   s = s.trim();
@@ -56,4 +63,5 @@ function toHtmlMarkdownIt(s) {
 
 export function toHtml(s) {
   return toHtmlMarkdownIt(s);
+  // return toHtmlMarked(s);
 }
