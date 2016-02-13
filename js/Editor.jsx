@@ -23,6 +23,8 @@ import * as api from './api.js';
 const kDragBarDy = 8;
 const kDragBarMin = 64;
 
+const isMac = /Mac/.test(navigator.platform);
+
 const cmOptions = {
   'autofocus': true
 };
@@ -240,7 +242,7 @@ function _toggleHeading(cm, direction, size) {
       var text = cm.getLine(i);
       var currHeadingLevel = text.search(/[^#]/);
 
-      if (isUndefined(direction)) {
+      if (!isUndefined(direction)) {
         if (currHeadingLevel <= 0) {
           if (direction == 'bigger') {
             text = '###### ' + text;
@@ -444,6 +446,15 @@ function drawImage(cm) {
   _replaceSelection(cm, stat.image, insertTexts.image);
 }
 
+function fixShortcut(name) {
+  if (isMac) {
+    name = name.replace('Ctrl', 'Cmd');
+  } else {
+    name = name.replace('Cmd', 'Ctrl');
+  }
+  return name;
+}
+
 export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
@@ -474,12 +485,13 @@ export default class Editor extends Component {
     this.handleEditCmdHeading = this.handleEditCmdHeading.bind(this);
     this.handleEditCmdHr = this.handleEditCmdHr.bind(this);
 
-    this.editNewNote = this.editNewNote.bind(this);
     this.ctrlEnterPressed = this.ctrlEnterPressed.bind(this);
+    this.editNewNote = this.editNewNote.bind(this);
     this.editNote = this.editNote.bind(this);
     this.escPressed = this.escPressed.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
+    this.togglePreview = this.togglePreview.bind(this);
     this.updateCodeMirrorMode = this.updateCodeMirrorMode.bind(this);
 
     this.initialNote = null;
@@ -499,6 +511,7 @@ export default class Editor extends Component {
     action.onEditNote(this.editNote, this);
     action.onEditNewNote(this.editNewNote, this);
     keymaster('esc', this.escPressed);
+    keymaster('F9', this.togglePreview);
 
     this.scheduleTimer();
   }
@@ -525,6 +538,7 @@ export default class Editor extends Component {
   componentWillUnmount() {
     action.offAllForOwner(this);
     keymaster.unbind('esc');
+    keymaster.unbind('f9');
   }
 
   ctrlEnterPressed() {
@@ -625,16 +639,33 @@ export default class Editor extends Component {
 
   handleEditorCreated(cm) {
     this.cm = cm;
-    cm.setOption('extraKeys', {
-      'Ctrl-Enter': cm => {
-        this.ctrlEnterPressed();
-      },
-      'Cmd-Enter': cm => {
-        this.ctrlEnterPressed();
-      },
+
+    const shortcuts = {
+      'Ctrl-B': cm => toggleBold(cm),
+      'Ctrl-I': cm => toggleItalic(cm),
+      'Ctrl-K': cm => drawLink(cm),
+      'Cmd-H': cm => toggleHeadingSmaller(cm),
+      'F9': cm => this.togglePreview,
+      "Cmd-'": cm => toggleBlockquote(cm),
+      'Ctrl-L': cm => toggleUnorderedList(cm),
+      'Cmd-Alt-L': cm => toggleOrderedList(cm),
+      'Shift-Cmd-H': cm => toggleHeadingBigger(cm),
       'Enter': 'newlineAndIndentContinueMarkdownList'
+    };
+
+    let extraKeys = {};
+    Object.keys(shortcuts).forEach(k => {
+      const k2 = fixShortcut(k);
+      extraKeys[k2] = shortcuts[k];
     });
 
+    extraKeys['Ctrl-Enter'] = this.ctrlEnterPressed;
+    if (isMac) {
+      extraKeys['Cmd-Enter'] = this.ctrlEnterPressed;
+    }
+
+
+    cm.setOption('extraKeys', extraKeys);
     cm.setOption('lineWrapping', true);
     cm.setOption('lineNumbers', true);
     cm.setOption('tabSize', 2);
@@ -779,12 +810,16 @@ export default class Editor extends Component {
     });
   }
 
-  handleTogglePreview(e) {
-    e.preventDefault();
+  togglePreview() {
     const isShowing = !this.state.isShowingPreview;
     this.setState({
       isShowingPreview: isShowing
     });
+  }
+
+  handleTogglePreview(e) {
+    e.preventDefault();
+    this.togglePreview();
   }
 
   handleOpenInNewWindow(e) {
@@ -820,7 +855,7 @@ export default class Editor extends Component {
         <button className="ebtn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdItalic } title="Emphasis (⌘I)">
+        <button className="ebtn" onClick={ this.handleEditCmdItalic } title="Italic (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
         <button className="ebtn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
@@ -921,6 +956,12 @@ export default class Editor extends Component {
       height: editorHeight(y)
     };
 
+    /*
+                <button className="ebtn" onClick={ this.handleOpenInNewWindow } title="Open in New Window">
+                  <i className="fa fa-expand"></i>
+                </button>
+    */
+
     return (
       <Overlay>
         <DragBarHoriz initialY={ y }
@@ -955,9 +996,6 @@ export default class Editor extends Component {
               value={ note.tags }
               onChange={ this.handleTagsChanged } />
             <div className="editor-spacer2"></div>
-            <button className="ebtn" onClick={ this.handleOpenInNewWindow } title="Insert Image (Ctrl+Alt+I)">
-              <i className="fa fa-expand"></i>
-            </button>
           </div>
           { this.renderMarkdownButtons(isText) }
           { editor }

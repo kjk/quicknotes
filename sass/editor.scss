@@ -74,39 +74,20 @@
   font-size: 16px;
   align-items: center;
   flex-shrink: 0;
+}
 
-  button {
-    display: inline-block;
-    position: relative;
-    padding: 4px 8px;
-    color: rgba(0,0,0,0.7);
-    background: rgba(0,0,0,0);
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    border: 1px solid rgba(0,0,0,0.4);
-    vertical-align: bottom;
-    white-space: nowrap;
-    user-select: none;
-    box-sizing: border-box;
-    // border-radius: 999em;
-    letter-spacing: 0;
-    font-style: normal;
-    text-rendering: optimizeLegibility;
-    margin-right: 4px;
-  }
+.ebtn {
+  border: 0;
+  padding: 2px 6px;
+  margin: 2px;
+  background-color: transparent;
 
-  .ebtn {
+  &:hover {
     border: 0;
-    padding: 4px 4px;
-    margin: 0;
-
-    &:hover {
-      border: 0;
-      background-color: #eee;
-    }
+    background-color: #eee;
   }
 }
+
 
 #editor-text-with-preview {
   flex-wrap: nowrap;
