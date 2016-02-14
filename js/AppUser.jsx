@@ -65,7 +65,7 @@ export default class AppUser extends Component {
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
-    this.reloadNotes = this.reloadNotes.bind(this);
+    this.handleReloadNotes = this.handleReloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
     let allNotes = [];
@@ -96,13 +96,14 @@ export default class AppUser extends Component {
       notesUserHashID: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
       loggedUserHashID: loggedUserHashID,
-      loggedUserHandle: loggedUserHandle
+      loggedUserHandle: loggedUserHandle,
+      resetScroll: false
     };
   }
 
   componentDidMount() {
     action.onTagSelected(this.handleTagSelected, this);
-    action.onReloadNotes(this.reloadNotes, this);
+    action.onReloadNotes(this.handleReloadNotes, this);
   }
 
   componentWillUnmount() {
@@ -115,11 +116,12 @@ export default class AppUser extends Component {
     // TODO: update url with /t:${tag}
     this.setState({
       selectedNotes: selectedNotes,
-      selectedTag: tag
+      selectedTag: tag,
+      resetScroll: true
     });
   }
 
-  setNotes(json) {
+  setNotes(json, resetScroll) {
     const allNotes = json.Notes || [];
     ni.sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
@@ -133,14 +135,15 @@ export default class AppUser extends Component {
       selectedNotes: selectedNotes,
       tags: tags,
       selectedTag: selectedTag,
+      resetScroll: resetScroll
     });
   }
 
-  reloadNotes() {
+  handleReloadNotes(resetScroll) {
     const userID = this.state.notesUserHashID;
-    console.log('reloadNotes: userID=', userID);
+    console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
     api.getNotes(userID, json => {
-      this.setNotes(json);
+      this.setNotes(json, resetScroll);
     });
   }
 
@@ -162,7 +165,10 @@ export default class AppUser extends Component {
           showingMyNotes={ showingMyNotes }
           onTagSelected={ this.handleTagSelected }
           selectedTag={ this.state.selectedTag } />
-        <NotesList notes={ this.state.selectedNotes } showingMyNotes={ showingMyNotes } compact={ false } />
+        <NotesList notes={ this.state.selectedNotes }
+          showingMyNotes={ showingMyNotes }
+          compact={ false }
+          resetScroll={ this.state.resetScroll } />
         <Settings />
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
