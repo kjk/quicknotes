@@ -477,9 +477,9 @@ function wordCount(data) {
 
 function isNullMsg(o) {
   if (isUndefined(o) || o == null) {
-    return "is null";
+    return 'is null';
   }
-  return "not null";
+  return 'not null';
 }
 
 export default class Editor extends Component {
@@ -762,7 +762,7 @@ export default class Editor extends Component {
       mode = 'markdown';
     }
     if (!this.cm) {
-      console.log("updteCodeMirrorMode but this.cm is null");
+      console.log('updteCodeMirrorMode but this.cm is null');
       return;
     }
     this.cm.setOption('mode', mode);
@@ -913,7 +913,7 @@ export default class Editor extends Component {
   }
 
   togglePreview() {
-    console.log("togglePreview");
+    console.log('togglePreview');
     const note = this.state.note;
     // can be invoked via F9 inside editor but only applicable
     // if note is markdown
@@ -1026,7 +1026,7 @@ export default class Editor extends Component {
       const style = {
         width: '100%',
         flexGrow: 8,
-        borderTop: "1px solid lightgray"
+        borderTop: '1px solid lightgray'
       };
       editor = (
         <div id="cm-wrapper" ref="editorTextAreaWrapperNode" style={ style }>
