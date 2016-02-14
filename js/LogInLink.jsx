@@ -30,24 +30,20 @@ export default class LogInLink extends Component {
     const u = gLoggedUser;
     const userUrl = '/u/' + u.HashID + '/' + u.Handle;
     return (
-      <div id="user">
-        <a href={ userUrl } className="user">
-          { u.Handle }
-        </a>
-        <div className="dropdown">
-          <i className="fa fa-chevron-down"></i>
-          <div className="dropdown-content">
-            <a href={ userUrl }>My notes</a>
-            { false ?
-              <a href="#" onClick={ showSettings }>Settings</a>
-              : null }
-            { false ?
-              <span className="divider"></span>
-              : null }
-            <a href="/import" onClick={ showImportSimpleNote }>Import from Simplenote</a>
+      <div id="login-link">
+        <a href={ userUrl } className="header-link">
+          { u.Handle } <i className="fa fa-chevron-down user-chevron"></i></a>
+        <div className="dropdown-content">
+          <a href={ userUrl }>My notes</a>
+          { false ?
+            <a href="#" onClick={ showSettings }>Settings</a>
+            : null }
+          { false ?
             <span className="divider"></span>
-            <a href={ url }>Sign Out</a>
-          </div>
+            : null }
+          <a href="/import" onClick={ showImportSimpleNote }>Import from Simplenote</a>
+          <span className="divider"></span>
+          <a href={ url }>Sign Out</a>
         </div>
       </div>
       );
@@ -59,23 +55,20 @@ export default class LogInLink extends Component {
     const googleUrl = '/logingoogle?redir=' + redir;
     const githubUrl = '/logingithub?redir=' + redir;
     return (
-      <div id="user">
-        <span className="user">Sign in / Sign up</span>
-        <div className="dropdown">
-          <i className="fa fa-chevron-down"></i>
-          <div className="log-in-dropdown-content">
-            <ul className="log-in">
-              <li>
-                <a className="twitter" href={ twitterUrl }>Sign in with Twitter</a>
-              </li>
-              <li>
-                <a className="google" href={ googleUrl }>Sign in with Google</a>
-              </li>
-              <li>
-                <a className="github" href={ githubUrl }>Sign in with GitHub</a>
-              </li>
-            </ul>
-          </div>
+      <div id="login-link">
+        <span className="header-link">Sign in / Sign up <i className="fa fa-chevron-down user-chevron"></i></span>
+        <div className="log-in-dropdown-content">
+          <ul className="log-in">
+            <li>
+              <a className="twitter" href={ twitterUrl }>Sign in with Twitter</a>
+            </li>
+            <li>
+              <a className="google" href={ googleUrl }>Sign in with Google</a>
+            </li>
+            <li>
+              <a className="github" href={ githubUrl }>Sign in with GitHub</a>
+            </li>
+          </ul>
         </div>
       </div>
       );
