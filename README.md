@@ -1,14 +1,8 @@
 # quicknotes
 
-http://quicknotes.io
+https://quicknotes.io
 
 # pre-requisites
 
-* `npm install react-tools -g`
-* `npm install webpack -g`
-* `npm install webpack-dev-server -g`
-* `npm install jsx-loader -g`
-
-# start mysql locally
-
-mysql.server start
+* docker for local testing/development
+* `npm install`
