@@ -251,7 +251,6 @@ a {
 }
 
 .btn-new-note {
-  margin-top: 8px;
   margin-left: 8px;
 }
 
@@ -260,13 +259,15 @@ a {
   top: 0; left: 0; right: 0;
   height: 45px;
   z-index: 4;
+  align-items: center;
 
   #logo {
-    width: $sidebar-width;
+    flex-basis: $sidebar-width;
+    flex-shrink: 0;
+    flex-grow: 0;
     height: 45px;
     line-height: 45px;
     display: block;
-    float: left;
     text-indent: -999999px;
   }
 
@@ -277,134 +278,78 @@ a {
   .logo {
     background-size: 115px 20px;
   }
+}
 
-  #new-note {
-    width: 45px; height: 45px;
+.header-link {
+  display: block;
+  height: 45px;
+  line-height: 45px;
+  padding: 0 0 0 16px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.6);
+
+  &:visited {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  &:hover {
+    color: #2196F3 !important;
+  }
+}
+
+.user-chevron {
+  padding-left: 4px;
+  padding-right: 12px;
+  font-size: 10px;
+  position: relative;
+  top: -1px;
+}
+
+#login-link {
+  &:hover .dropdown-content {
     display: block;
-    float: left;
-    position: relative;
-    padding: 0 4px;
-    text-align: center;
-    cursor: pointer;
-    box-sizing: content-box;
-
-    .icn-plus {
-      position: relative;
-      display: block;
-      top: 9px;
-    }
-
-    .icn-plus:before,
-    .icn-plus:after {
-      content: '';
-      background: #aaa;
-      width: 1.5em;
-      height: .1em;
-      position: relative;
-      cursor: pointer;
-      display: inline-block;
-      left: -0.75em;
-    }
-
-    .icn-plus:before {
-      transform: rotate(-90deg);
-      left: 0.75em;
-    }
   }
 
-  #new-note:hover {
-    background: rgba(0, 0, 0, .03);
-
-    .icn-plus:before,
-    .icn-plus:after {
-      background: #2196f3;
-    }
+  &:hover .log-in-dropdown-content {
+    display: block;
   }
 }
 
-#header {
-  .dropdown {
-    float: left;
+.dropdown-content {
+  white-space: nowrap; // size it to content
+  display: none;
+  position: absolute;
+  top: 36px; right: 8px;
+  padding: 8px 16px;
+  line-height: 20px;
+  border-radius: 2px;
+  z-index: 20;
+
+  a {
+    display: block;
+    clear: both;
+    padding: 6px 0;
   }
 
-  #user {
-    position: absolute;
-    top: 0; right: 0;
-
-    .user {
-      float: left;
-    }
-
-    .user {
-      height: 45px;
-      line-height: 45px;
-      display: block;
-      padding: 0 0 0 16px;
-      font-weight: bold;
-    }
-
-    span {
-      cursor: default;
-    }
-
-    #user:hover {
-      background: rgba(0,0,0,.03);
-    }
-
-    &:hover .user,
-    &:hover .fa-chevron-down {
-      color: #2196F3 !important;
-    }
-
-    &:hover .dropdown-content {
-      display: block;
-    }
-
-    &:hover .log-in-dropdown-content {
-      display: block;
-    }
-
+  .divider {
+    height: 1px;
+    display: block;
+    border-top: 1px solid transparent;
+    margin: 4px 0;
   }
 }
 
-#header {
-  .dropdown {
-    height: 45px;
-    line-height: 44px;
-    position: relative;
-    margin-right: 10px;
-
-    i {
-      position: relative;
-      padding: 0 10px;
-      font-size: 10px;
-      top: -1px;
-    }
-  }
-
-  .dropdown-content {
-    white-space: nowrap; // size it to content
-    display: none;
-    position: absolute;
-    top: 36px; right: 0;
-    padding: 8px 16px;
-    line-height: 20px;
-    border-radius: 2px;
-    z-index: 20;
-
-    a {
-      display: block;
-      clear: both;
-      padding: 6px 0;
-    }
-
-    .divider {
-      height: 1px;
-      display: block;
-      border-top: 1px solid transparent;
-      margin: 4px 0;
-    }
-  }
+.log-in-dropdown-content {
+  display: none;
+  position: absolute;
+  top: 40px; right: 8px;
+  padding: 8px 16px;
+  line-height: 20px;
+  border-radius: 2px;
+  z-index: 20;
+  background: white;
+  box-sizing: content-box;
+  border: 1px solid lightgray;
 }
 
 /**/
@@ -534,19 +479,6 @@ a {
       }
     }
   }
-}
-
-.log-in-dropdown-content {
-  display: none;
-  position: absolute;
-  top: 40px; right: 0;
-  padding: 8px 16px;
-  line-height: 20px;
-  border-radius: 2px;
-  z-index: 20;
-  background: white;
-  box-sizing: content-box;
-  border: 1px solid lightgray;
 }
 
 ul.log-in {
