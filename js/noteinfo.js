@@ -208,13 +208,13 @@ export function FetchLatestContent(noteOrig, cb) {
   const noteID = HashID(noteOrig);
   const content = Content(noteOrig);
   if (content !== null) {
-    console.log('FetchLatestContent: already has it for note', IDVer(noteOrig));
+    // console.log('FetchLatestContent: already has it for note', IDVer(noteOrig));
     cb(noteOrig, content);
     return;
   }
-  console.log('FetchLatestContent: starting to fetch content for note', noteID);
+  // console.log('FetchLatestContent: starting to fetch content for note', noteID);
   api.getNote(noteID, note => {
-    console.log('FetchLatestContent: json=', note);
+    // console.log('FetchLatestContent: json=', note);
     // version might be newer than in noteOrig
     let content = setCachedVersion(note);
     //console.log('FetchLatestContent: content=', content);
