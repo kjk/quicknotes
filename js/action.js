@@ -117,8 +117,8 @@ export function onShowHideSettings(cb, owner) {
 }
 
 /* --------------------- */
-export function reloadNotes() {
-  broadcast(reloadNotesCmd);
+export function reloadNotes(resetScroll) {
+  broadcast(reloadNotesCmd, resetScroll);
 }
 
 export function onReloadNotes(cb, owner) {

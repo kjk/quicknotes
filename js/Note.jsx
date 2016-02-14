@@ -87,11 +87,11 @@ export default class Note extends Component {
     const noteId = ni.HashID(note);
     if (ni.IsDeleted(note)) {
       api.undeleteNote(noteId, () => {
-        action.reloadNotes();
+        action.reloadNotes(false);
       });
     } else {
       api.deleteNote(noteId, () => {
-        action.reloadNotes();
+        action.reloadNotes(false);
       });
     }
   }
@@ -101,7 +101,7 @@ export default class Note extends Component {
     const note = this.props.note;
     const noteId = ni.HashID(note);
     api.permanentDeleteNote(noteId, () => {
-      action.reloadNotes();
+      action.reloadNotes(false);
     });
   }
 
@@ -112,11 +112,11 @@ export default class Note extends Component {
     const noteId = ni.HashID(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, () => {
-        action.reloadNotes();
+        action.reloadNotes(false);
       });
     } else {
       api.makeNotePublic(noteId, () => {
-        action.reloadNotes();
+        action.reloadNotes(false);
       });
     }
   }
@@ -212,11 +212,11 @@ export default class Note extends Component {
     const noteId = ni.HashID(note);
     if (ni.IsStarred(note)) {
       api.unstarNote(noteId, () => {
-        action.reloadNotes();
+        action.reloadNotes(false);
       });
     } else {
       api.starNote(noteId, () => {
-        action.reloadNotes();
+        action.reloadNotes(false);
       });
     }
   }

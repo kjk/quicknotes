@@ -611,7 +611,7 @@ export default class Editor extends Component {
         isShowing: false,
         note: newEmptyNote()
       });
-      action.reloadNotes();
+      action.reloadNotes(false);
     });
   }
 

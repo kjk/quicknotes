@@ -1,7 +1,7 @@
 'use strict';
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Note from './Note.jsx';
 import * as ni from './noteinfo.js';
@@ -15,7 +15,7 @@ function truncateNotes(notes) {
   return notes;
 }
 
-export default class NotesList extends React.Component {
+export default class NotesList extends Component {
   constructor(props, context) {
     super(props, context);
     this.handleScroll = this.handleScroll.bind(this);
@@ -26,16 +26,12 @@ export default class NotesList extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // TODO: must be more sophisticated.
-    // Sometimes (e.g. selecting a tag) we want
-    // to reset the scrolling.
-    // Sometimes (e.g. deleting a note) we want to preserve
-    // the current scrolling state
-    // If we can only have one, it's better to reset scroll
-    // Maybe add 'resetScrolling' arg to action.reloadNotes()
-    // that would be passed in here
-    let node = ReactDOM.findDOMNode(this);
-    node.scrollTop = 0;
+    const resetScroll = nextProps.resetScroll;
+    console.log('NotesList.componentWillReceiveProps(), resetScroll: ', resetScroll);
+    if (resetScroll) {
+      let node = ReactDOM.findDOMNode(this);
+      node.scrollTop = 0;
+    }
     this.setState({
       notes: truncateNotes(nextProps.notes)
     });
@@ -89,7 +85,8 @@ export default class NotesList extends React.Component {
 }
 
 NotesList.propTypes = {
-  notes: React.PropTypes.array,
-  compact: React.PropTypes.bool.isRequired,
-  showingMyNotes: React.PropTypes.bool.isRequired
+  notes: PropTypes.array,
+  compact: PropTypes.bool.isRequired,
+  showingMyNotes: PropTypes.bool.isRequired,
+  resetScroll: PropTypes.bool
 };
