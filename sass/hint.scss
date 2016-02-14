@@ -42,7 +42,9 @@ $zIndex: 1000000 !default;
 
 // Various colors
 // Default color is blackish
-$defaultColor: hsl(0, 0%, 22%) !default;
+//$defaultColor: hsl(360, 100%, 100%) !default;
+
+$defaultColor: hsla(0, 0%, 94%, 1) !default;
 
 // Error color
 $errorColor: hsl(1, 40%, 50%) !default;
@@ -158,7 +160,7 @@ $successColor: hsl(121, 32%, 40%) !default;
     &:after {
         content: attr(data-hint); // The magic!
         background: $defaultColor;
-        color: white;
+        color: black;
         padding: $verticalPadding $horizontalPadding;
         font-size: $fontSize;
         line-height: $fontSize; // Vertical centering.

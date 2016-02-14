@@ -20,7 +20,7 @@ import * as api from './api.js';
 // https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js
 // https://github.com/lepture/editor
 
-const kDragBarDy = 8;
+const kDragBarDy = 6;
 const kDragBarMin = 64;
 
 const isMac = /Mac/.test(navigator.platform);
