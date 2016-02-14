@@ -455,6 +455,13 @@ function fixShortcut(name) {
   return name;
 }
 
+function isNullMsg(o) {
+  if (isUndefined(o) || o == null) {
+    return "is null";
+  }
+  return "not null";
+}
+
 export default class Editor extends Component {
   constructor(props, context) {
     super(props, context);
@@ -489,7 +496,11 @@ export default class Editor extends Component {
     this.editNewNote = this.editNewNote.bind(this);
     this.editNote = this.editNote.bind(this);
     this.escPressed = this.escPressed.bind(this);
+    this.isShowingPreview = this.isShowingPreview.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
+    this.scrollToEndOnFirstRender = this.scrollToEndOnFirstRender.bind(this);
+    this.setupCodeMirror = this.setupCodeMirror.bind(this);
+    this.setupScrollSync = this.setupScrollSync.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
     this.togglePreview = this.togglePreview.bind(this);
     this.updateCodeMirrorMode = this.updateCodeMirrorMode.bind(this);
@@ -498,8 +509,9 @@ export default class Editor extends Component {
     this.cm = null;
     this.top = getWindowMiddle();
     this.firstRender = true;
-
+    this.isNewCM = false;
     this.setFocusInUpdate = false;
+
     this.state = {
       isShowing: false,
       isShowingPreview: true,
@@ -518,27 +530,126 @@ export default class Editor extends Component {
 
   componentDidUpdate() {
     const cm = this.cm;
-    //console.log('Editor.componentDidUpdate, cm: ', cm);
+    console.log('Editor.componentDidUpdate, cm ', isNullMsg(cm));
     if (!cm) {
       return;
     }
+
     if (this.setFocusInUpdate) {
       this.cm.focus();
       this.setFocusInUpdate = false;
     }
-    if (!this.firstRender) {
-      return;
+
+    if (this.isNewCM) {
+      this.isNewCM = false;
+      this.setupCodeMirror();
+      this.setupScrollSync();
     }
-    this.firstRender = false;
-    /*cm.focus();*/
-    cm.execCommand('goDocEnd');
-    cm.scrollIntoView();
+
+    this.scrollToEndOnFirstRender();
   }
 
   componentWillUnmount() {
     action.offAllForOwner(this);
     keymaster.unbind('esc');
     keymaster.unbind('f9');
+  }
+
+  scrollToEndOnFirstRender() {
+    if (!this.firstRender) {
+      return;
+    }
+    const cm = this.cm;
+    this.firstRender = false;
+    /*cm.focus();*/
+    cm.execCommand('goDocEnd');
+    cm.scrollIntoView();
+  }
+
+  handleEditorCreated(cm) {
+    console.log('Editor.handleEditorCreated');
+    this.cm = cm;
+    this.isNewCM = true;
+  }
+
+  // https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js#L1267
+  setupScrollSync() {
+    const cm = this.cm;
+    if (!cm) {
+      return;
+    }
+    const preview = ReactDOM.findDOMNode(this.refs.previewNode);
+    if (!this.isShowingPreview()) {
+      return;
+    }
+
+    console.log('setupScrollSync()');
+
+    // Syncs scroll  editor -> preview
+    var cScroll = false;
+    var pScroll = false;
+    cm.on('scroll', v => {
+      if (!this.isShowingPreview()) {
+        return;
+      }
+      if (cScroll) {
+        cScroll = false;
+        return;
+      }
+      pScroll = true;
+      // console.log('editor scroll, preview:', preview);
+      var height = v.getScrollInfo().height - v.getScrollInfo().clientHeight;
+      var ratio = parseFloat(v.getScrollInfo().top) / height;
+      var move = (preview.scrollHeight - preview.clientHeight) * ratio;
+      preview.scrollTop = move;
+    });
+
+    // Syncs scroll  preview -> editor
+    preview.onscroll = function() {
+      if (pScroll) {
+        pScroll = false;
+        return;
+      }
+      cScroll = true;
+      var height = preview.scrollHeight - preview.clientHeight;
+      var ratio = parseFloat(preview.scrollTop) / height;
+      var move = (cm.getScrollInfo().height - cm.getScrollInfo().clientHeight) * ratio;
+      cm.scrollTo(0, move);
+    };
+  }
+
+  setupCodeMirror() {
+    const cm = this.cm;
+
+    const shortcuts = {
+      'Ctrl-B': cm => toggleBold(cm),
+      'Ctrl-I': cm => toggleItalic(cm),
+      'Ctrl-K': cm => drawLink(cm),
+      'Cmd-H': cm => toggleHeadingSmaller(cm),
+      'F9': cm => this.togglePreview(),
+      "Cmd-'": cm => toggleBlockquote(cm),
+      'Ctrl-L': cm => toggleUnorderedList(cm),
+      'Cmd-Alt-L': cm => toggleOrderedList(cm),
+      'Shift-Cmd-H': cm => toggleHeadingBigger(cm),
+      'Enter': 'newlineAndIndentContinueMarkdownList'
+    };
+
+    let extraKeys = {};
+    Object.keys(shortcuts).forEach(k => {
+      const k2 = fixShortcut(k);
+      extraKeys[k2] = shortcuts[k];
+    });
+
+    extraKeys['Ctrl-Enter'] = this.ctrlEnterPressed;
+    if (isMac) {
+      extraKeys['Cmd-Enter'] = this.ctrlEnterPressed;
+    }
+
+    cm.setOption('extraKeys', extraKeys);
+    cm.setOption('lineWrapping', true);
+    cm.setOption('lineNumbers', true);
+    cm.setOption('tabSize', 2);
+    this.updateCodeMirrorMode();
   }
 
   ctrlEnterPressed() {
@@ -623,9 +734,6 @@ export default class Editor extends Component {
   }
 
   updateCodeMirrorMode() {
-    if (!this.cm) {
-      return;
-    }
     const note = this.state.note;
     let mode = 'text';
     if (note.isText()) {
@@ -633,43 +741,17 @@ export default class Editor extends Component {
     } else if (note.isMarkdown()) {
       mode = 'markdown';
     }
+    if (!this.cm) {
+      console.log("updteCodeMirrorMode but this.cm is null");
+      return;
+    }
     this.cm.setOption('mode', mode);
-    // console.log('updateCodeMirrorMode: mode=', mode);
+    console.log('updateCodeMirrorMode: mode=', mode);
   }
 
-  handleEditorCreated(cm) {
-    this.cm = cm;
-
-    const shortcuts = {
-      'Ctrl-B': cm => toggleBold(cm),
-      'Ctrl-I': cm => toggleItalic(cm),
-      'Ctrl-K': cm => drawLink(cm),
-      'Cmd-H': cm => toggleHeadingSmaller(cm),
-      'F9': cm => this.togglePreview,
-      "Cmd-'": cm => toggleBlockquote(cm),
-      'Ctrl-L': cm => toggleUnorderedList(cm),
-      'Cmd-Alt-L': cm => toggleOrderedList(cm),
-      'Shift-Cmd-H': cm => toggleHeadingBigger(cm),
-      'Enter': 'newlineAndIndentContinueMarkdownList'
-    };
-
-    let extraKeys = {};
-    Object.keys(shortcuts).forEach(k => {
-      const k2 = fixShortcut(k);
-      extraKeys[k2] = shortcuts[k];
-    });
-
-    extraKeys['Ctrl-Enter'] = this.ctrlEnterPressed;
-    if (isMac) {
-      extraKeys['Cmd-Enter'] = this.ctrlEnterPressed;
-    }
-
-
-    cm.setOption('extraKeys', extraKeys);
-    cm.setOption('lineWrapping', true);
-    cm.setOption('lineNumbers', true);
-    cm.setOption('tabSize', 2);
-    this.updateCodeMirrorMode();
+  isShowingPreview() {
+    const state = this.state;
+    return state.note.isMarkdown() && state.isShowingPreview;
   }
 
   startEditingNote(note) {
@@ -811,6 +893,13 @@ export default class Editor extends Component {
   }
 
   togglePreview() {
+    console.log("togglePreview");
+    const note = this.state.note;
+    // can be invoked via F9 inside editor but only applicable
+    // if note is markdown
+    if (!note.isMarkdown()) {
+      return;
+    }
     const isShowing = !this.state.isShowingPreview;
     this.setState({
       isShowingPreview: isShowing
@@ -945,7 +1034,7 @@ export default class Editor extends Component {
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
           </div>
-          <div id="editor-preview">
+          <div id="editor-preview" ref="previewNode">
             <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
           </div>
         </div>
