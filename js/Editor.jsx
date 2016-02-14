@@ -1029,8 +1029,7 @@ export default class Editor extends Component {
       };
       editor = (
         <div id="cm-wrapper" ref="editorTextAreaWrapperNode" style={ style }>
-          <CodeMirrorEditor
-            className="codemirror-div"
+          <CodeMirrorEditor className="codemirror-div"
             textAreaClassName="cm-textarea"
             placeholder="Enter text here..."
             defaultValue={ note.body }
@@ -1047,8 +1046,7 @@ export default class Editor extends Component {
       editor = (
         <div id="editor-text-with-preview" className="flex-row">
           <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
-            <CodeMirrorEditor
-              className="codemirror-div"
+            <CodeMirrorEditor className="codemirror-div"
               textAreaClassName="cm-textarea"
               placeholder="Enter text here..."
               defaultValue={ note.body }

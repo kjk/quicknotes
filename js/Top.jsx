@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import LogInLink from './LogInLink.jsx';
 import keymaster from 'keymaster';
 import * as action from './action.js';
-import * as u from './utils.js';
+import { focusSearch, isLoggedIn } from './utils.js';
 
 // by default all keypresses are filtered
 function keyFilter(event) {
@@ -23,7 +23,6 @@ export default class Top extends Component {
     this.handleEditNewNote = this.handleEditNewNote.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
-    this.renderSearchInput = this.renderSearchInput.bind(this);
 
     this.searchNotesUser = null;
 
@@ -36,9 +35,9 @@ export default class Top extends Component {
     action.onClearSearchTerm(this.handleClearSearchTerm, this);
 
     keymaster.filter = keyFilter;
-    keymaster('ctrl+f', u.focusSearch);
+    keymaster('ctrl+f', focusSearch);
     keymaster('ctrl+n', () => action.editNewNote());
-    //keymaster('ctrl+e', u.focusNewNote);
+    //keymaster('ctrl+e', focusNewNote);
   }
 
   componentWillUnmount() {
@@ -77,10 +76,20 @@ export default class Top extends Component {
     }
   }
 
-  renderSearchInput() {
-    if (!gNotesUser && !gLoggedUser) {
-      return;
+  handleEditNewNote(e) {
+    // console.log('Top.handleEditNewNote');
+    e.preventDefault();
+    action.editNewNote();
+  }
+
+  render() {
+    const withSearchInput = gNotesUser || gLoggedUser;
+
+    let userUrl = null;
+    if (gLoggedUser) {
+      userUrl = '/u/' + gLoggedUser.HashID + '/' + gLoggedUser.Handle;
     }
+
     let placeholder = 'Search your notes (Ctrl-F)';
     if (gNotesUser) {
       if (!gLoggedUser || (gLoggedUser.HashID != gNotesUser.HashID)) {
@@ -88,45 +97,31 @@ export default class Top extends Component {
         this.searchNotesUser = gNotesUser.HashID;
       }
     }
-    if (!this.searchNotesUser) {
+    if (!this.searchNotesUser && gLoggedUser) {
       this.searchNotesUser = gLoggedUser.HashID;
     }
 
     return (
-      <input name="search"
-        id="search-input"
-        value={ this.state.searchTerm }
-        onKeyDown={ this.handleInputKeyDown }
-        onChange={ this.handleInputChange }
-        type="text"
-        autoComplete="off"
-        autoCapitalize="off"
-        placeholder={ placeholder } />
-      );
-  }
-
-  handleEditNewNote(e) {
-    console.log('Top.handleEditNewNote');
-    e.preventDefault();
-    action.editNewNote();
-  }
-
-  renderNewNote() {
-    if (u.isLoggedIn()) {
-      return (
-        <button className="btn btn-new-note hint--bottom" data-hint="Ctrl-N" onClick={ this.handleEditNewNote }>
-          New note
-        </button>
-        );
-    }
-  }
-
-  render() {
-    return (
-      <div id="header">
+      <div id="header" className="flex-row">
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
-        { this.renderNewNote() }
-        { this.renderSearchInput() }
+        { userUrl ?
+          <button className="btn btn-new-note hint--bottom" data-hint="Ctrl-N" onClick={ this.handleEditNewNote }>
+            New note
+          </button> : null }
+        <div className="flex-spacer"></div>
+        { withSearchInput ?
+          <input name="search"
+            id="search-input"
+            value={ this.state.searchTerm }
+            onKeyDown={ this.handleInputKeyDown }
+            onChange={ this.handleInputChange }
+            type="text"
+            autoComplete="off"
+            autoCapitalize="off"
+            placeholder={ placeholder } /> : null }
+        <div className="flex-spacer"></div>
+        { userUrl ?
+          <a href={ userUrl } className="header-link">My Notes</a> : null }
         <LogInLink />
       </div>
       );
