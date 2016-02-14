@@ -455,6 +455,26 @@ function fixShortcut(name) {
   return name;
 }
 
+// https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js#L749
+const wordCountPattern = /[a-zA-Z0-9_\u0392-\u03c9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
+
+/* The right word count in respect for CJK. */
+function wordCount(data) {
+  const m = data.match(wordCountPattern);
+  if (m === null) {
+    return 0;
+  }
+  let count = 0;
+  for (let i = 0; i < m.length; i++) {
+    if (m[i].charCodeAt(0) >= 0x4E00) {
+      count += m[i].length;
+    } else {
+      count += 1;
+    }
+  }
+  return count;
+}
+
 function isNullMsg(o) {
   if (isUndefined(o) || o == null) {
     return "is null";
@@ -1005,7 +1025,8 @@ export default class Editor extends Component {
     if (isText || !isShowingPreview) {
       const style = {
         width: '100%',
-        flexGrow: 8
+        flexGrow: 8,
+        borderTop: "1px solid lightgray"
       };
       editor = (
         <div id="cm-wrapper" ref="editorTextAreaWrapperNode" style={ style }>
