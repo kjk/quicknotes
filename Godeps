@@ -1,11 +1,7 @@
 {
 	"ImportPath": "github.com/kjk/quicknotes",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.5.3",
 	"Deps": [
-		{
-			"ImportPath": "github.com/bradfitz/slice",
-			"Rev": "a665b5dbaad5fc7474c1193c67ed138df1e1b0e7"
-		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
 			"Rev": "3cd90eb3d932037b141d4daff9a012e1aee7e765"
@@ -13,11 +9,6 @@
 		{
 			"ImportPath": "github.com/garyburd/go-oauth/oauth",
 			"Rev": "3131beb69b81ff119923bdefbf029318f1f53794"
-		},
-		{
-			"ImportPath": "github.com/go-fsnotify/fsnotify",
-			"Comment": "v1.2.0-1-g6549b98",
-			"Rev": "6549b98005f3e4026ad9f50ef7d5011f40ba1397"
 		},
 		{
 			"ImportPath": "github.com/go-sql-driver/mysql",
@@ -37,33 +28,33 @@
 			"Rev": "5f171f42328bdd573211bb82bdee8f259c4c61ae"
 		},
 		{
+			"ImportPath": "github.com/jmcvetta/napping",
+			"Comment": "v3.0.5",
+			"Rev": "6c845f879618cc607cbc2bb1d8e817e618505341"
+		},
+		{
 			"ImportPath": "github.com/kjk/log",
 			"Rev": "f6e28b4f1903eeebfcef3a9bd10c611bb18b9ca6"
+		},
+		{
+			"ImportPath": "github.com/kjk/lzmadec",
+			"Rev": "99a5356921c396b85b3f1a6d541d44f85547b789"
 		},
 		{
 			"ImportPath": "github.com/kjk/simplenote",
 			"Rev": "bc3acefeddd8d7a41e3c72350dff4d7a7f4918ec"
 		},
 		{
+			"ImportPath": "github.com/kjk/stackoverflow",
+			"Rev": "2a5d8a2c4b2ac6dffed91f8a2e68d0cbbd1d9eae"
+		},
+		{
 			"ImportPath": "github.com/kjk/u",
 			"Rev": "a6fc06e80ad8a518e699bbc24068991fddc78a37"
 		},
 		{
-			"ImportPath": "github.com/mgutz/ansi",
-			"Rev": "22ddafb24adc4786c83841aa3021349818c898e4"
-		},
-		{
-			"ImportPath": "github.com/microcosm-cc/bluemonday",
-			"Rev": "fcd0f5074e55df204568c7419509fb59ddcad228"
-		},
-		{
-			"ImportPath": "github.com/russross/blackfriday",
-			"Comment": "v1.2-44-g6928e11",
-			"Rev": "3a90da10e373e33f9d809d0324741aade90b7299"
-		},
-		{
-			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
-			"Rev": "8e87604bec3c645a4eeaee97dfec9f25811ff20d"
+			"ImportPath": "github.com/mostafah/mandrill",
+			"Rev": "92d40f5a88ef8d627bd4f39aef71a973c8a2213f"
 		},
 		{
 			"ImportPath": "github.com/speps/go-hashids",
@@ -79,10 +70,6 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
-		},
-		{
-			"ImportPath": "golang.org/x/net/html",
 			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
 		},
 		{
