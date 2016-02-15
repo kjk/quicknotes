@@ -368,7 +368,7 @@ func dumpCreateDbStatements() {
 	}
 }
 
-func createDatabaseMust() *sql.DB {
+func createDatabaseMust() {
 	log.Verbosef("trying to create the database\n")
 	db, err := sql.Open("mysql", getSQLConnectionRoot())
 	fatalIfErr(err, "sql.Open()")
@@ -377,17 +377,14 @@ func createDatabaseMust() *sql.DB {
 	execMust(db, `CREATE DATABASE quicknotes CHARACTER SET utf8 COLLATE utf8_general_ci`)
 	db.Close()
 
-	db, err = sql.Open("mysql", getSQLConnection())
-	fatalIfErr(err, "sql.Open()")
-	err = db.Ping()
-	fatalIfErr(err, "db.Ping()")
+	db, err = getQuickNotesDb()
+	fatalIfErr(err, "getQuickNotesDb()")
 	stmts := getCreateDbStatementsMust()
 	for _, stm := range stmts {
 		execMust(db, stm)
 	}
-
-	log.Verbosef("created database\n")
-	return db
+	db.Close()
+	log.Verbosef("created quicknotes database\n")
 }
 
 func serializeTags(tags []string) string {
@@ -1198,28 +1195,41 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	return dbGetUserByLogin(userLogin)
 }
 
+func getQuickNotesDb() (*sql.DB, error) {
+	db, err := sql.Open("mysql", getSQLConnection())
+	if err != nil {
+		return nil, err
+	}
+	err = db.Ping()
+	if err == nil {
+		return db, nil
+	}
+	db.Close()
+	return db, err
+}
+
 // note: no locking. the presumption is that this is called at startup and
 // available throughout the lifetime of the program
 func getDbMust() *sql.DB {
 	sqlDbMu.Lock()
 	defer sqlDbMu.Unlock()
+
 	if sqlDb != nil {
 		return sqlDb
 	}
-	db, err := sql.Open("mysql", getSQLConnection())
+
+	db, err := getQuickNotesDb()
 	if err != nil {
-		log.Fatalf("sql.Open() failed with %s", err)
-	}
-	err = db.Ping()
-	if err != nil {
-		db.Close()
 		if strings.Contains(err.Error(), "Error 1049") {
 			log.Verbosef("db.Ping() failed because no database exists\n")
-			db = createDatabaseMust()
+			createDatabaseMust()
 		} else {
-			log.Fatalf("db.Ping() failed with %s\n", err)
+			fatalIfErr(err, "getQuickNotesDb")
 		}
 	}
+
+	db, err = getQuickNotesDb()
+	fatalIfErr(err, "getQuickNotesDb")
 	err = upgradeDb(db)
 	if err != nil {
 		log.Fatalf("upgradeDb() failed with '%s'\n", err)
