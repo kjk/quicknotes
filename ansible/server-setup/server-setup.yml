@@ -1,6 +1,6 @@
 ---
 - name: initial setup for quicknotes service
-  hosts: quicknotes-initial
+  hosts: server-setup
   sudo: True
   tasks:
     - name: create a group
@@ -20,7 +20,7 @@
     - name: create user's .ssh directory
       file: path=/home/quicknotes/.ssh state=directory owner=quicknotes group=quicknotes mode=0755
     - name: copy ssh key
-      copy: src=quicknotes_rsa.pub dest=/home/quicknotes/.ssh/authorized_keys
+      copy: src=../quicknotes_rsa.pub dest=/home/quicknotes/.ssh/authorized_keys
     - name: configure authorized_keys
       file: path=/home/quicknotes/.ssh/authorized_keys mode=0644 owner=quicknotes group=quicknotes
     - name: install desired software
