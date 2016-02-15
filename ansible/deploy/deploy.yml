@@ -12,9 +12,9 @@
     sudo: yes
     ignore_errors: yes
   - name: create systemd file
-    copy: src=quicknotes.service dest=/etc/systemd/user/quicknotes.service owner=root group=root mode=0644
+    copy: src=quicknotes.service dest=/lib/systemd/system/quicknotes.service owner=root group=root mode=0644
     sudo: yes
-  - name: make changes to website.service visible
+  - name: make changes to quicknotes.service visible
     command: systemctl daemon-reload
     sudo: yes
   - name: enable the service so that it restarts on reboot
