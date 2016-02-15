@@ -44,7 +44,6 @@ def add_dir_files(zip_file, dir, dirInZip=None):
 def zip_files(zip_path):
     zf = zipfile.ZipFile(zip_path, mode="w", compression=zipfile.ZIP_DEFLATED)
     zf.write("quicknotes_prod_linux", "quicknotes")
-    add_dir_files(zf, "s")
     zf.close()
 
 if __name__ == "__main__":
