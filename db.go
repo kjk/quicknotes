@@ -379,14 +379,14 @@ func createDatabaseMust() *sql.DB {
 
 	db, err = sql.Open("mysql", getSQLConnection())
 	fatalIfErr(err, "sql.Open()")
+	err = db.Ping()
+	fatalIfErr(err, "db.Ping()")
 	stmts := getCreateDbStatementsMust()
 	for _, stm := range stmts {
 		execMust(db, stm)
 	}
 
 	log.Verbosef("created database\n")
-	err = db.Ping()
-	fatalIfErr(err, "db.Ping()")
 	return db
 }
 
