@@ -556,6 +556,25 @@ func needsNewNoteVersion(note *NewNote, existingNote *Note) bool {
 	return false
 }
 
+func dbGetSelectCount(query string) (int, error) {
+	db := getDbMust()
+	n := 0
+	err := db.QueryRow(query).Scan(&n)
+	return n, err
+}
+
+func dbGetUsersCount() (int, error) {
+	return dbGetSelectCount(`SELECT count(*) from users`)
+}
+
+func dbGetNotesCount() (int, error) {
+	return dbGetSelectCount(`SELECT count(*) from notes`)
+}
+
+func dbGetVersionsCount() (int, error) {
+	return dbGetSelectCount(`SELECT count(*) from versions`)
+}
+
 func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	noteID, err := dehashInt(note.hashID)
 	if err != nil {
