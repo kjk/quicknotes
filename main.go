@@ -175,13 +175,6 @@ func main() {
 		return
 	}
 
-	getDbMust()
-
-	if flgListUsers {
-		listDbUsers()
-		return
-	}
-
 	if hasZipResources() {
 		log.Verbosef("using resources from embedded .zip\n")
 		err = loadResourcesFromEmbeddedZip()
@@ -190,6 +183,13 @@ func main() {
 		}
 	} else {
 		log.Verbosef("not using resources from embedded .zip\n")
+	}
+
+	getDbMust()
+
+	if flgListUsers {
+		listDbUsers()
+		return
 	}
 
 	localStore, err = NewLocalStore(getLocalStoreDir())
