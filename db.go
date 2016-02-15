@@ -65,7 +65,7 @@ func getSQLConnectionRoot() string {
 		//return "root@tcp(localhost:3306)/"
 		return fmt.Sprintf("root@tcp(%s:%s)/", flgDbHost, flgDbPort)
 	}
-	return "root:8Nmjt97WJFhR@tcp(104.197.60.193:3306)/"
+	return "root:7UgJnRvp39vW@tcp(104.196.50.40:3306)/"
 }
 
 func getSQLConnection() string {
