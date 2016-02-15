@@ -77,7 +77,7 @@ func dbSplitMultiStatements(s string) []string {
 			continue
 		}
 		if !strings.HasSuffix(s, ");") {
-			s += ");"
+			s += "\n);"
 		}
 		res = append(res, s)
 	}
