@@ -361,6 +361,13 @@ func getCreateDbStatementsMust() []string {
 	return dbSplitMultiStatements(string(d))
 }
 
+func dumpCreateDbStatements() {
+	a := getCreateDbStatementsMust()
+	for _, s := range a {
+		fmt.Printf("%s\n\n", s)
+	}
+}
+
 func createDatabaseMust() *sql.DB {
 	log.Verbosef("trying to create the database\n")
 	db, err := sql.Open("mysql", getSQLConnectionRoot())
