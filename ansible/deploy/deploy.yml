@@ -37,8 +37,6 @@
       owner=quicknotes group=quicknotes
   - name: unzip files
     unarchive: src={{ sha1.stdout }}.zip dest=/home/quicknotes/www/app/{{ sha1.stdout }}
-  - name: stop existing
-    command: /etc/init.d/quicknotes stop
   - name: stat current
     stat: path=/home/quicknotes/www/app/current
     register: current_stat
