@@ -7,7 +7,7 @@ pj = os.path.join
 script_dir = os.path.realpath(os.path.dirname(__file__))
 
 gopath = os.environ["GOPATH"]
-src_dir = os.path.dirname(script_dir)
+src_dir = os.path.dirname(os.path.dirname(script_dir))
 
 assert os.path.exists(src_dir), "%s doesn't exist" % src_dir
 assert os.path.exists(pj(src_dir, "main.go")), "%s doesn't exist" % pj(src_dir, "main.go")
@@ -44,13 +44,12 @@ def add_dir_files(zip_file, dir, dirInZip=None):
 def zip_files(zip_path):
     zf = zipfile.ZipFile(zip_path, mode="w", compression=zipfile.ZIP_DEFLATED)
     zf.write("quicknotes_prod_linux", "quicknotes")
-    zf.write(pj("scripts", "server_run.sh"), "server_run.sh")
     add_dir_files(zf, "s")
     zf.close()
 
 if __name__ == "__main__":
     os.chdir(src_dir)
-    git_ensure_clean()
+    #git_ensure_clean()
     subprocess.check_output("./scripts/build_linux.sh")
     sha1 = git_trunk_sha1()
     zip_name = sha1 + ".zip"

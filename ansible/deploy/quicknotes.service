@@ -1,0 +1,22 @@
+# TODO: should create pid file?
+# TODO: how do I get logs from a crash?
+# To start: systemctl start quicknotes
+# To stop : systemctl stop quicknotes
+# Restart : systemctl restart quicknotes
+# To view logs: journalctl -u quicknotes
+[Unit]
+Description=QuickNotes website
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=simple
+User=quicknotes
+Group=quicknotes
+WorkingDirectory=/home/quicknotes/www/app/current
+ExecStart=/home/quicknotes/www/app/current/quicknotes
+# http://www.freedesktop.org/software/systemd/man/systemd.service.html
+# only on unclean signal
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

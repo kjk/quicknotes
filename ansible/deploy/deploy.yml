@@ -3,12 +3,22 @@
   hosts: quicknotes
   tasks:
   - name: get repo sha1
-    local_action: command ./get-sha1.sh
+    local_action: command ../get-sha1.sh
     register: sha1
   - name: build
     local_action: command python build.py
-  - name: create .initd file
-    copy: src=quicknotes.initd dest=/etc/init.d/quicknotes owner=root group=root mode=0755
+  - name: stop currently running
+    command: systemctl stop quicknotes
+    sudo: yes
+    ignore_errors: yes
+  - name: create systemd file
+    copy: src=quicknotes.service dest=/etc/systemd/user/quicknotes.service owner=root group=root mode=0644
+    sudo: yes
+  - name: make changes to website.service visible
+    command: systemctl daemon-reload
+    sudo: yes
+  - name: enable the service so that it restarts on reboot
+    command: systemctl enable quicknotes
     sudo: yes
   - name: create directory for the app
     file: >
@@ -45,6 +55,12 @@
       dest=/home/quicknotes/www/app/current
       state=link
   - name: start it
-    command: /etc/init.d/quicknotes start
+    command: systemctl start quicknotes
+    sudo: yes
   - name: delete .zip file
     local_action: command rm {{ sha1.stdout }}.zip
+  - name: show status
+    command: systemctl status quicknotes
+    sudo: yes
+    register: quicknotes_status
+  - debug: var=quicknotes_status.stdout_lines
