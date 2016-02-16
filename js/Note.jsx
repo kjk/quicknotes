@@ -48,9 +48,6 @@ export default class Note extends Component {
   }
 
   renderTags(tags) {
-    if (!tags) {
-      return;
-    }
     const tagEls = tags.map(tag => {
       tag = '#' + tag;
       return (

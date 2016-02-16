@@ -117,12 +117,27 @@ export default class AppNote extends Component {
     return <div dangerouslySetInnerHTML={ html }></div>;
   }
 
+  renderTags(tags) {
+    const tagEls = tags.map(tag => {
+      tag = '#' + tag;
+      return (
+        <span className="note-tag" key={ tag }>{ tag }</span>
+        );
+    });
+
+    return (
+      <span className="note-tags">{ tagEls }</span>
+      );
+  }
+
   render() {
     console.log('appNoteStart: gLoggedUser: ', gLoggedUser);
     const note = this.state.note;
     const title = ni.Title(note);
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;
+    const tags = ni.Tags(note);
+
     return (
       <div>
         <div id="note-top">
@@ -132,6 +147,8 @@ export default class AppNote extends Component {
           <div className="note-content-wrapper">
             <div className="full-note-top">
               <h1>{ title }</h1>
+              { this.renderTags(tags) }
+              <div className="flex-spacer"></div>
               { this.isMyNote() ?
                 <div className="menu-trigger">
                   <i className="fa fa-ellipsis-v"></i>
