@@ -463,6 +463,20 @@ function fixShortcut(name) {
   return name;
 }
 
+function getCodeMirrorState(cm) {
+  return {
+    cursor: cm.getCursor(),
+    selections: cm.listSelections()
+  }
+}
+
+function restoreCodeMirrorState(cm, state) {
+  if (state) {
+    cm.setSelections(state.selections);
+    cm.setCursor(state.cursor);
+  }
+}
+
 // https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js#L749
 const wordCountPattern = /[a-zA-Z0-9_\u0392-\u03c9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
 
@@ -538,7 +552,7 @@ export default class Editor extends Component {
     this.firstRender = true;
     this.isNewCM = false;
     this.setFocusInUpdate = false;
-    this.savedCursorPos = null;
+    this.savedCodeMirrorState = null;
 
     this.state = {
       isShowing: false,
@@ -575,11 +589,8 @@ export default class Editor extends Component {
     }
 
     if (!this.firstRender) {
-      const cp = this.savedCursorPos;
-      if (cp != null) {
-        cm.setCursor(cp);
-        this.savedCursorPos = null;
-      }
+      restoreCodeMirrorState(cm, this.savedCodeMirrorState);
+      this.savedCodeMirrorState = null;
       cm.focus();
       return;
     }
@@ -891,7 +902,7 @@ export default class Editor extends Component {
   }
 
   handleFormatChanged(e, valIdx, val) {
-    this.savedCursorPos = this.cm.getCursor();
+    this.savedCodeMirrorState = getCodeMirrorState(this.cm);
     let note = this.state.note;
     note.formatName = formatShortName(val);
     this.setFocusInUpdate = true;
@@ -940,7 +951,7 @@ export default class Editor extends Component {
     if (!note.isMarkdown()) {
       return;
     }
-    this.savedCursorPos = this.cm.getCursor();
+    this.savedCodeMirrorState = getCodeMirrorState(this.cm);
     const isShowing = !this.state.isShowingPreview;
     this.setState({
       isShowingPreview: isShowing
