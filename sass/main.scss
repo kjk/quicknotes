@@ -725,6 +725,7 @@ hr.light2 {
 
   .note-content-wrapper {
     margin: 8px 16px;
+    margin-top: 16px;
 
     pre {
       /* reset.css sets that to auto which makes the content scroll
@@ -736,6 +737,7 @@ hr.light2 {
 
     h1 {
       font-size: 1.4em;
+      margin: 0;
     }
 
     .note-body {
@@ -744,6 +746,11 @@ hr.light2 {
       line-height: $line-height-note;
     }
   }
+}
+
+.full-note-top {
+  display: flex;
+  justify-content: space-between;
 }
 
 @import 'search';
@@ -935,6 +942,51 @@ button.close {
 
   &:hover {
     background-color: #d0d0d0;
+  }
+}
+
+.menu-trigger {
+  padding: 2px 16px;
+  color: rgba(0,0,0,0.5);
+  margin-right: 8px;
+  border: 0;
+  font-size: 1.4em; // matches its sibling h1
+  position: relative;
+  background-color: transparent;
+  &:hover {
+    border: 0;
+    background-color: #eee;
+  }
+
+  &:hover .menu-content {
+    display: block;
+  }
+}
+
+.menu-content {
+  white-space: nowrap; // size it to content
+  display: none;
+  position: absolute;
+  top: 24px;
+  right: 0px;
+  font-size: 14px;
+  padding: 8px 16px;
+  line-height: 20px;
+  border-radius: 2px;
+  z-index: 20;
+  background-color: white;
+
+  a {
+    display: block;
+    clear: both;
+    padding: 6px 0;
+  }
+
+  .divider {
+    height: 1px;
+    display: block;
+    border-top: 1px solid transparent;
+    margin: 4px 0;
   }
 }
 

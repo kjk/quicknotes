@@ -32,3 +32,5 @@ Order:
 * horizontal line
 * undo
 * redo
+
+Icon for menu: http://fortawesome.github.io/Font-Awesome/icon/ellipsis-v/

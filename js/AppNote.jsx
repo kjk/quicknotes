@@ -14,6 +14,8 @@ import Top from './Top.jsx';
 
 import { escapeHtml } from './utils.js';
 import * as ni from './noteinfo.js';
+import * as api from './api.js';
+import * as action from './action.js';
 
 function linkifyCb(s, href) {
   if (!href) {
@@ -33,6 +35,10 @@ export default class AppNote extends Component {
     super(props, context);
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
+
+    this.handleEditNote = this.handleEditNote.bind(this);
+    this.handleMakePrivate = this.handleMakePrivate.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleSearchResultSelected(noteHashID) {
@@ -41,6 +47,25 @@ export default class AppNote extends Component {
     const url = '/n/' + noteHashID;
     const win = window.open(url, '_blank');
     win.focus();
+  }
+
+  handleEditNote(e) {
+    e.preventDefault();
+    console.log('editNote id: ', gNoteHashID);
+    api.getNote(gNoteHashID, json => {
+      // TODO: handle error
+      action.editNote(json);
+    });
+  }
+
+  handleMakePrivate(e) {
+    console.log('makePrivate');
+    e.preventDefault();
+  }
+
+  handleDelete(e) {
+    console.log('handleDelete');
+    e.preventDefault();
   }
 
   renderBody() {
@@ -65,6 +90,7 @@ export default class AppNote extends Component {
     const title = gNoteTitle;
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;
+    const isMyNote = gLoggedUser && gLoggedUser.HashID === nu.HashID;
     return (
       <div>
         <div id="note-top">
@@ -72,7 +98,18 @@ export default class AppNote extends Component {
         </div>
         <div id="full-note">
           <div className="note-content-wrapper">
-            <h1>{ title }</h1>
+            <div className="full-note-top">
+              <h1>{ title }</h1>
+              { isMyNote ?
+                <div className="menu-trigger">
+                  <i className="fa fa-ellipsis-v"></i>
+                  <div className="menu-content">
+                    <a href="#" onClick={ this.handleEditNote }>Edit (Ctrl-E)</a>
+                    <a href="#" onClick={ this.handleMakePrivate }>Make private</a>
+                    <a href="#" onClick={ this.handleDelete }>Move to Trash</a>
+                  </div>
+                </div> : null }
+            </div>
             { this.renderBody() }
           </div>
           <hr className="light" />
