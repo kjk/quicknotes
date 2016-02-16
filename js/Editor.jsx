@@ -538,6 +538,7 @@ export default class Editor extends Component {
     this.firstRender = true;
     this.isNewCM = false;
     this.setFocusInUpdate = false;
+    this.savedCursorPos = null;
 
     this.state = {
       isShowing: false,
@@ -573,12 +574,17 @@ export default class Editor extends Component {
       this.setupScrollSync();
     }
 
-    // special handling if this is first render for this note
     if (!this.firstRender) {
+      const cp = this.savedCursorPos;
+      if (cp != null) {
+        cm.setCursor(cp);
+        this.savedCursorPos = null;
+      }
       cm.focus();
       return;
     }
 
+    // special handling if this is first render for this note
     this.firstRender = false;
     // for new (empty) notes, focus in title
     if (this.state.note.isEmpty()) {
@@ -885,6 +891,7 @@ export default class Editor extends Component {
   }
 
   handleFormatChanged(e, valIdx, val) {
+    this.savedCursorPos = this.cm.getCursor();
     let note = this.state.note;
     note.formatName = formatShortName(val);
     this.setFocusInUpdate = true;
@@ -926,13 +933,14 @@ export default class Editor extends Component {
   }
 
   togglePreview() {
-    console.log('togglePreview');
+    // console.log('togglePreview');
     const note = this.state.note;
     // can be invoked via F9 inside editor but only applicable
     // if note is markdown
     if (!note.isMarkdown()) {
       return;
     }
+    this.savedCursorPos = this.cm.getCursor();
     const isShowing = !this.state.isShowingPreview;
     this.setState({
       isShowingPreview: isShowing
