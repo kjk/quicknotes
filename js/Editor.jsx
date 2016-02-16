@@ -591,7 +591,6 @@ export default class Editor extends Component {
     if (!this.firstRender) {
       restoreCodeMirrorState(cm, this.savedCodeMirrorState);
       this.savedCodeMirrorState = null;
-      cm.focus();
       return;
     }
 
