@@ -322,13 +322,7 @@ func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
 	return loggedUser != nil && loggedUser.id == note.userID
 }
 
-func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
-	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
-	noteID, err := dehashInt(noteIDHashStr)
-	if err != nil {
-		return nil, err
-	}
-	log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+func getNoteByID(ctx *ReqContext, noteID int) (*Note, error) {
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		return nil, err
@@ -336,9 +330,19 @@ func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
 	// TODO: when we have sharing via secret link we'll have to check
 	// permissions
 	if !userCanAccessNote(ctx.User, note) {
-		return nil, fmt.Errorf("no access to note '%s'", noteIDHashStr)
+		return nil, fmt.Errorf("no access to note '%d'", noteID)
 	}
 	return note, nil
+}
+
+func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
+	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
+	noteID, err := dehashInt(noteIDHashStr)
+	if err != nil {
+		return nil, err
+	}
+	log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	return getNoteByID(ctx, noteID)
 }
 
 // /n/{note_id_hash}-rest
@@ -737,11 +741,12 @@ func handleAPIMakeNotePrivate(ctx *ReqContext, w http.ResponseWriter, r *http.Re
 		return
 	}
 	log.Verbosef("made note %d private\n", noteID)
-	v := struct {
-		Msg string
-	}{
-		Msg: "made note private",
+	note, err := getNoteByID(ctx, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, r, "getNoteByID() failed with '%s'", err)
+		return
 	}
+	v, err := noteToCompact(note, true)
 	httpOkWithJSON(w, r, v)
 }
 
@@ -761,12 +766,13 @@ func handleAPIMakeNotePublic(ctx *ReqContext, w http.ResponseWriter, r *http.Req
 		httpErrorWithJSONf(w, r, "failed to make note public with '%s'", err)
 		return
 	}
-	log.Infof("made note %d public\n", noteID)
-	v := struct {
-		Msg string
-	}{
-		Msg: "made note public",
+	log.Verbosef("made note %d public\n", noteID)
+	note, err := getNoteByID(ctx, noteID)
+	if err != nil {
+		httpErrorWithJSONf(w, r, "getNoteByID() failed with '%s'", err)
+		return
 	}
+	v, err := noteToCompact(note, true)
 	httpOkWithJSON(w, r, v)
 }
 
