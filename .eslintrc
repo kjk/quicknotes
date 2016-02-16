@@ -39,14 +39,11 @@
   "globals": {
     "global": true,
     "gLoggedUser": true,
+    "gInitialNote": true,
     "gNotesUser": true,
     "gNoteUser": true,
     "gRecentNotesInitial": true,
     "gInitialNotesJSON": true,
-    "gNoteTitle": true,
-    "gNoteBody": true,
-    "gNoteFormat": true,
-    "gNoteHashID": true,
     "linkify": true
   },
   "plugins": [

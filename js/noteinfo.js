@@ -159,6 +159,10 @@ export function CurrentVersion(note) {
   return s.split('-')[1];
 }
 
+export function GetContentDirect(note) {
+  return note[noteContentIdx];
+}
+
 // the key is id, the value is [idVer, content]
 // TODO: cache in local storage
 let contentCache = {};

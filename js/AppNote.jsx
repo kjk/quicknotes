@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import keymaster from 'keymaster';
 
 import { toHtml } from './md.js';
 import './linkify.js';
@@ -39,6 +40,35 @@ export default class AppNote extends Component {
     this.handleEditNote = this.handleEditNote.bind(this);
     this.handleMakePrivate = this.handleMakePrivate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.editNote = this.editNote.bind(this);
+    this.isMyNote = this.isMyNote.bind(this);
+
+    this.state = {
+      note: gInitialNote
+    };
+  }
+
+  componentDidMount() {
+    if (this.isMyNote()) {
+      keymaster('ctrl+e', this.editNote);
+      keymaster('ctrl+n', () => action.editNewNote());
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.isMyNote()) {
+      keymaster.unbind('ctrl+e');
+      keymaster.unbind('ctrl+n');
+    }
+  }
+
+  isMyNote() {
+    return gLoggedUser && gLoggedUser.HashID === gNoteUser.HashID;
+  }
+
+  editNote() {
+    const note = this.state.note;
+    action.editNote(note);
   }
 
   handleSearchResultSelected(noteHashID) {
@@ -51,8 +81,10 @@ export default class AppNote extends Component {
 
   handleEditNote(e) {
     e.preventDefault();
-    console.log('editNote id: ', gNoteHashID);
-    api.getNote(gNoteHashID, json => {
+    const note = this.state.note;
+    const id = ni.HashID(note);
+    console.log('editNote id: ', id);
+    api.getNote(id, json => {
       // TODO: handle error
       action.editNote(json);
     });
@@ -68,9 +100,9 @@ export default class AppNote extends Component {
     e.preventDefault();
   }
 
-  renderBody() {
-    const body = gNoteBody;
-    const fmtName = gNoteFormat;
+  renderBody(note) {
+    const body = ni.GetContentDirect(note);
+    const fmtName = ni.Format(note);
     const isTxt = fmtName == ni.formatText;
     if (isTxt) {
       const html = {
@@ -87,10 +119,10 @@ export default class AppNote extends Component {
 
   render() {
     console.log('appNoteStart: gLoggedUser: ', gLoggedUser);
-    const title = gNoteTitle;
+    const note = this.state.note;
+    const title = ni.Title(note);
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;
-    const isMyNote = gLoggedUser && gLoggedUser.HashID === nu.HashID;
     return (
       <div>
         <div id="note-top">
@@ -100,7 +132,7 @@ export default class AppNote extends Component {
           <div className="note-content-wrapper">
             <div className="full-note-top">
               <h1>{ title }</h1>
-              { isMyNote ?
+              { this.isMyNote() ?
                 <div className="menu-trigger">
                   <i className="fa fa-ellipsis-v"></i>
                   <div className="menu-content">
@@ -110,7 +142,7 @@ export default class AppNote extends Component {
                   </div>
                 </div> : null }
             </div>
-            { this.renderBody() }
+            { this.renderBody(note) }
           </div>
           <hr className="light" />
           <center className="note-footer">
