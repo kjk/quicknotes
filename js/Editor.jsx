@@ -26,7 +26,11 @@ const kDragBarMin = 64;
 const isMac = /Mac/.test(navigator.platform);
 
 const cmOptions = {
-  'autofocus': true
+  //'autofocus': true,
+  'lineWrapping': true,
+  'lineNumbers': false,
+  'tabSize': 2,
+  'tabindex': 3
 };
 
 function formatPrettyName(fmt) {
@@ -102,6 +106,10 @@ class Note {
 
   isMarkdown() {
     return this.formatName === ni.formatMarkdown;
+  }
+
+  isEmpty() {
+    return this.title == '' && this.tags == '' && this.body == '';
   }
 }
 
@@ -518,7 +526,6 @@ export default class Editor extends Component {
     this.escPressed = this.escPressed.bind(this);
     this.isShowingPreview = this.isShowingPreview.bind(this);
     this.scheduleTimer = this.scheduleTimer.bind(this);
-    this.scrollToEndOnFirstRender = this.scrollToEndOnFirstRender.bind(this);
     this.setupCodeMirror = this.setupCodeMirror.bind(this);
     this.setupScrollSync = this.setupScrollSync.bind(this);
     this.startEditingNote = this.startEditingNote.bind(this);
@@ -566,24 +573,31 @@ export default class Editor extends Component {
       this.setupScrollSync();
     }
 
-    this.scrollToEndOnFirstRender();
+    // special handling if this is first render for this note
+    if (!this.firstRender) {
+      cm.focus();
+      return;
+    }
+
+    this.firstRender = false;
+    // for new (empty) notes, focus in title
+    if (this.state.note.isEmpty()) {
+      const node = ReactDOM.findDOMNode(this.refs.title);
+      node.focus();
+      return;
+    }
+
+    // for existing notes, focus in tbe editor and
+    // add position cursor at the end
+    cm.execCommand('goDocEnd');
+    cm.scrollIntoView();
+    cm.focus();
   }
 
   componentWillUnmount() {
     action.offAllForOwner(this);
     keymaster.unbind('esc');
     keymaster.unbind('f9');
-  }
-
-  scrollToEndOnFirstRender() {
-    if (!this.firstRender) {
-      return;
-    }
-    const cm = this.cm;
-    this.firstRender = false;
-    /*cm.focus();*/
-    cm.execCommand('goDocEnd');
-    cm.scrollIntoView();
   }
 
   handleEditorCreated(cm) {
@@ -598,10 +612,10 @@ export default class Editor extends Component {
     if (!cm) {
       return;
     }
-    const preview = ReactDOM.findDOMNode(this.refs.previewNode);
     if (!this.isShowingPreview()) {
       return;
     }
+    const preview = ReactDOM.findDOMNode(this.refs.preview);
 
     console.log('setupScrollSync()');
 
@@ -666,14 +680,11 @@ export default class Editor extends Component {
     }
 
     cm.setOption('extraKeys', extraKeys);
-    cm.setOption('lineWrapping', true);
-    cm.setOption('lineNumbers', true);
-    cm.setOption('tabSize', 2);
     this.updateCodeMirrorMode();
   }
 
   ctrlEnterPressed() {
-    console.log('ctrlEnterPressed');
+    // console.log('ctrlEnterPressed');
     if (!this.state.isShowing) {
       return;
     }
@@ -696,11 +707,11 @@ export default class Editor extends Component {
   }
 
   handleDragBarMoved(y) {
-    console.log('Editor.handleDragBarMoved: y=', y);
+    // console.log('Editor.handleDragBarMoved: y=', y);
     this.top = y;
-    const node = ReactDOM.findDOMNode(this.refs.editorWrapperNode);
+    const node = ReactDOM.findDOMNode(this.refs.editorWrapper);
     if (node) {
-      console.log('this.refs.editorWrapperNode=', node);
+      console.log('this.refs.editorWrapper=', node);
       node.style.height = editorHeight(y) + 'px';
       this.cm.refresh();
     }
@@ -775,6 +786,8 @@ export default class Editor extends Component {
   }
 
   startEditingNote(note) {
+    // at this point we might not be rendered yet, so we use variables
+    // to communicate with componentDidUpdate
     this.firstRender = true;
     this.initialNote = deepCloneObject(note);
     this.setState({
@@ -850,7 +863,7 @@ export default class Editor extends Component {
       this.scheduleTimer();
       return;
     }
-    const node = ReactDOM.findDOMNode(this.refs.editorTextAreaWrapperNode);
+    const node = ReactDOM.findDOMNode(this.refs.editorTextAreaWrapper);
     // if the node we monitor for size changes doesn't exist yet,
     // skip dependent updates but check back later
     if (!node) {
@@ -959,39 +972,40 @@ export default class Editor extends Component {
     if (isText) {
       return;
     }
+    // TODO: translate shortcuts for Windows
     return (
       <div id="editor-buttons" className="flex-row">
-        <button className="ebtn" onClick={ this.handleEditCmdBold } title="Strong (⌘B)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdBold } data-hint="Bold (⌘B)">
           <i className="fa fa-bold"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdItalic } title="Italic (⌘I)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdItalic } data-hint="Italic (⌘I)">
           <i className="fa fa-italic"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdHeading } title="Heading (⌘⌥1)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdHeading } data-hint="Heading (⌘H)">
           <i className="fa fa-header"></i>
         </button>
         <div className="editor-btn-spacer"></div>
-        <button className="ebtn" onClick={ this.handleEditCmdQuote } title="Blockquote (⌘⇧9)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdQuote } data-hint="Blockquote (⌘-')">
           <i className="fa fa-quote-right"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdCode } title="Preformatted text (⌘⇧C)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdCode } data-hint="Code block">
           <i className="fa fa-code"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdListUnordered } title="Bulleted List (⌘⇧8)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdListUnordered } data-hint="Bulleted List (Ctrl-L)">
           <i className="fa fa-list-ul"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdListOrdered } title="Numbered List (⌘⇧7)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdListOrdered } data-hint="Numbered List (⌘-Alt-L">
           <i className="fa fa-list-ol"></i>
         </button>
         <div className="editor-btn-spacer"></div>
-        <button className="ebtn" onClick={ this.handleEditCmdLink } title="Hyperlink (⌘K)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdLink } data-hint="Link (Ctrl-K)">
           <i className="fa fa-link"></i>
         </button>
-        <button className="ebtn" onClick={ this.handleEditCmdImage } title="Insert Image (Ctrl+Alt+I)">
+        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdImage } data-hint="Image">
           <i className="fa fa-picture-o"></i>
         </button>
         <div className="editor-btn-spacer"></div>
-        <button className="ebtn" onClick={ this.handleTogglePreview } title="Toggle Preview (F9)">
+        <button className="ebtn hint--bottom" onClick={ this.handleTogglePreview } data-hint="Toggle Preview (F9)">
           <i className="fa fa-columns"></i>
         </button>
       </div>
@@ -1028,7 +1042,7 @@ export default class Editor extends Component {
         borderTop: '1px solid lightgray'
       };
       editor = (
-        <div id="cm-wrapper" ref="editorTextAreaWrapperNode" style={ style }>
+        <div id="cm-wrapper" ref="editorTextAreaWrapper" style={ style }>
           <CodeMirrorEditor className="codemirror-div"
             textAreaClassName="cm-textarea"
             placeholder="Enter text here..."
@@ -1045,7 +1059,7 @@ export default class Editor extends Component {
 
       editor = (
         <div id="editor-text-with-preview" className="flex-row">
-          <div id="cm-wrapper" ref="editorTextAreaWrapperNode">
+          <div id="cm-wrapper" ref="editorTextAreaWrapper">
             <CodeMirrorEditor className="codemirror-div"
               textAreaClassName="cm-textarea"
               placeholder="Enter text here..."
@@ -1054,7 +1068,7 @@ export default class Editor extends Component {
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
           </div>
-          <div id="editor-preview" ref="previewNode">
+          <div id="editor-preview" ref="preview">
             <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
           </div>
         </div>
@@ -1081,7 +1095,7 @@ export default class Editor extends Component {
         <div id="editor-wrapper"
           className="flex-col"
           style={ style }
-          ref="editorWrapperNode">
+          ref="editorWrapper">
           <div id="editor-top" className="flex-row">
             <button className="btn btn-primary hint--bottom"
               disabled={ saveDisabled }
@@ -1098,12 +1112,15 @@ export default class Editor extends Component {
               className="editor-input"
               placeholder="title here..."
               value={ note.title }
-              onChange={ this.handleTitleChanged } />
+              onChange={ this.handleTitleChanged }
+              ref="title"
+              tabIndex="1" />
             <input id="editor-tags"
               className="editor-input"
               placeholder="#enter #tags"
               value={ note.tags }
-              onChange={ this.handleTagsChanged } />
+              onChange={ this.handleTagsChanged }
+              tabIndex="2" />
             <div className="editor-spacer2"></div>
           </div>
           { this.renderMarkdownButtons(isText) }
