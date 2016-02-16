@@ -45,6 +45,25 @@
   border-color: rgba(0,0,0,.1);
 }
 
+.theme-light .menu-content {
+  background: #FFF;
+  box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 0 2px rgba(0,0,0,.1), 0 1px 6px rgba(0,0,0,.2);
+}
+
+.theme-light .menu-content a {
+  color: rgba(0,0,0,.8);
+}
+
+.theme-light .menu-content a:hover {
+  /*color: rgba(0,0,0,0.45);*/
+  color: $col-blue;
+}
+
+.menu-content .divider {
+  border-color: rgba(0,0,0,.1);
+}
+
+
 .theme-light #left-sidebar {
   background: #FFF;
   border-right: 1px solid rgba(0,0,0,.1);

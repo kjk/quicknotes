@@ -366,12 +366,14 @@ func handleNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	model := struct {
 		LoggedUser *UserSummary
 		NoteUser   *UserSummary
+		NoteHashID string
 		NoteTitle  string
 		NoteBody   string
 		NoteFormat string
 	}{
 		LoggedUser: ctx.User,
 		NoteUser:   noteUser,
+		NoteHashID: note.HashID,
 		NoteTitle:  note.Title,
 		NoteBody:   note.Content(),
 		NoteFormat: note.Format,

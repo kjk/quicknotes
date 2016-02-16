@@ -46,6 +46,7 @@
     "gNoteTitle": true,
     "gNoteBody": true,
     "gNoteFormat": true,
+    "gNoteHashID": true,
     "linkify": true
   },
   "plugins": [
