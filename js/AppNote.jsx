@@ -40,6 +40,7 @@ export default class AppNote extends Component {
     this.handleEditNote = this.handleEditNote.bind(this);
     this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
     this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
+    this.handleReloadNotes = this.handleReloadNotes.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.editNote = this.editNote.bind(this);
     this.isMyNote = this.isMyNote.bind(this);
@@ -54,6 +55,7 @@ export default class AppNote extends Component {
       keymaster('ctrl+e', this.editNote);
       keymaster('ctrl+n', () => action.editNewNote());
     }
+    action.onReloadNotes(this.handleReloadNotes, this);
   }
 
   componentWillUnmount() {
@@ -61,6 +63,7 @@ export default class AppNote extends Component {
       keymaster.unbind('ctrl+e');
       keymaster.unbind('ctrl+n');
     }
+    action.offAllForOwner(this);
   }
 
   isMyNote() {
@@ -70,6 +73,18 @@ export default class AppNote extends Component {
   editNote() {
     const note = this.state.note;
     action.editNote(note);
+  }
+
+  // sent when editor saved a note, so reload it
+  handleReloadNotes(resetScroll) {
+    const note = this.state.note;
+    const hashedNoteID = ni.HashID(note);
+    api.getNote(hashedNoteID, note => {
+      // TODO: handle the error
+      this.setState({
+        note: note
+      });
+    });
   }
 
   handleSearchResultSelected(noteHashID) {
