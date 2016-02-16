@@ -41,9 +41,12 @@ export default class AppNote extends Component {
     this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
     this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
+    this.handleDelUndel = this.handleDelUndel.bind(this);
+    this.handlePermanentDelete = this.handlePermanentDelete.bind(this);
+
     this.editNote = this.editNote.bind(this);
     this.isMyNote = this.isMyNote.bind(this);
+    this.setNote = this.setNote.bind(this);
 
     this.state = {
       note: gInitialNote
@@ -75,15 +78,19 @@ export default class AppNote extends Component {
     action.editNote(note);
   }
 
+  setNote(note) {
+    // TODO: handle the error
+    this.setState({
+      note: note
+    });
+  }
+
   // sent when editor saved a note, so reload it
   handleReloadNotes(resetScroll) {
     const note = this.state.note;
     const hashedNoteID = ni.HashID(note);
     api.getNote(hashedNoteID, note => {
-      // TODO: handle the error
-      this.setState({
-        note: note
-      });
+      this.setNote(note);
     });
   }
 
@@ -112,17 +119,11 @@ export default class AppNote extends Component {
     const noteId = ni.HashID(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, note => {
-        // TODO: handle error
-        this.setState({
-          note: note
-        });
+        this.setNote(note);
       });
     } else {
-      // TODO: handle error
       api.makeNotePublic(noteId, note => {
-        this.setState({
-          note: note
-        });
+        this.setNote(note);
       });
     }
   }
@@ -130,22 +131,41 @@ export default class AppNote extends Component {
   handleStarUnstarNote(e) {
     const note = this.state.note;
     console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
-    const noteId = ni.HashID(note);
+    const hashedNoteId = ni.HashID(note);
     if (ni.IsStarred(note)) {
-      api.unstarNote(noteId, note => {
-        // TODO: handle error
-        this.setState({
-          note: note
-        });
+      api.unstarNote(hashedNoteId, note => {
+        this.setNote(note);
       });
     } else {
-      api.starNote(noteId, note => {
-        // TODO: handle error
-        this.setState({
-          note: note
-        });
+      api.starNote(hashedNoteId, note => {
+        this.setNote(note);
       });
     }
+  }
+
+  handleDelUndel(e) {
+    e.preventDefault();
+    const note = this.state.note;
+    const hashedNoteId = ni.HashID(note);
+    if (ni.IsDeleted(note)) {
+      api.undeleteNote(hashedNoteId, note => {
+        this.setNote(note);
+      });
+    } else {
+      api.deleteNote(hashedNoteId, note => {
+        this.setNote(note);
+      });
+    }
+  }
+
+  handlePermanentDelete(e) {
+    e.preventDefault();
+    const note = this.state.note;
+    const hashedNoteId = ni.HashID(note);
+    api.permanentDeleteNote(hashedNoteId, () => {
+      // TODO: handle error
+      this.setNote(null);
+    });
   }
 
   handleDelete(e) {
@@ -153,27 +173,43 @@ export default class AppNote extends Component {
     e.preventDefault();
   }
 
+  renderEdit(note) {
+    if (ni.IsDeleted(note)) {
+      return;
+    }
+    return <a href="#" onClick={ this.handleEditNote }>Edit (Ctrl-E)</a>;
+  }
+
   renderStarUnstar(note) {
     if (ni.IsDeleted(note)) {
       return;
     }
-
-    const isStarred = ni.IsStarred(note);
-    if (isStarred) {
-      return <a href="#" onClick={ this.handleStarUnstarNote }>Unstar</a>;
-    } else {
-      return <a href="#" onClick={ this.handleStarUnstarNote }>Star</a>;
-    }
+    const s = ni.IsStarred(note) ? 'Unstar' : 'Star';
+    return <a href="#" onClick={ this.handleStarUnstarNote }>
+             { s }
+           </a>;
   }
 
   renderMakePublicPrivate(note) {
     if (ni.IsDeleted(note)) {
       return;
     }
-    if (ni.IsPublic(note)) {
-      return <a href="#" onClick={ this.handleMakePublicPrivate }>Make private</a>;
-    } else {
-      return <a href="#" onClick={ this.handleMakePublicPrivate }>Make public</a>;
+    const s = ni.IsPublic(note) ? 'Make private' : 'Make public';
+    return <a href="#" onClick={ this.handleMakePublicPrivate }>
+             { s }
+           </a>;
+  }
+
+  renderTrashUntrash(note) {
+    const s = ni.IsDeleted(note) ? 'Undelete' : 'Move to Trash';
+    return <a href="#" onClick={ this.handleDelUndel }>
+             { s }
+           </a>;
+  }
+
+  renderPermanentDelete(note) {
+    if (ni.IsDeleted(note)) {
+      return <a href="#" onClick={ this.handlePermanentDelete }>Delete permanently</a>;
     }
   }
 
@@ -207,8 +243,42 @@ export default class AppNote extends Component {
       );
   }
 
+  renderNoteDeleted() {
+    const nu = gNoteUser;
+    const url = `/u/${nu.HashID}/${nu.Handle}`;
+
+    return (
+      <div>
+        <div id="note-top">
+          <Top />
+        </div>
+        <div id="full-note">
+          <div className="note-content-wrapper">
+            <center className="note-deleted">
+              This note has been permanently deleted.
+            </center>
+          </div>
+          <hr className="light" />
+          <center className="note-footer">
+            A note by&nbsp;
+            <a href={ url }>
+              { nu.Handle }
+            </a>.
+          </center>
+        </div>
+        <Settings />
+        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
+        <ImportSimpleNote />
+      </div>
+      );
+  }
+
   render() {
     const note = this.state.note;
+    if (!note) {
+      return this.renderNoteDeleted();
+    }
+
     console.log('AppNote.render: gLoggedUser: ', gLoggedUser, ' note.IsPublic:', ni.IsPublic(note));
     const title = ni.Title(note);
     const nu = gNoteUser;
@@ -230,10 +300,11 @@ export default class AppNote extends Component {
                 <div className="menu-trigger">
                   <i className="fa fa-ellipsis-v"></i>
                   <div className="menu-content">
-                    <a href="#" onClick={ this.handleEditNote }>Edit (Ctrl-E)</a>
+                    { this.renderEdit(note) }
                     { this.renderStarUnstar(note) }
                     { this.renderMakePublicPrivate(note) }
-                    <a href="#" onClick={ this.handleDelete }>Move to Trash</a>
+                    { this.renderTrashUntrash(note) }
+                    { this.renderPermanentDelete(note) }
                   </div>
                 </div> : null }
             </div>
