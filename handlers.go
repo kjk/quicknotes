@@ -356,6 +356,11 @@ func handleNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	compactNote, err := noteToCompact(note, true)
+	if err != nil {
+		httpErrorf(w, "noteToCompact() failed with %s", err)
+		return
+	}
 	dbNoteUser, err := dbGetUserByID(note.userID)
 	if err != nil {
 		httpErrorf(w, "dbGetUserByID(%d) failed with %s", note.userID, err)
@@ -366,17 +371,13 @@ func handleNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	model := struct {
 		LoggedUser *UserSummary
 		NoteUser   *UserSummary
-		NoteHashID string
+		Note       []interface{}
 		NoteTitle  string
-		NoteBody   string
-		NoteFormat string
 	}{
 		LoggedUser: ctx.User,
+		Note:       compactNote,
 		NoteUser:   noteUser,
-		NoteHashID: note.HashID,
 		NoteTitle:  note.Title,
-		NoteBody:   note.Content(),
-		NoteFormat: note.Format,
 	}
 	execTemplate(w, tmplNote, model)
 }
@@ -426,7 +427,8 @@ func isBitSet(flags int, nBit uint) bool {
 	return flags&(1<<nBit) != 0
 }
 
-func noteToCompact(n *Note, withContent bool) []interface{} {
+// can return error only if withContent is true
+func noteToCompact(n *Note, withContent bool) ([]interface{}, error) {
 	nFields := noteFieldsCount
 	if withContent {
 		nFields++
@@ -441,7 +443,14 @@ func noteToCompact(n *Note, withContent bool) []interface{} {
 	res[noteFormatIdx] = n.Format
 	res[noteTagsIdx] = n.Tags
 	res[noteSnippetIdx] = n.Snippet
-	return res
+	if withContent {
+		content, err := getCachedContent(n.ContentSha1)
+		if err != nil {
+			return nil, err
+		}
+		res[noteContentIdx] = string(content)
+	}
+	return res, nil
 }
 
 // /api/getnote?id=${noteHashID}
@@ -457,14 +466,13 @@ func handleAPIGetNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		httpErrorWithJSONf(w, r, "/api/getnote.json access denied")
 		return
 	}
-	content, err := getCachedContent(note.ContentSha1)
+
+	v, err := noteToCompact(note, true)
 	if err != nil {
-		log.Errorf("getCachedContent() failed with %s\n", err)
+		log.Errorf("noteToCompact() failed with %s\n", err)
 		httpErrorWithJSONf(w, r, "/api/getnote.json: getCachedContent() failed with %s", err)
 		return
 	}
-	v := noteToCompact(note, true)
-	v[noteContentIdx] = string(content)
 	httpOkWithJSON(w, r, v)
 }
 
@@ -495,7 +503,8 @@ func handleAPIGetNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) 
 	var notes [][]interface{}
 	for _, note := range i.notes {
 		if note.IsPublic || showPrivate {
-			notes = append(notes, noteToCompact(note, false))
+			compactNote, _ := noteToCompact(note, false)
+			notes = append(notes, compactNote)
 		}
 	}
 
@@ -540,7 +549,8 @@ func handleAPIGetRecentNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Req
 	}
 	var res [][]interface{}
 	for _, note := range recentNotes {
-		res = append(res, noteToCompact(&note, false))
+		compactNote, _ := noteToCompact(&note, false)
+		res = append(res, compactNote)
 	}
 	httpOkWithJsonpCompact(w, r, res, jsonp)
 }

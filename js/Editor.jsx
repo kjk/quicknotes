@@ -467,7 +467,7 @@ function getCodeMirrorState(cm) {
   return {
     cursor: cm.getCursor(),
     selections: cm.listSelections()
-  }
+  };
 }
 
 function restoreCodeMirrorState(cm, state) {
