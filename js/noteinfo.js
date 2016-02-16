@@ -143,7 +143,7 @@ export function UpdatedAt(note) {
 }
 
 export function Tags(note) {
-  return note[noteTagsIdx];
+  return note[noteTagsIdx] || [];
 }
 
 export function Snippet(note) {
