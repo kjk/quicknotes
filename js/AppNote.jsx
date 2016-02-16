@@ -39,6 +39,7 @@ export default class AppNote extends Component {
 
     this.handleEditNote = this.handleEditNote.bind(this);
     this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
+    this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.editNote = this.editNote.bind(this);
     this.isMyNote = this.isMyNote.bind(this);
@@ -111,9 +112,43 @@ export default class AppNote extends Component {
     }
   }
 
+  handleStarUnstarNote(e) {
+    const note = this.state.note;
+    console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
+    const noteId = ni.HashID(note);
+    if (ni.IsStarred(note)) {
+      api.unstarNote(noteId, note => {
+        // TODO: handle error
+        this.setState({
+          note: note
+        });
+      });
+    } else {
+      api.starNote(noteId, note => {
+        // TODO: handle error
+        this.setState({
+          note: note
+        });
+      });
+    }
+  }
+
   handleDelete(e) {
     console.log('handleDelete');
     e.preventDefault();
+  }
+
+  renderStarUnstar(note) {
+    if (ni.IsDeleted(note)) {
+      return;
+    }
+
+    const isStarred = ni.IsStarred(note);
+    if (isStarred) {
+      return <a href="#" onClick={ this.handleStarUnstarNote }>Unstar</a>;
+    } else {
+      return <a href="#" onClick={ this.handleStarUnstarNote }>Star</a>;
+    }
   }
 
   renderMakePublicPrivate(note) {
@@ -181,6 +216,7 @@ export default class AppNote extends Component {
                   <i className="fa fa-ellipsis-v"></i>
                   <div className="menu-content">
                     <a href="#" onClick={ this.handleEditNote }>Edit (Ctrl-E)</a>
+                    { this.renderStarUnstar(note) }
                     { this.renderMakePublicPrivate(note) }
                     <a href="#" onClick={ this.handleDelete }>Move to Trash</a>
                   </div>

@@ -219,7 +219,7 @@ export default class Note extends Component {
   }
 
   renderStarUnstar(note) {
-    if (!this.props.showingMyNotes || ni.IsDeleted((note))) {
+    if (!this.props.showingMyNotes || ni.IsDeleted(note)) {
       return;
     }
 
