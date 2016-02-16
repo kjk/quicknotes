@@ -38,7 +38,7 @@ export default class AppNote extends Component {
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
 
     this.handleEditNote = this.handleEditNote.bind(this);
-    this.handleMakePrivate = this.handleMakePrivate.bind(this);
+    this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.editNote = this.editNote.bind(this);
     this.isMyNote = this.isMyNote.bind(this);
@@ -90,14 +90,41 @@ export default class AppNote extends Component {
     });
   }
 
-  handleMakePrivate(e) {
-    console.log('makePrivate');
-    e.preventDefault();
+  handleMakePublicPrivate(e) {
+    const note = this.state.note;
+    console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
+    const noteId = ni.HashID(note);
+    if (ni.IsPublic(note)) {
+      api.makeNotePrivate(noteId, note => {
+        // TODO: handle error
+        this.setState({
+          note: note
+        });
+      });
+    } else {
+      // TODO: handle error
+      api.makeNotePublic(noteId, note => {
+        this.setState({
+          note: note
+        });
+      });
+    }
   }
 
   handleDelete(e) {
     console.log('handleDelete');
     e.preventDefault();
+  }
+
+  renderMakePublicPrivate(note) {
+    if (ni.IsDeleted(note)) {
+      return;
+    }
+    if (ni.IsPublic(note)) {
+      return <a href="#" onClick={ this.handleMakePublicPrivate }>Make private</a>;
+    } else {
+      return <a href="#" onClick={ this.handleMakePublicPrivate }>Make public</a>;
+    }
   }
 
   renderBody(note) {
@@ -131,8 +158,8 @@ export default class AppNote extends Component {
   }
 
   render() {
-    console.log('appNoteStart: gLoggedUser: ', gLoggedUser);
     const note = this.state.note;
+    console.log('AppNote.render: gLoggedUser: ', gLoggedUser, ' note.IsPublic:', ni.IsPublic(note));
     const title = ni.Title(note);
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;
@@ -154,7 +181,7 @@ export default class AppNote extends Component {
                   <i className="fa fa-ellipsis-v"></i>
                   <div className="menu-content">
                     <a href="#" onClick={ this.handleEditNote }>Edit (Ctrl-E)</a>
-                    <a href="#" onClick={ this.handleMakePrivate }>Make private</a>
+                    { this.renderMakePublicPrivate(note) }
                     <a href="#" onClick={ this.handleDelete }>Move to Trash</a>
                   </div>
                 </div> : null }
