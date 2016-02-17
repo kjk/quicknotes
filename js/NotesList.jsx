@@ -8,9 +8,9 @@ import * as ni from './noteinfo.js';
 
 const maxInitialNotes = 50;
 
-function truncateNotes(notes) {
-  if (maxInitialNotes != -1 && notes && notes.length >= maxInitialNotes) {
-    return notes.slice(0, maxInitialNotes);
+function truncateNotes(notes, max) {
+  if (max != -1 && notes && notes.length >= max) {
+    return notes.slice(0, max);
   }
   return notes;
 }
@@ -20,8 +20,10 @@ export default class NotesList extends Component {
     super(props, context);
     this.handleScroll = this.handleScroll.bind(this);
 
+    this.maxLoadedNotes = maxInitialNotes;
+
     this.state = {
-      notes: truncateNotes(props.notes) || []
+      notes: truncateNotes(props.notes, this.maxLoadedNotes) || []
     };
   }
 
@@ -31,9 +33,10 @@ export default class NotesList extends Component {
     if (resetScroll) {
       let node = ReactDOM.findDOMNode(this);
       node.scrollTop = 0;
+      this.maxLoadedNotes = maxInitialNotes;
     }
     this.setState({
-      notes: truncateNotes(nextProps.notes)
+      notes: truncateNotes(nextProps.notes, this.maxLoadedNotes)
     });
   }
 
@@ -62,6 +65,7 @@ export default class NotesList extends Component {
       notes.push(this.props.notes[i]);
     }
     //console.log("new number of notes: " + notes.length);
+    this.maxLoadedNotes = notes.length;
     this.setState({
       notes: notes,
     });
