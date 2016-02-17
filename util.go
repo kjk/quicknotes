@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"mime"
@@ -203,4 +204,63 @@ func strArrRemoveEmpty(a []string) []string {
 		}
 	}
 	return a
+}
+
+func getLines(d []byte, maxLines int, maxSize int) ([]byte, [][]byte) {
+	var lines [][]byte
+	prevLineWasEmpty := false
+	d = bytes.TrimSpace(d)
+	sizeLeft := maxSize
+	for len(d) > 0 && sizeLeft > 0 && len(lines) < maxLines {
+		advance, line, err := bufio.ScanLines(d, true)
+		if err != nil || advance == 0 {
+			break
+		}
+		line = bytes.TrimRightFunc(line, unicode.IsSpace)
+		lineIsEmpty := len(line) == 0
+		skip := lineIsEmpty && prevLineWasEmpty
+		if !skip {
+			lines = append(lines, line)
+			sizeLeft -= len(line)
+		}
+		prevLineWasEmpty = lineIsEmpty
+		d = d[advance:]
+	}
+	return bytes.TrimSpace(d), lines
+}
+
+// truncate intelligently content of the note
+func getShortSnippet(d []byte) ([]byte, bool) {
+	d, lines := getLines(d, 10, 512)
+	if len(d) == 0 {
+		res := bytes.Join(lines, []byte{'\n'})
+		return res, false
+	}
+	d2, lines2 := getLines(d, 3, 80*3)
+	// if less 13 lines, it's not truncated
+	if len(d2) == 0 {
+		lines = append(lines, lines2...)
+		res := bytes.Join(lines, []byte{'\n'})
+		return res, false
+	}
+	truncated := len(d) > 0
+	res := bytes.Join(lines, []byte{'\n'})
+	return res, truncated
+}
+
+// returns first non-empty line
+func getFirstLine(d []byte) []byte {
+	for {
+		advance, line, err := bufio.ScanLines(d, false)
+		if err != nil {
+			return nil
+		}
+		if len(line) > 0 {
+			return line
+		}
+		if advance == 0 {
+			return nil
+		}
+		d = d[advance:]
+	}
 }

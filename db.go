@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"database/sql"
 	"errors"
@@ -11,7 +10,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"unicode"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kjk/log"
@@ -220,50 +218,6 @@ func (n *Note) SetCalculatedProperties() {
 	n.IsPartial = n.Size > snippetSizeThreshold
 	n.HashID = hashInt(n.id)
 	n.SetSnippet()
-}
-
-func getShortSnippet(d []byte) ([]byte, bool) {
-	var lines [][]byte
-	maxLines := 10
-	sizeLeft := 512
-	prevLineWasEmpty := false
-	d = bytes.TrimSpace(d)
-	for len(d) > 0 && sizeLeft > 0 && len(lines) < maxLines {
-		advance, line, err := bufio.ScanLines(d, true)
-		if err != nil || advance == 0 {
-			break
-		}
-		line = bytes.TrimRightFunc(line, unicode.IsSpace)
-		lineIsEmpty := len(line) == 0
-		skip := lineIsEmpty && prevLineWasEmpty
-		if !skip {
-			lines = append(lines, line)
-			sizeLeft -= len(line)
-		}
-		prevLineWasEmpty = lineIsEmpty
-		d = d[advance:]
-	}
-	d = bytes.TrimSpace(d)
-	truncated := len(d) > 0
-	res := bytes.Join(lines, []byte{'\n'})
-	return res, truncated
-}
-
-// returns first non-empty line
-func getFirstLine(d []byte) []byte {
-	for {
-		advance, line, err := bufio.ScanLines(d, false)
-		if err != nil {
-			return nil
-		}
-		if len(line) > 0 {
-			return line
-		}
-		if advance == 0 {
-			return nil
-		}
-		d = d[advance:]
-	}
 }
 
 // Content returns note content
