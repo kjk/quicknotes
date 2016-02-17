@@ -44,7 +44,7 @@ export default class AppNote extends Component {
     this.handleDelUndel = this.handleDelUndel.bind(this);
     this.handlePermanentDelete = this.handlePermanentDelete.bind(this);
 
-    this.editNote = this.editNote.bind(this);
+    this.editCurrentNote = this.editCurrentNote.bind(this);
     this.isMyNote = this.isMyNote.bind(this);
     this.setNote = this.setNote.bind(this);
 
@@ -55,7 +55,7 @@ export default class AppNote extends Component {
 
   componentDidMount() {
     if (this.isMyNote()) {
-      keymaster('ctrl+e', this.editNote);
+      keymaster('ctrl+e', this.editCurrentNote);
       keymaster('ctrl+n', () => action.editNewNote());
     }
     action.onReloadNotes(this.handleReloadNotes, this);
@@ -73,9 +73,16 @@ export default class AppNote extends Component {
     return gLoggedUser && gLoggedUser.HashID === gNoteUser.HashID;
   }
 
-  editNote() {
+  // the content we have might be stale (modified in another
+  // browser window), so re-get the content
+  editCurrentNote() {
     const note = this.state.note;
-    action.editNote(note);
+    const id = ni.HashID(note);
+    console.log('editCurrentNote id: ', id);
+    api.getNote(id, json => {
+      // TODO: handle error
+      action.editNote(json);
+    });
   }
 
   setNote(note) {
@@ -104,13 +111,7 @@ export default class AppNote extends Component {
 
   handleEditNote(e) {
     e.preventDefault();
-    const note = this.state.note;
-    const id = ni.HashID(note);
-    console.log('editNote id: ', id);
-    api.getNote(id, json => {
-      // TODO: handle error
-      action.editNote(json);
-    });
+    this.editCurrentNote();
   }
 
   handleMakePublicPrivate(e) {
