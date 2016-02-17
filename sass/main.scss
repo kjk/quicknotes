@@ -1018,6 +1018,7 @@ button.close {
 
 @import '../node_modules/codemirror/lib/codemirror';
 @import '../node_modules/codemirror/theme/solarized';
+@import '../node_modules/highlight.js/styles/solarized-light';
 
 .CodeMirror {
   min-height: 100%;

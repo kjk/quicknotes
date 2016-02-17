@@ -2,6 +2,7 @@
 
 import marked from 'marked';
 import MarkdownIt from 'markdown-it';
+import * as hljs from 'highlight.js';
 
 const renderer = new marked.Renderer();
 
@@ -51,6 +52,15 @@ const markdownItOpts = {
   linkify: true,
   breaks: false, // Convert '\n' in paragraphs into <br>
   typographer: false
+};
+
+markdownItOpts.highlight = function(str, lang) {
+  if (lang && hljs.getLanguage(lang)) {
+    try {
+      return hljs.highlight(lang, str).value;
+    } catch (__) {}
+  }
+  return ''; // use external default escaping
 };
 
 const markdownIt = new MarkdownIt(markdownItOpts);
