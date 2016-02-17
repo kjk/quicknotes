@@ -55,13 +55,20 @@ const markdownItOpts = {
 };
 
 markdownItOpts.highlight = function(str, lang) {
-  if (lang && hljs.getLanguage(lang)) {
+  // TODO: doesn't seem to work
+  hljs.configure({
+    tabReplace: '  '
+  });
+
+  const hasLang = lang && hljs.getLanguage(lang);
+  if (hasLang) {
     try {
       return hljs.highlight(lang, str).value;
     } catch (__) {}
   }
   return ''; // use external default escaping
 };
+
 
 const markdownIt = new MarkdownIt(markdownItOpts);
 

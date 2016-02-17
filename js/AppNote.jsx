@@ -78,7 +78,7 @@ export default class AppNote extends Component {
   editCurrentNote() {
     const note = this.state.note;
     const id = ni.HashID(note);
-    console.log('editCurrentNote id: ', id);
+    // console.log('editCurrentNote id: ', id);
     api.getNote(id, json => {
       // TODO: handle error
       action.editNote(json);
@@ -102,7 +102,7 @@ export default class AppNote extends Component {
   }
 
   handleSearchResultSelected(noteHashID) {
-    console.log('search note selected: ' + noteHashID);
+    // console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
     const win = window.open(url, '_blank');
@@ -116,7 +116,7 @@ export default class AppNote extends Component {
 
   handleMakePublicPrivate(e) {
     const note = this.state.note;
-    console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
+    // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
     const noteId = ni.HashID(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, note => {
@@ -131,7 +131,7 @@ export default class AppNote extends Component {
 
   handleStarUnstarNote(e) {
     const note = this.state.note;
-    console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
+    // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     const hashedNoteId = ni.HashID(note);
     if (ni.IsStarred(note)) {
       api.unstarNote(hashedNoteId, note => {
@@ -167,11 +167,6 @@ export default class AppNote extends Component {
       // TODO: handle error
       this.setNote(null);
     });
-  }
-
-  handleDelete(e) {
-    console.log('handleDelete');
-    e.preventDefault();
   }
 
   renderEdit(note) {
@@ -280,7 +275,7 @@ export default class AppNote extends Component {
       return this.renderNoteDeleted();
     }
 
-    console.log('AppNote.render: gLoggedUser: ', gLoggedUser, ' note.IsPublic:', ni.IsPublic(note));
+    // console.log('AppNote.render: gLoggedUser: ', gLoggedUser, ' note.IsPublic:', ni.IsPublic(note));
     const title = ni.Title(note);
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;

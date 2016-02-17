@@ -564,15 +564,17 @@ export default class Editor extends Component {
   componentDidMount() {
     action.onEditNote(this.editNote, this);
     action.onEditNewNote(this.editNewNote, this);
+
     keymaster('esc', this.escPressed);
     keymaster('F9', this.togglePreview);
+    keymaster('ctrl+enter', this.ctrlEnterPressed);
 
     this.scheduleTimer();
   }
 
   componentDidUpdate() {
     const cm = this.cm;
-    console.log('Editor.componentDidUpdate, cm ', isNullMsg(cm));
+    // console.log('Editor.componentDidUpdate, cm ', isNullMsg(cm));
     if (!cm) {
       return;
     }
@@ -614,10 +616,11 @@ export default class Editor extends Component {
     action.offAllForOwner(this);
     keymaster.unbind('esc');
     keymaster.unbind('f9');
+    keymaster.unbind('ctrl+enter');
   }
 
   handleEditorCreated(cm) {
-    console.log('Editor.handleEditorCreated');
+    // console.log('Editor.handleEditorCreated');
     this.cm = cm;
     this.isNewCM = true;
   }
@@ -632,8 +635,6 @@ export default class Editor extends Component {
       return;
     }
     const preview = ReactDOM.findDOMNode(this.refs.preview);
-
-    console.log('setupScrollSync()');
 
     // Syncs scroll  editor -> preview
     var cScroll = false;
@@ -727,7 +728,7 @@ export default class Editor extends Component {
     this.top = y;
     const node = ReactDOM.findDOMNode(this.refs.editorWrapper);
     if (node) {
-      console.log('this.refs.editorWrapper=', node);
+      // console.log('this.refs.editorWrapper=', node);
       node.style.height = editorHeight(y) + 'px';
       this.cm.refresh();
     }
@@ -793,7 +794,7 @@ export default class Editor extends Component {
       return;
     }
     this.cm.setOption('mode', mode);
-    console.log('updateCodeMirrorMode: mode=', mode);
+    // console.log('updateCodeMirrorMode: mode=', mode);
   }
 
   isShowingPreview() {
@@ -922,7 +923,6 @@ export default class Editor extends Component {
   renderPublicOrPrivateSelect(isPublic) {
     const values = ['public', 'private'];
     const selectedIdx = isPublic ? 0 : 1;
-
     return (
       <TextSelect values={ values } selectedIdx={ selectedIdx } onChange={ this.handlePublicOrPrivateChanged } />
       );
@@ -973,17 +973,6 @@ export default class Editor extends Component {
     return (
       <TextSelect values={ formats } selectedIdx={ selectedIdx } onChange={ this.handleFormatChanged } />
       );
-  }
-
-  renderShowHidePreview(note) {
-    if (note.isText()) {
-      return;
-    }
-    if (this.state.isShowingPreview) {
-      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleHidePreview }>« hide preview</a>;
-    } else {
-      return <a className="editor-hide-show-preview" href="#" onClick={ this.handleShowPreview }>show preview »</a>;
-    }
   }
 
   renderMarkdownButtons(isText) {

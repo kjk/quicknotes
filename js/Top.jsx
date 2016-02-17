@@ -6,8 +6,11 @@ import { focusSearch, isLoggedIn } from './utils.js';
 
 // by default all keypresses are filtered
 function keyFilter(event) {
+  // always allow ESC and ctrl-enter
   if (event.keyCode == 27) {
-    // allow ESC always
+    return true;
+  }
+  if (event.keyCode == 13 && event.ctrlKey) {
     return true;
   }
   // standard key filter, disable if inside those elements

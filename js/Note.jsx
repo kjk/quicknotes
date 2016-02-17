@@ -81,7 +81,7 @@ export default class Note extends Component {
   editCurrentNote() {
     const note = this.props.note;
     const id = ni.HashID(note);
-    console.log('editCurrentNote id: ', id);
+    // console.log('editCurrentNote id: ', id);
     api.getNote(id, json => {
       // TODO: handle error
       action.editNote(json);
@@ -120,7 +120,7 @@ export default class Note extends Component {
   handleMakePublicPrivate(e) {
     e.preventDefault();
     const note = this.props.note;
-    console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
+    // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
     const noteId = ni.HashID(note);
     if (ni.IsPublic(note)) {
       api.makeNotePrivate(noteId, () => {
@@ -162,7 +162,7 @@ export default class Note extends Component {
   }
 
   handleEdit(e) {
-    console.log('Note.handleEdit');
+    // console.log('Note.handleEdit');
     this.editCurrentNote();
   }
 
@@ -220,7 +220,7 @@ export default class Note extends Component {
 
   handleStarUnstarNote(e) {
     const note = this.props.note;
-    console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
+    // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     const noteId = ni.HashID(note);
     if (ni.IsStarred(note)) {
       api.unstarNote(noteId, () => {

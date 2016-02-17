@@ -176,4 +176,4 @@ export function isLoggedIn() {
 }
 
 window.runOnLoad = runOnLoad;
-console.log('iniialized window.runOnLoad');
+// console.log('iniialized window.runOnLoad');
