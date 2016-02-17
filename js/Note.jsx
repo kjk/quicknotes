@@ -25,6 +25,8 @@ export default class Note extends Component {
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
     this.handleDoubleClick = this.handleDoubleClick.bind(this);
 
+    this.editCurrentNote = this.editCurrentNote.bind(this);
+
     this.state = {
       showActions: false
     };
@@ -74,8 +76,21 @@ export default class Note extends Component {
     });
   }
 
+  // the content we have might be stale (modified in another
+  // browser window), so re-get the content
+  editCurrentNote() {
+    const note = this.props.note;
+    const id = ni.HashID(note);
+    console.log('editCurrentNote id: ', id);
+    api.getNote(id, json => {
+      // TODO: handle error
+      action.editNote(json);
+    });
+  }
+
   handleDoubleClick(e) {
-    action.editNote(this.props.note);
+    e.preventDefault();
+    this.editCurrentNote();
   }
 
   handleDelUndel(e) {
@@ -148,7 +163,7 @@ export default class Note extends Component {
 
   handleEdit(e) {
     console.log('Note.handleEdit');
-    action.editNote(this.props.note);
+    this.editCurrentNote();
   }
 
   renderEdit(note) {
