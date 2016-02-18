@@ -306,6 +306,9 @@ a {
 }
 
 #login-link {
+  cursor: pointer;
+  margin-left: auto;
+
   &:hover .dropdown-content {
     display: block;
   }
