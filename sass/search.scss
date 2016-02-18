@@ -1,10 +1,11 @@
 @import 'colors';
 
 #search-input {
-  flex-basis: 320px;
+  flex-basis: 520px;
   flex-shrink: 1;
-  flex-grow: 4;
-	margin-left: 8px;
+  // flex-grow: 4;
+  margin-left: auto;
+  margin-right: auto;
   // height: 22px;
   // font-size: 16px;
   line-height: 23px;
@@ -23,8 +24,8 @@
 
 #search-results-triangle-wrapper:after,
 #search-results-triangle-wrapper:before {
-    left: 50%;
-    margin-left: -4px;
+  left: 50%;
+  margin-left: -4px;
 }
 
 #search-results-triangle-wrapper:before {
