@@ -111,7 +111,6 @@ export default class Top extends Component {
           <button className="btn btn-new-note hint--bottom" data-hint="Ctrl-N" onClick={ this.handleEditNewNote }>
             New note
           </button> : null }
-        <div className="flex-spacer"></div>
         { withSearchInput ?
           <input name="search"
             id="search-input"
@@ -122,7 +121,6 @@ export default class Top extends Component {
             autoComplete="off"
             autoCapitalize="off"
             placeholder={ placeholder } /> : null }
-        <div className="flex-spacer"></div>
         { userUrl ?
           <a href={ userUrl } className="header-link">My Notes</a> : null }
         <LogInLink />
