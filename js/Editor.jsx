@@ -765,11 +765,13 @@ export default class Editor extends Component {
     const note = this.state.note;
     const noteJSON = toNewNoteJSON(note);
     //console.log('handleSave, note=', note, 'noteJSON=', noteJSON);
+    this.setState({
+      isShowing: false,
+      note: newEmptyNote()
+    });
+    // TODO: show a message that is saving, remove when finished
+    // important UI feedback when network is slow/unreliable
     api.createOrUpdateNote(noteJSON, () => {
-      this.setState({
-        isShowing: false,
-        note: newEmptyNote()
-      });
       action.reloadNotes(false);
     });
   }
