@@ -209,7 +209,7 @@ export function User(note) {
 // Call cb(note, content) on success
 // Note: it gets the latest version, not the version on noteOrig
 export function FetchLatestContent(noteOrig, cb) {
-  const hashedNoteID = HashID(noteOrig);
+  const noteID = HashID(noteOrig);
   const content = Content(noteOrig);
   if (content !== null) {
     // console.log('FetchLatestContent: already has it for note', IDVer(noteOrig));
@@ -217,7 +217,7 @@ export function FetchLatestContent(noteOrig, cb) {
     return;
   }
   // console.log('FetchLatestContent: starting to fetch content for note', noteID);
-  api.getNote(hashedNoteID, note => {
+  api.getNote(noteID, note => {
     // console.log('FetchLatestContent: json=', note);
     // version might be newer than in noteOrig
     let content = setCachedVersion(note);

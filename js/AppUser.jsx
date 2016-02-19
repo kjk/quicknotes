@@ -142,7 +142,7 @@ export default class AppUser extends Component {
 
   handleReloadNotes(resetScroll) {
     const userID = this.state.notesUserHashID;
-    console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
+    // console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
     api.getNotes(userID, json => {
       this.setNotes(json, resetScroll);
     });

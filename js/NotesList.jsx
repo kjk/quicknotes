@@ -29,7 +29,7 @@ export default class NotesList extends Component {
 
   componentWillReceiveProps(nextProps) {
     const resetScroll = nextProps.resetScroll;
-    console.log('NotesList.componentWillReceiveProps(), resetScroll: ', resetScroll);
+    // console.log('NotesList.componentWillReceiveProps(), resetScroll: ', resetScroll);
     if (resetScroll) {
       let node = ReactDOM.findDOMNode(this);
       node.scrollTop = 0;

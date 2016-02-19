@@ -96,8 +96,8 @@ export default class AppNote extends Component {
   // sent when editor saved a note, so reload it
   handleReloadNotes(resetScroll) {
     const note = this.state.note;
-    const hashedNoteID = ni.HashID(note);
-    api.getNote(hashedNoteID, note => {
+    const noteID = ni.HashID(note);
+    api.getNote(noteID, note => {
       this.setNote(note);
     });
   }
@@ -115,46 +115,22 @@ export default class AppNote extends Component {
     this.editCurrentNote();
   }
 
-  handleMakePublicPrivate(e) {
-    const note = this.state.note;
-    // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
-    const noteId = ni.HashID(note);
-    if (ni.IsPublic(note)) {
-      api.makeNotePrivate(noteId, note => {
-        this.setNote(note);
-      });
-    } else {
-      api.makeNotePublic(noteId, note => {
-        this.setNote(note);
-      });
-    }
-  }
-
-  handleStarUnstarNote(e) {
-    const note = this.state.note;
-    // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
-    const hashedNoteId = ni.HashID(note);
-    if (ni.IsStarred(note)) {
-      api.unstarNote(hashedNoteId, note => {
-        this.setNote(note);
-      });
-    } else {
-      api.starNote(hashedNoteId, note => {
-        this.setNote(note);
-      });
-    }
-  }
-
   handleDelUndel(e) {
     e.preventDefault();
     const note = this.state.note;
-    const hashedNoteId = ni.HashID(note);
+    const noteID = ni.HashID(note);
     if (ni.IsDeleted(note)) {
-      api.undeleteNote(hashedNoteId, note => {
+      action.showTemporaryMessage("Undeleting note...", 500);
+      api.undeleteNote(noteID, note => {
+        // TODO: handle error
+        action.showTemporaryMessage(`Undeleted <a href="/n/${noteID}" target="_blank">note</a>.`);
         this.setNote(note);
       });
     } else {
-      api.deleteNote(hashedNoteId, note => {
+      action.showTemporaryMessage("Moving note to trash...", 500);
+      api.deleteNote(noteID, note => {
+        // TODO: handle error
+        action.showTemporaryMessage(`Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
         this.setNote(note);
       });
     }
@@ -163,11 +139,56 @@ export default class AppNote extends Component {
   handlePermanentDelete(e) {
     e.preventDefault();
     const note = this.state.note;
-    const hashedNoteId = ni.HashID(note);
-    api.permanentDeleteNote(hashedNoteId, () => {
+    const noteID = ni.HashID(note);
+    action.showTemporaryMessage("Permanently deleting note...", 500);
+    api.permanentDeleteNote(noteID, () => {
       // TODO: handle error
+      // TODO: allow undoe
+      action.showTemporaryMessage(`Permanently deleted note.`);
       this.setNote(null);
     });
+  }
+
+  handleMakePublicPrivate(e) {
+    const note = this.state.note;
+    // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
+    const noteID = ni.HashID(note);
+    if (ni.IsPublic(note)) {
+      action.showTemporaryMessage("Making note private...", 500);
+      api.makeNotePrivate(noteID, note => {
+        // TODO: handle error
+        action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> private.`);
+        this.setNote(note);
+      });
+    } else {
+      action.showTemporaryMessage("Making note public...", 500);
+      api.makeNotePublic(noteID, note => {
+        // TODO: handle error
+        action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> public.`);
+        this.setNote(note);
+      });
+    }
+  }
+
+  handleStarUnstarNote(e) {
+    const note = this.state.note;
+    // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
+    const noteID = ni.HashID(note);
+    if (ni.IsStarred(note)) {
+      action.showTemporaryMessage("Un-starring a note...", 500);
+      api.unstarNote(noteID, note => {
+        // TODO: handle error
+        action.showTemporaryMessage(`Unstarred <a href="/n/${noteID}" target="_blank">note</a>.`);
+        this.setNote(note);
+      });
+    } else {
+      action.showTemporaryMessage("Starring a note...", 500);
+      api.starNote(noteID, note => {
+        // TODO: handle error
+        action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
+        this.setNote(note);
+      });
+    }
   }
 
   renderEdit(note) {
@@ -266,6 +287,8 @@ export default class AppNote extends Component {
         <Settings />
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
+        <Editor />
+        <TemporaryMessage />
       </div>
       );
   }
