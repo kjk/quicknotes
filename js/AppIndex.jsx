@@ -8,6 +8,7 @@ import ImportSimpleNote from './ImportSimpleNote.jsx';
 import NotesList from './NotesList.jsx';
 import SearchResults from './SearchResults.jsx';
 import Settings from './Settings.jsx';
+import TemporaryMessage from './TemporaryMessage.jsx';
 import Top from './Top.jsx';
 
 import * as action from './action.js';
@@ -52,6 +53,7 @@ export default class AppIndex extends Component {
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
         <Editor />
+        <TemporaryMessage />
       </div>
       );
   }

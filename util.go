@@ -119,10 +119,15 @@ func hashInt(n int) string {
 	return res
 }
 
+// TODO: hashID.Decode() may panic, so either wrap it inside recover()
+// or fork go-hashids to change Decode() to not panic.
 func dehashInt(s string) (int, error) {
+	if len(s) == 0 {
+		return -1, fmt.Errorf("dehashInt: invalid valude '%s'", s)
+	}
 	hashIDMu.Lock()
+	defer hashIDMu.Unlock()
 	nums := hashID.Decode(s)
-	hashIDMu.Unlock()
 	if len(nums) != 1 {
 		return -1, fmt.Errorf("dehashInt: invalid valude '%s'", s)
 	}

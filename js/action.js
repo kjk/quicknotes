@@ -84,6 +84,7 @@ const editNewNoteCmd = 'editNewNoteCmd';
 const editNoteCmd = 'editNoteCmd';
 const startSearchDelayedCmd = 'startSearchDelayedCmd';
 const clearSearchTermCmd = 'clearSearchTermCmd';
+const showTemporaryMessageCmd = 'showTemporaryMessageCmd';
 
 /* --------------------- */
 export function tagSelected(tag) {
@@ -159,4 +160,13 @@ export function clearSearchTerm() {
 
 export function onClearSearchTerm(cb, owner) {
   return on(clearSearchTermCmd, cb, owner);
+}
+
+/* --------------------- */
+export function showTemporaryMessage(msg, delayMs) {
+  broadcast(showTemporaryMessageCmd, msg, delayMs);
+}
+
+export function onShowTemporaryMessage(cb, owner) {
+  return on(showTemporaryMessageCmd, cb, owner);
 }

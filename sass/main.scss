@@ -258,7 +258,7 @@ a {
 #header {
   top: 0; left: 0; right: 0;
   height: 45px;
-  z-index: 4;
+  z-index: 2;
   align-items: center;
 
   #logo {
@@ -1017,6 +1017,27 @@ button.close {
   margin-bottom: 16px;
   font-size: 18px;
   color: red;
+}
+
+.temporary-message {
+  position: absolute;
+  display: inline;
+
+  background-color: #FFE500;
+  color: #361E00;
+  padding: 4px 8px 8px 8px;
+
+  border: 2px solid orange;
+  border-top: none;
+  border: none;
+  top: 0px;
+  border-radius: 8px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 30;
 }
 
 @import 'editor';

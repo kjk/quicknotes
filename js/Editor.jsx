@@ -769,9 +769,16 @@ export default class Editor extends Component {
       isShowing: false,
       note: newEmptyNote()
     });
-    // TODO: show a message that is saving, remove when finished
-    // important UI feedback when network is slow/unreliable
-    api.createOrUpdateNote(noteJSON, () => {
+    action.showTemporaryMessage('Saving note...', 500);
+    const isNewNote = note.id;
+    api.createOrUpdateNote(noteJSON, res => {
+      // TODO: handle error
+      let hashID = '';
+      if (res) {
+        hashID = res.HashID;
+      }
+      let msg = isNewNote ? `Updated <a href="/n/${hashID}" target="_blank">a note</a>.` : `Created <a href="/n/${hashID}" target="_blank">a note</a>.`;
+      action.showTemporaryMessage(msg);
       action.reloadNotes(false);
     });
   }

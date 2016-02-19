@@ -600,8 +600,14 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 	return &newNote
 }
 
-// POST /api/createorupdatenote
-//  noteJSON : note serialized as json in array format
+/*
+POST /api/createorupdatenote
+   noteJSON : note serialized as json in array format
+returns:
+  {
+    HashID: $hashID
+  }
+*/
 func handleAPICreateOrUpdateNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	note := newNoteFromArgs(r)
