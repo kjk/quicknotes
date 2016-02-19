@@ -210,7 +210,7 @@ func (n *Note) SetSnippet() {
 	// TODO: make this trimming when we create snippet sha1
 	snippetBytes, n.IsTruncated = getShortSnippet(snippet)
 	n.Snippet = strings.TrimSpace(string(snippetBytes))
-	//log.Infof("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
+	//log.Verbosef("note: %d, snippet size: %d\n", n.Id, len(n.CachedSnippet))
 }
 
 // SetCalculatedProperties calculates some props
@@ -568,7 +568,7 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 
 	noteSize := len(note.content)
 
-	//log.Infof("inserting new version of note %d\n", noteID)
+	//log.Verbosef("inserting new version of note %d\n", noteID)
 	serializedTags := serializeTags(note.tags)
 	vals := NewDbVals("versions", 11)
 	vals.Add("note_id", noteID)
@@ -713,7 +713,7 @@ func dbUndeleteNote(userID, noteID int) error {
 }
 
 func dbSetNotePublicState(userID, noteID int, isPublic bool) error {
-	log.Infof("userID: %d, noteID: %d, isPublic: %v\n", userID, noteID, isPublic)
+	log.Verbosef("userID: %d, noteID: %d, isPublic: %v\n", userID, noteID, isPublic)
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
 	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`
@@ -734,7 +734,7 @@ func dbMakeNotePrivate(userID, noteID int) error {
 }
 
 func dbSetNoteStarredState(userID, noteID int, isStarred bool) error {
-	log.Infof("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
+	log.Verbosef("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
 	db := getDbMust()
 	// matching against user_id is not necessary, added just to prevent potential bugs
 	q := `UPDATE notes SET is_starred=? WHERE id=? AND user_id=?`

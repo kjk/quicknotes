@@ -342,7 +342,7 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("logged in as GitHub user: %s\n", *user.Login)
+	log.Verbosef("logged in as GitHub user: %s\n", *user.Login)
 	githubLogin := *user.Login
 	fullName := *user.Name
 
@@ -357,7 +357,7 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
+	log.Verbosef("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}
@@ -438,7 +438,7 @@ func handleOauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	log.Infof("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
+	log.Verbosef("got or created user %d, login: '%s'\n", dbUser.ID, userLogin)
 	cookieVal := &SecureCookieValue{
 		UserID: dbUser.ID,
 	}

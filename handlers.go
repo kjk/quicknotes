@@ -145,7 +145,7 @@ func loadResourcesFromZipReader(zr *zip.Reader) error {
 		if name == "s/dist/bundle.min.js" {
 			name = "s/dist/bundle.js"
 		}
-		//log.Infof("Loaded '%s' of size %d bytes\n", name, len(d))
+		//log.Verbosef("Loaded '%s' of size %d bytes\n", name, len(d))
 		resourcesFromZip[name] = d
 	}
 	return nil
@@ -182,7 +182,7 @@ func loadResourcesFromZip(path string) error {
 func loadResourcesFromEmbeddedZip() error {
 	timeStart := time.Now()
 	defer func() {
-		log.Infof(" in %s\n", time.Since(timeStart))
+		log.Verbosef(" in %s\n", time.Since(timeStart))
 	}()
 
 	n := len(resourcesZipData)
@@ -204,7 +204,7 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 	data := resourcesFromZip[path]
 	gzippedData := resourcesFromZip[path+".gz"]
 
-	log.Infof("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
+	log.Verbosef("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
 
 	if data == nil {
 		log.Errorf("no data for file '%s'\n", path)
@@ -279,7 +279,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	if u.PathExists(path) {
 		http.ServeFile(w, r, path)
 	} else {
-		log.Infof("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
+		log.Verbosef("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
 		http.NotFound(w, r)
 	}
 }
@@ -582,7 +582,7 @@ func newNoteFromArgs(r *http.Request) *NewNote {
 		log.Errorf("json.Unmarshal('%s') failed with %s", noteJSON, err)
 		return nil
 	}
-	//log.Infof("note: %s\n", noteJSON)
+	//log.Verbosef("note: %s\n", noteJSON)
 	if !isValidFormat(note.Format) {
 		log.Errorf("invalid format %s\n", note.Format)
 		return nil

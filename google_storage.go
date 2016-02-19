@@ -71,7 +71,7 @@ func testListObjects() {
 			log.Errorf("storage.ListObjects() failed with %s\n", err)
 			return
 		}
-		//log.Infof("%d objects\n", len(objects.Results))
+		//log.Verbosef("%d objects\n", len(objects.Results))
 		//for _, obj := range objects.Results {
 		//	fmt.Printf("name: %s, size: %v\n", obj.Name, obj.Size)
 		//}
@@ -81,7 +81,7 @@ func testListObjects() {
 			break
 		}
 	}
-	log.Infof("listed %d objects in %s\n", nTotal, time.Since(timeStart))
+	log.Verbosef("listed %d objects in %s\n", nTotal, time.Since(timeStart))
 }
 
 func noteGoogleStoragePath(sha1 []byte) string {
@@ -141,6 +141,6 @@ func readNoteFromGoogleStorage(sha1 []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("downloaded %s from google storage in %s\n", path, time.Since(timeStart))
+	log.Verbosef("downloaded %s from google storage in %s\n", path, time.Since(timeStart))
 	return d, nil
 }

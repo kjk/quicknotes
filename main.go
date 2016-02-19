@@ -224,7 +224,12 @@ func main() {
 	_, err = dbGetOrCreateUser("email:quicknotes@quicknotes.io", "QuickNotes")
 	fatalIfErr(err, "dbGetOrCreateUser")
 
+	if !flgIsLocal {
+		sendBootMail()
+	}
+
 	startWebServer()
+
 	// TODO: this isn't actually called
 	localStore.Close()
 }
