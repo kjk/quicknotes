@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"log"
 	"mime"
 	"path/filepath"
 	"runtime"
@@ -12,11 +11,13 @@ import (
 	"sync"
 	"unicode"
 
+	"github.com/kjk/log"
 	"github.com/kjk/u"
 	"github.com/speps/go-hashids"
 )
 
 var (
+	// TODO: not sure if I need this
 	hashIDMu sync.Mutex
 	hashID   *hashids.HashID
 )
@@ -119,15 +120,24 @@ func hashInt(n int) string {
 	return res
 }
 
+// hashID.Decode() can panic, so guard against that
+func dehashIntSafe(s string) []int {
+	var res []int
+	defer func() {
+		if r := recover(); r != nil {
+			res = nil
+		}
+	}()
+	res = hashID.Decode(s)
+	return res
+}
+
 // TODO: hashID.Decode() may panic, so either wrap it inside recover()
 // or fork go-hashids to change Decode() to not panic.
 func dehashInt(s string) (int, error) {
-	if len(s) == 0 {
-		return -1, fmt.Errorf("dehashInt: invalid valude '%s'", s)
-	}
 	hashIDMu.Lock()
 	defer hashIDMu.Unlock()
-	nums := hashID.Decode(s)
+	nums := dehashIntSafe(s)
 	if len(nums) != 1 {
 		return -1, fmt.Errorf("dehashInt: invalid valude '%s'", s)
 	}
