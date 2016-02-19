@@ -32,7 +32,7 @@ export default class LogInLink extends Component {
     return (
       <div id="login-link">
         <a href={ userUrl } className="header-link">
-          { u.Handle } <i className="fa fa-chevron-down user-chevron"></i></a>
+          { u.Handle } <i className="fa fa-chevron-down login-chevron"></i></a>
         <div className="dropdown-content">
           <a href={ userUrl }>My notes</a>
           { false ?
@@ -56,7 +56,7 @@ export default class LogInLink extends Component {
     const githubUrl = '/logingithub?redir=' + redir;
     return (
       <div id="login-link">
-        <span className="header-link">Sign in / Sign up <i className="fa fa-chevron-down user-chevron"></i></span>
+        <span className="header-link">Sign in / Sign up <i className="fa fa-chevron-down login-chevron"></i></span>
         <div className="log-in-dropdown-content">
           <ul className="log-in">
             <li>

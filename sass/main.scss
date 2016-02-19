@@ -280,6 +280,10 @@ a {
   }
 }
 
+.flex-push-right {
+  margin-left: auto;
+}
+
 .header-link {
   display: block;
   height: 45px;
@@ -287,6 +291,7 @@ a {
   padding: 0 0 0 16px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
 
   &:visited {
     color: rgba(0, 0, 0, 0.6);
@@ -297,7 +302,7 @@ a {
   }
 }
 
-.user-chevron {
+.login-chevron {
   padding-left: 4px;
   padding-right: 12px;
   font-size: 10px;
@@ -307,7 +312,7 @@ a {
 
 #login-link {
   cursor: pointer;
-  margin-left: auto;
+  white-space: nowrap;
 
   &:hover .dropdown-content {
     display: block;

@@ -121,6 +121,7 @@ export default class Top extends Component {
             autoComplete="off"
             autoCapitalize="off"
             placeholder={ placeholder } /> : null }
+        <div className="flex-push-right"></div>
         { userUrl ?
           <a href={ userUrl } className="header-link">My Notes</a> : null }
         <LogInLink />
