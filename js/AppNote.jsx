@@ -11,6 +11,7 @@ import Editor from './Editor.jsx';
 import ImportSimpleNote from './ImportSimpleNote.jsx';
 import SearchResults from './SearchResults.jsx';
 import Settings from './Settings.jsx';
+import TemporaryMessage from './TemporaryMessage.jsx';
 import Top from './Top.jsx';
 
 import { escapeHtml } from './utils.js';
@@ -318,6 +319,7 @@ export default class AppNote extends Component {
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
         <Editor />
+        <TemporaryMessage />
       </div>
       );
   }

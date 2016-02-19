@@ -10,6 +10,7 @@ import NotesList from './NotesList.jsx';
 import Router from './Router.js';
 import SearchResults from './SearchResults.jsx';
 import Settings from './Settings.jsx';
+import TemporaryMessage from './TemporaryMessage.jsx';
 import Top from './Top.jsx';
 
 import * as u from './utils.js';
@@ -173,6 +174,7 @@ export default class AppUser extends Component {
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
         <ImportSimpleNote />
         <Editor />
+        <TemporaryMessage />
       </div>
       );
   }
