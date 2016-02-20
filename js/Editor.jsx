@@ -13,7 +13,7 @@ import * as action from './action.js';
 import * as ni from './noteinfo.js';
 import { debounce } from './utils.js';
 import { toHtml } from './md.js';
-import { isUndefined, deepCloneObject, strArrRemoveDups } from './utils.js';
+import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils.js';
 import * as api from './api.js';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
@@ -713,7 +713,8 @@ export default class Editor extends Component {
 
   escPressed() {
     if (!this.state.isShowing) {
-      return;
+      focusSearch();
+      return false;
     }
     if (!didNoteChange(this.initialNote, this.state.note)) {
       this.setState({
@@ -721,6 +722,7 @@ export default class Editor extends Component {
         note: newEmptyNote()
       });
     }
+    return false;
   }
 
   handleDragBarMoved(y) {
