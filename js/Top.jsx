@@ -6,11 +6,12 @@ import { focusSearch, isLoggedIn } from './utils.js';
 
 // by default all keypresses are filtered
 function keyFilter(event) {
-  // always allow ESC and ctrl-enter
+  // always allow ESC
   if (event.keyCode == 27) {
     return true;
   }
-  if (event.keyCode == 13 && event.ctrlKey) {
+  // always allow ctrl-enter
+  if (event.ctrlKey && event.keyCode == 13) {
     return true;
   }
   // standard key filter, disable if inside those elements
@@ -38,17 +39,20 @@ export default class Top extends Component {
     action.onClearSearchTerm(this.handleClearSearchTerm, this);
 
     keymaster.filter = keyFilter;
-    keymaster('ctrl+f', focusSearch);
-    keymaster('ctrl+n', () => action.editNewNote());
-    //keymaster('ctrl+e', focusNewNote);
+    keymaster('/', () => {
+      focusSearch(); return false;
+    });
+    keymaster('n', () => {
+      action.editNewNote(); return false;
+    });
   }
 
   componentWillUnmount() {
     action.offAllForOwner(this);
 
-    keymaster.unbind('ctrl+f');
-    keymaster.unbind('ctrl+n');
-    //keymaster.unbind('ctrl+e');
+    keymaster.unbind('esc');
+    keymaster.unbind('/');
+    keymaster.unbind('n');
   }
 
   handleClearSearchTerm() {
@@ -93,10 +97,10 @@ export default class Top extends Component {
       userUrl = '/u/' + gLoggedUser.HashID + '/' + gLoggedUser.Handle;
     }
 
-    let placeholder = 'Search your notes (Ctrl-F)';
+    let placeholder = 'Search your notes (Esc or /)';
     if (gNotesUser) {
       if (!gLoggedUser || (gLoggedUser.HashID != gNotesUser.HashID)) {
-        placeholder = `Search public notes by ${gNotesUser.Handle} (Ctrl-F)`;
+        placeholder = `Search public notes by ${gNotesUser.Handle} (Esc or /)`;
         this.searchNotesUser = gNotesUser.HashID;
       }
     }
@@ -108,7 +112,7 @@ export default class Top extends Component {
       <div id="header" className="flex-row">
         <a id="logo" className="logo colored" href="/">QuickNotes</a>
         { userUrl ?
-          <button className="btn btn-new-note hint--bottom" data-hint="Ctrl-N" onClick={ this.handleEditNewNote }>
+          <button className="btn btn-new-note hint--bottom" data-hint="shortcut: n" onClick={ this.handleEditNewNote }>
             New note
           </button> : null }
         { withSearchInput ?

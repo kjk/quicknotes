@@ -99,7 +99,9 @@ export function dictInc(d, key) {
 export function focusSearch() {
   //console.log('focusSearch');
   const el = document.getElementById('search-input');
-  el.focus();
+  if (el) {
+    el.focus();
+  }
 }
 
 // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
