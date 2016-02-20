@@ -961,6 +961,7 @@ export default class Editor extends Component {
     if (!note.isMarkdown()) {
       return;
     }
+    this.setFocusInUpdate = true;
     this.savedCodeMirrorState = getCodeMirrorState(this.cm);
     const isShowing = !this.state.isShowingPreview;
     this.setState({
