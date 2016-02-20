@@ -270,7 +270,7 @@ $successColor: hsl(121, 32%, 40%) !default;
      * tooltip body
      */
     &:after {
-        text-shadow: 0 -1px 0px darken($defaultColor, $textShadowDarkenAmount);
+        // text-shadow: 0 -1px 0px darken($defaultColor, $textShadowDarkenAmount);
         box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
     }
 }
@@ -293,7 +293,7 @@ $successColor: hsl(121, 32%, 40%) !default;
 @mixin hint-type($color) {
     &:after {
         background-color: $color;
-        text-shadow: 0 -1px 0px darken($color, $textShadowDarkenAmount);
+        // text-shadow: 0 -1px 0px darken($color, $textShadowDarkenAmount);
     }
 
     // generate arrow color style
