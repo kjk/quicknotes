@@ -175,14 +175,14 @@ export default class AppNote extends Component {
     // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     const noteID = ni.HashID(note);
     if (ni.IsStarred(note)) {
-      action.showTemporaryMessage('Un-starring a note...', 500);
+      action.showTemporaryMessage('Un-starring the note...', 500);
       api.unstarNote(noteID, note => {
         // TODO: handle error
         action.showTemporaryMessage(`Unstarred <a href="/n/${noteID}" target="_blank">note</a>.`);
         this.setNote(note);
       });
     } else {
-      action.showTemporaryMessage('Starring a note...', 500);
+      action.showTemporaryMessage('Starring the note...', 500);
       api.starNote(noteID, note => {
         // TODO: handle error
         action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
