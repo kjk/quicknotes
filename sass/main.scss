@@ -35,7 +35,8 @@ body {
   font-weight: 500;
 }
 
-pre {
+pre > code {
+  display: block;
   border: 1px solid lightblue;
   padding: 2px;
 }
