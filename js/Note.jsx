@@ -176,24 +176,24 @@ export default class Note extends Component {
         <a className="note-action"
           href="#"
           onClick={ this.handleDelUndel }
-          title="Undelete"><i className="fa fa-undo"></i></a>
+          title="Undelete">undelete</a>
         );
     }
     return (
-      <a className="note-action"
+      <a className="note-action delete"
         href="#"
         onClick={ this.handleDelUndel }
-        title="Move to Trash"><i className="fa fa-trash-o"></i></a>
+        title="Move to Trash">delete</a>
       );
   }
 
   renderPermanentDelete(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a className="note-action"
+        <a className="note-action delete"
           href="#"
           onClick={ this.handlePermanentDelete }
-          title="Delete permanently"><i className="fa fa-trash-o"></i></a>
+          title="Delete permanently">delete permanently</a>
         );
     }
   }
@@ -209,7 +209,7 @@ export default class Note extends Component {
         <a className="note-action"
           href="#"
           onClick={ this.handleEdit }
-          title="Edit note"><i className="fa fa-pencil"></i></a>
+          title="Edit note">edit</a>
         );
     }
   }
@@ -224,7 +224,7 @@ export default class Note extends Component {
       <a className="note-action"
         href={ url }
         target="_blank"
-        title="View note"><i className="fa fa-external-link"></i></a>
+        title="View note">view</a>
       );
   }
 
@@ -243,14 +243,14 @@ export default class Note extends Component {
         <a className="note-action"
           href="#"
           onClick={ this.handleMakePublicPrivate }
-          title="Make private"><i className="fa fa-unlock"></i></a>
+          title="Make private">make private</a>
         );
     } else {
       return (
         <a className="note-action"
           href="#"
           onClick={ this.handleMakePublicPrivate }
-          title="Make public"><i className="fa fa-lock"></i></a>
+          title="Make public">make public</a>
         );
     }
   }
