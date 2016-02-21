@@ -617,13 +617,20 @@ pre.note-body {
     .note-actions {
       position: absolute;
       top: 0; right: 0;
+      background: white;
+      // border: 1px solid lightgray;
+
       .note-action {
-        width: 20px;
-        height: $note-header-dy;
-        line-height: $note-header-dy;
+        font-size: $font-size-note-tag;
         text-align: center;
         overflow: hidden;
-        margin-left: 6px;
+        margin-left: 12px;
+      }
+
+      .delete {
+        &:hover {
+          color: red;
+        }
       }
     }
 
