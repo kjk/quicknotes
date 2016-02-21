@@ -32,7 +32,7 @@ export default class AppIndex extends Component {
   }
 
   handleSearchResultSelected(noteHashID) {
-    console.log('search note selected: ' + noteHashID);
+    // console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
     const win = window.open(url, '_blank');
@@ -40,7 +40,7 @@ export default class AppIndex extends Component {
   }
 
   render() {
-    console.log('AppIndex: gLoggedUser: ', gLoggedUser);
+    // console.log('AppIndex: gLoggedUser: ', gLoggedUser);
     const notes = this.state.notes;
     return (
       <div>
