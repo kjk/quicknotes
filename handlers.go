@@ -59,8 +59,9 @@ func (t *Timing) Start(what string) {
 }
 
 // Finished marks an end of an event
-func (t *Timing) Finished() {
+func (t *Timing) Finished() time.Duration {
 	t.Duration = time.Since(t.TimeStart)
+	return t.Duration
 }
 
 // ReqContext contains data that is useful to access in every http handler
@@ -82,7 +83,17 @@ func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
 		uri := r.URL.Path
 		ctx := &ReqContext{}
 		timing := ctx.NewTimingf("uri: %s", uri)
-		defer timing.Finished()
+		rrw := NewRecordingResponseWriter(w)
+		defer func() {
+			referer := getReferer(r)
+			dur := timing.Finished()
+			ip := getIPAddress(r)
+			userID := 0
+			if ctx.User != nil {
+				userID = ctx.User.id
+			}
+			logHTTP(uri, referer, ip, rrw.Code, rrw.BytesWritten, userID, dur)
+		}()
 		ctx.User = getUserSummaryFromCookie(w, r)
 
 		isJSON := opts&IsJSON != 0
@@ -238,15 +249,6 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	/*
-		name := r.URL.Path[1:]
-		if strings.HasSuffix(name, ".html") {
-			path := filepath.Join("s", name)
-			if u.PathExists(path) {
-				http.ServeFile(w, r, path)
-				return
-			}
-		}*/
 
 	if ctx.User != nil {
 		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, ctx.User.id, ctx.User.HashID, ctx.User.Handle)
@@ -285,7 +287,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 }
 
 // /u/${userId}/${whatever}
-func handleUser(w http.ResponseWriter, r *http.Request) {
+func handleUser(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	userHashID := r.URL.Path[len("/u/"):]
 	userHashID = strings.Split(userHashID, "/")[0]
 	userID, err := dehashInt(userHashID)
@@ -300,15 +302,14 @@ func handleUser(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	loggedUser := getUserSummaryFromCookie(w, r)
-	notesUser := *userSummaryFromDbUser(i.user)
+	notesUser := userSummaryFromDbUser(i.user)
 	log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, userHashID)
 	model := struct {
 		LoggedUser *UserSummary
-		NotesUser  UserSummary
+		NotesUser  *UserSummary
 		Notes      []*Note
 	}{
-		LoggedUser: loggedUser,
+		LoggedUser: ctx.User,
 		NotesUser:  notesUser,
 		Notes:      i.notes,
 	}
@@ -814,7 +815,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
-	http.HandleFunc("/u/", handleUser)
+	http.HandleFunc("/u/", withCtx(handleUser, 0))
 	http.HandleFunc("/n/", withCtx(handleNote, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
