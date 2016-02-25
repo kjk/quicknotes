@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,6 +37,9 @@ var (
 	flgImportStackOverflow bool
 
 	localStore  *LocalStore
+	httpLogs    *log.DailyRotateFile
+	httpLogsCsv *csv.Writer
+
 	oauthClient = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
 		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
@@ -125,10 +130,30 @@ func listDbUsers() {
 	}
 }
 
-func openLogFileMust() {
+func openLogFilesMust() {
 	pathFormat := filepath.Join(getLogDir(), "2006-01-02.txt")
 	err := log.Open(pathFormat)
 	fatalIfErr(err, "openLogFileMust")
+
+	pathFormat = filepath.Join(getLogDir(), "2006-01-02-http.txt")
+	httpLogs, err = log.NewDailyRotateFile(pathFormat)
+	fatalIfErr(err, "openLogFileMust")
+	httpLogsCsv = csv.NewWriter(httpLogs)
+}
+
+func logHTTP(url, referer, ip string, code, nBytesWritten, userID int, dur time.Duration) {
+	t := time.Now().Unix()
+	rec := []string{
+		strconv.FormatInt(t, 10),
+		url,
+		ip,
+		referer,
+		strconv.Itoa(code),
+		strconv.Itoa(nBytesWritten),
+		strconv.Itoa(userID),
+		strconv.FormatInt(int64(dur), 10),
+	}
+	httpLogsCsv.Write(rec)
 }
 
 func debugShowNote(hashedNoteID string) {
@@ -160,7 +185,8 @@ func main() {
 	}
 
 	verifyDirs()
-	openLogFileMust()
+	openLogFilesMust()
+
 	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	initAppMust()
 
