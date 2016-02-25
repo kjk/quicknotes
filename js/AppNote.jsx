@@ -118,7 +118,7 @@ export default class AppNote extends Component {
   }
 
   handleDoubleClick(e) {
-    console.log("doubleclick");
+    console.log('doubleclick');
     e.preventDefault();
     if (this.isMyNote()) {
       this.editCurrentNote();
@@ -205,7 +205,7 @@ export default class AppNote extends Component {
 
   handleVersions(e) {
     e.preventDefault();
-    console.log("show note versions")
+    console.log('show note versions');
   }
 
   renderEdit(note) {
