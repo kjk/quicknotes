@@ -38,12 +38,14 @@ export default class AppNote extends Component {
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
 
+    this.handleDelUndel = this.handleDelUndel.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
     this.handleEditNote = this.handleEditNote.bind(this);
     this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
-    this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
-    this.handleDelUndel = this.handleDelUndel.bind(this);
     this.handlePermanentDelete = this.handlePermanentDelete.bind(this);
+    this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
+    this.handleVersions = this.handleVersions.bind(this);
 
     this.editCurrentNote = this.editCurrentNote.bind(this);
     this.isMyNote = this.isMyNote.bind(this);
@@ -56,7 +58,7 @@ export default class AppNote extends Component {
 
   componentDidMount() {
     if (this.isMyNote()) {
-      keymaster('ctrl+e', this.editCurrentNote);
+      //keymaster('ctrl+e', this.editCurrentNote);
       keymaster('ctrl+n', () => action.editNewNote());
     }
     action.onReloadNotes(this.handleReloadNotes, this);
@@ -64,7 +66,7 @@ export default class AppNote extends Component {
 
   componentWillUnmount() {
     if (this.isMyNote()) {
-      keymaster.unbind('ctrl+e');
+      //keymaster.unbind('ctrl+e');
       keymaster.unbind('ctrl+n');
     }
     action.offAllForOwner(this);
@@ -115,6 +117,14 @@ export default class AppNote extends Component {
     this.editCurrentNote();
   }
 
+  handleDoubleClick(e) {
+    console.log("doubleclick");
+    e.preventDefault();
+    if (this.isMyNote()) {
+      this.editCurrentNote();
+    }
+  }
+
   handleDelUndel(e) {
     e.preventDefault();
     const note = this.state.note;
@@ -150,6 +160,7 @@ export default class AppNote extends Component {
   }
 
   handleMakePublicPrivate(e) {
+    e.preventDefault();
     const note = this.state.note;
     // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
     const noteID = ni.HashID(note);
@@ -171,6 +182,7 @@ export default class AppNote extends Component {
   }
 
   handleStarUnstarNote(e) {
+    e.preventDefault();
     const note = this.state.note;
     // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     const noteID = ni.HashID(note);
@@ -191,11 +203,20 @@ export default class AppNote extends Component {
     }
   }
 
+  handleVersions(e) {
+    e.preventDefault();
+    console.log("show note versions")
+  }
+
   renderEdit(note) {
     if (ni.IsDeleted(note)) {
       return;
     }
-    return <a href="#" onClick={ this.handleEditNote }>Edit (Ctrl-E)</a>;
+    return <a href="#" onClick={ this.handleEditNote }>Edit</a>;
+  }
+
+  renderVersions(note) {
+    //return <a href="#" onClick={ this.handleVersions }>Versions</a>;
   }
 
   renderStarUnstar(note) {
@@ -239,13 +260,13 @@ export default class AppNote extends Component {
       const html = {
         __html: linkify2(body)
       };
-      return <pre dangerouslySetInnerHTML={ html }></pre>;
+      return <pre onDoubleClick={ this.handleDoubleClick } dangerouslySetInnerHTML={ html }></pre>;
     }
     const html = {
       __html: toHtml(body)
     };
 
-    return <div dangerouslySetInnerHTML={ html }></div>;
+    return <div onDoubleClick={ this.handleDoubleClick } dangerouslySetInnerHTML={ html }></div>;
   }
 
   renderTags(tags) {
