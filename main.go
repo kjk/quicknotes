@@ -126,7 +126,8 @@ func listDbUsers() {
 }
 
 func openLogFileMust() {
-	err := log.Open(getLogDir(), ".txt")
+	pathFormat := filepath.Join(getLogDir(), "2006-01-02.txt")
+	err := log.Open(pathFormat)
 	fatalIfErr(err, "openLogFileMust")
 }
 
