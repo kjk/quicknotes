@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
@@ -36,9 +37,10 @@ var (
 	flgListUsers           bool
 	flgImportStackOverflow bool
 
-	localStore  *LocalStore
-	httpLogs    *log.DailyRotateFile
-	httpLogsCsv *csv.Writer
+	localStore      *LocalStore
+	httpLogs        *log.DailyRotateFile
+	httpLogsCsv     *csv.Writer
+	httpLogCsvMutex sync.Mutex
 
 	oauthClient = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
@@ -153,7 +155,9 @@ func logHTTP(url, referer, ip string, code, nBytesWritten, userID int, dur time.
 		strconv.Itoa(userID),
 		strconv.FormatInt(int64(dur), 10),
 	}
+	httpLogCsvMutex.Lock()
 	httpLogsCsv.Write(rec)
+	httpLogCsvMutex.Unlock()
 }
 
 func debugShowNote(hashedNoteID string) {
