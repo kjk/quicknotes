@@ -150,14 +150,14 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 	ip := getIPAddress(r)
 	referer := getReferer(r)
 	rec := []string{
-		strconv.FormatInt(t, 10),
-		uri,
-		ip,
-		referer,
-		strconv.Itoa(code),
-		strconv.Itoa(nBytesWritten),
-		strconv.Itoa(userID),
-		strconv.FormatInt(int64(dur), 10),
+		strconv.FormatInt(t, 10), // 0
+		uri,                               // 1
+		ip,                                // 2
+		referer,                           // 3
+		strconv.Itoa(code),                // 4
+		strconv.Itoa(nBytesWritten),       // 5
+		strconv.Itoa(userID),              // 6
+		strconv.FormatInt(int64(dur), 10), // 7
 	}
 	httpLogCsvMutex.Lock()
 	httpLogsCsv.Write(rec)
