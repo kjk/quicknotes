@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -143,11 +144,14 @@ func openLogFilesMust() {
 	httpLogsCsv = csv.NewWriter(httpLogs)
 }
 
-func logHTTP(url, referer, ip string, code, nBytesWritten, userID int, dur time.Duration) {
+func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration) {
 	t := time.Now().Unix()
+	uri := r.URL.String()
+	ip := getIPAddress(r)
+	referer := getReferer(r)
 	rec := []string{
 		strconv.FormatInt(t, 10),
-		url,
+		uri,
 		ip,
 		referer,
 		strconv.Itoa(code),
@@ -157,6 +161,7 @@ func logHTTP(url, referer, ip string, code, nBytesWritten, userID int, dur time.
 	}
 	httpLogCsvMutex.Lock()
 	httpLogsCsv.Write(rec)
+	httpLogsCsv.Flush()
 	httpLogCsvMutex.Unlock()
 }
 
