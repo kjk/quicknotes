@@ -85,14 +85,12 @@ func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
 		timing := ctx.NewTimingf("uri: %s", uri)
 		rrw := NewRecordingResponseWriter(w)
 		defer func() {
-			referer := getReferer(r)
 			dur := timing.Finished()
-			ip := getIPAddress(r)
 			userID := 0
 			if ctx.User != nil {
 				userID = ctx.User.id
 			}
-			logHTTP(uri, referer, ip, rrw.Code, rrw.BytesWritten, userID, dur)
+			logHTTP(r, rrw.Code, rrw.BytesWritten, userID, dur)
 		}()
 		ctx.User = getUserSummaryFromCookie(w, r)
 
