@@ -159,6 +159,7 @@ type NewNote struct {
 	createdAt   time.Time
 	isDeleted   bool
 	isPublic    bool
+	isStarred   bool
 	contentSha1 []byte
 }
 
@@ -171,6 +172,7 @@ func newNoteFromNote(n *Note) (*NewNote, error) {
 		createdAt:   n.CreatedAt,
 		isDeleted:   n.IsDeleted,
 		isPublic:    n.IsPublic,
+		isStarred:   n.IsStarred,
 		contentSha1: n.ContentSha1,
 	}
 	nn.content, err = getCachedContent(nn.contentSha1)
@@ -461,96 +463,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	return int(noteID), err
 }
 
-func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote)) error {
-	note, err := dbGetNoteByID(noteID)
-	if err != nil {
-		return err
-	}
-	if userID != note.userID {
-		return fmt.Errorf("mismatched note user. noteID: %d, userID: %d, note.userID: %d", noteID, userID, note.userID)
-	}
-	newNote, err := newNoteFromNote(note)
-	if err != nil {
-		return err
-	}
-	updateFn(newNote)
-	// TODO: wasteful, because will call dbGetNoteByID() again
-	_, err = dbUpdateNote(userID, newNote)
-	return err
-}
-
-func dbUpdateNoteTitle(userID, noteID int, newTitle string) error {
-	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) {
-		newNote.title = newTitle
-	})
-}
-
-func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
-	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) {
-		newNote.tags = newTags
-	})
-}
-
-func needsNewNoteVersion(note *NewNote, existingNote *Note) bool {
-	if !bytes.Equal(note.contentSha1, existingNote.ContentSha1) {
-		return true
-	}
-	if note.format != existingNote.Format {
-		return true
-	}
-	if note.title != existingNote.Title {
-		return true
-	}
-	if !strArrEqual(note.tags, existingNote.Tags) {
-		return true
-	}
-	if note.isDeleted != existingNote.IsDeleted {
-		return true
-	}
-	if note.isPublic != existingNote.IsPublic {
-		return true
-	}
-	// TODO: add checks for is_starred
-	return false
-}
-
-func dbGetSelectCount(query string) (int, error) {
-	db := getDbMust()
-	n := 0
-	err := db.QueryRow(query).Scan(&n)
-	return n, err
-}
-
-func dbGetUsersCount() (int, error) {
-	return dbGetSelectCount(`SELECT count(*) from users`)
-}
-
-func dbGetNotesCount() (int, error) {
-	return dbGetSelectCount(`SELECT count(*) from notes`)
-}
-
-func dbGetVersionsCount() (int, error) {
-	return dbGetSelectCount(`SELECT count(*) from versions`)
-}
-
-func dbUpdateNote(userID int, note *NewNote) (int, error) {
-	noteID, err := dehashInt(note.hashID)
-	if err != nil {
-		return 0, err
-	}
-	existingNote, err := dbGetNoteByID(noteID)
-	if err != nil {
-		return 0, err
-	}
-	if existingNote.userID != userID {
-		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
-	}
-
-	// don't create new versions if not necessary
-	if !needsNewNoteVersion(note, existingNote) {
-		return noteID, nil
-	}
-
+func dbUpdateNote2(noteID int, note *NewNote) (int, error) {
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -568,7 +481,7 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 
 	noteSize := len(note.content)
 
-	//log.Verbosef("inserting new version of note %d\n", noteID)
+	// log.Verbosef("inserting new version of note %d\n", noteID)
 	serializedTags := serializeTags(note.tags)
 	vals := NewDbVals("versions", 11)
 	vals.Add("note_id", noteID)
@@ -580,7 +493,7 @@ func dbUpdateNote(userID int, note *NewNote) (int, error) {
 	vals.Add("tags", serializedTags)
 	vals.Add("is_deleted", note.isDeleted)
 	vals.Add("is_public", note.isPublic)
-	vals.Add("is_starred", false)
+	vals.Add("is_starred", note.isStarred)
 	vals.Add("is_encrypted", false)
 
 	res, err := vals.TxInsert(tx)
@@ -605,6 +518,7 @@ UPDATE notes SET
   tags=?,
   is_public=?,
   is_deleted=?,
+  is_starred=?,
   curr_version_id=?,
   versions_count = versions_count + 1
 WHERE id=?`
@@ -617,6 +531,7 @@ WHERE id=?`
 		serializedTags,
 		note.isPublic,
 		note.isDeleted,
+		note.isStarred,
 		versionID,
 		noteID)
 	if err != nil {
@@ -627,6 +542,107 @@ WHERE id=?`
 	err = tx.Commit()
 	tx = nil
 	return int(noteID), err
+}
+
+func dbUpdateNote(userID int, note *NewNote) (int, error) {
+	noteID, err := dehashInt(note.hashID)
+	if err != nil {
+		return 0, err
+	}
+	existingNote, err := dbGetNoteByID(noteID)
+	if err != nil {
+		return 0, err
+	}
+	if existingNote.userID != userID {
+		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
+	}
+
+	// don't create new versions if not necessary
+	if !needsNewNoteVersion(note, existingNote) {
+		return noteID, nil
+	}
+	return dbUpdateNote2(noteID, note)
+}
+
+func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote) bool) error {
+	// log.Verbosef("dbUpdateNoteWith: userID=%d, noteID=%d\n", userID, noteID)
+	defer clearCachedUserInfo(userID)
+
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		return err
+	}
+	if userID != note.userID {
+		return fmt.Errorf("mismatched note user. noteID: %d, userID: %d, note.userID: %d", noteID, userID, note.userID)
+	}
+	newNote, err := newNoteFromNote(note)
+	if err != nil {
+		return err
+	}
+	shouldUpdate := updateFn(newNote)
+	if !shouldUpdate {
+		return nil
+	}
+	_, err = dbUpdateNote2(noteID, newNote)
+	return err
+}
+
+func dbUpdateNoteTitle(userID, noteID int, newTitle string) error {
+	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) bool {
+		newNote.title = newTitle
+		return newNote.title != newTitle
+	})
+}
+
+func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
+	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) bool {
+		newNote.tags = newTags
+		return !strArrEqual(newNote.tags, newTags)
+	})
+}
+
+func needsNewNoteVersion(note *NewNote, existingNote *Note) bool {
+	if !bytes.Equal(note.contentSha1, existingNote.ContentSha1) {
+		return true
+	}
+	if note.title != existingNote.Title {
+		return true
+	}
+	if note.format != existingNote.Format {
+		return true
+	}
+	if !strArrEqual(note.tags, existingNote.Tags) {
+		return true
+	}
+	if note.isDeleted != existingNote.IsDeleted {
+		return true
+	}
+	if note.isPublic != existingNote.IsPublic {
+		return true
+	}
+	if note.isStarred != existingNote.IsStarred {
+		return true
+	}
+	return false
+}
+
+func dbGetSelectCount(query string) (int, error) {
+	db := getDbMust()
+	n := 0
+	err := db.QueryRow(query).Scan(&n)
+	return n, err
+}
+
+func dbGetUsersCount() (int, error) {
+	return dbGetSelectCount(`SELECT count(*) from users`)
+}
+
+func dbGetNotesCount() (int, error) {
+	return dbGetSelectCount(`SELECT count(*) from notes`)
+}
+
+func dbGetVersionsCount() (int, error) {
+	return dbGetSelectCount(`SELECT count(*) from versions`)
 }
 
 // create a new note. if note.createdAt is non-zero value, this is an import
@@ -692,66 +708,56 @@ WHERE note_id=?`
 	return nil
 }
 
-func dbSetNoteDeleteState(userID, noteID int, isDeleted bool) error {
-	db := getDbMust()
-	// matching against user_id is not necessary, added just to prevent potential bugs
-	q := `UPDATE notes SET is_deleted=? WHERE id=? AND user_id=?`
-	_, err := db.Exec(q, isDeleted, noteID, userID)
-	if err != nil {
-		log.Errorf("db.Exec() failed with '%s'\n", err)
-	}
-	clearCachedUserInfo(userID)
-	return err
-}
-
 func dbDeleteNote(userID, noteID int) error {
-	return dbSetNoteDeleteState(userID, noteID, true)
+	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+		shouldUpdate := !note.isDeleted
+		note.isDeleted = true
+		return shouldUpdate
+	})
 }
 
 func dbUndeleteNote(userID, noteID int) error {
-	return dbSetNoteDeleteState(userID, noteID, false)
-}
-
-func dbSetNotePublicState(userID, noteID int, isPublic bool) error {
-	log.Verbosef("userID: %d, noteID: %d, isPublic: %v\n", userID, noteID, isPublic)
-	db := getDbMust()
-	// matching against user_id is not necessary, added just to prevent potential bugs
-	q := `UPDATE notes SET is_public=? WHERE id=? AND user_id=?`
-	_, err := db.Exec(q, isPublic, noteID, userID)
-	if err != nil {
-		log.Errorf("db.Exec() failed with '%s'\n", err)
-	}
-	clearCachedUserInfo(userID)
-	return err
+	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+		shouldUpdate := note.isDeleted
+		note.isDeleted = false
+		return shouldUpdate
+	})
 }
 
 func dbMakeNotePublic(userID, noteID int) error {
-	return dbSetNotePublicState(userID, noteID, true)
+	// log.Verbosef("dbMakeNotePublic: userID=%d, noteID=%d", userID, noteID)
+	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+		shouldUpdate := !note.isPublic
+		note.isPublic = true
+		// log.Verbosef(" shouldUpdate=%v\n", shouldUpdate)
+		return shouldUpdate
+	})
 }
 
 func dbMakeNotePrivate(userID, noteID int) error {
-	return dbSetNotePublicState(userID, noteID, false)
-}
-
-func dbSetNoteStarredState(userID, noteID int, isStarred bool) error {
-	log.Verbosef("userID: %d, noteID: %d, isStarred: %v\n", userID, noteID, isStarred)
-	db := getDbMust()
-	// matching against user_id is not necessary, added just to prevent potential bugs
-	q := `UPDATE notes SET is_starred=? WHERE id=? AND user_id=?`
-	_, err := db.Exec(q, isStarred, noteID, userID)
-	if err != nil {
-		log.Errorf("db.Exec() failed with '%s'\n", err)
-	}
-	clearCachedUserInfo(userID)
-	return err
-}
-
-func dbUnstarNote(userID, noteID int) error {
-	return dbSetNoteStarredState(userID, noteID, false)
+	// log.Verbosef("dbMakeNotePrivate: userID: %d, noteID: %d\n", userID, noteID)
+	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+		shouldUpdate := note.isPublic
+		note.isPublic = false
+		return shouldUpdate
+	})
 }
 
 func dbStarNote(userID, noteID int) error {
-	return dbSetNoteStarredState(userID, noteID, true)
+	// log.Verbosef("dbStarNote: userID: %d, noteID: %d\n", userID, noteID)
+	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+		shouldUpdate := !note.isStarred
+		note.isStarred = true
+		return shouldUpdate
+	})
+}
+
+func dbUnstarNote(userID, noteID int) error {
+	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+		shouldUpdate := note.isStarred
+		note.isStarred = false
+		return shouldUpdate
+	})
 }
 
 // note: only use locally for testing search, not in production
