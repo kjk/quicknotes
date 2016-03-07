@@ -236,12 +236,18 @@ func createResourcesZip(path string) {
 }
 
 func genHexLine(f *os.File, d []byte, off, n int) {
-	f.WriteString("\t")
+	if n == 0 {
+		return
+	}
+	_, err := f.WriteString("\t")
+	fataliferr(err)
 	for i := 0; i < n; i++ {
 		b := d[off+i]
-		fmt.Fprintf(f, "0x%02x,", b)
+		_, err = fmt.Fprintf(f, "0x%02x,", b)
+		fataliferr(err)
 	}
-	f.WriteString("\n")
+	_, err = f.WriteString("\n")
+	fataliferr(err)
 }
 
 func genResourcesGo(goPath, dataPath string) {
