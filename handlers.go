@@ -340,7 +340,7 @@ func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	// log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
 	return getNoteByID(ctx, noteID)
 }
 
