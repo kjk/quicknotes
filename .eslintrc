@@ -1,15 +1,17 @@
 {
-  "ecmaFeatures": {
-    "arrowFunctions": true,
-    "blockBindings": true,
-    "classes": true,
-    "destructuring": true,
-    "forOf": true,
-    "modules": true,
-    "restParams": true,
-    "spread": true,
-    "templateStrings": true,
-    "jsx": true
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "arrowFunctions": true,
+      "blockBindings": true,
+      "classes": true,
+      "destructuring": true,
+      "forOf": true,
+      "restParams": true,
+      "spread": true,
+      "templateStrings": true,
+      "jsx": true
+    }
   },
   "rules": {
     "no-undef": 2,

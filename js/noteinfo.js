@@ -52,7 +52,8 @@ function strArrEq(a1, a2) {
   // that doesn't handle duplicate keys
 
   let d = {};
-  let i, s;
+  let i,
+    s;
   for (i = 0; i < a1.length; i++) {
     s = a1[i];
     d[s] = 1;

@@ -188,7 +188,8 @@ function getState(cm, pos) {
   var types = stat.type.split(' ');
 
   var ret = {},
-    data, text;
+    data,
+    text;
   for (var i = 0; i < types.length; i++) {
     data = types[i];
     if (data === 'strong') {
