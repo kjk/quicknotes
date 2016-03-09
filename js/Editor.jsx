@@ -606,9 +606,8 @@ export default class Editor extends Component {
       return;
     }
 
-    // for existing notes, focus in tbe editor and
-    // add position cursor at the end
-    cm.execCommand('goDocEnd');
+    // for existing notes, focus in tbe editor
+    cm.execCommand('goDocStart'); // goDocEnd
     cm.scrollIntoView();
     cm.focus();
   }
