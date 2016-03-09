@@ -278,10 +278,10 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 
 	if u.PathExists(path) {
 		http.ServeFile(w, r, path)
-	} else {
-		log.Verbosef("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
-		http.NotFound(w, r)
+		return
 	}
+	log.Verbosef("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
+	http.NotFound(w, r)
 }
 
 // /u/${userId}/${whatever}
@@ -809,12 +809,33 @@ func handleAPIUnstarNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request
 	serveNoteCompact(ctx, w, r, noteID)
 }
 
+// GET /idx/allnotes
+// args:
+// - page
+func handleIndexAllNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
+	var err error
+	log.Verbosef("url: '%s'\n", r.URL)
+	pageNo := 1
+	pageNoStr := strings.TrimSpace(r.FormValue("page"))
+	if pageNoStr != "" {
+		pageNo, err = strconv.Atoi(pageNoStr)
+		if err != nil {
+			log.Errorf("Invalid 'page' argument in '%s': '%s'\n", r.URL, pageNoStr)
+			pageNo = 0
+		}
+	}
+	log.Verbosef("pageNo: %d\n", pageNo)
+	path := notesIndexPagePath(pageNo)
+	serveMaybeGzippedFile(w, r, path)
+}
+
 func registerHTTPHandlers() {
 	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
 	http.HandleFunc("/u/", withCtx(handleUser, 0))
 	http.HandleFunc("/n/", withCtx(handleNote, OnlyGet))
+	http.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
 	http.HandleFunc("/logingithub", handleLoginGitHub)
