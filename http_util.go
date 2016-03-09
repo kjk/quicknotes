@@ -6,11 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/kjk/log"
+	"github.com/kjk/u"
 )
 
 // RecordingResponseWriter records return code and number of bytes written
@@ -219,5 +221,40 @@ func serveData(w http.ResponseWriter, r *http.Request, code int, contentType str
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(len(d)))
 	w.WriteHeader(code)
+	w.Write(d)
+}
+
+func serveMaybeGzippedFile(w http.ResponseWriter, r *http.Request, path string) {
+	log.Verbosef("path: '%s'\n", path)
+	if !u.PathExists(path) {
+		http.NotFound(w, r)
+		return
+	}
+	contentType := MimeTypeByExtensionExt(path)
+	usesGzip := acceptsGzip(r)
+	if usesGzip {
+		if u.PathExists(path + ".gz") {
+			path = path + ".gz"
+		} else {
+			usesGzip = false
+		}
+	}
+	if len(contentType) > 0 {
+		w.Header().Set("Content-Type", contentType)
+	}
+	// https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+	// prevent caching non-gzipped version
+	w.Header().Add("Vary", "Accept-Encoding")
+	if usesGzip {
+		w.Header().Set("Content-Encoding", "gzip")
+	}
+	d, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Errorf("ioutil.ReadFile('%s') failed with '%s'\n", path, err)
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Length", strconv.Itoa(len(d)))
+	w.WriteHeader(200)
 	w.Write(d)
 }

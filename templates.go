@@ -2,21 +2,26 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 var (
-	tmplIndex     = "index.html"
-	tmplUser      = "user.html"
-	tmplResult    = "result.html"
-	tmplNote      = "note.html"
-	templateNames = []string{tmplIndex, tmplUser, tmplResult, tmplNote}
-	templatePaths []string
-	templates     *template.Template
+	tmplIndex      = "index.html"
+	tmplUser       = "user.html"
+	tmplResult     = "result.html"
+	tmplNote       = "note.html"
+	tmplNotesIndex = "notes_index.html"
+	templateNames  = []string{tmplIndex, tmplUser, tmplResult, tmplNote, tmplNotesIndex}
+	templatePaths  []string
+	templates      *template.Template
 
 	reloadTemplates = true
 )
@@ -45,4 +50,31 @@ func execTemplate(w http.ResponseWriter, templateName string, model interface{})
 	w.Header().Set("Content-Length", strconv.Itoa(len(buf.Bytes())))
 	w.Write(buf.Bytes())
 	return true
+}
+
+func execTemplateFile(path string, templateName string, model interface{}) error {
+	var buf bytes.Buffer
+	if err := getTemplates().ExecuteTemplate(&buf, templateName, model); err != nil {
+		fmt.Printf("Failed to execute template %q, error: %s", templateName, err)
+		return err
+	}
+	var w io.Writer
+	var gzipWriter *gzip.Writer
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	w = f
+	if strings.HasSuffix(path, ".gz") {
+		gzipWriter = gzip.NewWriter(f)
+		w = gzipWriter
+	}
+	_, err = w.Write(buf.Bytes())
+	if err != nil {
+		return err
+	}
+	if gzipWriter != nil {
+		gzipWriter.Close()
+	}
+	return f.Close()
 }

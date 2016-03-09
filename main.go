@@ -62,6 +62,10 @@ func verifyDirs() {
 	if !u.PathExists(getDataDir()) {
 		log.Fatalf("directory '%s' doesn't exist\n", getDataDir())
 	}
+	err := os.MkdirAll(getCacheDir(), 0755)
+	if err != nil {
+		log.Fatalf("couldn't create directory '%s'\n", getCacheDir())
+	}
 }
 
 func getDataDir() string {
@@ -76,8 +80,16 @@ func getLogDir() string {
 	return filepath.Join(getDataDir(), "log")
 }
 
+func getCacheDir() string {
+	return filepath.Join(getDataDir(), "cache")
+}
+
 func getLocalStoreDir() string {
 	return filepath.Join(getDataDir(), "localstore")
+}
+
+func pathForFileInCache(path string) string {
+	return filepath.Join(getCacheDir(), path)
 }
 
 func parseFlags() {
@@ -263,6 +275,8 @@ func main() {
 	if !flgIsLocal {
 		sendBootMail()
 	}
+
+	buildPublicNotesIndex()
 
 	startWebServer()
 

@@ -243,6 +243,17 @@ $col-btn-hover-border: #1862b5;
   overflow: hidden;
 }
 
+#index-root {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+  overflow-y: auto;
+}
+
 .fixed {
   position: fixed;
   top: 0; left: 0; right: 0;
