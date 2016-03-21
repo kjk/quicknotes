@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	// TODO: not sure if I need this
+	// TODO: not sure if I need hashIDMu
 	hashIDMu sync.Mutex
 	hashID   *hashids.HashID
 )
@@ -120,26 +120,12 @@ func hashInt(n int) string {
 	return res
 }
 
-// hashID.Decode() can panic, so guard against that
-func dehashIntSafe(s string) []int {
-	var res []int
-	defer func() {
-		if r := recover(); r != nil {
-			res = nil
-		}
-	}()
-	res = hashID.Decode(s)
-	return res
-}
-
-// TODO: hashID.Decode() may panic, so either wrap it inside recover()
-// or fork go-hashids to change Decode() to not panic.
 func dehashInt(s string) (int, error) {
 	hashIDMu.Lock()
 	defer hashIDMu.Unlock()
-	nums := dehashIntSafe(s)
-	if len(nums) != 1 {
-		return -1, fmt.Errorf("dehashInt: invalid valude '%s'", s)
+	nums, err := hashID.DecodeWithError(s)
+	if err != nil || len(nums) != 1 {
+		return -1, fmt.Errorf("dehashInt: invalid valude '%s', err: '%s'", s, err)
 	}
 	return nums[0], nil
 }
