@@ -92,7 +92,7 @@ func saveNoteToGoogleStorage(sha1 []byte, d []byte) error {
 	}
 	if err != nil {
 		if err != storage.ErrObjectNotExist {
-			log.Errorf("storage.StatObject('%s') failed with %s", path, err)
+			log.Errorf("storage.Attrs('%s') failed with %s", path, err)
 			return err
 		}
 	}
