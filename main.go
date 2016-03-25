@@ -276,7 +276,7 @@ func main() {
 		sendBootMail()
 	}
 
-	buildPublicNotesIndex()
+	go buildPublicNotesIndex()
 
 	startWebServer()
 

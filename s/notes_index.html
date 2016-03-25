@@ -15,12 +15,12 @@
 
   <div id="index-root">
     <p>
-      <a href="/">QuickNotes</a> : Public notes, page {{ .PageNo }}
+      <a href="/">QuickNotes</a> : {{ .NumNotes }} public notes, page {{ .PageNo }} out of {{ .NumPages }}
     </p>
 
     {{ range .Notes }}
       <div>
-        <a href="{{ .URL }}">{{ .Title }}</a>
+        <a href="{{ .URL }}">{{ .Title }}</a> by {{ .Creator }} on {{ .CreatedAtString }}
       </div>
     {{ end }}
 
@@ -29,10 +29,9 @@
         <a href="/idx/allnotes?page={{ .NextPageNo }}">Next page</a>
       </p>
     {{ end }}
+    <p></p>
+    <hr>
   </div>
-
-  <p></p>
-  <hr>
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

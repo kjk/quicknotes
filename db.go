@@ -270,8 +270,8 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	mu.Lock()
 	i := userIDToCachedInfo[userID]
 	mu.Unlock()
+
 	if i != nil {
-		log.Verbosef("user '%d', got from cache\n", userID)
 		return i, nil
 	}
 	timeStart := time.Now()
@@ -288,6 +288,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 		user:  user,
 		notes: notes,
 	}
+
 	mu.Lock()
 	userIDToCachedInfo[userID] = res
 	mu.Unlock()
