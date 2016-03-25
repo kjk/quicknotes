@@ -13,19 +13,6 @@ const (
 	sparkpostKey = "0f6d54023ed5e6e4beb0c55e8f910064a5605151"
 )
 
-func getStatsEmailBody() string {
-	nUsers, _ := dbGetUsersCount()
-	nNotes, _ := dbGetNotesCount()
-	nVersions, _ := dbGetVersionsCount()
-	a := []string{
-		"QuickNotes stats",
-		fmt.Sprintf("Users: %d", nUsers),
-		fmt.Sprintf("Notes: %d", nNotes),
-		fmt.Sprintf("Versions: %d", nVersions),
-	}
-	return strings.Join(a, "\n")
-}
-
 func sendMail(subject, body, from string) {
 	var sparky sp.Client
 	err := sparky.Init(&sp.Config{ApiKey: sparkpostKey})
@@ -46,6 +33,19 @@ func sendMail(subject, body, from string) {
 	if err != nil {
 		log.Errorf("sparky.Send() failed with '%s'\n", err)
 	}
+}
+
+func getStatsEmailBody() string {
+	nUsers, _ := dbGetUsersCount()
+	nNotes, _ := dbGetNotesCount()
+	nVersions, _ := dbGetVersionsCount()
+	a := []string{
+		"QuickNotes stats:",
+		fmt.Sprintf("users: %d", nUsers),
+		fmt.Sprintf("notes: %d", nNotes),
+		fmt.Sprintf("versions: %d", nVersions),
+	}
+	return strings.Join(a, "\n")
 }
 
 func sendStatsMail() {
