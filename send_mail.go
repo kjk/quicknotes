@@ -51,14 +51,14 @@ func getStatsEmailBody() string {
 func sendStatsMail() {
 	subject := time.Now().Format("QuickNotes stats on 2006-01-02")
 	body := getStatsEmailBody()
-	sendMail(subject, body, "QuickNotes Stats")
+	sendMail(subject, body, "QuickNotes Stats <info@quicknotes.io>")
 }
 
 func sendBootMail() {
 	subject := time.Now().Format("QuickNotes started on 2006-01-02")
 	body := "Just letting you know that I've started\n"
 	body += fmt.Sprintf("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
-	sendMail(subject, body, "QuickNotes")
+	sendMail(subject, body, "QuickNotes <info@quicknotes.io>")
 }
 
 func testSendEmail() {
