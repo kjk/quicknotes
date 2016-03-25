@@ -4,7 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/SparkPost/gosparkpost",
-			"Rev": "a3f54b2464457109de455474a9ca4b8ad28c7345"
+			"Rev": "c611ef909d493a9c6394d5c8c423e361164a5827"
 		},
 		{
 			"ImportPath": "github.com/certifi/gocertifi",
