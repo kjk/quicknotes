@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -1135,6 +1136,16 @@ func dbGetAllUsers() ([]*DbUser, error) {
 	return res, rows.Err()
 }
 
+func getWelcomeMD() []byte {
+	if hasZipResources() {
+		return resourcesFromZip["welcome.md"]
+	}
+	path := filepath.Join("data", "welcome.md")
+	d, err := ioutil.ReadFile(path)
+	fatalIfErr(err, "getWelcomeMD()")
+	return d
+}
+
 // TODO: also insert oauthJSON
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
@@ -1152,8 +1163,30 @@ func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: insert default notes
-	return dbGetUserByLogin(userLogin)
+
+	dbUser, err := dbGetUserByLogin(userLogin)
+	if err != nil {
+		return nil, err
+	}
+
+	d := getWelcomeMD()
+	if len(d) > 0 {
+		note := &NewNote{
+			title:     "Welcome!",
+			format:    formatMarkdown,
+			content:   d,
+			tags:      []string{"quicknotes"},
+			createdAt: time.Now(),
+			isDeleted: false,
+			isPublic:  false,
+			isStarred: false,
+		}
+		_, err = dbCreateOrUpdateNote(dbUser.ID, note)
+		if err != nil {
+			log.Errorf("dbCreateOrUpdateNote() failed with '%s'\n", err)
+		}
+	}
+	return dbUser, err
 }
 
 func getQuickNotesDb() (*sql.DB, error) {
