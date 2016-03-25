@@ -177,6 +177,25 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 	httpLogCsvMutex.Unlock()
 }
 
+func dailyTasksLoop() {
+	// things we do at application start
+	if !flgIsLocal {
+		sendBootMail()
+	}
+	buildPublicNotesIndex()
+
+	// tasks we run once a day at 1 am
+	for {
+		y, m, d := time.Now().Date()
+		nextTime := time.Date(y, m, d, 0, 0, 0, 0, time.UTC).Add(time.Hour * 25)
+		toWait := nextTime.Sub(time.Now())
+		time.Sleep(toWait)
+
+		buildPublicNotesIndex()
+		sendStatsMail()
+	}
+}
+
 func debugShowNote(hashedNoteID string) {
 	noteID, err := dehashInt(hashedNoteID)
 	u.PanicIfErr(err)
@@ -272,11 +291,7 @@ func main() {
 	_, err = dbGetOrCreateUser("email:quicknotes@quicknotes.io", "QuickNotes")
 	fatalIfErr(err, "dbGetOrCreateUser")
 
-	if !flgIsLocal {
-		sendBootMail()
-	}
-
-	go buildPublicNotesIndex()
+	go dailyTasksLoop()
 
 	startWebServer()
 
