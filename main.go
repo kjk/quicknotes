@@ -186,11 +186,19 @@ func dailyTasksLoop() {
 
 	// tasks we run once a day at 1 am
 	for {
-		y, m, d := time.Now().Date()
-		nextTime := time.Date(y, m, d, 0, 0, 0, 0, time.UTC).Add(time.Hour * 25)
-		toWait := nextTime.Sub(time.Now())
+		nowUTC := time.Now().UTC()
+		y, m, d := nowUTC.Date()
+		nowZero := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+		timeNext := nowZero.Add(time.Hour * 25)
+		//log.Verbosef("time now :%s\n", nowUTC.Format("2006-01-02 15:04:05"))
+		//log.Verbosef("time now2:%s\n", nowZero.Format("2006-01-02 15:04:05"))
+		//log.Verbosef("time next:%s\n", timeNext.Format("2006-01-02 15:04:05"))
+		toWait := timeNext.Sub(nowUTC)
+		log.Infof("waiting %s to do daily tasks\n", toWait)
 		time.Sleep(toWait)
 
+		timeStr := time.Now().Format("2006-01-02 15:04:05")
+		log.Infof("executing daily tasks at %s\n", timeStr)
 		buildPublicNotesIndex()
 		sendStatsMail()
 	}
