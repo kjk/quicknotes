@@ -92,7 +92,7 @@ func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
 			}
 			logHTTP(r, rrw.Code, rrw.BytesWritten, userID, dur)
 		}()
-		ctx.User = getUserSummaryFromCookie(w, r)
+		ctx.User = getUserSummaryFromCookie(rrw, r)
 
 		isJSON := opts&IsJSON != 0
 		onlyLoggedIn := opts&OnlyLoggedIn != 0
@@ -100,22 +100,22 @@ func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
 		onlyPost := opts&OnlyPost != 0
 
 		if onlyLoggedIn && ctx.User == nil {
-			serveError(w, r, isJSON, "not logged in")
+			serveError(rrw, r, isJSON, "not logged in")
 			return
 		}
 
 		method := strings.ToUpper(r.Method)
 		if onlyGet && method != "GET" {
-			serveError(w, r, isJSON, fmt.Sprintf("%s %s is not GET", method, uri))
+			serveError(rrw, r, isJSON, fmt.Sprintf("%s %s is not GET", method, uri))
 			return
 		}
 
 		if onlyPost && method != "POST" {
-			serveError(w, r, isJSON, fmt.Sprintf("%s %s is not POST", method, uri))
+			serveError(rrw, r, isJSON, fmt.Sprintf("%s %s is not POST", method, uri))
 			return
 		}
 
-		f(ctx, w, r)
+		f(ctx, rrw, r)
 		timing.Finished()
 		if timing.Duration > time.Millisecond*500 {
 			log.Infof("slow handler: '%s' took %s\n", r.RequestURI, timing.Duration)
