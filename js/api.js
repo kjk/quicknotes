@@ -28,7 +28,7 @@ function handleResponse(code, respTxt, cb, cbErr) {
   } else {
     respTxt = respTxt || '';
     console.log(`handleResponse: code=${code}, respTxt='${respTxt}'`);
-    js['error'] = `request returned code ${code}, text: '${respTxt}'`;
+    js['Error'] = `request returned code ${code}, text: '${respTxt}'`;
   }
   const errMsg = js['Error'];
   if (errMsg) {
