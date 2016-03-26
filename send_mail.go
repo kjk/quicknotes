@@ -24,7 +24,7 @@ func sendMail(subject, body, from string) {
 	tx := &sp.Transmission{
 		Recipients: []string{"kkowalczyk@gmail.com"},
 		Content: sp.Content{
-			Text:    subject,
+			Text:    body,
 			From:    from,
 			Subject: subject,
 		},
@@ -49,13 +49,13 @@ func getStatsEmailBody() string {
 }
 
 func sendStatsMail() {
-	subject := time.Now().Format("QuickNotes stats on 2006-01-02")
+	subject := time.Now().Format("QuickNotes stats on 2006-01-02 15:04:05")
 	body := getStatsEmailBody()
 	sendMail(subject, body, "QuickNotes Stats <info@quicknotes.io>")
 }
 
 func sendBootMail() {
-	subject := time.Now().Format("QuickNotes started on 2006-01-02")
+	subject := time.Now().Format("QuickNotes started on 2006-01-02 15:04:05")
 	body := "Just letting you know that I've started\n"
 	body += fmt.Sprintf("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	sendMail(subject, body, "QuickNotes <info@quicknotes.io>")
