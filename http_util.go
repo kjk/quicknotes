@@ -35,16 +35,16 @@ func (w *RecordingResponseWriter) Header() http.Header {
 }
 
 // Write writes the data
-func (w *RecordingResponseWriter) Write(d []byte) (int, error) {
-	n, err := w.w.Write(d)
-	w.BytesWritten += n
+func (rrw *RecordingResponseWriter) Write(d []byte) (int, error) {
+	n, err := rrw.w.Write(d)
+	rrw.BytesWritten += n
 	return n, err
 }
 
 // WriteHeader sends an HTTP response header
-func (w *RecordingResponseWriter) WriteHeader(code int) {
-	w.Code = code
-	w.WriteHeader(code)
+func (rrw *RecordingResponseWriter) WriteHeader(code int) {
+	rrw.Code = code
+	rrw.w.WriteHeader(code)
 }
 
 func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
