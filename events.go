@@ -2,79 +2,52 @@ package main
 
 import (
 	"encoding/json"
-	"log"
-	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/kjk/u"
+	"github.com/kjk/log"
 )
-
-/*
-TODO: save in a file events.log-YYYY-MM-DD.json, rotate the logs daily.
-*/
 
 var (
-	eventsLog *EventsLog
+	eventsLog    *log.DailyRotateFile
+	eventsLogEnc *json.Encoder
 )
 
-// EventsLog describes a single log with events
-type EventsLog struct {
-	dir      string
-	file     *os.File
-	enc      *json.Encoder
-	currPath string
-	currTime time.Time
+// EventUserLogin is generated on successful/unsuccesful login
+type EventUserLogin struct {
+	UserID int
+	When   time.Time
+	Ok     bool
 }
 
-func reopenEventsFileIfNeeded() error {
-	var err error
-	if eventsLog.file != nil {
-		if eventsLog.currTime.YearDay() == time.Now().YearDay() {
-			return nil
-		}
-	}
-	path := filepath.Join(eventsLog.dir, "events.log.json")
-	if eventsLog.file != nil {
-		eventsLog.file.Close()
-		eventsLog.file = nil
-		newPath := eventsLog.currTime.Format("events.log-2006-01-02.json")
-		err = os.Rename(path, newPath)
-		// TODO: mark EventsLog as invalid so we don't keep logging on error?
-		if err != nil {
-			return err
-		}
-	}
-
-	eventsLog.currTime = time.Now()
-	eventsLog.file, err = os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
-		// TODO: mark EventsLog as invalid so we don't keep logging on error?
-		return err
-	}
-	eventsLog.enc = json.NewEncoder(eventsLog.file)
-	return nil
+// EventNoteCreated is generated when a note is createda
+type EventNoteCreated struct {
+	UserID int       // user id
+	ID     int       // note id
+	When   time.Time // when it was created
 }
 
-// InitEventsLogMust initializes event logging
-func InitEventsLogMust(dir string) error {
-	err := os.MkdirAll(dir, 0755)
-	u.PanicIfErr(err)
-	eventsLog = &EventsLog{
-		dir: dir,
-	}
-	return reopenEventsFileIfNeeded()
+// EventNoteModified is generated when a note is modified (including a deletion)
+type EventNoteModified struct {
+	UserID int       // user id
+	ID     int       // note id
+	When   time.Time // when it was modified
 }
 
-// LogEvent logs another event as json
-func LogEvent(v interface{}) {
-	// TODO: do logging on a separate goroutine to prevent random stalls due to i/o
-	err := reopenEventsFileIfNeeded()
+func initEventsLogMust() {
+	pathFormat := filepath.Join(getLogDir(), "2006-01-02-events.json")
+	eventsLog, err := log.NewDailyRotateFile(pathFormat)
+	fatalIfErr(err, "initEventsLogMust")
+	eventsLogEnc = json.NewEncoder(eventsLog)
+}
+
+func logEvent(v interface{}) {
+	err := eventsLogEnc.Encode(v)
 	if err != nil {
-		return
+		log.Errorf("eventsLogEnc.Encode() failed with %s\n", err)
 	}
-	err = eventsLog.enc.Encode(v)
+	err = eventsLog.Flush()
 	if err != nil {
-		log.Printf("eventsLog.enc.Encode() failed with %s\n", err)
+		log.Errorf("eventsLog.Flush() failed with %s\n", err)
 	}
 }

@@ -45,7 +45,7 @@
 		},
 		{
 			"ImportPath": "github.com/kjk/log",
-			"Rev": "a29f2fab20c3d3ae7bb629454693cf5e1adf595c"
+			"Rev": "a06b6f56db805d6bbf21978c4d4bfdfae10c2d09"
 		},
 		{
 			"ImportPath": "github.com/kjk/lzmadec",
