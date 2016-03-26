@@ -8,6 +8,12 @@ import (
 	"github.com/kjk/log"
 )
 
+const (
+	eventUserLogin    = "ul"
+	eventNoteCreated  = "nc"
+	eventNoteModified = "nm"
+)
+
 var (
 	eventsLog    *log.DailyRotateFile
 	eventsLogEnc *json.Encoder
@@ -15,23 +21,25 @@ var (
 
 // EventUserLogin is generated on successful/unsuccesful login
 type EventUserLogin struct {
-	UserID int
-	When   time.Time
-	Ok     bool
+	Type   string `json:"tp"`
+	UserID int    `json:"ui"`
+	When   int64  `json:"t"`
 }
 
 // EventNoteCreated is generated when a note is createda
 type EventNoteCreated struct {
-	UserID int       // user id
-	ID     int       // note id
-	When   time.Time // when it was created
+	Type   string `json:"tp"`
+	UserID int    `json:"ui"`
+	NoteID int    `json:"ni"`
+	When   int64  `json:"t"`
 }
 
 // EventNoteModified is generated when a note is modified (including a deletion)
 type EventNoteModified struct {
-	UserID int       // user id
-	ID     int       // note id
-	When   time.Time // when it was modified
+	Type   string `json:"tp"`
+	UserID int    `json:"ui"`
+	NoteID int    `json:"ni"`
+	When   int64  `json:"t"`
 }
 
 func initEventsLogMust() {
@@ -39,6 +47,10 @@ func initEventsLogMust() {
 	eventsLog, err := log.NewDailyRotateFile(pathFormat)
 	fatalIfErr(err, "initEventsLogMust")
 	eventsLogEnc = json.NewEncoder(eventsLog)
+}
+
+func getUTCTime() int64 {
+	return time.Now().UTC().Unix()
 }
 
 func logEvent(v interface{}) {
@@ -50,4 +62,33 @@ func logEvent(v interface{}) {
 	if err != nil {
 		log.Errorf("eventsLog.Flush() failed with %s\n", err)
 	}
+}
+
+func logEventUserLogin(userID int) {
+	e := EventUserLogin{
+		Type:   eventUserLogin,
+		UserID: userID,
+		When:   getUTCTime(),
+	}
+	logEvent(&e)
+}
+
+func logEventNoteCreated(userID, noteID int) {
+	e := EventNoteCreated{
+		Type:   eventNoteCreated,
+		UserID: userID,
+		NoteID: noteID,
+		When:   getUTCTime(),
+	}
+	logEvent(&e)
+}
+
+func logEventNoteModified(userID, noteID int) {
+	e := EventNoteModified{
+		Type:   eventNoteModified,
+		UserID: userID,
+		NoteID: noteID,
+		When:   getUTCTime(),
+	}
+	logEvent(&e)
 }
