@@ -30,8 +30,8 @@ func NewRecordingResponseWriter(w http.ResponseWriter) *RecordingResponseWriter 
 }
 
 // Header returns header map
-func (w *RecordingResponseWriter) Header() http.Header {
-	return w.w.Header()
+func (rrw *RecordingResponseWriter) Header() http.Header {
+	return rrw.w.Header()
 }
 
 // Write writes the data

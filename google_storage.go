@@ -46,6 +46,7 @@ func initGoogleStorageMust() {
 	ctx := context.Background()
 	opt := cloud.WithTokenSource(conf.TokenSource(ctx))
 	googleStorageClient, err = storage.NewClient(ctx, opt)
+	fatalIfErr(err, "storage.NewClient")
 }
 
 func testListObjects() {

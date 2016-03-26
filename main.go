@@ -296,6 +296,8 @@ func main() {
 		runGulpAsync()
 	}
 
+	initGoogleStorageMust()
+
 	_, err = dbGetOrCreateUser("email:quicknotes@quicknotes.io", "QuickNotes")
 	fatalIfErr(err, "dbGetOrCreateUser")
 
