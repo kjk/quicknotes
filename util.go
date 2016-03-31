@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 	"unicode"
 
 	"github.com/kjk/log"
@@ -40,6 +41,14 @@ func isWin() bool {
 
 func isMac() bool {
 	return runtime.GOOS == "darwin"
+}
+
+func utcNow() time.Time {
+	return time.Now().UTC()
+}
+
+func utcNowUnix() int64 {
+	return utcNow().Unix()
 }
 
 var extraMimeTypes = map[string]string{
