@@ -13,6 +13,10 @@ const (
 	sparkpostKey = "0f6d54023ed5e6e4beb0c55e8f910064a5605151"
 )
 
+func utcNow() time.Time {
+	return time.Now().UTC()
+}
+
 func sendMail(subject, body, from string) {
 	var sparky sp.Client
 	err := sparky.Init(&sp.Config{ApiKey: sparkpostKey})
@@ -49,20 +53,20 @@ func getStatsEmailBody() string {
 }
 
 func sendStatsMail() {
-	subject := time.Now().Format("QuickNotes stats on 2006-01-02 15:04:05")
+	subject := utcNow().Format("QuickNotes stats on 2006-01-02 15:04:05")
 	body := getStatsEmailBody()
 	sendMail(subject, body, "QuickNotes Stats <info@quicknotes.io>")
 }
 
 func sendBootMail() {
-	subject := time.Now().Format("QuickNotes started on 2006-01-02 15:04:05")
+	subject := utcNow().Format("QuickNotes started on 2006-01-02 15:04:05")
 	body := "Just letting you know that I've started\n"
 	body += fmt.Sprintf("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	sendMail(subject, body, "QuickNotes <info@quicknotes.io>")
 }
 
 func testSendEmail() {
-	subject := time.Now().Format("QuickNotes stats on 2006-01-02")
+	subject := utcNow().Format("QuickNotes stats on 2006-01-02 15:04:05")
 	body := "this is a test e-mail"
 	sendMail(subject, body, "QuickNotes Stats <info@quicknotes.io>")
 }
