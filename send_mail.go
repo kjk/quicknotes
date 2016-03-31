@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	sp "github.com/SparkPost/gosparkpost"
 	"github.com/kjk/log"
@@ -12,10 +11,6 @@ import (
 const (
 	sparkpostKey = "0f6d54023ed5e6e4beb0c55e8f910064a5605151"
 )
-
-func utcNow() time.Time {
-	return time.Now().UTC()
-}
 
 func sendMail(subject, body, from string) {
 	var sparky sp.Client

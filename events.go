@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"path/filepath"
-	"time"
 
 	"github.com/kjk/log"
 )
@@ -49,10 +48,6 @@ func initEventsLogMust() {
 	eventsLogEnc = json.NewEncoder(eventsLog)
 }
 
-func getUTCTime() int64 {
-	return time.Now().UTC().Unix()
-}
-
 func logEvent(v interface{}) {
 	err := eventsLogEnc.Encode(v)
 	if err != nil {
@@ -68,7 +63,7 @@ func logEventUserLogin(userID int) {
 	e := EventUserLogin{
 		Type:   eventUserLogin,
 		UserID: userID,
-		When:   getUTCTime(),
+		When:   utcNowUnix(),
 	}
 	logEvent(&e)
 }
@@ -78,7 +73,7 @@ func logEventNoteCreated(userID, noteID int) {
 		Type:   eventNoteCreated,
 		UserID: userID,
 		NoteID: noteID,
-		When:   getUTCTime(),
+		When:   utcNowUnix(),
 	}
 	logEvent(&e)
 }
@@ -88,7 +83,7 @@ func logEventNoteModified(userID, noteID int) {
 		Type:   eventNoteModified,
 		UserID: userID,
 		NoteID: noteID,
-		When:   getUTCTime(),
+		When:   utcNowUnix(),
 	}
 	logEvent(&e)
 }
