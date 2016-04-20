@@ -20,9 +20,10 @@ import (
 )
 
 const (
-	cookieAuthKeyHex = "513521f0ef43c9446ed7bf359a5a9700ef5fa5a5eb15d0db5eae8e93856d99bd"
-	cookieEncrKeyHex = "4040ed16d4352320b5a7f51e26443342d55a0f46be2acfe5ba694a123230376a"
-	cookieName       = "qnckie" // "quicknotes cookie"
+	cookieAuthKeyHex  = "513521f0ef43c9446ed7bf359a5a9700ef5fa5a5eb15d0db5eae8e93856d99bd"
+	cookieEncrKeyHex  = "4040ed16d4352320b5a7f51e26443342d55a0f46be2acfe5ba694a123230376a"
+	cookieName        = "qnckie"      // "quicknotes cookie"
+	sessionCookieName = "sess_qnckie" // "session quicknotes cookie"
 
 	// random string for oauth2 API calls to protect against CSRF
 	oauthSecretPrefix = "5576867039-"
@@ -97,17 +98,19 @@ func setSecureCookie(w http.ResponseWriter, cookieVal *SecureCookieValue) {
 	if encoded, err := secureCookie.Encode(cookieName, cookieVal); err == nil {
 		// TODO: set expiration (Expires    time.Time) long time in the future?
 		cookie := &http.Cookie{
-			Name:  cookieName,
-			Value: encoded,
-			Path:  "/",
+			Name:   cookieName,
+			Value:  encoded,
+			Path:   "/",
+			MaxAge: weekInSeconds,
 		}
 		http.SetCookie(w, cookie)
 	} else {
-		fmt.Printf("setSecureCookie(): error encoding secure cookie %s\n", err)
+		log.Errorf("error encoding secure cookie %s\n", err)
 	}
 }
 
 const weekInSeconds = 60 * 60 * 24 * 7
+const minuteInSeconds = 60
 
 // to delete the cookie value (e.g. for logging out), we need to set an
 // invalid value
@@ -115,7 +118,7 @@ func deleteSecureCookie(w http.ResponseWriter) {
 	cookie := &http.Cookie{
 		Name:   cookieName,
 		Value:  "deleted",
-		MaxAge: weekInSeconds,
+		MaxAge: minuteInSeconds,
 		Path:   "/",
 	}
 	http.SetCookie(w, cookie)
@@ -139,6 +142,25 @@ func getSecureCookie(w http.ResponseWriter, r *http.Request) *SecureCookieValue 
 	}
 	//log.Verbosef("Got cookie %#v\n", ret)
 	return &ret
+}
+
+// returns true if session cookie is set
+// returns false if session cookie is not set and sets the cookie so
+// that next time we call getSetSessionCookie(), it'll be set
+func getSetSessionCookie(w http.ResponseWriter, r *http.Request) bool {
+	cookie, err := r.Cookie(sessionCookieName)
+	if err == nil && cookie != nil {
+		//log.Infof("session cookie is set. url: '%s'\n", r.URL.String())
+		return true
+	}
+	cookie = &http.Cookie{
+		Name:  sessionCookieName,
+		Value: "is_set",
+		Path:  "/",
+	}
+	http.SetCookie(w, cookie)
+	//log.Infof("session cookie not set; setting it. url: '%s'\n", r.URL.String())
+	return false
 }
 
 func getDbUserFromCookie(w http.ResponseWriter, r *http.Request) *DbUser {

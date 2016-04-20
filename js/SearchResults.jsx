@@ -126,7 +126,7 @@ export default class SearchResults extends React.Component {
     return (
       <div key={ k } className={ cls }>
         <span className="line-no">{ lineNo }</span>
-        <span dangerouslySetInnerHTML={ {  __html: i.HTML} }></span>
+        <span dangerouslySetInnerHTML={ { __html: i.HTML } }></span>
       </div>
       );
   }

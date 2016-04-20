@@ -138,10 +138,10 @@ window.linkify = (function() {
       // Add appropriate protocol to naked links.
       if (!SCHEME_RE.test(href)) {
         href = (href.indexOf('@') !== -1 ? (!href.indexOf(MAILTO) ? '' : MAILTO)
-          : !href.indexOf('irc.') ? 'irc://'
-            : !href.indexOf('ftp.') ? 'ftp://'
-              : 'http://')
-        + href;
+            : !href.indexOf('irc.') ? 'irc://'
+              : !href.indexOf('ftp.') ? 'ftp://'
+                : 'http://')
+          + href;
       }
 
       // Push preceding non-link text onto the array.
