@@ -115,6 +115,13 @@ func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
 			return
 		}
 
+		firstRequestInSession := !getSetSessionCookie(w, r)
+		if ctx.User != nil && firstRequestInSession && r.URL.String() == "/" {
+			url := "/u/" + ctx.User.HashID + "/" + ctx.User.Handle
+			http.Redirect(w, r, url, http.StatusFound)
+			return
+		}
+
 		f(ctx, rrw, r)
 		timing.Finished()
 		if timing.Duration > time.Millisecond*500 {

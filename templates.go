@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"compress/gzip"
-	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -11,6 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/kjk/log"
 )
 
 var (
@@ -41,7 +42,7 @@ func getTemplates() *template.Template {
 func execTemplate(w http.ResponseWriter, templateName string, model interface{}) bool {
 	var buf bytes.Buffer
 	if err := getTemplates().ExecuteTemplate(&buf, templateName, model); err != nil {
-		fmt.Printf("Failed to execute template %q, error: %s", templateName, err)
+		log.Errorf("Failed to execute template %q, error: %s", templateName, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return false
 	}
@@ -55,7 +56,7 @@ func execTemplate(w http.ResponseWriter, templateName string, model interface{})
 func execTemplateFile(path string, templateName string, model interface{}) error {
 	var buf bytes.Buffer
 	if err := getTemplates().ExecuteTemplate(&buf, templateName, model); err != nil {
-		fmt.Printf("Failed to execute template %q, error: %s", templateName, err)
+		log.Errorf("Failed to execute template %q, error: %s", templateName, err)
 		return err
 	}
 	var w io.Writer
