@@ -10,7 +10,11 @@ export default class TagCount extends Component {
 
   handleClick(e) {
     e.preventDefault();
-    this.props.onTagSelected(this.props.tagName);
+    if (e.altKey) {
+      this.props.onTagSelected(this.props.tagName, 'toggle');
+    } else {
+      this.props.onTagSelected(this.props.tagName, 'set');
+    }
   }
 
   render() {

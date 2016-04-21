@@ -87,6 +87,14 @@ export function filterNotesByTag(notes, tag) {
   return res;
 }
 
+export function filterNotesByTags(notes, tags) {
+  var res = notes;
+  for (var i = 0; i < tags.length; i++) {
+    res = filterNotesByTag(res, tags[i]);
+  }
+  return res;
+}
+
 export function dictInc(d, key) {
   if (d[key]) {
     d[key] += 1;

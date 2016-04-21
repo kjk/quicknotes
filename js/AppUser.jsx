@@ -71,7 +71,7 @@ export default class AppUser extends Component {
     const initialNotesJSON = props.initialNotesJSON;
     let allNotes = [];
     let selectedNotes = [];
-    let selectedTag = props.initialTag;
+    let selectedTags = [props.initialTag];
     let tags = {};
 
     let loggedUserHandle = '';
@@ -84,15 +84,14 @@ export default class AppUser extends Component {
     if (initialNotesJSON && initialNotesJSON.Notes) {
       allNotes = initialNotesJSON.Notes;
       ni.sortNotesByUpdatedAt(allNotes);
-      selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
+      selectedNotes = u.filterNotesByTags(allNotes, selectedTags);
       tags = tagsFromNotes(allNotes);
     }
 
     this.state = {
       allNotes: allNotes,
       selectedNotes: selectedNotes,
-      // TODO: should be an array this.props.initialTags
-      selectedTag: selectedTag,
+      selectedTags: selectedTags,
       tags: tags,
       notesUserHashID: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
@@ -111,13 +110,34 @@ export default class AppUser extends Component {
     action.offAllForOwner(this);
   }
 
-  handleTagSelected(tag) {
+  // op = toggle or set
+  handleTagSelected(tag, op) {
     //console.log("selected tag: ", tag);
-    const selectedNotes = u.filterNotesByTag(this.state.allNotes, tag);
+    var tags = this.state.selectedTags;
+    if (op == 'set') {
+      tags = [tag];
+    } else if (op === 'toggle') {
+      if (tag === '__all' || tag == '__deleted') {
+        return;
+      }
+
+      let idx = tags.indexOf(tag);
+
+      if (idx == -1) {
+        tags.push(tag);
+      } else {
+        tags.splice(idx, 1);
+      }
+    } else {
+      console.log('unknown op:', op);
+      return;
+    }
+
+    const selectedNotes = u.filterNotesByTags(this.state.allNotes, tags);
     // TODO: update url with /t:${tag}
     this.setState({
       selectedNotes: selectedNotes,
-      selectedTag: tag,
+      selectedTags: tags,
       resetScroll: true
     });
   }
@@ -126,16 +146,17 @@ export default class AppUser extends Component {
     const allNotes = json.Notes || [];
     ni.sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
-    let selectedTag = this.state.selectedTag;
-    if (!(selectedTag in tags)) {
-      selectedTag = '__all';
+    let selectedTags = this.state.selectedTags.filter(tag => tag in tags);
+    if (selectedTags.length === 0) {
+      selectedTags = ['__all'];
     }
-    const selectedNotes = u.filterNotesByTag(allNotes, selectedTag);
+
+    const selectedNotes = u.filterNotesByTags(allNotes, selectedTags);
     this.setState({
       allNotes: allNotes,
       selectedNotes: selectedNotes,
       tags: tags,
-      selectedTag: selectedTag,
+      selectedTags: selectedTags,
       resetScroll: resetScroll
     });
   }
@@ -165,7 +186,7 @@ export default class AppUser extends Component {
         <LeftSidebar tags={ this.state.tags }
           showingMyNotes={ showingMyNotes }
           onTagSelected={ this.handleTagSelected }
-          selectedTag={ this.state.selectedTag } />
+          selectedTags={ this.state.selectedTags } />
         <NotesList notes={ this.state.selectedNotes }
           showingMyNotes={ showingMyNotes }
           compact={ false }
