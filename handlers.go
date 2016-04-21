@@ -862,7 +862,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/undeletenote", withCtx(handleAPIUndeleteNote, IsJSON|OnlyLoggedIn))
 	http.HandleFunc("/api/makenoteprivate", withCtx(handleAPIMakeNotePrivate, IsJSON|OnlyLoggedIn))
 	http.HandleFunc("/api/makenotepublic", withCtx(handleAPIMakeNotePublic, IsJSON|OnlyLoggedIn))
-	http.HandleFunc("/api/starnoten", withCtx(handleAPIStarNote, IsJSON|OnlyLoggedIn))
+	http.HandleFunc("/api/starnote", withCtx(handleAPIStarNote, IsJSON|OnlyLoggedIn))
 	http.HandleFunc("/api/unstarnote", withCtx(handleAPIUnstarNote, IsJSON|OnlyLoggedIn))
 	http.HandleFunc("/api/getrecentnotes", withCtx(handleAPIGetRecentNotes, IsJSON))
 }

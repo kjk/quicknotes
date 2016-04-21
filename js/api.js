@@ -122,7 +122,7 @@ export function starNote(noteId, cb, cbErr) {
   const args = {
     'noteIdHash': noteId
   };
-  post('/api/starnoten', args, cb, cbErr);
+  post('/api/starnote', args, cb, cbErr);
 }
 
 export function unstarNote(noteId, cb, cbErr) {
