@@ -185,7 +185,6 @@ export default class AppUser extends Component {
         <Top />
         <LeftSidebar tags={ this.state.tags }
           showingMyNotes={ showingMyNotes }
-          onTagSelected={ this.handleTagSelected }
           selectedTags={ this.state.selectedTags } />
         <NotesList notes={ this.state.selectedNotes }
           showingMyNotes={ showingMyNotes }

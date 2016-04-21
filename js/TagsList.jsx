@@ -16,19 +16,19 @@ export default class TagsList extends Component {
     const tagNames = this.props.tagNames;
     const tags = this.props.tags;
     const selectedTags = this.props.selectedTags;
-    const onTagSelected = this.props.onTagSelected;
 
     const tagEls = tagNames.map((tagName) => {
       const count = tags[tagName];
       const displayName = u.tagNameToDisplayName(tagName);
       const isSelected = isTagSelected(selectedTags, tagName);
       return (
-        <TagCount onTagSelected={ onTagSelected }
+        <TagCount
           isSelected={ isSelected }
           displayName={ displayName }
           tagName={ tagName }
           count={ count }
-          key={ tagName } />
+          key={ tagName }
+        />
         );
     });
 
@@ -41,8 +41,7 @@ export default class TagsList extends Component {
 }
 
 TagsList.propTypes = {
-  tagNames: PropTypes.array, // TODO: array of string
+  tagNames: PropTypes.arrayOf(PropTypes.string),
   tags: PropTypes.object, // TODO: more specific
-  selectedTags: PropTypes.array,
-  onTagSelected: PropTypes.func.isRequired
+  selectedTags: PropTypes.array
 };
