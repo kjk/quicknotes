@@ -46,7 +46,8 @@ export default class Note extends Component {
     if (tag.startsWith('#')) {
       tag = tag.substr(1);
     }
-    action.tagSelected(tag);
+    const op = e.altKey ? 'toggle' : 'set';
+    action.tagSelected(tag, op);
   }
 
   renderTags(tags) {

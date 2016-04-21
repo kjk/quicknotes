@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { Component, PropTypes } from 'react';
+import * as action from './action.js';
 
 export default class TagCount extends Component {
   constructor(props, context) {
@@ -10,11 +11,8 @@ export default class TagCount extends Component {
 
   handleClick(e) {
     e.preventDefault();
-    if (e.altKey) {
-      this.props.onTagSelected(this.props.tagName, 'toggle');
-    } else {
-      this.props.onTagSelected(this.props.tagName, 'set');
-    }
+    const op = e.altKey ? 'toggle' : 'set';
+    action.tagSelected(this.props.tagName, op);
   }
 
   render() {
@@ -29,7 +27,6 @@ export default class TagCount extends Component {
 }
 
 TagCount.propTypes = {
-  onTagSelected: PropTypes.func.isRequired,
   count: PropTypes.number,
   displayName: PropTypes.string,
   isSelected: PropTypes.bool,

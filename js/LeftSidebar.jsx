@@ -18,7 +18,7 @@ export default class LeftSidebar extends Component {
         tagNames={ tagNames }
         tags={ tags }
         selectedTags={ this.props.selectedTags }
-        onTagSelected={ this.props.onTagSelected } />
+      />
       );
   }
 
@@ -65,7 +65,6 @@ export default class LeftSidebar extends Component {
 }
 
 LeftSidebar.propTypes = {
-  onTagSelected: PropTypes.func.isRequired,
   tags: PropTypes.object, // TODO: more specific
   showingMyNotes: PropTypes.bool.isRequired,
   selectedTags: PropTypes.array
