@@ -4,18 +4,24 @@ import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount.jsx';
 import * as u from './utils.js';
 
+function isTagSelected(selectedTags, tag) {
+  return selectedTags.indexOf(tag) != -1;
+}
+
 export default class TagsList extends Component {
+
   render() {
+    //console.log("TagsList render");
     //var sectionName = this.props.sectionName;
     const tagNames = this.props.tagNames;
     const tags = this.props.tags;
-    const selectedTag = this.props.selectedTag;
+    const selectedTags = this.props.selectedTags;
     const onTagSelected = this.props.onTagSelected;
 
     const tagEls = tagNames.map((tagName) => {
       const count = tags[tagName];
       const displayName = u.tagNameToDisplayName(tagName);
-      const isSelected = (tagName == selectedTag);
+      const isSelected = isTagSelected(selectedTags, tagName);
       return (
         <TagCount onTagSelected={ onTagSelected }
           isSelected={ isSelected }
@@ -37,6 +43,6 @@ export default class TagsList extends Component {
 TagsList.propTypes = {
   tagNames: PropTypes.array, // TODO: array of string
   tags: PropTypes.object, // TODO: more specific
-  selectedTag: PropTypes.string,
+  selectedTags: PropTypes.array,
   onTagSelected: PropTypes.func.isRequired
 };

@@ -87,8 +87,8 @@ const clearSearchTermCmd = 'clearSearchTermCmd';
 const showTemporaryMessageCmd = 'showTemporaryMessageCmd';
 
 /* --------------------- */
-export function tagSelected(tag) {
-  broadcast(tagSelectedCmd, tag);
+export function tagSelected(tag, op) {
+  broadcast(tagSelectedCmd, tag, op);
 }
 
 export function onTagSelected(cb, owner) {
