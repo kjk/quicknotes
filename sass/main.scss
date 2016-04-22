@@ -676,12 +676,26 @@ pre.note-body {
       float: right;
       font-size: 11px;
     }
+
   }
+}
+
+.is-deleted {
+  color: red;
+  margin-right: 8px;
+  font-size: 13px;
+}
+
+.is-public, .is-private {
+  // TODO: this should be under .theme-light
+  color: rgba(0, 0, 0, 0.5);
+  margin-right: 8px;
+  font-size: 13px;
 }
 
 .full-note-top {
     .note-tags {
-      font-size: 15px;
+      //font-size: 15px;
       color: rgba(0, 0, 0, 0.5);
       margin-left: 8px;
     }

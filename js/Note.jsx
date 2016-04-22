@@ -32,15 +32,6 @@ export default class Note extends Component {
     };
   }
 
-  renderTitle(note) {
-    const title = ni.Title(note);
-    if (title !== '') {
-      return (
-        <span className="note-title">{ title }</span>
-        );
-    }
-  }
-
   handleTagClicked(e) {
     let tag = e.target.textContent;
     if (tag.startsWith('#')) {
@@ -48,19 +39,6 @@ export default class Note extends Component {
     }
     const op = e.altKey ? 'toggle' : 'set';
     action.tagSelected(tag, op);
-  }
-
-  renderTags(tags) {
-    const tagEls = tags.map(tag => {
-      tag = '#' + tag;
-      return (
-        <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
-        );
-    });
-
-    return (
-      <span className="note-tags">{ tagEls }</span>
-      );
   }
 
   handleMouseEnter(e) {
@@ -168,6 +146,44 @@ export default class Note extends Component {
         action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
         action.reloadNotes(false);
       });
+    }
+  }
+
+  renderTitle(note) {
+    const title = ni.Title(note);
+    if (title !== '') {
+      return (
+        <span className="note-title">{ title }</span>
+        );
+    }
+  }
+
+  renderTags(tags) {
+    const tagEls = tags.map(tag => {
+      tag = '#' + tag;
+      return (
+        <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
+        );
+    });
+
+    return (
+      <span className="note-tags">{ tagEls }</span>
+      );
+  }
+
+  renderPublicPrivate(note) {
+    const isPublic = ni.IsPublic(note);
+    if (isPublic) {
+      return <span className="is-public">public</span>;
+    } else {
+     return <span className="is-private">private</span>;
+    }
+  }
+
+  renderDeletedState(note) {
+    const isDeleted = ni.IsDeleted(note);
+    if (isDeleted) {
+      return <span className="is-deleted">deleted</span>;
     }
   }
 
@@ -329,6 +345,8 @@ export default class Note extends Component {
           { this.renderStarUnstar(note) }
           { this.renderTitle(note) }
           { this.renderTags(ni.Tags(note)) }
+          { this.renderPublicPrivate(note) }
+          { this.renderDeletedState(note) }
           { this.renderActions(note) }
         </div>
         <NoteBody compact={ this.props.compact } note={ note } />

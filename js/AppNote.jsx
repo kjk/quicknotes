@@ -282,6 +282,22 @@ export default class AppNote extends Component {
       );
   }
 
+  renderPublicPrivate(note) {
+    const isPublic = ni.IsPublic(note);
+    if (isPublic) {
+      return <span className="is-public">public</span>;
+    } else {
+     return <span className="is-private">private</span>;
+    }
+  }
+
+  renderDeletedState(note) {
+    const isDeleted = ni.IsDeleted(note);
+    if (isDeleted) {
+      return <span className="is-deleted">deleted</span>;
+    }
+  }
+
   renderNoteDeleted() {
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;
@@ -336,6 +352,9 @@ export default class AppNote extends Component {
             <div className="full-note-top">
               <h1>{ title }</h1>
               { this.renderTags(tags) }
+              { this.renderPublicPrivate(note) }
+              { this.renderDeletedState(note) }
+
               <div className="flex-spacer"></div>
               { this.isMyNote() ?
                 <div className="menu-trigger">
