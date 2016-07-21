@@ -17,8 +17,7 @@ export default class LeftSidebar extends Component {
       <TagsList sectionName={ sectionName }
         tagNames={ tagNames }
         tags={ tags }
-        selectedTags={ this.props.selectedTags }
-      />
+        selectedTags={ this.props.selectedTags } />
       );
   }
 

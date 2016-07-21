@@ -176,7 +176,7 @@ export default class Note extends Component {
     if (isPublic) {
       return <span className="is-public">public</span>;
     } else {
-     return <span className="is-private">private</span>;
+      return <span className="is-private">private</span>;
     }
   }
 

@@ -39,33 +39,47 @@ def verify_docker_running():
     print("docker is not running! must run docker")
     sys.exit(10)
 
-def get_docker_machine_ip():
-  ip = run_cmd_out(["docker-machine", "ip", "default"])
-  return ip.strip()
+# not sure if this covers all cases
+def decode_status(status_verbose):
+  if "Exited" in status_verbose:
+    return kStatusExited
+  return kStatusRunning
 
-# returns container id and status (running, exited) for a container
-# started with a given name
-# returns None if no container of that name
-def docker_ps(containerName):
-  s = run_cmd_out(["docker", "ps", "-a"])
+# given:
+# 0.0.0.0:7200->3306/tcp
+# return (0.0.0.0, 7200) or None if doesn't match
+def decode_ip_port(mappings):
+  parts = mappings.split("->")
+  if len(parts) != 2:
+    return None
+  parts = parts[0].split(":")
+  if len(parts) != 2:
+    return None
+  return parts
+
+
+# returns:
+#  - container id
+#  - status
+#  - (ip, port) in the host that maps to exposed port inside the container (or None)
+# returns (None, None, None) if no container of that name
+def docker_container_info(containerName):
+  s = run_cmd_out(["docker", "ps", "-a", "--format", "{{.ID}}|{{.Status}}|{{.Ports}}|{{.Names}}"])
+  # this returns a line like:
+  # 6c5a934e00fb|Exited (0) 3 months ago|0.0.0.0:7200->3306/tcp|mysql-56-for-quicknotes
   lines = s.split("\n")
-  #print(lines)
-  if len(lines) < 2:
-    return (None, None)
-  lines = lines[1:]
   for l in lines:
-    # imperfect heuristic
-    if containerName in l:
-      status = kStatusRunning
-      # probably imperfect heuristic
-      if "Exited" in l:
-        status = kStatusExited
-      parts = l.split()
-      return (parts[0], status)
-  return (None, None)
+    parts = l.split("|")
+    assert len(parts) == 4
+    id, status, mappings, names = parts
+    if containerName in names:
+      status = decode_status(status)
+      ip_port = decode_ip_port(mappings)
+      return (id, status, ip_port)
+  return (None, None, None)
 
 def start_container_if_needed(imageName, containerName, portMapping):
-  (containerId, status) = docker_ps(containerName)
+  (containerId, status, ip_port) = docker_container_info(containerName)
   if status == kStatusRunning:
     print("container %s is already running" % containerName)
     return
@@ -88,9 +102,11 @@ def wait_for_container(containerName):
 
 def main():
   verify_docker_running()
-  ip = get_docker_machine_ip()
   start_container_if_needed(g_imageName, g_containerName, "7200:3306")
-  cmd = "./scripts/build_and_run.sh -verbose -db-host %s -db-port 7200" % ip
+  (containerId, status, ip_port) = docker_container_info(g_containerName)
+  assert ip_port is not None
+  ip, port = ip_port
+  cmd = "./scripts/build_and_run.sh -verbose -db-host %s -db-port %s" % (ip, port)
   run_cmd_show_progress(cmd)
 
 if __name__ == "__main__":

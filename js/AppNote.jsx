@@ -287,7 +287,7 @@ export default class AppNote extends Component {
     if (isPublic) {
       return <span className="is-public">public</span>;
     } else {
-     return <span className="is-private">private</span>;
+      return <span className="is-private">private</span>;
     }
   }
 
@@ -354,7 +354,6 @@ export default class AppNote extends Component {
               { this.renderTags(tags) }
               { this.renderPublicPrivate(note) }
               { this.renderDeletedState(note) }
-
               <div className="flex-spacer"></div>
               { this.isMyNote() ?
                 <div className="menu-trigger">

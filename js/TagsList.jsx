@@ -22,13 +22,11 @@ export default class TagsList extends Component {
       const displayName = u.tagNameToDisplayName(tagName);
       const isSelected = isTagSelected(selectedTags, tagName);
       return (
-        <TagCount
-          isSelected={ isSelected }
+        <TagCount isSelected={ isSelected }
           displayName={ displayName }
           tagName={ tagName }
           count={ count }
-          key={ tagName }
-        />
+          key={ tagName } />
         );
     });
 
