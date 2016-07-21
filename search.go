@@ -342,6 +342,7 @@ func removeStringPart(a []StringPart, i int) []StringPart {
 	return append(a[:i], a[i+1:]...)
 }
 
+// TODO: could distribute what is being cut more evenly among non-higlighted parts
 func limitLineLength(parts []StringPart, maxLen int) []StringPart {
 	removedLast := false
 	for {
@@ -374,7 +375,34 @@ func limitLineLength(parts []StringPart, maxLen int) []StringPart {
 			}
 			continue
 		}
-		break
+		largestLen := 0
+		idx := -1
+		for i, sp := range parts {
+			if !sp.isHighlight {
+				if len(sp.s) > 9 && len(sp.s) > largestLen {
+					largestLen = len(sp.s)
+					idx = i
+				}
+			}
+		}
+		// TODO: if we're too long even after trimming non-higlighted parts,
+		// we should remove higlighted parts
+		if idx == -1 {
+			break
+		}
+		sp := parts[idx]
+		toKeepLen := maxLen - (totalLen - len(sp.s))
+		toKeepStr := ""
+		if toKeepLen > 9 {
+			s := sp.s
+			toKeepLen -= 3
+			half := toKeepLen / 2
+			n := len(s)
+			toKeepStr = s[:half] + "..." + s[n-half:]
+			parts[idx].s = toKeepStr
+			return parts
+		}
+		parts[idx].s = "..."
 	}
 	return parts
 }
