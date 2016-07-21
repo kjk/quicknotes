@@ -183,9 +183,7 @@ export default class AppUser extends Component {
     return (
       <div>
         <Top />
-        <LeftSidebar tags={ this.state.tags }
-          showingMyNotes={ showingMyNotes }
-          selectedTags={ this.state.selectedTags } />
+        <LeftSidebar tags={ this.state.tags } showingMyNotes={ showingMyNotes } selectedTags={ this.state.selectedTags } />
         <NotesList notes={ this.state.selectedNotes }
           showingMyNotes={ showingMyNotes }
           compact={ false }
