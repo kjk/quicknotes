@@ -315,7 +315,6 @@ func newLineSearchResultItem(s string, lineNo int) SearchResultItem {
 	}
 }
 
-// TODO: need to html-escape <, > etc.
 func decorateHTML(s string, matchPositions []PosLen) string {
 	if len(matchPositions) == 0 {
 		return s
