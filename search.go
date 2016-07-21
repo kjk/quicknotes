@@ -338,16 +338,52 @@ func stringToStringParts(str string, matchPositions []PosLen) []StringPart {
 	return res
 }
 
-func decorateHTMLAndTrim(s string, matchPositions []PosLen) string {
-	return s
+func removeStringPart(a []StringPart, i int) []StringPart {
+	return append(a[:i], a[i+1:]...)
+}
+
+func limitLineLength(parts []StringPart, maxLen int) []StringPart {
+	removedLast := false
+	for {
+		totalLen := 0
+		highlightedLen := 0
+		for _, sp := range parts {
+			totalLen += len(sp.s)
+			if sp.isHighlight {
+				highlightedLen += len(sp.s)
+			}
+		}
+		if totalLen <= maxLen {
+			return parts
+		}
+		n := len(parts)
+		if !removedLast {
+			removedLast = true
+			sp := parts[n-1]
+			if !sp.isHighlight {
+				toKeepLen := maxLen - (totalLen - len(sp.s))
+				toKeepStr := ""
+				if toKeepLen > 6 {
+					toKeepLen -= 3
+					toKeepStr = sp.s[:toKeepLen] + "..."
+				}
+				parts = removeStringPart(parts, n-1)
+				if len(toKeepStr) > 0 {
+					parts = append(parts, StringPart{toKeepStr, false})
+				}
+			}
+			continue
+		}
+		break
+	}
+	return parts
 }
 
 func decorateHTML(s string, matchPositions []PosLen) string {
-	/*if len(s) > maxSearchResultLineLen {
-		return decorateHTMLAndTrim(s, matchPositions)
-	}*/
-
 	parts := stringToStringParts(s, matchPositions)
+	if len(s) > maxSearchResultLineLen {
+		parts = limitLineLength(parts, maxSearchResultLineLen)
+	}
 	res := ""
 	for _, sp := range parts {
 		if sp.isHighlight {
