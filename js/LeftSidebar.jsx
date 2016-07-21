@@ -25,7 +25,7 @@ export default class LeftSidebar extends Component {
     const tags = this.props.tags;
     if (!tags) {
       return (
-        <div id="leftSidebar">
+        <div id='leftSidebar'>
         </div>
         );
     }
@@ -55,7 +55,7 @@ export default class LeftSidebar extends Component {
     const specialTagsList = this.renderTagsList('SPECIAL', specialTagNames, tags);
     const tagsList = this.renderTagsList('TAGS', tagNames, tags);
     return (
-      <div id="left-sidebar">
+      <div id='left-sidebar'>
         { specialTagsList }
         { tagsList }
       </div>

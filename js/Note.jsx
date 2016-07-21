@@ -153,7 +153,7 @@ export default class Note extends Component {
     const title = ni.Title(note);
     if (title !== '') {
       return (
-        <span className="note-title">{ title }</span>
+        <span className='note-title'>{ title }</span>
         );
     }
   }
@@ -162,55 +162,55 @@ export default class Note extends Component {
     const tagEls = tags.map(tag => {
       tag = '#' + tag;
       return (
-        <span className="note-tag" key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
+        <span className='note-tag' key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
         );
     });
 
     return (
-      <span className="note-tags">{ tagEls }</span>
+      <span className='note-tags'>{ tagEls }</span>
       );
   }
 
   renderPublicPrivate(note) {
     const isPublic = ni.IsPublic(note);
     if (isPublic) {
-      return <span className="is-public">public</span>;
+      return <span className='is-public'>public</span>;
     } else {
-      return <span className="is-private">private</span>;
+      return <span className='is-private'>private</span>;
     }
   }
 
   renderDeletedState(note) {
     const isDeleted = ni.IsDeleted(note);
     if (isDeleted) {
-      return <span className="is-deleted">deleted</span>;
+      return <span className='is-deleted'>deleted</span>;
     }
   }
 
   renderTrashUntrash(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a className="note-action"
-          href="#"
+        <a className='note-action'
+          href='#'
           onClick={ this.handleDelUndel }
-          title="Undelete">undelete</a>
+          title='Undelete'>undelete</a>
         );
     }
     return (
-      <a className="note-action delete"
-        href="#"
+      <a className='note-action delete'
+        href='#'
         onClick={ this.handleDelUndel }
-        title="Move to Trash">delete</a>
+        title='Move to Trash'>delete</a>
       );
   }
 
   renderPermanentDelete(note) {
     if (ni.IsDeleted(note)) {
       return (
-        <a className="note-action delete"
-          href="#"
+        <a className='note-action delete'
+          href='#'
           onClick={ this.handlePermanentDelete }
-          title="Delete permanently">delete permanently</a>
+          title='Delete permanently'>delete permanently</a>
         );
     }
   }
@@ -223,10 +223,10 @@ export default class Note extends Component {
   renderEdit(note) {
     if (!ni.IsDeleted(note)) {
       return (
-        <a className="note-action"
-          href="#"
+        <a className='note-action'
+          href='#'
           onClick={ this.handleEdit }
-          title="Edit note">edit</a>
+          title='Edit note'>edit</a>
         );
     }
   }
@@ -238,16 +238,16 @@ export default class Note extends Component {
     }
     const url = '/n/' + ni.HashID(note) + title;
     return (
-      <a className="note-action"
+      <a className='note-action'
         href={ url }
-        target="_blank"
-        title="View note">view</a>
+        target='_blank'
+        title='View note'>view</a>
       );
   }
 
   renderSize(note) {
     return (
-      <span className="note-size">{ ni.HumanSize(note) }</span>
+      <span className='note-size'>{ ni.HumanSize(note) }</span>
       );
   }
 
@@ -257,17 +257,17 @@ export default class Note extends Component {
     }
     if (ni.IsPublic(note)) {
       return (
-        <a className="note-action"
-          href="#"
+        <a className='note-action'
+          href='#'
           onClick={ this.handleMakePublicPrivate }
-          title="Make private">make private</a>
+          title='Make private'>make private</a>
         );
     } else {
       return (
-        <a className="note-action"
-          href="#"
+        <a className='note-action'
+          href='#'
           onClick={ this.handleMakePublicPrivate }
-          title="Make public">make public</a>
+          title='Make public'>make public</a>
         );
     }
   }
@@ -280,17 +280,17 @@ export default class Note extends Component {
     const isStarred = ni.IsStarred(note);
     if (isStarred) {
       return (
-        <a className="note-action note-star note-starred"
-          href="#"
+        <a className='note-action note-star note-starred'
+          href='#'
           onClick={ this.handleStarUnstarNote }
-          title="Unstar"><i className="fa fa-star"></i></a>
+          title='Unstar'><i className='fa fa-star'></i></a>
         );
     } else {
       return (
-        <a className="note-action note-star"
-          href="#"
+        <a className='note-action note-star'
+          href='#'
           onClick={ this.handleStarUnstarNote }
-          title="Star"><i className="fa fa-star-o"></i></a>
+          title='Star'><i className='fa fa-star-o'></i></a>
         );
     }
   }
@@ -298,7 +298,7 @@ export default class Note extends Component {
   renderActionsIfMyNotes(note) {
     if (this.state.showActions) {
       return (
-        <div className="note-actions">
+        <div className='note-actions'>
           { this.renderTrashUntrash(note) }
           { this.renderPermanentDelete(note) }
           { this.renderMakePublicPrivate(note) }
@@ -312,13 +312,13 @@ export default class Note extends Component {
   renderActionsIfNotMyNotes(note) {
     if (this.state.showActions) {
       return (
-        <div className="note-actions">
+        <div className='note-actions'>
           { this.renderViewLink(note) }
         </div>
         );
     }
     return (
-      <div className="note-actions"></div>
+      <div className='note-actions'></div>
       );
   }
 
@@ -341,7 +341,7 @@ export default class Note extends Component {
         onMouseEnter={ this.handleMouseEnter }
         onMouseLeave={ this.handleMouseLeave }
         onDoubleClick={ this.handleDoubleClick }>
-        <div className="note-header">
+        <div className='note-header'>
           { this.renderStarUnstar(note) }
           { this.renderTitle(note) }
           { this.renderTags(ni.Tags(note)) }

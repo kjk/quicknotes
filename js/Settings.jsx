@@ -104,23 +104,23 @@ export default class Settings extends React.Component {
     //console.log('Settings.render');
     if (!this.state.isShowing) {
       return (
-        <div id="settings" className="hidden">
+        <div id='settings' className='hidden'>
         </div>
         );
     }
     const layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
     const themes = this.renderThemesSelect(allThemes, this.state.theme);
     return (
-      <div id="settings">
-        <div className="settings-div">
+      <div id='settings'>
+        <div className='settings-div'>
           Layout:
           { layouts }
         </div>
-        <div className="settings-div">
+        <div className='settings-div'>
           Theme:
           { themes }
         </div>
-        <div className="settings-buttons">
+        <div className='settings-buttons'>
           <button onClick={ this.handleOk }>
             Ok
           </button>

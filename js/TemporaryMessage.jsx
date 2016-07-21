@@ -42,11 +42,11 @@ export default class TemporaryMessage extends Component {
 
   render() {
     if (!this.state.message) {
-      return <div className="hidden"></div>;
+      return <div className='hidden'></div>;
     }
     const html = {
       __html: this.state.message
     };
-    return <div className="temporary-message" dangerouslySetInnerHTML={ html }></div>;
+    return <div className='temporary-message' dangerouslySetInnerHTML={ html }></div>;
   }
 }

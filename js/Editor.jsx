@@ -805,7 +805,7 @@ export default class Editor extends Component {
       return;
     }
     this.cm.setOption('mode', mode);
-    // console.log('updateCodeMirrorMode: mode=', mode);
+  // console.log('updateCodeMirrorMode: mode=', mode);
   }
 
   isShowingPreview() {
@@ -993,39 +993,39 @@ export default class Editor extends Component {
     }
     // TODO: translate shortcuts for Windows
     return (
-      <div id="editor-buttons" className="flex-row">
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdBold } data-hint="Bold (⌘B)">
-          <i className="fa fa-bold"></i>
+      <div id='editor-buttons' className='flex-row'>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdBold } data-hint='Bold (⌘B)'>
+          <i className='fa fa-bold'></i>
         </button>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdItalic } data-hint="Italic (⌘I)">
-          <i className="fa fa-italic"></i>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdItalic } data-hint='Italic (⌘I)'>
+          <i className='fa fa-italic'></i>
         </button>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdHeading } data-hint="Heading (⌘H)">
-          <i className="fa fa-header"></i>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdHeading } data-hint='Heading (⌘H)'>
+          <i className='fa fa-header'></i>
         </button>
-        <div className="editor-btn-spacer"></div>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdQuote } data-hint="Blockquote (⌘-')">
-          <i className="fa fa-quote-right"></i>
+        <div className='editor-btn-spacer'></div>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdQuote } data-hint="Blockquote (⌘-')">
+          <i className='fa fa-quote-right'></i>
         </button>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdCode } data-hint="Code block">
-          <i className="fa fa-code"></i>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdCode } data-hint='Code block'>
+          <i className='fa fa-code'></i>
         </button>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdListUnordered } data-hint="Bulleted List (Ctrl-L)">
-          <i className="fa fa-list-ul"></i>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdListUnordered } data-hint='Bulleted List (Ctrl-L)'>
+          <i className='fa fa-list-ul'></i>
         </button>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdListOrdered } data-hint="Numbered List (⌘-Alt-L">
-          <i className="fa fa-list-ol"></i>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdListOrdered } data-hint='Numbered List (⌘-Alt-L'>
+          <i className='fa fa-list-ol'></i>
         </button>
-        <div className="editor-btn-spacer"></div>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdLink } data-hint="Link (Ctrl-K)">
-          <i className="fa fa-link"></i>
+        <div className='editor-btn-spacer'></div>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdLink } data-hint='Link (Ctrl-K)'>
+          <i className='fa fa-link'></i>
         </button>
-        <button className="ebtn hint--bottom" onClick={ this.handleEditCmdImage } data-hint="Image">
-          <i className="fa fa-picture-o"></i>
+        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdImage } data-hint='Image'>
+          <i className='fa fa-picture-o'></i>
         </button>
-        <div className="editor-btn-spacer"></div>
-        <button className="ebtn hint--bottom" onClick={ this.handleTogglePreview } data-hint="Toggle Preview (F9)">
-          <i className="fa fa-columns"></i>
+        <div className='editor-btn-spacer'></div>
+        <button className='ebtn hint--bottom' onClick={ this.handleTogglePreview } data-hint='Toggle Preview (F9)'>
+          <i className='fa fa-columns'></i>
         </button>
       </div>
       );
@@ -1035,7 +1035,7 @@ export default class Editor extends Component {
     // console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
-      return <div className="hidden"></div>;
+      return <div className='hidden'></div>;
     }
 
     const note = this.state.note;
@@ -1061,10 +1061,10 @@ export default class Editor extends Component {
         borderTop: '1px solid lightgray'
       };
       editor = (
-        <div id="cm-wrapper" ref="editorTextAreaWrapper" style={ style }>
-          <CodeMirrorEditor className="codemirror-div"
-            textAreaClassName="cm-textarea"
-            placeholder="Enter text here..."
+        <div id='cm-wrapper' ref='editorTextAreaWrapper' style={ style }>
+          <CodeMirrorEditor className='codemirror-div'
+            textAreaClassName='cm-textarea'
+            placeholder='Enter text here...'
             defaultValue={ note.body }
             cmOptions={ cmOptions }
             onChange={ this.handleTextChanged }
@@ -1077,18 +1077,18 @@ export default class Editor extends Component {
       };
 
       editor = (
-        <div id="editor-text-with-preview" className="flex-row">
-          <div id="cm-wrapper" ref="editorTextAreaWrapper">
-            <CodeMirrorEditor className="codemirror-div"
-              textAreaClassName="cm-textarea"
-              placeholder="Enter text here..."
+        <div id='editor-text-with-preview' className='flex-row'>
+          <div id='cm-wrapper' ref='editorTextAreaWrapper'>
+            <CodeMirrorEditor className='codemirror-div'
+              textAreaClassName='cm-textarea'
+              placeholder='Enter text here...'
               defaultValue={ note.body }
               cmOptions={ cmOptions }
               onChange={ this.handleTextChanged }
               onEditorCreated={ this.handleEditorCreated } />
           </div>
-          <div id="editor-preview" ref="preview">
-            <div id="editor-preview-inner" dangerouslySetInnerHTML={ html }></div>
+          <div id='editor-preview' ref='preview'>
+            <div id='editor-preview-inner' dangerouslySetInnerHTML={ html }></div>
           </div>
         </div>
       );
@@ -1111,36 +1111,36 @@ export default class Editor extends Component {
           min={ kDragBarMin }
           max={ dragBarMax }
           onPosChanged={ this.handleDragBarMoved } />
-        <div id="editor-wrapper"
-          className="flex-col"
+        <div id='editor-wrapper'
+          className='flex-col'
           style={ style }
-          ref="editorWrapper">
-          <div id="editor-top" className="flex-row">
-            <button className="btn btn-primary hint--bottom"
+          ref='editorWrapper'>
+          <div id='editor-top' className='flex-row'>
+            <button className='btn btn-primary hint--bottom'
               disabled={ saveDisabled }
               onClick={ this.handleSave }
-              data-hint="Ctrl-Enter">
+              data-hint='Ctrl-Enter'>
               Save
             </button>
-            <button className="btn btn-cancel" onClick={ this.handleCancel }>
+            <button className='btn btn-cancel' onClick={ this.handleCancel }>
               Cancel
             </button>
             { publicSelect }
-            { formatSelect }&nbsp;&nbsp;
-            <input id="editor-title"
-              className="editor-input"
-              placeholder="title here..."
+            { formatSelect }
+            <input id='editor-title'
+              className='editor-input'
+              placeholder='title here...'
               value={ note.title }
               onChange={ this.handleTitleChanged }
-              ref="title"
-              tabIndex="1" />
-            <input id="editor-tags"
-              className="editor-input"
-              placeholder="#enter #tags"
+              ref='title'
+              tabIndex='1' />
+            <input id='editor-tags'
+              className='editor-input'
+              placeholder='#enter #tags'
               value={ note.tags }
               onChange={ this.handleTagsChanged }
-              tabIndex="2" />
-            <div className="editor-spacer2"></div>
+              tabIndex='2' />
+            <div className='editor-spacer2'></div>
           </div>
           { this.renderMarkdownButtons(isText) }
           { editor }

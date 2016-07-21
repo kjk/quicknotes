@@ -79,7 +79,7 @@ export default class ImportSimpleNote extends Component {
     console.log('ImportSimpleNote.handleCloseFinished()');
     e.preventDefault();
     action.showHideImportSimpleNote(false);
-    // TODO: reload notes via action
+  // TODO: reload notes via action
   }
 
   handleInputChanged(e) {
@@ -157,8 +157,8 @@ export default class ImportSimpleNote extends Component {
     }
     return (
       <tr>
-        <td colSpan="2">
-          <div className="error">
+        <td colSpan='2'>
+          <div className='error'>
             { this.state.errorMessage }
           </div>
         </td>
@@ -172,7 +172,7 @@ export default class ImportSimpleNote extends Component {
     }
     return (
       <tr>
-        <td colSpan="2">
+        <td colSpan='2'>
           { this.state.statusMessage }
         </td>
       </tr>
@@ -183,7 +183,7 @@ export default class ImportSimpleNote extends Component {
     if (this.state.finishedImporting) {
       return (
         <tr style={ styleMarginTop }>
-          <td colSpan="2">
+          <td colSpan='2'>
             { this.state.statusMessage }
           </td>
         </tr>
@@ -193,15 +193,15 @@ export default class ImportSimpleNote extends Component {
     return (
       <tr>
         <td>
-          <label style={ stylePadRight } htmlFor="email">
+          <label style={ stylePadRight } htmlFor='email'>
             Email
           </label>
         </td>
         <td>
           <input style={ style100 }
-            type="text"
-            id="email"
-            name="email"
+            type='text'
+            id='email'
+            name='email'
             onChange={ this.handleInputChanged } />
         </td>
       </tr>
@@ -216,15 +216,15 @@ export default class ImportSimpleNote extends Component {
     return (
       <tr style={ styleMarginTop }>
         <td>
-          <label htmlFor="password">
+          <label htmlFor='password'>
             Password
           </label>
         </td>
         <td>
           <input style={ style100 }
-            type="password"
-            id="password"
-            name="password"
+            type='password'
+            id='password'
+            name='password'
             onChange={ this.handleInputChanged } />
         </td>
       </tr>
@@ -237,7 +237,7 @@ export default class ImportSimpleNote extends Component {
         <tr>
           <td></td>
           <td>
-            <button className="btn btn-primary right no-margin-x" onClick={ this.handleCloseFinished }>
+            <button className='btn btn-primary right no-margin-x' onClick={ this.handleCloseFinished }>
               Ok
             </button>
           </td>
@@ -250,7 +250,7 @@ export default class ImportSimpleNote extends Component {
         <tr>
           <td></td>
           <td>
-            <i className="fa fa-spinner fa-pulse right" style={ styleSpinner }></i>
+            <i className='fa fa-spinner fa-pulse right' style={ styleSpinner }></i>
           </td>
         </tr>
         );
@@ -260,10 +260,10 @@ export default class ImportSimpleNote extends Component {
       <tr>
         <td></td>
         <td>
-          <button className="btn btn-primary right no-margin-x" onClick={ this.handleImport }>
+          <button className='btn btn-primary right no-margin-x' onClick={ this.handleImport }>
             Import
           </button>
-          <button className="btn btn-cancel right" onClick={ this.handleClose }>
+          <button className='btn btn-cancel right' onClick={ this.handleClose }>
             Cancel
           </button>
         </td>
@@ -274,7 +274,7 @@ export default class ImportSimpleNote extends Component {
   render() {
     if (!this.state.isShowing) {
       return (
-        <div id="no-import-simple-note" className="hidden">
+        <div id='no-import-simple-note' className='hidden'>
         </div>
         );
     }
@@ -288,20 +288,20 @@ export default class ImportSimpleNote extends Component {
     //const isFinished = !this.state.finishedImporting;
 
     return (
-      <div className="modal">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button"
-                className="close"
-                data-dismiss="modal"
+      <div className='modal'>
+        <div className='modal-dialog'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <button type='button'
+                className='close'
+                data-dismiss='modal'
                 onClick={ this.handleClose }>
                 <span>×</span>
               </button>
-              <h4 className="modal-title">Import notes from SimpleNote.com</h4>
+              <h4 className='modal-title'>Import notes from SimpleNote.com</h4>
             </div>
-            <div className="modal-body">
-              <form id="import-simplenote" method="GET">
+            <div className='modal-body'>
+              <form id='import-simplenote' method='GET'>
                 <table style={ styleTable }>
                   <tbody>
                     { formInner1 }
@@ -312,7 +312,7 @@ export default class ImportSimpleNote extends Component {
                   </tbody>
                 </table>
               </form>
-              <div className="status">
+              <div className='status'>
               </div>
             </div>
           </div>
