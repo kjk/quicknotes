@@ -31,7 +31,7 @@ export default class TagsList extends Component {
     });
 
     return (
-      <div className="tags-list">
+      <div className='tags-list'>
         { tagEls }
       </div>
       );

@@ -212,7 +212,7 @@ export default class AppNote extends Component {
     if (ni.IsDeleted(note)) {
       return;
     }
-    return <a href="#" onClick={ this.handleEditNote }>Edit</a>;
+    return <a href='#' onClick={ this.handleEditNote }>Edit</a>;
   }
 
   renderVersions(note) {
@@ -224,7 +224,7 @@ export default class AppNote extends Component {
       return;
     }
     const s = ni.IsStarred(note) ? 'Unstar' : 'Star';
-    return <a href="#" onClick={ this.handleStarUnstarNote }>
+    return <a href='#' onClick={ this.handleStarUnstarNote }>
              { s }
            </a>;
   }
@@ -234,21 +234,21 @@ export default class AppNote extends Component {
       return;
     }
     const s = ni.IsPublic(note) ? 'Make private' : 'Make public';
-    return <a href="#" onClick={ this.handleMakePublicPrivate }>
+    return <a href='#' onClick={ this.handleMakePublicPrivate }>
              { s }
            </a>;
   }
 
   renderTrashUntrash(note) {
     const s = ni.IsDeleted(note) ? 'Undelete' : 'Move to Trash';
-    return <a href="#" onClick={ this.handleDelUndel }>
+    return <a href='#' onClick={ this.handleDelUndel }>
              { s }
            </a>;
   }
 
   renderPermanentDelete(note) {
     if (ni.IsDeleted(note)) {
-      return <a href="#" onClick={ this.handlePermanentDelete }>Delete permanently</a>;
+      return <a href='#' onClick={ this.handlePermanentDelete }>Delete permanently</a>;
     }
   }
 
@@ -273,28 +273,28 @@ export default class AppNote extends Component {
     const tagEls = tags.map(tag => {
       tag = '#' + tag;
       return (
-        <span className="note-tag" key={ tag }>{ tag }</span>
+        <span className='note-tag' key={ tag }>{ tag }</span>
         );
     });
 
     return (
-      <span className="note-tags">{ tagEls }</span>
+      <span className='note-tags'>{ tagEls }</span>
       );
   }
 
   renderPublicPrivate(note) {
     const isPublic = ni.IsPublic(note);
     if (isPublic) {
-      return <span className="is-public">public</span>;
+      return <span className='is-public'>public</span>;
     } else {
-      return <span className="is-private">private</span>;
+      return <span className='is-private'>private</span>;
     }
   }
 
   renderDeletedState(note) {
     const isDeleted = ni.IsDeleted(note);
     if (isDeleted) {
-      return <span className="is-deleted">deleted</span>;
+      return <span className='is-deleted'>deleted</span>;
     }
   }
 
@@ -304,18 +304,18 @@ export default class AppNote extends Component {
 
     return (
       <div>
-        <div id="note-top">
+        <div id='note-top'>
           <Top />
         </div>
-        <div id="full-note">
-          <div className="note-content-wrapper">
-            <center className="note-deleted">
+        <div id='full-note'>
+          <div className='note-content-wrapper'>
+            <center className='note-deleted'>
               This note has been permanently deleted.
             </center>
           </div>
-          <hr className="light" />
-          <center className="note-footer">
-            A note by&nbsp;
+          <hr className='light' />
+          <center className='note-footer'>
+            A note by
             <a href={ url }>
               { nu.Handle }
             </a>.
@@ -344,21 +344,21 @@ export default class AppNote extends Component {
 
     return (
       <div>
-        <div id="note-top">
+        <div id='note-top'>
           <Top />
         </div>
-        <div id="full-note">
-          <div className="note-content-wrapper">
-            <div className="full-note-top">
+        <div id='full-note'>
+          <div className='note-content-wrapper'>
+            <div className='full-note-top'>
               <h1>{ title }</h1>
               { this.renderTags(tags) }
               { this.renderPublicPrivate(note) }
               { this.renderDeletedState(note) }
-              <div className="flex-spacer"></div>
+              <div className='flex-spacer'></div>
               { this.isMyNote() ?
-                <div className="menu-trigger">
-                  <i className="fa fa-ellipsis-v"></i>
-                  <div className="menu-content">
+                <div className='menu-trigger'>
+                  <i className='fa fa-ellipsis-v'></i>
+                  <div className='menu-content'>
                     { this.renderEdit(note) }
                     { this.renderStarUnstar(note) }
                     { this.renderMakePublicPrivate(note) }
@@ -369,9 +369,9 @@ export default class AppNote extends Component {
             </div>
             { this.renderBody(note) }
           </div>
-          <hr className="light" />
-          <center className="note-footer">
-            A note by&nbsp;
+          <hr className='light' />
+          <center className='note-footer'>
+            A note by
             <a href={ url }>
               { nu.Handle }
             </a>.

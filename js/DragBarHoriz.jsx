@@ -85,7 +85,7 @@ export default class DragBarHoriz extends Component {
     };
 
     return (
-      <div className="drag-bar-horiz" style={ style } onMouseDown={ this.handleMouseDown }>
+      <div className='drag-bar-horiz' style={ style } onMouseDown={ this.handleMouseDown }>
       </div>
       );
   }

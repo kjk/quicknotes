@@ -15,7 +15,7 @@ export default class RecentNotes extends Component {
   render() {
     const notes = this.state.notes;
     return (
-      <div id="recentNotes">
+      <div id='recentNotes'>
         <div>
           Recent notes:
         </div>
