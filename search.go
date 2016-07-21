@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	colorReset = "\x1b[0m\x1b[K"
-	colorMatch = "\x1b[30;43m" // black text with yellow background
+	colorReset             = "\x1b[0m\x1b[K"
+	colorMatch             = "\x1b[30;43m" // black text with yellow background
+	maxSearchResultLineLen = 120
 )
 
 var (
@@ -74,7 +75,7 @@ func (m ByMatchScore) Less(i, j int) bool {
 	return matchLess(m1, m2)
 }
 
-// BySimpleMatchScore is for sorting
+// BySimpleMatchScore is for sorting by match score
 type BySimpleMatchScore []*MatchWithSimpleNote
 
 func (m BySimpleMatchScore) Len() int {
@@ -90,6 +91,7 @@ func (m BySimpleMatchScore) Less(i, j int) bool {
 	return matchLess(m1, m2)
 }
 
+// PosLenByPos is for sorting PosLen by position
 type PosLenByPos []PosLen
 
 func (a PosLenByPos) Len() int {
@@ -106,11 +108,7 @@ func (a PosLenByPos) Less(i, j int) bool {
 }
 
 func decorate(s string, matchPositions []PosLen) string {
-	if len(matchPositions) == 0 {
-		return s
-	}
 	res := ""
-	prevEnd := 0
 	positions := ""
 	if flgPositions {
 		res += fmt.Sprintf("s: %s\n", s)
@@ -120,15 +118,14 @@ func decorate(s string, matchPositions []PosLen) string {
 		res += fmt.Sprintf("pos: %s\n", positions)
 	}
 
-	for _, pl := range matchPositions {
-		pos := pl.Pos
-		res += s[prevEnd:pos]
-		res += colorMatch
-		prevEnd = pos + pl.Len
-		res += s[pos:prevEnd]
-		res += colorReset
+	parts := stringToStringParts(s, matchPositions)
+	for _, sp := range parts {
+		if sp.isHighlight {
+			res += colorMatch + sp.s + colorReset
+		} else {
+			res += sp.s
+		}
 	}
-	res += s[prevEnd:len(s)]
 	return res
 }
 
@@ -315,23 +312,50 @@ func newLineSearchResultItem(s string, lineNo int) SearchResultItem {
 	}
 }
 
-func decorateHTML(s string, matchPositions []PosLen) string {
-	if len(matchPositions) == 0 {
-		return s
-	}
-	res := ""
+// StringPart describes part of the string
+type StringPart struct {
+	s           string
+	isHighlight bool
+}
+
+func stringToStringParts(str string, matchPositions []PosLen) []StringPart {
+	var res []StringPart
 	prevEnd := 0
-	spanBefore := `<span class="s-h">`
-	spanAfter := `</span>`
-	for _, pl := range matchPositions {
-		pos := pl.Pos
-		res += html.EscapeString(s[prevEnd:pos])
-		res += spanBefore
-		prevEnd = pos + pl.Len
-		res += html.EscapeString(s[pos:prevEnd])
-		res += spanAfter
+	for _, mp := range matchPositions {
+		pos := mp.Pos
+		s := str[prevEnd:pos]
+		if len(s) > 0 {
+			res = append(res, StringPart{s, false})
+		}
+		prevEnd = pos + mp.Len
+		res = append(res, StringPart{str[pos:prevEnd], true})
 	}
-	res += html.EscapeString(s[prevEnd:len(s)])
+
+	s := str[prevEnd:len(str)]
+	if len(s) > 0 {
+		res = append(res, StringPart{s, false})
+	}
+	return res
+}
+
+func decorateHTMLAndTrim(s string, matchPositions []PosLen) string {
+	return s
+}
+
+func decorateHTML(s string, matchPositions []PosLen) string {
+	/*if len(s) > maxSearchResultLineLen {
+		return decorateHTMLAndTrim(s, matchPositions)
+	}*/
+
+	parts := stringToStringParts(s, matchPositions)
+	res := ""
+	for _, sp := range parts {
+		if sp.isHighlight {
+			res += `<span class="s-h">` + html.EscapeString(sp.s) + `</span>`
+		} else {
+			res += html.EscapeString(sp.s)
+		}
+	}
 	return res
 }
 
