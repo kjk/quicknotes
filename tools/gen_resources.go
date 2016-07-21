@@ -2,6 +2,8 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -107,49 +109,47 @@ func cmdToStr(cmd *exec.Cmd) string {
 	return strings.Join(arr, " ")
 }
 
-func getCmdOutMust(cmd *exec.Cmd) []byte {
-	var resOut, resErr []byte
-	stdout, _ := cmd.StdoutPipe()
-	stderr, _ := cmd.StderrPipe()
-	cmd.Start()
-
-	go func() {
-		buf := make([]byte, 1024, 1024)
-		for {
-			n, err := stdout.Read(buf)
-			if err != nil {
-				break
-			}
-			if n > 0 {
-				d := buf[:n]
-				resOut = append(resOut, d...)
-			}
-		}
-	}()
-
-	go func() {
-		buf := make([]byte, 1024, 1024)
-		for {
-			n, err := stderr.Read(buf)
-			if err != nil {
-				break
-			}
-			if n > 0 {
-				d := buf[:n]
-				resErr = append(resErr, d...)
-				os.Stderr.Write(d)
-			}
-		}
-	}()
-	err := cmd.Wait()
-	fataliferr(err)
-	fatalif(len(resErr) != 0, "failed to execute %s\n", cmdToStr(cmd))
-	return resOut
+func getCmdOut(cmd *exec.Cmd) []byte {
+	cmd.Stdout = &bytes.Buffer{}
+	cmd.Stderr = &bytes.Buffer{}
+	err := cmd.Start()
+	if err != nil {
+		return nil
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return nil
+	}
+	resErr := cmd.Stdout.(*bytes.Buffer).Bytes()
+	if len(resErr) != 0 {
+		return nil
+	}
+	return cmd.Stdout.(*bytes.Buffer).Bytes()
 }
 
-func compressWithZopfliMust(path string) []byte {
+func compressFileMust(path string) []byte {
 	cmd := exec.Command("zopfli", "-c", path)
-	return getCmdOutMust(cmd)
+	d := getCmdOut(cmd)
+	if len(d) > 0 {
+		return d
+	}
+	out := &bytes.Buffer{}
+	content, err := ioutil.ReadFile(path)
+	fataliferr(err)
+	w, err := gzip.NewWriterLevel(out, gzip.BestCompression)
+	fataliferr(err)
+	_, err = w.Write(content)
+	fataliferr(err)
+	err = w.Close()
+	fataliferr(err)
+	return out.Bytes()
+}
+
+func checkZopfliInstalled() {
+	_, err := exec.LookPath("zopfli")
+	if err != nil {
+		fmt.Printf("'zopfli' doesn't seem to be installed. Use 'brew install zopfli' on mac\n")
+	}
 }
 
 func addZipFileMust(zw *zip.Writer, path, zipName string) {
@@ -214,7 +214,7 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 			addZipFileMust(zw, path, zipName)
 			if shouldAddCompressed(path) {
 				zipName = zipName + ".gz"
-				d := compressWithZopfliMust(path)
+				d := compressFileMust(path)
 				addZipDataMust(zw, path, d, zipName)
 			}
 		}
@@ -280,5 +280,6 @@ func genResources() {
 }
 
 func main() {
+	checkZopfliInstalled()
 	genResources()
 }
