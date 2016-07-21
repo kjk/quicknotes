@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"sort"
 	"strings"
 )
@@ -325,13 +326,13 @@ func decorateHTML(s string, matchPositions []PosLen) string {
 	spanAfter := `</span>`
 	for _, pl := range matchPositions {
 		pos := pl.Pos
-		res += s[prevEnd:pos]
+		res += html.EscapeString(s[prevEnd:pos])
 		res += spanBefore
 		prevEnd = pos + pl.Len
-		res += s[pos:prevEnd]
+		res += html.EscapeString(s[pos:prevEnd])
 		res += spanAfter
 	}
-	res += s[prevEnd:len(s)]
+	res += html.EscapeString(s[prevEnd:len(s)])
 	return res
 }
 
