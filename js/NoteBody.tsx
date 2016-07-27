@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { PropTypes, Component } from 'react';
-import * as ni from './noteinfo.js';
+import * as ni from './noteinfo.ts';
 
 export default class NoteBody extends Component {
   constructor(props, context) {

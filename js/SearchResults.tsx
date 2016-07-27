@@ -2,10 +2,10 @@
 
 import React from 'react';
 
-import Overlay from './Overlay.jsx';
+import Overlay from './Overlay.tsx';
 
-import * as action from './action.js';
-import * as api from './api.js';
+import * as action from './action.ts';
+import * as api from './api.ts';
 
 const TypeTitle = 1;
 const TypeLine = 2;

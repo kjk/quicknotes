@@ -1,7 +1,7 @@
 'use strict';
 
-import * as api from './api.js';
-import { assert, isUndefined } from './utils.js';
+import * as api from './api.ts';
+import { assert, isUndefined } from './utils.ts';
 import filesize from 'filesize';
 
 // must match handlers.go

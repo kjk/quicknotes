@@ -2,8 +2,8 @@
 
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import TagsList from './TagsList.jsx';
-import * as u from './utils.js';
+import TagsList from './TagsList.tsx';
+import * as u from './utils.ts';
 
 const showDeletedTag = true;
 

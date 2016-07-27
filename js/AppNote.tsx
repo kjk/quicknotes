@@ -4,20 +4,20 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import keymaster from 'keymaster';
 
-import { toHtml } from './md.js';
-import './linkify.js';
+import { toHtml } from './md.ts';
+import './linkify.ts';
 
-import Editor from './Editor.jsx';
-import ImportSimpleNote from './ImportSimpleNote.jsx';
-import SearchResults from './SearchResults.jsx';
-import Settings from './Settings.jsx';
-import TemporaryMessage from './TemporaryMessage.jsx';
-import Top from './Top.jsx';
+import Editor from './Editor.tsx';
+import ImportSimpleNote from './ImportSimpleNote.tsx';
+import SearchResults from './SearchResults.tsx';
+import Settings from './Settings.tsx';
+import TemporaryMessage from './TemporaryMessage.tsx';
+import Top from './Top.tsx';
 
-import { escapeHtml } from './utils.js';
-import * as ni from './noteinfo.js';
-import * as api from './api.js';
-import * as action from './action.js';
+import { escapeHtml } from './utils.ts';
+import * as ni from './noteinfo.ts';
+import * as api from './api.ts';
+import * as action from './action.ts';
 
 function linkifyCb(s, href) {
   if (!href) {

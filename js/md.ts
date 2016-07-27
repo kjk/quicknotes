@@ -2,7 +2,7 @@
 
 import marked from 'marked';
 import MarkdownIt from 'markdown-it';
-import * as hljs from 'highlight.js';
+import * as hljs from 'highlight.ts';
 
 const renderer = new marked.Renderer();
 

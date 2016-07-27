@@ -1,8 +1,8 @@
 'use strict';
 
 import React, { Component, PropTypes } from 'react';
-import TagCount from './TagCount.jsx';
-import * as u from './utils.js';
+import TagCount from './TagCount.tsx';
+import * as u from './utils.ts';
 
 function isTagSelected(selectedTags, tag) {
   return selectedTags.indexOf(tag) != -1;

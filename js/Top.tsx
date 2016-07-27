@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import LogInLink from './LogInLink.jsx';
+import LogInLink from './LogInLink.tsx';
 import keymaster from 'keymaster';
-import * as action from './action.js';
-import { focusSearch, isLoggedIn } from './utils.js';
+import * as action from './action.ts';
+import { focusSearch, isLoggedIn } from './utils.ts';
 
 // by default all keypresses are filtered
 function keyFilter(event) {

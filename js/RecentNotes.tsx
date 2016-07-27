@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import NotesList from './NotesList.jsx';
+import NotesList from './NotesList.tsx';
 
 export default class RecentNotes extends Component {
   constructor(props, context) {

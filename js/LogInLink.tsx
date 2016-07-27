@@ -2,8 +2,8 @@
 
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import * as action from './action.js';
-import { isLoggedIn } from './utils.js';
+import * as action from './action.ts';
+import { isLoggedIn } from './utils.ts';
 
 function showImportSimpleNote(e) {
   e.preventDefault();

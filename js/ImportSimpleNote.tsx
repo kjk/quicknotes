@@ -1,8 +1,8 @@
 'use strict';
 
 import React, { Component } from 'react';
-import * as action from './action.js';
-import * as api from './api.js';
+import * as action from './action.ts';
+import * as api from './api.ts';
 
 const style100 = {
   width: '100%'
