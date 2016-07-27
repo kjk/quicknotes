@@ -46,7 +46,8 @@
     "gNoteUser": true,
     "gRecentNotesInitial": true,
     "gInitialNotesJSON": true,
-    "linkify": true
+    "linkify": true,
+    "require": true
   },
   "plugins": [
     "eslint-plugin-react"

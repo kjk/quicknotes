@@ -1,6 +1,6 @@
 'use strict';
 
-import * as ni from './noteinfo.js';
+import * as ni from './noteinfo.ts';
 
 export function isUndefined(v) {
   return typeof v === 'undefined';

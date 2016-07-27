@@ -3,8 +3,8 @@
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import Note from './Note.jsx';
-import * as ni from './noteinfo.js';
+import Note from './Note.tsx';
+import * as ni from './noteinfo.ts';
 
 const maxInitialNotes = 50;
 

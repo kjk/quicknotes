@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./node_modules/.bin/eslint js/*.js*
+./node_modules/.bin/eslint js/*.ts*
 
 gdep go vet github.com/kjk/quicknotes
 

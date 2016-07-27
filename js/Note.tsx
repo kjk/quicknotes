@@ -2,10 +2,10 @@
 
 import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';
-import NoteBody from './NoteBody.jsx';
-import * as ni from './noteinfo.js';
-import * as action from './action.js';
-import * as api from './api.js';
+import NoteBody from './NoteBody.tsx';
+import * as ni from './noteinfo.ts';
+import * as action from './action.ts';
+import * as api from './api.ts';
 
 function urlifyTitle(s) {
   s = s.slice(0, 32);

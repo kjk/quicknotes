@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component, PropTypes } from 'react';
-import * as action from './action.js';
+import * as action from './action.ts';
 
 export default class TagCount extends Component {
   constructor(props, context) {

@@ -3,20 +3,20 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
-import Editor from './Editor.jsx';
-import ImportSimpleNote from './ImportSimpleNote.jsx';
-import LeftSidebar from './LeftSidebar.jsx';
-import NotesList from './NotesList.jsx';
-import Router from './Router.js';
-import SearchResults from './SearchResults.jsx';
-import Settings from './Settings.jsx';
-import TemporaryMessage from './TemporaryMessage.jsx';
-import Top from './Top.jsx';
+import Editor from './Editor.tsx';
+import ImportSimpleNote from './ImportSimpleNote.tsx';
+import LeftSidebar from './LeftSidebar.tsx';
+import NotesList from './NotesList.tsx';
+import Router from './Router.ts';
+import SearchResults from './SearchResults.tsx';
+import Settings from './Settings.tsx';
+import TemporaryMessage from './TemporaryMessage.tsx';
+import Top from './Top.tsx';
 
-import * as u from './utils.js';
-import * as ni from './noteinfo.js';
-import * as action from './action.js';
-import * as api from './api.js';
+import * as u from './utils.ts';
+import * as ni from './noteinfo.ts';
+import * as action from './action.ts';
+import * as api from './api.ts';
 
 // returns { tagName1: count, ... }
 function tagsFromNotes(notes) {

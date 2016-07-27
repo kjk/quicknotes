@@ -3,18 +3,18 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import keymaster from 'keymaster';
-import CodeMirrorEditor from './CodeMirrorEditor.jsx';
+import CodeMirrorEditor from './CodeMirrorEditor.tsx';
 
-import Overlay from './Overlay.jsx';
-import DragBarHoriz from './DragBarHoriz.jsx';
-import TextSelect from './TextSelect.jsx';
+import Overlay from './Overlay.tsx';
+import DragBarHoriz from './DragBarHoriz.tsx';
+import TextSelect from './TextSelect.tsx';
 
-import * as action from './action.js';
-import * as ni from './noteinfo.js';
-import { debounce } from './utils.js';
-import { toHtml } from './md.js';
-import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils.js';
-import * as api from './api.js';
+import * as action from './action.ts';
+import * as ni from './noteinfo.ts';
+import { debounce } from './utils.ts';
+import { toHtml } from './md.ts';
+import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils.ts';
+import * as api from './api.ts';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
 // https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js

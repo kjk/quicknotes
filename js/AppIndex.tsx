@@ -3,15 +3,15 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import Editor from './Editor.jsx';
-import ImportSimpleNote from './ImportSimpleNote.jsx';
-import NotesList from './NotesList.jsx';
-import SearchResults from './SearchResults.jsx';
-import Settings from './Settings.jsx';
-import TemporaryMessage from './TemporaryMessage.jsx';
-import Top from './Top.jsx';
+import Editor from './Editor.tsx';
+import ImportSimpleNote from './ImportSimpleNote.tsx';
+import NotesList from './NotesList.tsx';
+import SearchResults from './SearchResults.tsx';
+import Settings from './Settings.tsx';
+import TemporaryMessage from './TemporaryMessage.tsx';
+import Top from './Top.tsx';
 
-import * as action from './action.js';
+import * as action from './action.ts';
 
 export default class AppIndex extends Component {
   constructor(props, context) {
