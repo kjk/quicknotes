@@ -1,4 +1,4 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 // based on https://github.com/javierbyte/react-textselect
 import React, { Component, PropTypes } from 'react';

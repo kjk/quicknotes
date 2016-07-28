@@ -1,10 +1,10 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import Note from './Note.tsx';
-import * as ni from './noteinfo.ts';
+import Note from './Note';
+import * as ni from './noteinfo';
 
 const maxInitialNotes = 50;
 
@@ -15,7 +15,30 @@ function truncateNotes(notes, max) {
   return notes;
 }
 
-export default class NotesList extends Component {
+/*
+NotesList.propTypes = {
+  notes: PropTypes.array,
+  compact: PropTypes.bool.isRequired,
+  showingMyNotes: PropTypes.bool.isRequired,
+  resetScroll: PropTypes.bool
+};
+*/
+
+interface Props {
+  notes: any;
+  compact: boolean;
+  showingMyNotes: boolean;
+  resetScroll?: boolean;
+}
+
+interface State {
+  notes: any;
+}
+
+export default class NotesList extends Component<Props, State> {
+
+  maxLoadedNotes : any;
+
   constructor(props, context) {
     super(props, context);
     this.handleScroll = this.handleScroll.bind(this);
@@ -87,10 +110,3 @@ export default class NotesList extends Component {
       );
   }
 }
-
-NotesList.propTypes = {
-  notes: PropTypes.array,
-  compact: PropTypes.bool.isRequired,
-  showingMyNotes: PropTypes.bool.isRequired,
-  resetScroll: PropTypes.bool
-};

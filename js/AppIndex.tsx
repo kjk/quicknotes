@@ -1,19 +1,24 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
+/// <reference path="./vendor.d.ts" />
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import Editor from './Editor.tsx';
-import ImportSimpleNote from './ImportSimpleNote.tsx';
-import NotesList from './NotesList.tsx';
-import SearchResults from './SearchResults.tsx';
-import Settings from './Settings.tsx';
-import TemporaryMessage from './TemporaryMessage.tsx';
-import Top from './Top.tsx';
+import Editor from './Editor';
+import ImportSimpleNote from './ImportSimpleNote';
+import NotesList from './NotesList';
+import SearchResults from './SearchResults';
+import Settings from './Settings';
+import TemporaryMessage from './TemporaryMessage';
+import Top from './Top';
 
-import * as action from './action.ts';
+import * as action from './action';
 
-export default class AppIndex extends Component {
+interface State {
+  notes: any;
+}
+
+export default class AppIndex extends Component<{}, State> {
   constructor(props, context) {
     super(props, context);
 
@@ -65,4 +70,4 @@ function appIndexStart() {
   );
 }
 
-window.appIndexStart = appIndexStart;
+window["appIndexStart"] = appIndexStart;

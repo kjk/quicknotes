@@ -1,11 +1,11 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React from 'react';
 
-import Overlay from './Overlay.tsx';
+import Overlay from './Overlay';
 
-import * as action from './action.ts';
-import * as api from './api.ts';
+import * as action from './action';
+import * as api from './api';
 
 const TypeTitle = 1;
 const TypeLine = 2;
@@ -32,7 +32,23 @@ Format of search results:
 }
 */
 
-export default class SearchResults extends React.Component {
+interface State {
+  searchResults: any;
+}
+
+/*
+SearchResults.propTypes = {
+  onSearchResultSelected: React.PropTypes.func,
+};
+*/
+interface Props {
+  onSearchResultSelected: any;
+}
+
+export default class SearchResults extends React.Component<Props, State> {
+  currSearchTerm: any;
+  searchDelayTimerID: any;
+
   constructor(props, context) {
     super(props, context);
 
@@ -185,7 +201,3 @@ export default class SearchResults extends React.Component {
       );
   }
 }
-
-SearchResults.propTypes = {
-  onSearchResultSelected: React.PropTypes.func,
-};

@@ -1,18 +1,36 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import NoteBody from './NoteBody.tsx';
-import * as ni from './noteinfo.ts';
-import * as action from './action.ts';
-import * as api from './api.ts';
+import NoteBody from './NoteBody';
+import * as ni from './noteinfo';
+import * as action from './action';
+import * as api from './api';
 
 function urlifyTitle(s) {
   s = s.slice(0, 32);
   return s.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
-export default class Note extends Component {
+interface State {
+  showActions: boolean;
+}
+
+/*
+Note.propTypes = {
+  note: PropTypes.array.isRequired,
+  compact: PropTypes.bool.isRequired,
+  showingMyNotes: PropTypes.bool.isRequired
+};
+*/
+
+interface Props {
+  note: any;
+  compact: boolean;
+  showingMyNotes: boolean;
+}
+
+export default class Note extends Component<Props, State> {
   constructor(props, context) {
     super(props, context);
     this.handleDelUndel = this.handleDelUndel.bind(this);
@@ -354,9 +372,3 @@ export default class Note extends Component {
       );
   }
 }
-
-Note.propTypes = {
-  note: PropTypes.array.isRequired,
-  compact: PropTypes.bool.isRequired,
-  showingMyNotes: PropTypes.bool.isRequired
-};

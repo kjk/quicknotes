@@ -1,8 +1,8 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component, PropTypes } from 'react';
-import TagCount from './TagCount.tsx';
-import * as u from './utils.ts';
+import TagCount from './TagCount';
+import * as u from './utils';
 
 function isTagSelected(selectedTags, tag) {
   return selectedTags.indexOf(tag) != -1;

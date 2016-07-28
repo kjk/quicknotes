@@ -1,9 +1,9 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import TagsList from './TagsList.tsx';
-import * as u from './utils.ts';
+import TagsList from './TagsList';
+import * as u from './utils';
 
 const showDeletedTag = true;
 

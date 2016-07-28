@@ -1,22 +1,22 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
-import Editor from './Editor.tsx';
-import ImportSimpleNote from './ImportSimpleNote.tsx';
-import LeftSidebar from './LeftSidebar.tsx';
-import NotesList from './NotesList.tsx';
-import Router from './Router.ts';
-import SearchResults from './SearchResults.tsx';
-import Settings from './Settings.tsx';
-import TemporaryMessage from './TemporaryMessage.tsx';
-import Top from './Top.tsx';
+import Editor from './Editor';
+import ImportSimpleNote from './ImportSimpleNote';
+import LeftSidebar from './LeftSidebar';
+import NotesList from './NotesList';
+import Router from './Router';
+import SearchResults from './SearchResults';
+import Settings from './Settings';
+import TemporaryMessage from './TemporaryMessage';
+import Top from './Top';
 
-import * as u from './utils.ts';
-import * as ni from './noteinfo.ts';
-import * as action from './action.ts';
-import * as api from './api.ts';
+import * as u from './utils';
+import * as ni from './noteinfo';
+import * as action from './action';
+import * as api from './api';
 
 // returns { tagName1: count, ... }
 function tagsFromNotes(notes) {

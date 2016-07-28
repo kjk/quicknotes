@@ -1,4 +1,4 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 // based on https://github.com/jashkenas/backbone/blob/master/backbone.js
 // TODO: probably strip down everything we don't use, but is good for now

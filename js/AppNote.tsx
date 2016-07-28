@@ -1,23 +1,23 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import keymaster from 'keymaster';
 
-import { toHtml } from './md.ts';
+import { toHtml } from './md';
 import './linkify.ts';
 
-import Editor from './Editor.tsx';
-import ImportSimpleNote from './ImportSimpleNote.tsx';
-import SearchResults from './SearchResults.tsx';
-import Settings from './Settings.tsx';
-import TemporaryMessage from './TemporaryMessage.tsx';
-import Top from './Top.tsx';
+import Editor from './Editor';
+import ImportSimpleNote from './ImportSimpleNote';
+import SearchResults from './SearchResults';
+import Settings from './Settings';
+import TemporaryMessage from './TemporaryMessage';
+import Top from './Top';
 
-import { escapeHtml } from './utils.ts';
-import * as ni from './noteinfo.ts';
-import * as api from './api.ts';
-import * as action from './action.ts';
+import { escapeHtml } from './utils';
+import * as ni from './noteinfo';
+import * as api from './api';
+import * as action from './action';
 
 function linkifyCb(s, href) {
   if (!href) {

@@ -1,8 +1,8 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import 'babel-polyfill';
-import React from 'react';
+import React = require('react');
 
-import AppUser from './AppUser.tsx';
-import AppNote from './AppNote.tsx';
-import AppIndex from './AppIndex.tsx';
+import AppUser from './AppUser';
+import AppNote from './AppNote';
+import AppIndex from './AppIndex';
