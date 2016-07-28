@@ -163,7 +163,7 @@ export function onClearSearchTerm(cb, owner) {
 }
 
 /* --------------------- */
-export function showTemporaryMessage(msg, delayMs) {
+export function showTemporaryMessage(msg: any, delayMs?: any) {
   broadcast(showTemporaryMessageCmd, msg, delayMs);
 }
 

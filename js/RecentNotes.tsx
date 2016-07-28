@@ -1,7 +1,7 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component } from 'react';
-import NotesList from './NotesList.tsx';
+import NotesList from './NotesList';
 
 export default class RecentNotes extends Component {
   constructor(props, context) {

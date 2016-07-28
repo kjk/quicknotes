@@ -1,9 +1,25 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
-import React, { PropTypes, Component } from 'react';
-import * as ni from './noteinfo.ts';
+import React, { Component } from 'react';
+import * as ni from './noteinfo';
 
-export default class NoteBody extends Component {
+/*
+NoteBody.propTypes = {
+  note: PropTypes.array.isRequired,
+  compact: PropTypes.bool.isRequired
+};
+*/
+interface Props {
+  note: any;
+  compact: boolean;
+}
+
+interface State {
+  note: any;
+  body: string;
+}
+
+export default class NoteBody extends Component<Props, State> {
   constructor(props, context) {
     super(props, context);
     this.handleCollapse = this.handleCollapse.bind(this);
@@ -94,9 +110,4 @@ export default class NoteBody extends Component {
       );
   }
 }
-
-NoteBody.propTypes = {
-  note: PropTypes.array.isRequired,
-  compact: PropTypes.bool.isRequired
-};
 

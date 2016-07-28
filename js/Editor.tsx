@@ -1,20 +1,20 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import keymaster from 'keymaster';
-import CodeMirrorEditor from './CodeMirrorEditor.tsx';
+import CodeMirrorEditor from './CodeMirrorEditor';
 
-import Overlay from './Overlay.tsx';
-import DragBarHoriz from './DragBarHoriz.tsx';
-import TextSelect from './TextSelect.tsx';
+import Overlay from './Overlay';
+import DragBarHoriz from './DragBarHoriz';
+import TextSelect from './TextSelect';
 
-import * as action from './action.ts';
-import * as ni from './noteinfo.ts';
-import { debounce } from './utils.ts';
-import { toHtml } from './md.ts';
-import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils.ts';
-import * as api from './api.ts';
+import * as action from './action';
+import * as ni from './noteinfo';
+import { debounce } from './utils';
+import { toHtml } from './md';
+import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils';
+import * as api from './api';
 
 // https://github.com/musicbed/MirrorMark/blob/master/src/js/mirrormark.js
 // https://github.com/NextStepWebs/simplemde-markdown-editor/blob/master/src/js/simplemde.js

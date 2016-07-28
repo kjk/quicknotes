@@ -1,6 +1,6 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
-import * as ni from './noteinfo.ts';
+import * as ni from './noteinfo';
 
 export function isUndefined(v) {
   return typeof v === 'undefined';

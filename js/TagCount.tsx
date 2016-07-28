@@ -1,4 +1,4 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component, PropTypes } from 'react';
 import * as action from './action.ts';

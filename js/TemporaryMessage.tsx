@@ -1,5 +1,7 @@
+/// <reference path="../typings/index.d.ts" />
+
 import React, { Component, PropTypes } from 'react';
-import * as action from './action.ts';
+import * as action from './action';
 
 const hideTimeOut = 5 * 1000; // 5 secs
 

@@ -1,7 +1,7 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
-import * as api from './api.ts';
-import { assert, isUndefined } from './utils.ts';
+import * as api from './api';
+import { assert, isUndefined } from './utils';
 import filesize from 'filesize';
 
 // must match handlers.go

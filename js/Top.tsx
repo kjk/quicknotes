@@ -1,8 +1,10 @@
+/// <reference path="../typings/index.d.ts" />
+
 import React, { Component, PropTypes } from 'react';
-import LogInLink from './LogInLink.tsx';
+import LogInLink from './LogInLink';
 import keymaster from 'keymaster';
-import * as action from './action.ts';
-import { focusSearch, isLoggedIn } from './utils.ts';
+import * as action from './action';
+import { focusSearch, isLoggedIn } from './utils';
 
 // by default all keypresses are filtered
 function keyFilter(event) {
@@ -19,7 +21,14 @@ function keyFilter(event) {
   return !(tag == 'INPUT' || tag == 'SELECT' || tag == 'TEXTAREA');
 }
 
-export default class Top extends Component {
+interface State {
+  searchTerm: any,
+}
+
+export default class Top extends Component<{}, State> {
+
+  searchNotesUser: any;
+
   constructor(props, context) {
     super(props, context);
 

@@ -1,9 +1,9 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import * as action from './action.ts';
-import { isLoggedIn } from './utils.ts';
+import * as action from './action';
+import { isLoggedIn } from './utils';
 
 function showImportSimpleNote(e) {
   e.preventDefault();
@@ -16,7 +16,7 @@ function showSettings(e) {
   action.showSettings();
 }
 
-export default class LogInLink extends Component {
+export default class LogInLink extends Component<{}, {}> {
 
   constructor(props, context) {
     super(props, context);

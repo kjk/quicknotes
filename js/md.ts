@@ -1,8 +1,8 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import marked from 'marked';
 import MarkdownIt from 'markdown-it';
-import * as hljs from 'highlight.ts';
+import * as hljs from 'highlight.js';
 
 const renderer = new marked.Renderer();
 

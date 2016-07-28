@@ -1,8 +1,8 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React, { Component } from 'react';
-import * as action from './action.ts';
-import * as api from './api.ts';
+import * as action from './action';
+import * as api from './api';
 
 const style100 = {
   width: '100%'

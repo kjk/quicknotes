@@ -1,8 +1,8 @@
-'use strict';
+/// <reference path="../typings/index.d.ts" />
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as action from './action.ts';
+import * as action from './action';
 
 const allThemes = [
   'light',
@@ -15,7 +15,13 @@ const allLayouts = [
   'compact'
 ];
 
-export default class Settings extends React.Component {
+interface State {
+  isShowing?: boolean;
+  theme?: any;
+  layout?: any;
+}
+
+export default class Settings extends React.Component<{}, State> {
   constructor(props, context) {
     super(props, context);
     this.handleCancel = this.handleCancel.bind(this);
@@ -39,7 +45,7 @@ export default class Settings extends React.Component {
     action.offAllForOwner(this);
   }
 
-  showHide(shouldShow) {
+  showHide(shouldShow: boolean) {
     console.log('Settings.showHide: shouldShow: ", shouldShow');
     this.setState({
       isShowing: shouldShow
