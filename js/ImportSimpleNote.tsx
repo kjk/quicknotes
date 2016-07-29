@@ -30,7 +30,19 @@ const styleSpinner = {
   marginRight: 8
 };
 
-export default class ImportSimpleNote extends Component {
+interface State {
+  isShowing?: any;
+  isImporting?: any;
+  importId?: any;
+  finishedImporting?: any;
+  errorMessage?: any;
+  statusMessage?: any;
+}
+
+export default class ImportSimpleNote extends Component<{}, State> {
+
+  inputValues: any;
+
   constructor(props, context) {
     super(props, context);
 

@@ -2,7 +2,19 @@
 
 import React, { Component, PropTypes } from 'react';
 
-export default class Overlay extends Component {
+/*
+Overlay.propTypes = {
+  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  onClick: PropTypes.func
+};
+*/
+
+interface Props {
+  children: any;
+  onClick: any;
+}
+
+export default class Overlay extends Component<Props, {}> {
 
   constructor(props, context) {
     super(props, context);
@@ -23,7 +35,3 @@ export default class Overlay extends Component {
   }
 }
 
-Overlay.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  onClick: PropTypes.func
-};

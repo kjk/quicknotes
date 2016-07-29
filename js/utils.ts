@@ -118,11 +118,7 @@ export function deepCloneObject(o) {
 }
 
 function runOnLoad(f) {
-  if (window.addEventListener) {
-    window.addEventListener('DOMContentLoaded', f);
-  } else {
-    window.attachEvent('onload', f);
-  }
+  window.addEventListener('DOMContentLoaded', f);
 }
 
 // helps to use map() in cases where the value can be null

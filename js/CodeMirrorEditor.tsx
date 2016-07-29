@@ -13,7 +13,37 @@ import 'codemirror/mode/markdown/markdown';
 // https://github.com/JedWatson/react-md-editor
 // https://github.com/ForbesLindesay/react-code-mirror/blob/master/standalone.js
 
-export default class CodeMirrorEditor extends Component {
+/*
+CodeMirrorEditor.propTypes = {
+  defaultValue: PropTypes.string,
+  style: PropTypes.object,
+  className: PropTypes.string,
+  onChange: PropTypes.func,
+  onEditorCreated: PropTypes.func,
+  readOnly: PropTypes.bool,
+  value: PropTypes.string,
+  textAreaStyle: PropTypes.object,
+  textAreaClassName: PropTypes.string,
+  cmOptions: PropTypes.object
+};
+*/
+
+interface Props {
+  defaultValue: any;
+  style: any;
+  className: any;
+  onChange: any;
+  onEditorCreated: any;
+  readOnly: any;
+  value: any;
+  textAreaStyle: any;
+  textAreaClassName: any;
+  cmOptions: any;
+}
+
+export default class CodeMirrorEditor extends Component<Props, {}> {
+
+  cm: any;
 
   constructor(props, context) {
     super(props, context);
@@ -22,7 +52,9 @@ export default class CodeMirrorEditor extends Component {
   }
 
   componentDidMount() {
-    const node = ReactDOM.findDOMNode(this.refs.editorNode);
+    const refs = this.refs;
+    const editorNode = refs["editorNode"];
+    const node = ReactDOM.findDOMNode(editorNode) as HTMLTextAreaElement;
     this.cm = CodeMirror.fromTextArea(node, this.props.cmOptions);
     this.cm.on('change', this.handleChange);
     this.props.onEditorCreated && this.props.onEditorCreated(this.cm);
@@ -64,16 +96,3 @@ export default class CodeMirrorEditor extends Component {
       );
   }
 }
-
-CodeMirrorEditor.propTypes = {
-  defaultValue: PropTypes.string,
-  style: PropTypes.object,
-  className: PropTypes.string,
-  onChange: PropTypes.func,
-  onEditorCreated: PropTypes.func,
-  readOnly: PropTypes.bool,
-  value: PropTypes.string,
-  textAreaStyle: PropTypes.object,
-  textAreaClassName: PropTypes.string,
-  cmOptions: PropTypes.object
-};

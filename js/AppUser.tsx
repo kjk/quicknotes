@@ -60,7 +60,18 @@ function tagsFromNotes(notes) {
   return tags;
 }
 
-export default class AppUser extends Component {
+/*
+AppUser.propTypes = {
+  initialTag: PropTypes.string,
+  initialNotesJSON: PropTypes.object
+};
+*/
+interface Props {
+  initialTag?: string;
+  initialNotesJSON?: any;
+}
+
+export default class AppUser extends Component<Props, {}> {
   constructor(props, context) {
     super(props, context);
 
@@ -197,11 +208,6 @@ export default class AppUser extends Component {
       );
   }
 }
-
-AppUser.propTypes = {
-  initialTag: PropTypes.string,
-  initialNotesJSON: PropTypes.object
-};
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s) {

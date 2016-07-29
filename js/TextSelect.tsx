@@ -3,7 +3,24 @@
 // based on https://github.com/javierbyte/react-textselect
 import React, { Component, PropTypes } from 'react';
 
-export default class TextSelect extends Component {
+/*
+
+TextSelect.propTypes = {
+  values: PropTypes.array.isRequired,
+  selectedIdx: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired,
+  className: PropTypes.string
+};
+*/
+
+interface Props {
+  values: any;
+  selectedIdx: any;
+  onChange: any;
+  className: any;
+}
+
+export default class TextSelect extends Component<Props, {}> {
   constructor(props, context) {
     super(props, context);
 
@@ -40,11 +57,3 @@ export default class TextSelect extends Component {
       );
   }
 }
-
-TextSelect.propTypes = {
-  values: PropTypes.array.isRequired,
-  selectedIdx: PropTypes.number.isRequired,
-  onChange: PropTypes.func.isRequired,
-  className: PropTypes.string
-};
-

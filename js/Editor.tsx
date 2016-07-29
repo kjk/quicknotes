@@ -91,6 +91,13 @@ function editorHeight(y) {
 }
 
 class Note {
+  id: any;
+  title: any;
+  tags: any;
+  body: any;
+  isPublic: any;
+  formatName: any;
+
   constructor(id, title, tags, body, isPublic, formatName) {
     this.id = id;
     this.title = title;
@@ -123,6 +130,15 @@ function noteFromCompact(noteCompact, body) {
   return new Note(id, title, tagsStr, body, isPublic, formatName);
 }
 
+interface Note {
+  HashID: any;
+  Title: any;
+  Format: any;
+  Content: any;
+  Tags: any;
+  IsPublic: any;
+}
+
 /* convert Note note to
 type NewNoteFromBrowser struct {
 	HashID   string
@@ -134,7 +150,7 @@ type NewNoteFromBrowser struct {
 }
 */
 function toNewNoteJSON(note) {
-  var n = {};
+  var n : Note;
   n.HashID = note.id;
   n.Title = note.title;
   n.Format = note.formatName;
@@ -180,7 +196,7 @@ var blockStyles = {
 };
 
 // The state of CodeMirror at the given position.
-function getState(cm, pos) {
+function getState(cm: any, pos?: any) {
   pos = pos || cm.getCursor('start');
   var stat = cm.getTokenAt(pos);
   if (!stat.type) return {};
@@ -243,7 +259,7 @@ function _replaceSelection(cm, active, startEnd) {
   cm.focus();
 }
 
-function _toggleHeading(cm, direction, size) {
+function _toggleHeading(cm: any, direction: any, size?: any) {
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
   for (var i = startPoint.line; i <= endPoint.line; i++) {
@@ -343,7 +359,7 @@ function _toggleLine(cm, name) {
   cm.focus();
 }
 
-function _toggleBlock(cm, type, start_chars, end_chars) {
+function _toggleBlock(cm: any, type: any, start_chars: any, end_chars?: any) {
   end_chars = isUndefined(end_chars) ? start_chars : end_chars;
   var stat = getState(cm);
 
@@ -505,7 +521,22 @@ function isNullMsg(o) {
   return 'not null';
 }
 
-export default class Editor extends Component {
+interface State {
+  isShowing?: any;
+  isShowingPreview?: any;
+  note?: any;
+}
+
+export default class Editor extends Component<{}, State> {
+
+  initialNote: any;
+  cm: any;
+  top: any;
+  firstRender: any;
+  isNewCM: any;
+  setFocusInUpdate: any;
+  savedCodeMirrorState: any;
+
   constructor(props, context) {
     super(props, context);
 
@@ -763,7 +794,7 @@ export default class Editor extends Component {
     });
   }
 
-  handleSave(e) {
+  handleSave(e?: any) {
     const note = this.state.note;
     const noteJSON = toNewNoteJSON(note);
     //console.log('handleSave, note=', note, 'noteJSON=', noteJSON);
