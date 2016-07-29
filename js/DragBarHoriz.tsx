@@ -98,7 +98,7 @@ export default class DragBarHoriz extends Component<Props, State> {
     }
     this.y = y;
     const yDelta = this.props.initialY - y;
-    const el = ReactDOM.findDOMNode(this);
+    const el = ReactDOM.findDOMNode(this) as HTMLElement;
     el.style.bottom = this.calcBottom() + 'px';
     this.props.onPosChanged(y, yDelta);
   }

@@ -71,7 +71,19 @@ interface Props {
   initialNotesJSON?: any;
 }
 
-export default class AppUser extends Component<Props, {}> {
+interface State {
+  allNotes?: any;
+  selectedNotes?: any;
+  selectedTags?: any;
+  tags?: any;
+  notesUserHashID?: any;
+  notesUserHandle?: any;
+  loggedUserHashID?: any;
+  loggedUserHandle?: any;
+  resetScroll?: any;
+}
+
+export default class AppUser extends Component<Props, State> {
   constructor(props, context) {
     super(props, context);
 

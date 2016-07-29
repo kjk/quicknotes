@@ -10,14 +10,14 @@ NoteBody.propTypes = {
 };
 */
 interface Props {
-  note: any;
-  compact: boolean;
-}
+  note?: any;
+  compact?: boolean;
+};
 
 interface State {
-  note: any;
-  body: string;
-}
+  note?: any;
+  body?: string;
+};
 
 export default class NoteBody extends Component<Props, State> {
   constructor(props, context) {
