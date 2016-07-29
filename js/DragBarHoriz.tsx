@@ -3,7 +3,32 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
-export default class DragBarHoriz extends Component {
+/*
+
+DragBarHoriz.propTypes = {
+  onPosChanged: PropTypes.func.isRequired,
+  initialY: PropTypes.number.isRequired,
+  min: PropTypes.number,
+  max: PropTypes.number,
+  dy: PropTypes.number.isRequired
+};
+*/
+
+interface Props {
+  onPosChanged: any;
+  initialY: number;
+  min: number;
+  max: number;
+  dy: number;
+}
+
+interface State {
+  dragging?: boolean;
+}
+
+export default class DragBarHoriz extends Component<Props, State> {
+  y: number;
+
   constructor(props, context) {
     super(props, context);
 
@@ -90,11 +115,3 @@ export default class DragBarHoriz extends Component {
       );
   }
 }
-
-DragBarHoriz.propTypes = {
-  onPosChanged: PropTypes.func.isRequired,
-  initialY: PropTypes.number.isRequired,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  dy: PropTypes.number.isRequired
-};

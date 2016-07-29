@@ -3,7 +3,23 @@
 import React, { Component, PropTypes } from 'react';
 import * as action from './action.ts';
 
-export default class TagCount extends Component {
+/*
+TagCount.propTypes = {
+  count: PropTypes.number,
+  displayName: PropTypes.string,
+  isSelected: PropTypes.bool,
+  tagName: PropTypes.string
+};
+*/
+
+interface Props {
+  count: number;
+  displayName: string;
+  isSelected: boolean;
+  tagName: string;
+}
+
+export default class TagCount extends Component<Props, {}> {
   constructor(props, context) {
     super(props, context);
     this.handleClick = this.handleClick.bind(this);
@@ -26,9 +42,3 @@ export default class TagCount extends Component {
   }
 }
 
-TagCount.propTypes = {
-  count: PropTypes.number,
-  displayName: PropTypes.string,
-  isSelected: PropTypes.bool,
-  tagName: PropTypes.string
-};

@@ -5,7 +5,14 @@ import * as action from './action';
 
 const hideTimeOut = 5 * 1000; // 5 secs
 
-export default class TemporaryMessage extends Component {
+interface State {
+  message?: any;
+}
+
+export default class TemporaryMessage extends Component<{}, State> {
+
+  currTimerID: any;
+
   constructor(props, context) {
     super(props, context);
 
@@ -32,7 +39,7 @@ export default class TemporaryMessage extends Component {
     });
     clearTimeout(this.currTimerID);
     if (delay) {
-      this.currTimerID = setTimeout(() => this.showMessage(msg), delay);
+      this.currTimerID = setTimeout(() => this.showMessage(msg, delay));
       return;
     }
     this.currTimerID = setTimeout(() => {

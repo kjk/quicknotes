@@ -7,7 +7,21 @@ import * as u from './utils';
 
 const showDeletedTag = true;
 
-export default class LeftSidebar extends Component {
+/*
+LeftSidebar.propTypes = {
+  tags: PropTypes.object, // TODO: more specific
+  showingMyNotes: PropTypes.bool.isRequired,
+  selectedTags: PropTypes.array
+};
+*/
+
+interface Props {
+  tags: any;
+  showingMyNotes: any;
+  selectedTags: any;
+}
+
+export default class LeftSidebar extends Component<Props, {}> {
   renderTagsList(sectionName, tagNames, tags) {
     if (tagNames.length === 0) {
       return;
@@ -62,9 +76,3 @@ export default class LeftSidebar extends Component {
       );
   }
 }
-
-LeftSidebar.propTypes = {
-  tags: PropTypes.object, // TODO: more specific
-  showingMyNotes: PropTypes.bool.isRequired,
-  selectedTags: PropTypes.array
-};

@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import keymaster from 'keymaster';
 
 import { toHtml } from './md';
-import './linkify.ts';
+import { linkify } from './linkify';
 
 import Editor from './Editor';
 import ImportSimpleNote from './ImportSimpleNote';
@@ -32,7 +32,11 @@ function linkify2(s) {
   });
 }
 
-export default class AppNote extends Component {
+interface State {
+  note?: any;
+}
+
+export default class AppNote extends Component<{}, State> {
   constructor(props, context) {
     super(props, context);
 

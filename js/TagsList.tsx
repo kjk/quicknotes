@@ -8,7 +8,22 @@ function isTagSelected(selectedTags, tag) {
   return selectedTags.indexOf(tag) != -1;
 }
 
-export default class TagsList extends Component {
+/*
+TagsList.propTypes = {
+  tagNames: PropTypes.arrayOf(PropTypes.string),
+  tags: PropTypes.object, // TODO: more specific
+  selectedTags: PropTypes.array
+};
+*/
+
+interface Props {
+  tagNames: string[];
+  tags: any;
+  selectedTags: any;
+  sectionName: any;
+}
+
+export default class TagsList extends Component<Props, {}> {
 
   render() {
     //console.log("TagsList render");
@@ -37,9 +52,3 @@ export default class TagsList extends Component {
       );
   }
 }
-
-TagsList.propTypes = {
-  tagNames: PropTypes.arrayOf(PropTypes.string),
-  tags: PropTypes.object, // TODO: more specific
-  selectedTags: PropTypes.array
-};
