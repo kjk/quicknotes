@@ -15,6 +15,20 @@ var rootStripper = /^\/+|\/+$/g;
 var pathStripper = /#.*$/;
 
 class Router {
+
+  location: any;
+  history: any;
+  root: any;
+  _usePushState: any;
+  _wantsHashChange: any;
+  options: any;
+  _hasHashChange: any;
+  _useHashChange: any;
+  _wantsPushState: any;
+  _hasPushState: any;
+  fragment: any;
+  iframe: any;
+
   constructor() {
     // Ensure that `History` can be used outside of the browser.
     if (typeof window !== 'undefined') {
@@ -45,7 +59,7 @@ class Router {
 
   // Gets the true hash value. Cannot use location.hash directly due to bug
   // in Firefox where location.hash will always be decoded.
-  getHash(window) {
+  getHash(window?: Window) : any {
     var match = (window || this).location.href.match(/#(.*)$/);
     return match ? match[1] : '';
   }
@@ -62,7 +76,7 @@ class Router {
   }
 
   // Get the cross-browser normalized URL fragment from the path or hash.
-  getFragment(fragment) {
+  getFragment(fragment?: any): any {
     if (fragment == null) {
       if (this._usePushState || !this._wantsHashChange) {
         fragment = this.getPath();
@@ -75,14 +89,13 @@ class Router {
 
   // Start the hash change handling, returning `true` if the current URL matches
   // an existing route, and `false` otherwise.
-  start(options) {
+  start(options?: any) {
 
     // Figure out the initial configuration. Do we need an iframe?
     // Is pushState desired ... is it available?
     // TODO: was _.extend(), hope this is equivalent
-    this.options = Object.assign(options || {}, {
-      root: '/'
-    });
+    this.options = options || {};
+    this.options.root = '/';
 
     this.root = this.options.root;
     this._wantsHashChange = this.options.hashChange !== false;
@@ -127,7 +140,8 @@ class Router {
       iframe.tabIndex = -1;
       var body = document.body;
       // Using `appendChild` will throw on IE < 9 if the document is not ready.
-      this.iframe = body.insertBefore(iframe, body.firstChild).contentWindow;
+      this.iframe = body.insertBefore(iframe, body.firstChild) as HTMLFrameElement;
+      this.iframe.contentWindow;
       this.iframe.document.open().close();
       this.iframe.location.hash = '#' + this.fragment;
     }

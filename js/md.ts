@@ -47,7 +47,7 @@ function toHtmlMarked(s) {
   return html;
 }
 
-const markdownItOpts = {
+const markdownItOpts : MarkdownIt.Options = {
   html: false,
   linkify: true,
   breaks: false, // Convert '\n' in paragraphs into <br>
@@ -69,16 +69,16 @@ markdownItOpts.highlight = function(str, lang) {
   return ''; // use external default escaping
 };
 
-
-const markdownIt = new MarkdownIt(markdownItOpts);
+const preset: string = null;
+const markdownIt = new MarkdownIt(preset, markdownItOpts);
 
 // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md
 // Remember old renderer, if overriden, or proxy to default renderer
-var defaultRender = markdownIt.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+var defaultRender = markdownIt.renderer.rules["link_open"] || function(tokens, idx, options, env, self) {
   return self.renderToken(tokens, idx, options);
 };
 
-markdownIt.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+markdownIt.renderer.rules["link_open"] = function(tokens, idx, options, env, self) {
   // If you are sure other plugins can't add `target` - drop check below
   var aIndex = tokens[idx].attrIndex('target');
 

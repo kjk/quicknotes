@@ -10,8 +10,8 @@ Overlay.propTypes = {
 */
 
 interface Props {
-  children: any;
-  onClick: any;
+  children?: any;
+  onClick?: any;
 }
 
 export default class Overlay extends Component<Props, {}> {

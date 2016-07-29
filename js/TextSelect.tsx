@@ -14,10 +14,10 @@ TextSelect.propTypes = {
 */
 
 interface Props {
-  values: any;
-  selectedIdx: any;
-  onChange: any;
-  className: any;
+  values?: any;
+  selectedIdx?: any;
+  onChange?: any;
+  className?: any;
 }
 
 export default class TextSelect extends Component<Props, {}> {

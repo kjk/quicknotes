@@ -15,24 +15,18 @@ let registeredActions = {};
 // we don't bother recycling them after off()
 let currCid = 0;
 
-function slice(iter, n) {
-  return Array.prototype.slice.call(iter, n);
-}
-
-function broadcast(actionCmd) {
+function broadcast(actionCmd: any, ...rest: any[]) {
   const callbacks = registeredActions[actionCmd];
   if (!callbacks || callbacks.length === 0) {
     console.log('action.broadcast: no callback for action', actionCmd);
     return;
   }
 
-  const args = slice(arguments, 1);
-  //const args = Array.prototype.slice.call(arguments, 1);
   for (let cbInfo of callbacks) {
     const cb = cbInfo[0];
     // console.log('action.broadcast: calling callback for action', actionCmd, 'args:', args);
-    if (args.length > 0) {
-      cb.apply(null, args);
+    if (rest.length > 0) {
+      cb.apply(null, rest);
     } else {
       cb();
     }

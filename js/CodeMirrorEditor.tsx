@@ -29,16 +29,17 @@ CodeMirrorEditor.propTypes = {
 */
 
 interface Props {
-  defaultValue: any;
-  style: any;
-  className: any;
-  onChange: any;
-  onEditorCreated: any;
-  readOnly: any;
-  value: any;
-  textAreaStyle: any;
-  textAreaClassName: any;
-  cmOptions: any;
+  defaultValue?: any;
+  style?: any;
+  className?: any;
+  onChange?: any;
+  onEditorCreated?: any;
+  readOnly?: any;
+  value?: any;
+  textAreaStyle?: any;
+  textAreaClassName?: any;
+  cmOptions?: any;
+  placeholder?: any;
 }
 
 export default class CodeMirrorEditor extends Component<Props, {}> {
