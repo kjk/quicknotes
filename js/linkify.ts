@@ -137,9 +137,9 @@ export function linkify(txt, options) {
     // Add appropriate protocol to naked links.
     if (!SCHEME_RE.test(href)) {
       href = (href.indexOf('@') !== -1 ? (!href.indexOf(MAILTO) ? '' : MAILTO)
-          : !href.indexOf('irc.') ? 'irc://'
-            : !href.indexOf('ftp.') ? 'ftp://'
-              : 'http://')
+        : !href.indexOf('irc.') ? 'irc://'
+          : !href.indexOf('ftp.') ? 'ftp://'
+            : 'http://')
         + href;
     }
 

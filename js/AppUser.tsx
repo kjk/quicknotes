@@ -217,7 +217,7 @@ export default class AppUser extends Component<Props, State> {
         <Editor />
         <TemporaryMessage />
       </div>
-      );
+    );
   }
 }
 

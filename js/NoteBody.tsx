@@ -79,12 +79,12 @@ export default class NoteBody extends Component<Props, State> {
     if (ni.IsCollapsed(note)) {
       return (
         <a href='#' className='expand' onClick={ this.handleExpand }>Expand</a>
-        );
+      );
     }
 
     return (
       <a href='#' className='collapse' onClick={ this.handleCollapse }>Collapse</a>
-      );
+    );
   }
 
   renderContent(note) {
@@ -107,7 +107,6 @@ export default class NoteBody extends Component<Props, State> {
         { this.renderContent(note) }
         { this.renderCollapseOrExpand(note) }
       </div>
-      );
+    );
   }
 }
-

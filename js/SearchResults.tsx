@@ -144,7 +144,7 @@ export default class SearchResults extends React.Component<Props, State> {
         <span className='line-no'>{ lineNo }</span>
         <span dangerouslySetInnerHTML={ { __html: i.HTML } }></span>
       </div>
-      );
+    );
   }
 
   renderResultNote(o) {
@@ -159,7 +159,7 @@ export default class SearchResults extends React.Component<Props, State> {
       <div key={ noteID } className='search-result-note' onClick={ cb }>
         { children }
       </div>
-      );
+    );
   }
 
   renderNoResults(term) {
@@ -169,7 +169,7 @@ export default class SearchResults extends React.Component<Props, State> {
           No results for: <b>{ term }</b>
         </p>
       </div>
-      );
+    );
   }
 
   render() {
@@ -198,6 +198,6 @@ export default class SearchResults extends React.Component<Props, State> {
           </div>
         </div>
       </Overlay>
-      );
+    );
   }
 }

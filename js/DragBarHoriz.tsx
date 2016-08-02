@@ -112,6 +112,6 @@ export default class DragBarHoriz extends Component<Props, State> {
     return (
       <div className='drag-bar-horiz' style={ style } onMouseDown={ this.handleMouseDown }>
       </div>
-      );
+    );
   }
 }

@@ -32,7 +32,7 @@ export default class LeftSidebar extends Component<Props, {}> {
         tagNames={ tagNames }
         tags={ tags }
         selectedTags={ this.props.selectedTags } />
-      );
+    );
   }
 
   render() {
@@ -41,7 +41,7 @@ export default class LeftSidebar extends Component<Props, {}> {
       return (
         <div id='leftSidebar'>
         </div>
-        );
+      );
     }
     let tagNames = [];
     let specialTagNames = [];
@@ -73,6 +73,6 @@ export default class LeftSidebar extends Component<Props, {}> {
         { specialTagsList }
         { tagsList }
       </div>
-      );
+    );
   }
 }

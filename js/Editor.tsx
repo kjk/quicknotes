@@ -150,7 +150,7 @@ type NewNoteFromBrowser struct {
 }
 */
 function toNewNoteJSON(note) {
-  var n : Note;
+  var n: Note;
   n.HashID = note.id;
   n.Title = note.title;
   n.Format = note.formatName;
@@ -206,7 +206,7 @@ interface CodeMirrorState {
 }
 
 // The state of CodeMirror at the given position.
-function getState(cm: any, pos?: any) : CodeMirrorState {
+function getState(cm: any, pos?: any): CodeMirrorState {
   pos = pos || cm.getCursor('start');
   var stat = cm.getTokenAt(pos);
   if (!stat.type) return {};
@@ -326,9 +326,9 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
         line: i,
         ch: 0
       }, {
-        line: i,
-        ch: 99999999999999
-      });
+          line: i,
+          ch: 99999999999999
+        });
     })(i);
   }
   cm.focus();
@@ -360,9 +360,9 @@ function _toggleLine(cm, name) {
         line: i,
         ch: 0
       }, {
-        line: i,
-        ch: 99999999999999
-      });
+          line: i,
+          ch: 99999999999999
+        });
     })(i);
   }
   cm.focus();
@@ -397,9 +397,9 @@ function _toggleBlock(cm: any, type: any, start_chars: any, end_chars?: any) {
       line: startPoint.line,
       ch: 0
     }, {
-      line: startPoint.line,
-      ch: 99999999999999
-    });
+        line: startPoint.line,
+        ch: 99999999999999
+      });
 
     if (type == 'bold' || type == 'strikethrough') {
       startPoint.ch -= 2;
@@ -845,7 +845,7 @@ export default class Editor extends Component<{}, State> {
       return;
     }
     this.cm.setOption('mode', mode);
-  // console.log('updateCodeMirrorMode: mode=', mode);
+    // console.log('updateCodeMirrorMode: mode=', mode);
   }
 
   isShowingPreview() {
@@ -977,7 +977,7 @@ export default class Editor extends Component<{}, State> {
     const selectedIdx = isPublic ? 0 : 1;
     return (
       <TextSelect values={ values } selectedIdx={ selectedIdx } onChange={ this.handlePublicOrPrivateChanged } />
-      );
+    );
   }
 
   handleHidePreview(e) {
@@ -1025,7 +1025,7 @@ export default class Editor extends Component<{}, State> {
     const selectedIdx = formats.indexOf(formatPretty);
     return (
       <TextSelect values={ formats } selectedIdx={ selectedIdx } onChange={ this.handleFormatChanged } />
-      );
+    );
   }
 
   renderMarkdownButtons(isText) {
@@ -1069,7 +1069,7 @@ export default class Editor extends Component<{}, State> {
           <i className='fa fa-columns'></i>
         </button>
       </div>
-      );
+    );
   }
 
   render() {
@@ -1187,7 +1187,7 @@ export default class Editor extends Component<{}, State> {
           { editor }
         </div>
       </Overlay>
-      );
+    );
   }
 
 }

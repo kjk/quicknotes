@@ -59,7 +59,7 @@ class Router {
 
   // Gets the true hash value. Cannot use location.hash directly due to bug
   // in Firefox where location.hash will always be decoded.
-  getHash(window?: Window) : any {
+  getHash(window?: Window): any {
     var match = (window || this).location.href.match(/#(.*)$/);
     return match ? match[1] : '';
   }
@@ -121,8 +121,8 @@ class Router {
         // Return immediately as browser will do redirect to new url
         return true;
 
-      // Or if we've started out with a hash-based route, but we're currently
-      // in a browser where it could be `pushState`-based instead...
+        // Or if we've started out with a hash-based route, but we're currently
+        // in a browser where it could be `pushState`-based instead...
       } else if (this._hasPushState && this.atRoot()) {
         this.navigate(this.getHash(), {
           replace: true
@@ -180,8 +180,8 @@ class Router {
     if (this._usePushState) {
       this.history[options.replace ? 'replaceState' : 'pushState']({}, document.title, url);
 
-    // If hash changes haven't been explicitly disabled, update the hash
-    // fragment to store history.
+      // If hash changes haven't been explicitly disabled, update the hash
+      // fragment to store history.
     } else if (this._wantsHashChange) {
       this._updateHash(this.location, fragment, options.replace);
       if (this.iframe && (fragment !== this.getHash(this.iframe))) {
@@ -192,8 +192,8 @@ class Router {
         this._updateHash(this.iframe.location, fragment, options.replace);
       }
 
-    // If you've told us that you explicitly don't want fallback hashchange-
-    // based history, then `navigate` becomes a page refresh.
+      // If you've told us that you explicitly don't want fallback hashchange-
+      // based history, then `navigate` becomes a page refresh.
     } else {
       return this.location.assign(url);
     }
@@ -217,4 +217,3 @@ let router = new Router();
 router.start();
 
 export default router;
-

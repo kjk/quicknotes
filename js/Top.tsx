@@ -139,6 +139,6 @@ export default class Top extends Component<{}, State> {
           <a href={ userUrl } className='header-link'>My Notes</a> : null }
         <LogInLink />
       </div>
-      );
+    );
   }
 }

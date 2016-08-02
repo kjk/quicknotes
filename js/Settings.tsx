@@ -73,27 +73,27 @@ export default class Settings extends React.Component<{}, State> {
   renderThemesSelect(themes, selected) {
     const options = themes.map(function(theme) {
       return <option key={ theme }>
-               { theme }
-             </option>;
+        { theme }
+      </option>;
     });
     return (
       <select value={ selected } onChange={ this.handleThemeChanged }>
         { options }
       </select>
-      );
+    );
   }
 
   renderLayoutsSelect(layouts, selected) {
     const options = layouts.map(function(layout) {
       return <option key={ layout }>
-               { layout }
-             </option>;
+        { layout }
+      </option>;
     });
     return (
       <select value={ selected } onChange={ this.handleLayoutChanged }>
         { options }
       </select>
-      );
+    );
   }
 
   handleOk(e) {
@@ -112,7 +112,7 @@ export default class Settings extends React.Component<{}, State> {
       return (
         <div id='settings' className='hidden'>
         </div>
-        );
+      );
     }
     const layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
     const themes = this.renderThemesSelect(allThemes, this.state.theme);
@@ -135,6 +135,6 @@ export default class Settings extends React.Component<{}, State> {
           </button>
         </div>
       </div>
-      );
+    );
   }
 }

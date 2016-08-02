@@ -91,7 +91,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
     console.log('ImportSimpleNote.handleCloseFinished()');
     e.preventDefault();
     action.showHideImportSimpleNote(false);
-  // TODO: reload notes via action
+    // TODO: reload notes via action
   }
 
   handleInputChanged(e) {
@@ -175,7 +175,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
           </div>
         </td>
       </tr>
-      );
+    );
   }
 
   renderStatusMessage() {
@@ -188,7 +188,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
           { this.state.statusMessage }
         </td>
       </tr>
-      );
+    );
   }
 
   renderFormInner1() {
@@ -199,7 +199,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
             { this.state.statusMessage }
           </td>
         </tr>
-        );
+      );
     }
 
     return (
@@ -217,7 +217,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
             onChange={ this.handleInputChanged } />
         </td>
       </tr>
-      );
+    );
   }
 
   renderFormInner2() {
@@ -240,7 +240,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
             onChange={ this.handleInputChanged } />
         </td>
       </tr>
-      );
+    );
   }
 
   renderFormInner3() {
@@ -254,7 +254,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
             </button>
           </td>
         </tr>
-        );
+      );
     }
 
     if (this.state.isImporting) {
@@ -265,7 +265,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
             <i className='fa fa-spinner fa-pulse right' style={ styleSpinner }></i>
           </td>
         </tr>
-        );
+      );
     }
 
     return (
@@ -280,7 +280,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
           </button>
         </td>
       </tr>
-      );
+    );
   }
 
   render() {
@@ -288,7 +288,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
       return (
         <div id='no-import-simple-note' className='hidden'>
         </div>
-        );
+      );
     }
 
     const statusMessage = this.renderStatusMessage();
@@ -330,6 +330,6 @@ export default class ImportSimpleNote extends Component<{}, State> {
           </div>
         </div>
       </div>
-      );
+    );
   }
 }
