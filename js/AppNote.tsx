@@ -229,8 +229,8 @@ export default class AppNote extends Component<{}, State> {
     }
     const s = ni.IsStarred(note) ? 'Unstar' : 'Star';
     return <a href='#' onClick={ this.handleStarUnstarNote }>
-             { s }
-           </a>;
+      { s }
+    </a>;
   }
 
   renderMakePublicPrivate(note) {
@@ -239,15 +239,15 @@ export default class AppNote extends Component<{}, State> {
     }
     const s = ni.IsPublic(note) ? 'Make private' : 'Make public';
     return <a href='#' onClick={ this.handleMakePublicPrivate }>
-             { s }
-           </a>;
+      { s }
+    </a>;
   }
 
   renderTrashUntrash(note) {
     const s = ni.IsDeleted(note) ? 'Undelete' : 'Move to Trash';
     return <a href='#' onClick={ this.handleDelUndel }>
-             { s }
-           </a>;
+      { s }
+    </a>;
   }
 
   renderPermanentDelete(note) {
@@ -278,20 +278,20 @@ export default class AppNote extends Component<{}, State> {
       tag = '#' + tag;
       return (
         <span className='note-tag' key={ tag }>{ tag }</span>
-        );
+      );
     });
 
     return (
       <span className='note-tags'>{ tagEls }</span>
-      );
+    );
   }
 
   renderPublicPrivate(note) {
     const isPublic = ni.IsPublic(note);
     if (isPublic) {
-      return <span className='is-public'>public</span>;
+      return <span className='is-public'>public </span>;
     } else {
-      return <span className='is-private'>private</span>;
+      return <span className='is-private'>private </span>;
     }
   }
 
@@ -331,7 +331,7 @@ export default class AppNote extends Component<{}, State> {
         <Editor />
         <TemporaryMessage />
       </div>
-      );
+    );
   }
 
   render() {
@@ -387,7 +387,7 @@ export default class AppNote extends Component<{}, State> {
         <Editor />
         <TemporaryMessage />
       </div>
-      );
+    );
   }
 }
 

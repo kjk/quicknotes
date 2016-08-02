@@ -45,7 +45,7 @@ export default class TextSelect extends Component<Props, {}> {
         <option value={ key } key={ key }>
           { val }
         </option>
-        );
+      );
     });
     return (
       <div className={ classes }>
@@ -54,6 +54,6 @@ export default class TextSelect extends Component<Props, {}> {
           { vals }
         </select>
       </div>
-      );
+    );
   }
 }

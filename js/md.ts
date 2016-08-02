@@ -63,7 +63,7 @@ function toHtmlMarked(s) {
   return html;
 }
 
-const markdownItOpts : MarkdownIt.Options = {
+const markdownItOpts: MarkdownIt.Options = {
   html: false,
   linkify: true,
   breaks: false, // Convert '\n' in paragraphs into <br>
@@ -80,7 +80,7 @@ markdownItOpts.highlight = function(str, lang) {
   if (hasLang) {
     try {
       return hljs.highlight(lang, str).value;
-    } catch (__) {}
+    } catch (__) { }
   }
   return ''; // use external default escaping
 };
@@ -118,5 +118,5 @@ function toHtmlMarkdownIt(s) {
 
 export function toHtml(s) {
   return toHtmlMarkdownIt(s);
-// return toHtmlMarked(s);
+  // return toHtmlMarked(s);
 }

@@ -172,7 +172,7 @@ export default class Note extends Component<Props, State> {
     if (title !== '') {
       return (
         <span className='note-title'>{ title }</span>
-        );
+      );
     }
   }
 
@@ -181,20 +181,20 @@ export default class Note extends Component<Props, State> {
       tag = '#' + tag;
       return (
         <span className='note-tag' key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
-        );
+      );
     });
 
     return (
       <span className='note-tags'>{ tagEls }</span>
-      );
+    );
   }
 
   renderPublicPrivate(note) {
     const isPublic = ni.IsPublic(note);
     if (isPublic) {
-      return <span className='is-public'>public</span>;
+      return <span className='is-public'>public </span>;
     } else {
-      return <span className='is-private'>private</span>;
+      return <span className='is-private'>private </span>;
     }
   }
 
@@ -212,14 +212,14 @@ export default class Note extends Component<Props, State> {
           href='#'
           onClick={ this.handleDelUndel }
           title='Undelete'>undelete</a>
-        );
+      );
     }
     return (
       <a className='note-action delete'
         href='#'
         onClick={ this.handleDelUndel }
-        title='Move to Trash'>delete</a>
-      );
+        title='Move to Trash'>delete </a>
+    );
   }
 
   renderPermanentDelete(note) {
@@ -229,7 +229,7 @@ export default class Note extends Component<Props, State> {
           href='#'
           onClick={ this.handlePermanentDelete }
           title='Delete permanently'>delete permanently</a>
-        );
+      );
     }
   }
 
@@ -245,7 +245,7 @@ export default class Note extends Component<Props, State> {
           href='#'
           onClick={ this.handleEdit }
           title='Edit note'>edit</a>
-        );
+      );
     }
   }
 
@@ -260,13 +260,13 @@ export default class Note extends Component<Props, State> {
         href={ url }
         target='_blank'
         title='View note'>view</a>
-      );
+    );
   }
 
   renderSize(note) {
     return (
       <span className='note-size'>{ ni.HumanSize(note) }</span>
-      );
+    );
   }
 
   renderMakePublicPrivate(note) {
@@ -278,15 +278,15 @@ export default class Note extends Component<Props, State> {
         <a className='note-action'
           href='#'
           onClick={ this.handleMakePublicPrivate }
-          title='Make private'>make private</a>
-        );
+          title='Make private'>make private </a>
+      );
     } else {
       return (
         <a className='note-action'
           href='#'
           onClick={ this.handleMakePublicPrivate }
-          title='Make public'>make public</a>
-        );
+          title='Make public'>make public </a>
+      );
     }
   }
 
@@ -302,14 +302,14 @@ export default class Note extends Component<Props, State> {
           href='#'
           onClick={ this.handleStarUnstarNote }
           title='Unstar'><i className='fa fa-star'></i></a>
-        );
+      );
     } else {
       return (
         <a className='note-action note-star'
           href='#'
           onClick={ this.handleStarUnstarNote }
           title='Star'><i className='fa fa-star-o'></i></a>
-        );
+      );
     }
   }
 
@@ -323,7 +323,7 @@ export default class Note extends Component<Props, State> {
           { this.renderEdit(note) }
           { this.renderViewLink(note) }
         </div>
-        );
+      );
     }
   }
 
@@ -333,11 +333,11 @@ export default class Note extends Component<Props, State> {
         <div className='note-actions'>
           { this.renderViewLink(note) }
         </div>
-        );
+      );
     }
     return (
       <div className='note-actions'></div>
-      );
+    );
   }
 
   renderActions(note) {
@@ -369,6 +369,6 @@ export default class Note extends Component<Props, State> {
         </div>
         <NoteBody compact={ this.props.compact } note={ note } />
       </div>
-      );
+    );
   }
 }

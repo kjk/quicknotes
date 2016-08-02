@@ -42,13 +42,13 @@ export default class TagsList extends Component<Props, {}> {
           tagName={ tagName }
           count={ count }
           key={ tagName } />
-        );
+      );
     });
 
     return (
       <div className='tags-list'>
         { tagEls }
       </div>
-      );
+    );
   }
 }

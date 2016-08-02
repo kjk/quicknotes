@@ -29,7 +29,7 @@ export default class AppIndex extends Component<{}, State> {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentWillUnmount() {
     //action.offAllForOwner(this);
@@ -59,7 +59,7 @@ export default class AppIndex extends Component<{}, State> {
         <Editor />
         <TemporaryMessage />
       </div>
-      );
+    );
   }
 }
 

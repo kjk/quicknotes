@@ -38,7 +38,6 @@ export default class TagCount extends Component<Props, {}> {
         <span className='tag-name'>{ this.props.displayName }</span>
         <span className='tag-count'>{ this.props.count }</span>
       </div>
-      );
+    );
   }
 }
-

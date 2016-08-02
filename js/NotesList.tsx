@@ -37,7 +37,7 @@ interface State {
 
 export default class NotesList extends Component<Props, State> {
 
-  maxLoadedNotes : any;
+  maxLoadedNotes: any;
 
   constructor(props, context) {
     super(props, context);
@@ -99,14 +99,14 @@ export default class NotesList extends Component<Props, State> {
       <div id='notes-list' onScroll={ this.handleScroll }>
         <div className='wrapper'>
           { this.state.notes.map((note) => {
-              const key = `${ni.HashID(note)}-${ni.CurrentVersion(note)}`;
-              return <Note compact={ this.props.compact }
-                       note={ note }
-                       key={ key }
-                       showingMyNotes={ this.props.showingMyNotes } />;
-            }) }
+            const key = `${ni.HashID(note)}-${ni.CurrentVersion(note)}`;
+            return <Note compact={ this.props.compact }
+              note={ note }
+              key={ key }
+              showingMyNotes={ this.props.showingMyNotes } />;
+          }) }
         </div>
       </div>
-      );
+    );
   }
 }

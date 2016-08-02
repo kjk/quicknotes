@@ -46,7 +46,7 @@ export default class LogInLink extends Component<{}, {}> {
           <a href={ url }>Sign Out</a>
         </div>
       </div>
-      );
+    );
   }
 
   renderLoggedOut() {
@@ -71,7 +71,7 @@ export default class LogInLink extends Component<{}, {}> {
           </ul>
         </div>
       </div>
-      );
+    );
   }
 
   render() {
