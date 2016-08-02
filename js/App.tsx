@@ -1,7 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 
 import 'babel-polyfill';
-import React = require('react');
+import * as React from 'react';
 
 import AppUser from './AppUser';
 import AppNote from './AppNote';

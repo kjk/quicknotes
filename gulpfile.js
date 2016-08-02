@@ -30,13 +30,25 @@ var t_babelify = ['babelify', {
   'presets': ['es2015', 'react']
 }];
 
+var babelify_opts = {
+  presets: ['es2015', 'react'],
+  extensions: ['.tsx', '.ts', '.js', '.jsx']
+};
+
+var tsify_opts = {
+  target: 'es6',
+  module: 'es2015'
+};
+
+var browserify_opts = {
+  entries: ['js/App.tsx'],
+  debug: true
+};
+
 gulp.task('js', function() {
-  browserify({
-    entries: ['js/App.tsx'],
-    debug: true
-  })
-    .plugin(tsify, { target: 'es6' })
-    .transform(t_babelify, { extensions: ['.tsx', '.ts'] })
+  browserify(browserify_opts)
+    .plugin("tsify", tsify_opts)
+    .transform(babelify, babelify_opts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
