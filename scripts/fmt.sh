@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./node_modules/.bin/tsfmt -i js/*ts*
+./node_modules/.bin/tsfmt -r js/*ts*
