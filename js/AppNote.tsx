@@ -313,17 +313,17 @@ export default class AppNote extends Component<{}, State> {
         </div>
         <div id='full-note'>
           <div className='note-content-wrapper'>
-            <center className='note-deleted'>
+            <div className='note-deleted center'>
               This note has been permanently deleted.
-            </center>
+            </div>
           </div>
           <hr className='light' />
-          <center className='note-footer'>
+          <div className='note-footer center'>
             A note by
             <a href={ url }>
               { nu.Handle }
             </a>.
-          </center>
+          </div>
         </div>
         <Settings />
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
@@ -374,12 +374,12 @@ export default class AppNote extends Component<{}, State> {
             { this.renderBody(note) }
           </div>
           <hr className='light' />
-          <center className='note-footer'>
+          <div className='note-footer center'>
             A note by
             <a href={ url }>
               { nu.Handle }
             </a>.
-          </center>
+          </div>
         </div>
         <Settings />
         <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />

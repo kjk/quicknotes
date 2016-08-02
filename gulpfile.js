@@ -14,6 +14,7 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var source = require('vinyl-source-stream');
+var tsify = require('tsify');
 var uglify = require('gulp-uglify');
 
 require('babel-register');
@@ -31,10 +32,11 @@ var t_babelify = ['babelify', {
 
 gulp.task('js', function() {
   browserify({
-    entries: ['js/App.jsx'],
-    'transform': [t_babelify],
+    entries: ['js/App.tsx'],
     debug: true
   })
+    .plugin(tsify, { target: 'es6' })
+    .transform(t_babelify, { extensions: ['.tsx', '.ts'] })
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
@@ -43,10 +45,11 @@ gulp.task('js', function() {
 
 gulp.task('jsprod', function() {
   browserify({
-    entries: ['js/App.jsx'],
+    entries: ['js/App.tsx'],
     'transform': [t_babelify, t_envify],
     debug: true
   })
+    .plugin(tsify, { target: 'es6' })
     .bundle()
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
