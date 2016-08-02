@@ -1,10 +1,14 @@
 /// <reference path="../typings/index.d.ts" />
 
-import marked from 'marked';
-import MarkdownIt from 'markdown-it';
+import * as marked from 'marked';
+import * as MarkdownIt from 'markdown-it';
 import * as hljs from 'highlight.js';
 
 const renderer = new marked.Renderer();
+
+function unescape(html: string) : string {
+  return html;
+}
 
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
@@ -74,9 +78,11 @@ const markdownIt = new MarkdownIt(preset, markdownItOpts);
 
 // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md
 // Remember old renderer, if overriden, or proxy to default renderer
-var defaultRender = markdownIt.renderer.rules["link_open"] || function(tokens, idx, options, env, self) {
-  return self.renderToken(tokens, idx, options);
+function myRenderer(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, md: MarkdownIt.MarkdownIt): string {
+  return md.renderer.renderToken(tokens, idx, options);
 };
+
+var defaultRender = markdownIt.renderer.rules["link_open"] || myRenderer;
 
 markdownIt.renderer.rules["link_open"] = function(tokens, idx, options, env, self) {
   // If you are sure other plugins can't add `target` - drop check below

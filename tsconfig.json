@@ -9,6 +9,7 @@
         "jsx": "react",
         "outFile": "s/dist/main.js",
         "allowSyntheticDefaultImports": true,
+        "allowJs": true,
         "sourceMap": true
     },
     "files": [
