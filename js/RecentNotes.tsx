@@ -3,7 +3,11 @@
 import React, { Component } from 'react';
 import NotesList from './NotesList';
 
-export default class RecentNotes extends Component {
+interface State {
+  notes: any;
+}
+
+export default class RecentNotes extends Component<{}, State> {
   constructor(props, context) {
     super(props, context);
 

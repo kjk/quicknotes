@@ -1,8 +1,8 @@
 /// <reference path="../typings/index.d.ts" />
 
 import 'babel-polyfill';
-import * as React from 'react';
+import 'react'
 
-import AppUser from './AppUser';
-import AppNote from './AppNote';
-import AppIndex from './AppIndex';
+import './AppUser';
+import './AppNote';
+import './AppIndex';
