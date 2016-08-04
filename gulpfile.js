@@ -16,6 +16,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var source = require('vinyl-source-stream');
 var tsify = require('tsify');
 var uglify = require('gulp-uglify');
+var debug = require('gulp-debug');
 
 require('babel-register');
 
