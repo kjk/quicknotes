@@ -1,7 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 
 import * as marked from 'marked';
-import * as MarkdownIt from 'markdown-it';
+import MarkdownIt from 'markdown-it';
 import * as hljs from 'highlight.js';
 
 const renderer = new marked.Renderer();
@@ -85,7 +85,7 @@ markdownItOpts.highlight = function(str, lang) {
   return ''; // use external default escaping
 };
 
-const preset: string = null;
+const preset: string = "default";
 const markdownIt = new MarkdownIt(preset, markdownItOpts);
 
 // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md
