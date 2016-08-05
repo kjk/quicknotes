@@ -21,13 +21,13 @@ interface Props {
 }
 
 export default class TextSelect extends Component<Props, {}> {
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
 
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e) {
+  handleChange(e: any) {
     const selectedIdx = e.target.value;
     this.props.onChange(e, selectedIdx, this.props.values[selectedIdx]);
   }
@@ -40,7 +40,7 @@ export default class TextSelect extends Component<Props, {}> {
       classes += ' ' + className;
     }
     const selected = values[selectedIdx];
-    const vals = values.map((val, key) => {
+    const vals = values.map((val: any, key: any) => {
       return (
         <option value={ key } key={ key }>
           { val }

@@ -7,7 +7,7 @@ import * as action from './action';
 import { focusSearch, isLoggedIn } from './utils';
 
 // by default all keypresses are filtered
-function keyFilter(event) {
+function keyFilter(event: any) {
   // always allow ESC
   if (event.keyCode == 27) {
     return true;
@@ -29,7 +29,7 @@ export default class Top extends Component<{}, State> {
 
   searchNotesUser: any;
 
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
 
     this.handleClearSearchTerm = this.handleClearSearchTerm.bind(this);
@@ -70,7 +70,7 @@ export default class Top extends Component<{}, State> {
     });
   }
 
-  handleInputKeyDown(e) {
+  handleInputKeyDown(e: any) {
     // on ESC loose focus and reset the value
     if (e.keyCode == 27) {
       e.preventDefault();
@@ -79,7 +79,7 @@ export default class Top extends Component<{}, State> {
     }
   }
 
-  handleInputChange(e) {
+  handleInputChange(e: any) {
     const user = this.searchNotesUser;
     const searchTerm = e.target.value;
     this.setState({
@@ -92,7 +92,7 @@ export default class Top extends Component<{}, State> {
     }
   }
 
-  handleEditNewNote(e) {
+  handleEditNewNote(e: any) {
     // console.log('Top.handleEditNewNote');
     e.preventDefault();
     action.editNewNote();
@@ -101,7 +101,7 @@ export default class Top extends Component<{}, State> {
   render() {
     const withSearchInput = gNotesUser || gLoggedUser;
 
-    let userUrl = null;
+    let userUrl: any = null;
     if (gLoggedUser) {
       userUrl = '/u/' + gLoggedUser.HashID + '/' + gLoggedUser.Handle;
     }

@@ -19,7 +19,7 @@ import * as action from './action';
 import * as api from './api';
 
 // returns { tagName1: count, ... }
-function tagsFromNotes(notes) {
+function tagsFromNotes(notes: any) {
   let tags = {
     __all: 0,
     __deleted: 0,
@@ -84,7 +84,7 @@ interface State {
 }
 
 export default class AppUser extends Component<Props, State> {
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
@@ -92,8 +92,8 @@ export default class AppUser extends Component<Props, State> {
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
-    let allNotes = [];
-    let selectedNotes = [];
+    let allNotes: any = [];
+    let selectedNotes: any = [];
     let selectedTags = [props.initialTag];
     let tags = {};
 
@@ -134,7 +134,7 @@ export default class AppUser extends Component<Props, State> {
   }
 
   // op = toggle or set
-  handleTagSelected(tag, op) {
+  handleTagSelected(tag: any, op: any) {
     //console.log("selected tag: ", tag);
     var tags = this.state.selectedTags;
     if (op == 'set') {
@@ -165,11 +165,11 @@ export default class AppUser extends Component<Props, State> {
     });
   }
 
-  setNotes(json, resetScroll) {
+  setNotes(json: any, resetScroll: boolean) {
     const allNotes = json.Notes || [];
     ni.sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
-    let selectedTags = this.state.selectedTags.filter(tag => tag in tags);
+    let selectedTags = this.state.selectedTags.filter((tag: any) => tag in tags);
     if (selectedTags.length === 0) {
       selectedTags = ['__all'];
     }
@@ -184,15 +184,15 @@ export default class AppUser extends Component<Props, State> {
     });
   }
 
-  handleReloadNotes(resetScroll) {
+  handleReloadNotes(resetScroll: boolean) {
     const userID = this.state.notesUserHashID;
     // console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
-    api.getNotes(userID, json => {
+    api.getNotes(userID, (json: any) => {
       this.setNotes(json, resetScroll);
     });
   }
 
-  handleSearchResultSelected(noteHashID) {
+  handleSearchResultSelected(noteHashID: any) {
     console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
@@ -222,9 +222,9 @@ export default class AppUser extends Component<Props, State> {
 }
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
-function tagsFromRoute(s) {
+function tagsFromRoute(s: any) {
   const parts = s.split('/t:');
-  const res = parts.filter((s) => s !== '');
+  const res = parts.filter((s: any) => s !== '');
   if (res.length === 0) {
     return ['__all'];
   }

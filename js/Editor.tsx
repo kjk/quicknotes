@@ -33,7 +33,7 @@ const cmOptions = {
   'tabindex': 3
 };
 
-function formatPrettyName(fmt) {
+function formatPrettyName(fmt: any) {
   if (fmt === ni.formatText) {
     return 'text';
   }
@@ -43,7 +43,7 @@ function formatPrettyName(fmt) {
   return fmt;
 }
 
-function formatShortName(fmt) {
+function formatShortName(fmt: any) {
   if (fmt === 'text') {
     return ni.formatText;
   }
@@ -58,12 +58,12 @@ function getWindowMiddle() {
   return dy / 3;
 }
 
-function tagsToText(tags) {
+function tagsToText(tags: any) {
   if (!tags) {
     return '';
   }
   let s = '';
-  tags.forEach(tag => {
+  tags.forEach((tag: any) => {
     if (s !== '') {
       s += ' ';
     }
@@ -72,9 +72,9 @@ function tagsToText(tags) {
   return s;
 }
 
-function textToTags(s) {
-  let tags = [];
-  s.split(' ').forEach(tag => {
+function textToTags(s: any) {
+  let tags: any = [];
+  s.split(' ').forEach((tag: any) => {
     tag = tag.trim();
     if (tag.startsWith('#')) {
       tag = tag.substring(1);
@@ -86,7 +86,7 @@ function textToTags(s) {
   return strArrRemoveDups(tags);
 }
 
-function editorHeight(y) {
+function editorHeight(y: number) {
   return window.innerHeight - y - kDragBarDy;
 }
 
@@ -98,7 +98,7 @@ class Note {
   isPublic: any;
   formatName: any;
 
-  constructor(id, title, tags, body, isPublic, formatName) {
+  constructor(id: any, title: any, tags: any, body: any, isPublic: any, formatName: any) {
     this.id = id;
     this.title = title;
     this.tags = tags;
@@ -120,7 +120,7 @@ class Note {
   }
 }
 
-function noteFromCompact(noteCompact, body) {
+function noteFromCompact(noteCompact: any, body: any) {
   const id = ni.HashID(noteCompact);
   const title = ni.Title(noteCompact);
   const tags = ni.Tags(noteCompact);
@@ -149,7 +149,7 @@ type NewNoteFromBrowser struct {
 	IsPublic bool
 }
 */
-function toNewNoteJSON(note) {
+function toNewNoteJSON(note: any) {
   var n: Note;
   n.HashID = note.id;
   n.Title = note.title;
@@ -164,7 +164,7 @@ function newEmptyNote() {
   return new Note(null, '', '', '', false, ni.formatMarkdown);
 }
 
-function didNoteChange(n1, n2) {
+function didNoteChange(n1: any, n2: any) {
   if (n1.title != n2.title) {
     return true;
   }
@@ -213,8 +213,8 @@ function getState(cm: any, pos?: any): CodeMirrorState {
 
   var types = stat.type.split(' ');
 
-  const ret: CodeMirrorState = {};
-  let data, text;
+  const ret: any = {};
+  let data: any, text: any;
   for (var i = 0; i < types.length; i++) {
     data = types[i];
     if (data === 'strong') {
@@ -238,11 +238,11 @@ function getState(cm: any, pos?: any): CodeMirrorState {
       ret.code = true;
     }
   }
-  return ret;
+  return ret as CodeMirrorState;
 }
 
-function _replaceSelection(cm, active, startEnd) {
-  var text;
+function _replaceSelection(cm: any, active: any, startEnd: any) {
+  var text: any;
   var start = startEnd[0];
   var end = startEnd[1];
   var startPoint = cm.getCursor('start');
@@ -272,7 +272,7 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function(i) {
+    (function(i: any) {
       var text = cm.getLine(i);
       var currHeadingLevel = text.search(/[^#]/);
 
@@ -334,22 +334,22 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
   cm.focus();
 }
 
-function _toggleLine(cm, name) {
-  var stat = getState(cm);
+function _toggleLine(cm: any, name: any) {
+  var stat: any = getState(cm);
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
-  var repl = {
+  var repl: any = {
     'quote': /^(\s*)\>\s+/,
     'unordered-list': /^(\s*)(\*|\-|\+)\s+/,
     'ordered-list': /^(\s*)\d+\.\s+/
   };
-  var map = {
+  var map: any = {
     'quote': '> ',
     'unordered-list': '* ',
     'ordered-list': '1. '
   };
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function(i) {
+    (function(i: any) {
       var text = cm.getLine(i);
       if (stat[name]) {
         text = text.replace(repl[name], '$1');
@@ -370,9 +370,9 @@ function _toggleLine(cm, name) {
 
 function _toggleBlock(cm: any, type: any, start_chars: any, end_chars?: any) {
   end_chars = isUndefined(end_chars) ? start_chars : end_chars;
-  var stat = getState(cm);
+  var stat: any = getState(cm);
 
-  var text;
+  var text: any;
   var start = start_chars;
   var end = end_chars;
 
@@ -433,54 +433,54 @@ function _toggleBlock(cm: any, type: any, start_chars: any, end_chars?: any) {
   cm.focus();
 }
 
-function toggleBold(cm) {
+function toggleBold(cm: any) {
   _toggleBlock(cm, 'bold', '**');
 }
 
-function toggleItalic(cm) {
+function toggleItalic(cm: any) {
   _toggleBlock(cm, 'italic', '*');
 }
 
-function toggleBlockquote(cm) {
+function toggleBlockquote(cm: any) {
   _toggleLine(cm, 'quote');
 }
 
-function toggleUnorderedList(cm) {
+function toggleUnorderedList(cm: any) {
   _toggleLine(cm, 'unordered-list');
 }
 
-function toggleOrderedList(cm) {
+function toggleOrderedList(cm: any) {
   _toggleLine(cm, 'ordered-list');
 }
 
-function toggleHeadingSmaller(cm) {
+function toggleHeadingSmaller(cm: any) {
   _toggleHeading(cm, 'smaller');
 }
 
-function toggleHeadingBigger(cm) {
+function toggleHeadingBigger(cm: any) {
   _toggleHeading(cm, 'bigger');
 }
 
-function toggleCodeBlock(cm) {
+function toggleCodeBlock(cm: any) {
   _toggleBlock(cm, 'code', '```\r\n', '\r\n```');
 }
 
-function drawHorizontalRule(cm) {
+function drawHorizontalRule(cm: any) {
   var stat = getState(cm);
   _replaceSelection(cm, stat.image, insertTexts.horizontalRule);
 }
 
-function drawLink(cm) {
+function drawLink(cm: any) {
   var stat = getState(cm);
   _replaceSelection(cm, stat.link, insertTexts.link);
 }
 
-function drawImage(cm) {
+function drawImage(cm: any) {
   var stat = getState(cm);
   _replaceSelection(cm, stat.image, insertTexts.image);
 }
 
-function fixShortcut(name) {
+function fixShortcut(name: string) {
   if (isMac) {
     name = name.replace('Ctrl', 'Cmd');
   } else {
@@ -489,14 +489,14 @@ function fixShortcut(name) {
   return name;
 }
 
-function getCodeMirrorState(cm) {
+function getCodeMirrorState(cm: any) {
   return {
     cursor: cm.getCursor(),
     selections: cm.listSelections()
   };
 }
 
-function restoreCodeMirrorState(cm, state) {
+function restoreCodeMirrorState(cm: any, state: any) {
   if (state) {
     cm.setSelections(state.selections);
     cm.setCursor(state.cursor);
@@ -507,7 +507,7 @@ function restoreCodeMirrorState(cm, state) {
 const wordCountPattern = /[a-zA-Z0-9_\u0392-\u03c9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
 
 /* The right word count in respect for CJK. */
-function wordCount(data) {
+function wordCount(data: any) {
   const m = data.match(wordCountPattern);
   if (m === null) {
     return 0;
@@ -523,7 +523,7 @@ function wordCount(data) {
   return count;
 }
 
-function isNullMsg(o) {
+function isNullMsg(o: any) {
   if (isUndefined(o) || o == null) {
     return 'is null';
   }
@@ -546,7 +546,7 @@ export default class Editor extends Component<{}, State> {
   setFocusInUpdate: any;
   savedCodeMirrorState: any;
 
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
 
     this.handleCancel = this.handleCancel.bind(this);
@@ -659,7 +659,7 @@ export default class Editor extends Component<{}, State> {
     keymaster.unbind('ctrl+enter');
   }
 
-  handleEditorCreated(cm) {
+  handleEditorCreated(cm: any) {
     // console.log('Editor.handleEditorCreated');
     this.cm = cm;
     this.isNewCM = true;
@@ -679,7 +679,7 @@ export default class Editor extends Component<{}, State> {
     // Syncs scroll  editor -> preview
     var cScroll = false;
     var pScroll = false;
-    cm.on('scroll', v => {
+    cm.on('scroll', (v: any) => {
       if (!this.isShowingPreview()) {
         return;
       }
@@ -712,20 +712,20 @@ export default class Editor extends Component<{}, State> {
   setupCodeMirror() {
     const cm = this.cm;
 
-    const shortcuts = {
-      'Ctrl-B': cm => toggleBold(cm),
-      'Ctrl-I': cm => toggleItalic(cm),
-      'Ctrl-K': cm => drawLink(cm),
-      'Cmd-H': cm => toggleHeadingSmaller(cm),
-      'F9': cm => this.togglePreview(),
-      "Cmd-'": cm => toggleBlockquote(cm),
-      'Ctrl-L': cm => toggleUnorderedList(cm),
-      'Cmd-Alt-L': cm => toggleOrderedList(cm),
-      'Shift-Cmd-H': cm => toggleHeadingBigger(cm),
+    const shortcuts: any = {
+      'Ctrl-B': (cm: any) => toggleBold(cm),
+      'Ctrl-I': (cm: any) => toggleItalic(cm),
+      'Ctrl-K': (cm: any) => drawLink(cm),
+      'Cmd-H': (cm: any) => toggleHeadingSmaller(cm),
+      'F9': (cm: any) => this.togglePreview(),
+      "Cmd-'": (cm: any) => toggleBlockquote(cm),
+      'Ctrl-L': (cm: any) => toggleUnorderedList(cm),
+      'Cmd-Alt-L': (cm: any) => toggleOrderedList(cm),
+      'Shift-Cmd-H': (cm: any) => toggleHeadingBigger(cm),
       'Enter': 'newlineAndIndentContinueMarkdownList'
     };
 
-    let extraKeys = {};
+    let extraKeys: any = {};
     Object.keys(shortcuts).forEach(k => {
       const k2 = fixShortcut(k);
       extraKeys[k2] = shortcuts[k];
@@ -765,7 +765,7 @@ export default class Editor extends Component<{}, State> {
     return false;
   }
 
-  handleDragBarMoved(y) {
+  handleDragBarMoved(y: any) {
     // console.log('Editor.handleDragBarMoved: y=', y);
     this.top = y;
     const node = ReactDOM.findDOMNode(this.refs["editorWrapper"]) as HTMLElement;
@@ -776,7 +776,7 @@ export default class Editor extends Component<{}, State> {
     }
   }
 
-  handleTextChanged(cm) {
+  handleTextChanged(cm: any) {
     const s = cm.getValue();
     let note = this.state.note;
     note.body = s;
@@ -785,7 +785,7 @@ export default class Editor extends Component<{}, State> {
     });
   }
 
-  handleTitleChanged(e) {
+  handleTitleChanged(e: any) {
     const s = e.target.value;
     let note = this.state.note;
     note.title = s;
@@ -794,7 +794,7 @@ export default class Editor extends Component<{}, State> {
     });
   }
 
-  handleTagsChanged(e) {
+  handleTagsChanged(e: any) {
     const s = e.target.value;
     let note = this.state.note;
     note.tags = s;
@@ -813,7 +813,7 @@ export default class Editor extends Component<{}, State> {
     });
     action.showTemporaryMessage('Saving note...', 500);
     const isNewNote = note.id;
-    api.createOrUpdateNote(noteJSON, res => {
+    api.createOrUpdateNote(noteJSON, (res: any) => {
       // TODO: handle error
       let hashID = '';
       if (res) {
@@ -825,7 +825,7 @@ export default class Editor extends Component<{}, State> {
     });
   }
 
-  handleCancel(e) {
+  handleCancel(e: any) {
     this.setState({
       isShowing: false,
       note: newEmptyNote()
@@ -853,7 +853,7 @@ export default class Editor extends Component<{}, State> {
     return state.note.isMarkdown() && state.isShowingPreview;
   }
 
-  startEditingNote(note) {
+  startEditingNote(note: any) {
     // at this point we might not be rendered yet, so we use variables
     // to communicate with componentDidUpdate
     this.firstRender = true;
@@ -872,51 +872,51 @@ export default class Editor extends Component<{}, State> {
     this.startEditingNote(newEmptyNote());
   }
 
-  editNote(noteCompactInitial) {
+  editNote(noteCompactInitial: any) {
     //console.log('Editor.editNote: noteCompact=', noteCompact);
-    ni.FetchLatestContent(noteCompactInitial, (noteCompact, body) => {
+    ni.FetchLatestContent(noteCompactInitial, (noteCompact: any, body: any) => {
       const note = noteFromCompact(noteCompact, body);
       this.startEditingNote(note);
     });
   }
 
-  handleEditCmdBold(e) {
+  handleEditCmdBold(e: any) {
     toggleBold(this.cm);
   }
 
-  handleEditCmdItalic(e) {
+  handleEditCmdItalic(e: any) {
     toggleItalic(this.cm);
   }
 
-  handleEditCmdLink(e) {
+  handleEditCmdLink(e: any) {
     drawLink(this.cm);
   }
 
-  handleEditCmdQuote(e) {
+  handleEditCmdQuote(e: any) {
     toggleBlockquote(this.cm);
   }
 
-  handleEditCmdCode(e) {
+  handleEditCmdCode(e: any) {
     toggleCodeBlock(this.cm);
   }
 
-  handleEditCmdListUnordered(e) {
+  handleEditCmdListUnordered(e: any) {
     toggleUnorderedList(this.cm);
   }
 
-  handleEditCmdListOrdered(e) {
+  handleEditCmdListOrdered(e: any) {
     toggleOrderedList(this.cm);
   }
 
-  handleEditCmdHeading(e) {
+  handleEditCmdHeading(e: any) {
     toggleHeadingSmaller(this.cm);
   }
 
-  handleEditCmdHr(e) {
+  handleEditCmdHr(e: any) {
     drawHorizontalRule(this.cm);
   }
 
-  handleEditCmdImage(e) {
+  handleEditCmdImage(e: any) {
     drawImage(this.cm);
   }
 
@@ -953,7 +953,7 @@ export default class Editor extends Component<{}, State> {
     this.scheduleTimer();
   }
 
-  handleFormatChanged(e, valIdx, val) {
+  handleFormatChanged(e: any, valIdx: any, val: any) {
     this.savedCodeMirrorState = getCodeMirrorState(this.cm);
     let note = this.state.note;
     note.formatName = formatShortName(val);
@@ -963,7 +963,7 @@ export default class Editor extends Component<{}, State> {
     });
   }
 
-  handlePublicOrPrivateChanged(e, valIdx, v) {
+  handlePublicOrPrivateChanged(e: any, valIdx: any, v: any) {
     let note = this.state.note;
     note.isPublic = valIdx == 0;
     this.setFocusInUpdate = true;
@@ -972,7 +972,7 @@ export default class Editor extends Component<{}, State> {
     });
   }
 
-  renderPublicOrPrivateSelect(isPublic) {
+  renderPublicOrPrivateSelect(isPublic: any) {
     const values = ['public', 'private'];
     const selectedIdx = isPublic ? 0 : 1;
     return (
@@ -980,14 +980,14 @@ export default class Editor extends Component<{}, State> {
     );
   }
 
-  handleHidePreview(e) {
+  handleHidePreview(e: any) {
     e.preventDefault();
     this.setState({
       isShowingPreview: false
     });
   }
 
-  handleShowPreview(e) {
+  handleShowPreview(e: any) {
     e.preventDefault();
     this.setState({
       isShowingPreview: true
@@ -1010,16 +1010,16 @@ export default class Editor extends Component<{}, State> {
     });
   }
 
-  handleTogglePreview(e) {
+  handleTogglePreview(e: any) {
     e.preventDefault();
     this.togglePreview();
   }
 
-  handleOpenInNewWindow(e) {
+  handleOpenInNewWindow(e: any) {
     e.preventDefault();
   }
 
-  renderFormatSelect(formatSelected) {
+  renderFormatSelect(formatSelected: any) {
     const formats = ['text', 'markdown'];
     const formatPretty = formatPrettyName(formatSelected);
     const selectedIdx = formats.indexOf(formatPretty);
@@ -1028,7 +1028,7 @@ export default class Editor extends Component<{}, State> {
     );
   }
 
-  renderMarkdownButtons(isText) {
+  renderMarkdownButtons(isText: any) {
     if (isText) {
       return;
     }
@@ -1094,7 +1094,7 @@ export default class Editor extends Component<{}, State> {
     const saveDisabled = !didNoteChange(note, this.initialNote);
     const formatSelect = this.renderFormatSelect(note.formatName);
     const publicSelect = this.renderPublicOrPrivateSelect(note.isPublic);
-    let editor;
+    let editor: any;
     if (isText || !isShowingPreview) {
       const style = {
         width: '100%',

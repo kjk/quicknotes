@@ -22,7 +22,7 @@ interface State {
 }
 
 export default class Settings extends React.Component<{}, State> {
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleLayoutChanged = this.handleLayoutChanged.bind(this);
@@ -52,7 +52,7 @@ export default class Settings extends React.Component<{}, State> {
     });
   }
 
-  handleThemeChanged(e) {
+  handleThemeChanged(e: any) {
     const theme = e.target.value;
     console.log('handleThemeChanged: ', theme);
     this.setState({
@@ -61,7 +61,7 @@ export default class Settings extends React.Component<{}, State> {
     document.body.className = 'theme-' + theme;
   }
 
-  handleLayoutChanged(e) {
+  handleLayoutChanged(e: any) {
     const layout = e.target.value;
     console.log('handleLayoutChanged: ', layout);
     this.setState({
@@ -70,8 +70,8 @@ export default class Settings extends React.Component<{}, State> {
     document.body.setAttribute('data-spacing', layout);
   }
 
-  renderThemesSelect(themes, selected) {
-    const options = themes.map(function(theme) {
+  renderThemesSelect(themes: any, selected: any) {
+    const options = themes.map(function(theme: any) {
       return <option key={ theme }>
         { theme }
       </option>;
@@ -83,8 +83,8 @@ export default class Settings extends React.Component<{}, State> {
     );
   }
 
-  renderLayoutsSelect(layouts, selected) {
-    const options = layouts.map(function(layout) {
+  renderLayoutsSelect(layouts: any, selected: any) {
+    const options = layouts.map(function(layout: any) {
       return <option key={ layout }>
         { layout }
       </option>;
@@ -96,12 +96,12 @@ export default class Settings extends React.Component<{}, State> {
     );
   }
 
-  handleOk(e) {
+  handleOk(e: any) {
     e.preventDefault();
     action.hideSettings();
   }
 
-  handleCancel(e) {
+  handleCancel(e: any) {
     e.preventDefault();
     action.hideSettings();
   }

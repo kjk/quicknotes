@@ -40,7 +40,7 @@ var SCHEME = '[a-z\\d.-]+://',
   URI_RE = new RegExp('(?:' + URI1 + '|' + URI2 + '|' + EMAIL + ')', 'ig'),
   SCHEME_RE = new RegExp('^' + SCHEME, 'i'),
 
-  quotes = {
+  quotes: any = {
     "'": '`',
     '>': '<',
     ')': '(',
@@ -50,39 +50,39 @@ var SCHEME = '[a-z\\d.-]+://',
     'â€º': 'â€¹'
   },
 
-  default_options = {
-    callback: function(text, href) {
+  default_options: any = {
+    callback: function(text: any, href: any) {
       return href ? '<a href="' + href + '" title="' + href + '">' + text + '<\/a>' : text;
     },
     punct_regexp: /(?:[!?.,:;'"]|(?:&|&amp;)(?:lt|gt|quot|apos|raquo|laquo|rsaquo|lsaquo);)$/
   };
 
-export function linkify(txt, options) {
+export function linkify(txt: any, options?: any) {
   options = options || {};
 
   // Temp variables.
-  var arr,
-    i,
-    link,
-    href,
+  var arr: any;
+  var i: any;
+  var link: any;
+  var href: any;
 
-    // Output HTML.
-    html = '',
+  // Output HTML.
+  var html = '';
 
-    // Store text / link parts, in order, for re-combination.
-    parts = [],
+  // Store text / link parts, in order, for re-combination.
+  var parts: any = [];
 
-    // Used for keeping track of indices in the text.
-    idx_prev,
-    idx_last,
-    idx,
-    link_last,
+  // Used for keeping track of indices in the text.
+  var idx_prev: any;
+  var idx_last: any;
+  var idx: any;
+  var link_last: any;
 
-    // Used for trimming trailing punctuation and quotes from links.
-    matches_begin,
-    matches_end,
-    quote_begin,
-    quote_end;
+  // Used for trimming trailing punctuation and quotes from links.
+  var matches_begin: any;
+  var matches_end: any;
+  var quote_begin: any;
+  var quote_end: any;
 
   // Initialize options.
   for (i in default_options) {
@@ -125,7 +125,7 @@ export function linkify(txt, options) {
 
       // Ending non-quote punctuation character?
       if (options.punct_regexp) {
-        link = link.replace(options.punct_regexp, function(a) {
+        link = link.replace(options.punct_regexp, function(a: any) {
           idx_last -= a.length;
           return '';
         });

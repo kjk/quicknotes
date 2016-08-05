@@ -2,11 +2,11 @@
 
 import * as ni from './noteinfo';
 
-export function isUndefined(v) {
+export function isUndefined(v: any) {
   return typeof v === 'undefined';
 }
 
-export function noteHasTag(note, tag) {
+export function noteHasTag(note: any, tag: any) {
   const tags = ni.Tags(note);
   if (!tags) {
     return false;
@@ -19,12 +19,13 @@ export function noteHasTag(note, tag) {
   return false;
 }
 
-function getSpecialNotes(notes) {
-  let deletedNotes = [];
-  let notDeletedNotes = [];
-  let publicNotes = [];
-  let privateNotes = [];
-  let starredNotes = [];
+function getSpecialNotes(notes: any) {
+  let deletedNotes: any = [];
+  let notDeletedNotes: any = [];
+  let publicNotes: any = [];
+  let privateNotes: any = [];
+  let starredNotes: any = [];
+
   for (let note of notes) {
     if (ni.IsDeleted(note)) {
       deletedNotes.push(note);
@@ -49,7 +50,7 @@ function getSpecialNotes(notes) {
   };
 }
 
-const specialTagNames = {
+const specialTagNames: any = {
   __all: 'all',
   __public: 'public',
   __private: 'private',
@@ -57,11 +58,11 @@ const specialTagNames = {
   __starred: 'starred'
 };
 
-export function isSpecialTag(tag) {
+export function isSpecialTag(tag: any) {
   return specialTagNames[tag];
 }
 
-export function tagNameToDisplayName(tagName) {
+export function tagNameToDisplayName(tagName: any) {
   const translated = specialTagNames[tagName];
   if (!translated) {
     return tagName;
@@ -69,13 +70,13 @@ export function tagNameToDisplayName(tagName) {
   return translated;
 }
 
-export function filterNotesByTag(notes, tag) {
+export function filterNotesByTag(notes: any, tag: any): any {
   if (isSpecialTag(tag)) {
-    const specialNotes = getSpecialNotes(notes);
+    const specialNotes: any = getSpecialNotes(notes);
     return specialNotes[tag];
   }
 
-  let res = [];
+  let res: any = [];
   for (let note of notes) {
     if (ni.IsDeleted(note)) {
       continue;
@@ -87,7 +88,7 @@ export function filterNotesByTag(notes, tag) {
   return res;
 }
 
-export function filterNotesByTags(notes, tags) {
+export function filterNotesByTags(notes: any, tags: any) {
   var res = notes;
   for (var i = 0; i < tags.length; i++) {
     res = filterNotesByTag(res, tags[i]);
@@ -95,7 +96,7 @@ export function filterNotesByTags(notes, tags) {
   return res;
 }
 
-export function dictInc(d, key) {
+export function dictInc(d: any, key: any) {
   if (d[key]) {
     d[key] += 1;
   } else {
@@ -113,16 +114,16 @@ export function focusSearch() {
 }
 
 // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object
-export function deepCloneObject(o) {
+export function deepCloneObject(o: any) {
   return JSON.parse(JSON.stringify(o));
 }
 
-function runOnLoad(f) {
+function runOnLoad(f: any) {
   window.addEventListener('DOMContentLoaded', f);
 }
 
 // helps to use map() in cases where the value can be null
-export function arrNotNull(a) {
+export function arrNotNull(a: any) {
   return a ? a : [];
 }
 
@@ -132,8 +133,8 @@ will not be triggered. The function will be called after it stops
 being called for N milliseconds. If `immediate` is passed, trigger
 the function on the leading edge, instead of the trailing.
 */
-export function debounce(func, wait, immediate) {
-  var timeout;
+export function debounce(func: any, wait: any, immediate: any) {
+  var timeout: number;
   return function() {
     var context = this,
       args = arguments;
@@ -151,17 +152,17 @@ export function debounce(func, wait, immediate) {
 // TODO: make conditional on NODE_ENV['production'] so that it gets
 // optimized out in production build
 // TODO: also show in an alert?
-export function assert(cond) {
+export function assert(cond: boolean) {
   if (!cond) {
     throw 'assert() failed';
   }
 }
 
-export function strArrRemoveDups(a) {
+export function strArrRemoveDups(a: string[]) {
   if (a.length == 0) {
     return a;
   }
-  let d = {};
+  let d: any = {};
   for (let v of a) {
     d[v] = 1;
   }
@@ -170,7 +171,7 @@ export function strArrRemoveDups(a) {
 
 // Use the browser's built-in functionality to quickly and
 // safely escape the string
-export function escapeHtml(str) {
+export function escapeHtml(str: any) {
   var div = document.createElement('div');
   div.appendChild(document.createTextNode(str));
   return div.innerHTML;

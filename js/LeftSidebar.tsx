@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default class LeftSidebar extends Component<Props, {}> {
-  renderTagsList(sectionName, tagNames, tags) {
+  renderTagsList(sectionName: any, tagNames: any, tags: any) {
     if (tagNames.length === 0) {
       return;
     }
@@ -43,8 +43,8 @@ export default class LeftSidebar extends Component<Props, {}> {
         </div>
       );
     }
-    let tagNames = [];
-    let specialTagNames = [];
+    let tagNames: any = [];
+    let specialTagNames: any = [];
 
     for (let tagName in tags) {
       if (!u.isSpecialTag(tagName)) {

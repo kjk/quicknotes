@@ -5,12 +5,12 @@ import ReactDOM from 'react-dom';
 import * as action from './action';
 import { isLoggedIn } from './utils';
 
-function showImportSimpleNote(e) {
+function showImportSimpleNote(e: any) {
   e.preventDefault();
   action.showHideImportSimpleNote(true);
 }
 
-function showSettings(e) {
+function showSettings(e: any) {
   e.preventDefault();
   console.log('showSettings');
   action.showSettings();
@@ -18,7 +18,7 @@ function showSettings(e) {
 
 export default class LogInLink extends Component<{}, {}> {
 
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
 
     this.renderLoggedIn = this.renderLoggedIn.bind(this);

@@ -29,7 +29,7 @@ interface State {
 export default class DragBarHoriz extends Component<Props, State> {
   y: number;
 
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -44,7 +44,7 @@ export default class DragBarHoriz extends Component<Props, State> {
     };
   }
 
-  componentDidUpdate(props, prevState) {
+  componentDidUpdate(props: Props, prevState: State) {
     const dragEnter = !prevState.dragging && this.state.dragging;
     const dragLeave = prevState.dragging && !this.state.dragging;
     if (dragEnter) {
@@ -56,7 +56,7 @@ export default class DragBarHoriz extends Component<Props, State> {
     }
   }
 
-  handleMouseDown(e) {
+  handleMouseDown(e: MouseEvent): any {
     // only left mouse button
     if (e.button !== 0)
       return;
@@ -67,7 +67,7 @@ export default class DragBarHoriz extends Component<Props, State> {
     });
   }
 
-  handleMouseUp(e) {
+  handleMouseUp(e: MouseEvent): any {
     e.stopPropagation();
     e.preventDefault();
     this.setState({
@@ -75,7 +75,7 @@ export default class DragBarHoriz extends Component<Props, State> {
     });
   }
 
-  isAllowed(y) {
+  isAllowed(y: number) {
     const min = this.props.min || 0;
     const max = this.props.max || 9999999;
     return (y >= min) && (y <= max);
@@ -85,7 +85,7 @@ export default class DragBarHoriz extends Component<Props, State> {
     return window.innerHeight - this.y - this.props.dy;
   }
 
-  handleMouseMove(e) {
+  handleMouseMove(e: MouseEvent): any {
     if (!this.state.dragging) {
       return;
     }

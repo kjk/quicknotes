@@ -43,7 +43,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
 
   inputValues: any;
 
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
 
     this.showHide = this.showHide.bind(this);
@@ -74,40 +74,40 @@ export default class ImportSimpleNote extends Component<{}, State> {
     action.offAllForOwner(this);
   }
 
-  showHide(shouldShow) {
+  showHide(shouldShow: boolean) {
     console.log('ImportSimpleNote.showHide: shouldShow: ", shouldShow');
     this.setState({
       isShowing: shouldShow
     });
   }
 
-  handleClose(e) {
+  handleClose(e: any) {
     console.log('ImportSimpleNote.handleClose()');
     e.preventDefault();
     action.showHideImportSimpleNote(false);
   }
 
-  handleCloseFinished(e) {
+  handleCloseFinished(e: any) {
     console.log('ImportSimpleNote.handleCloseFinished()');
     e.preventDefault();
     action.showHideImportSimpleNote(false);
     // TODO: reload notes via action
   }
 
-  handleInputChanged(e) {
+  handleInputChanged(e: any) {
     const id = e.target.id;
     const val = e.target.value;
     console.log(`ImportSimpleNote.handleClose: id=${id} val=${val}`);
     this.inputValues[id] = val;
   }
 
-  scheduleCheckStatus(importId) {
+  scheduleCheckStatus(importId: any) {
     setTimeout(() => {
       this.checkStatus(importId);
     }, 1000);
   }
 
-  handleCheckStatusResp(res) {
+  handleCheckStatusResp(res: any) {
     console.log('handleCheckStatusResp: res=', res);
     if (res.Error) {
       this.setState({
@@ -138,16 +138,16 @@ export default class ImportSimpleNote extends Component<{}, State> {
     this.scheduleCheckStatus(this.state.importId);
   }
 
-  checkStatus(importId) {
+  checkStatus(importId: any) {
     api.importSimpleNoteStatus(importId, this.handleCheckStatusResp, this.handleCheckStatusResp);
   }
 
-  handleImport(e) {
+  handleImport(e: any) {
     console.log('ImportSimpleNote.handleImport()');
     e.preventDefault();
     const email = this.inputValues['email'] || '';
     const pwd = this.inputValues['password'] || '';
-    api.importSimpleNoteStart(email, pwd, res => {
+    api.importSimpleNoteStart(email, pwd, (res: any) => {
       const importId = res.ImportID;
       this.setState({
         importId: importId,
@@ -156,7 +156,7 @@ export default class ImportSimpleNote extends Component<{}, State> {
         isImporting: true
       });
       this.scheduleCheckStatus(importId);
-    }, resErr => {
+    }, (resErr: any) => {
       this.setState({
         errorMessage: resErr.Error
       });

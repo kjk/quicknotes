@@ -8,7 +8,7 @@ interface State {
 }
 
 export default class RecentNotes extends Component<{}, State> {
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
 
     this.state = {
