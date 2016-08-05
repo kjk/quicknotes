@@ -20,12 +20,12 @@ interface Props {
 }
 
 export default class TagCount extends Component<Props, {}> {
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(e) {
+  handleClick(e: React.MouseEvent) {
     e.preventDefault();
     const op = e.altKey ? 'toggle' : 'set';
     action.tagSelected(this.props.tagName, op);

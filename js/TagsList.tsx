@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount';
 import * as u from './utils';
 
-function isTagSelected(selectedTags, tag) {
+function isTagSelected(selectedTags: any, tag: any) {
   return selectedTags.indexOf(tag) != -1;
 }
 

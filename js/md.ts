@@ -7,7 +7,7 @@ import * as hljs from 'highlight.js';
 const renderer = new marked.Renderer();
 
 // copied from marked.js
-function unescape(html) {
+function unescape(html: string) {
   // explicitly match decimal, hex, and named HTML entities
   return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
     n = n.toLowerCase();
@@ -57,7 +57,7 @@ const markedOpts = {
   smartypants: false
 };
 
-function toHtmlMarked(s) {
+function toHtmlMarked(s: string) {
   s = s.trim();
   const html = marked(s, markedOpts);
   return html;
@@ -110,13 +110,13 @@ markdownIt.renderer.rules["link_open"] = function(tokens, idx, options, env, sel
   return defaultRender(tokens, idx, options, env, self);
 };
 
-function toHtmlMarkdownIt(s) {
+function toHtmlMarkdownIt(s: string) {
   s = s.trim();
   const html = markdownIt.render(s);
   return html;
 }
 
-export function toHtml(s) {
+export function toHtml(s: string) {
   return toHtmlMarkdownIt(s);
   // return toHtmlMarked(s);
 }

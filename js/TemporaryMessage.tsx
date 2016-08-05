@@ -6,14 +6,14 @@ import * as action from './action';
 const hideTimeOut = 5 * 1000; // 5 secs
 
 interface State {
-  message?: any;
+  message?: string;
 }
 
 export default class TemporaryMessage extends Component<{}, State> {
 
-  currTimerID: any;
+  currTimerID: number;
 
-  constructor(props, context) {
+  constructor(props?: any, context?: any) {
     super(props, context);
 
     this.showMessage = this.showMessage.bind(this);
@@ -33,7 +33,7 @@ export default class TemporaryMessage extends Component<{}, State> {
     action.offAllForOwner(this);
   }
 
-  showMessage(msg, delay) {
+  showMessage(msg: string, delay?: number) {
     this.setState({
       message: msg
     });

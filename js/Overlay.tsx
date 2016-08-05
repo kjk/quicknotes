@@ -16,7 +16,7 @@ interface Props {
 
 export default class Overlay extends Component<Props, {}> {
 
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
   }
 

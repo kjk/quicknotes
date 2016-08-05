@@ -9,14 +9,14 @@
 
 // index is one of the above constants.
 // value at a given index is [[cbFunc, cbId], ...]
-let registeredActions = {};
+let registeredActions: any = {};
 
 // current global callback id to hand out in on()
 // we don't bother recycling them after off()
 let currCid = 0;
 
 function broadcast(actionCmd: any, ...rest: any[]) {
-  const callbacks = registeredActions[actionCmd];
+  const callbacks: any = registeredActions[actionCmd];
   if (!callbacks || callbacks.length === 0) {
     console.log('action.broadcast: no callback for action', actionCmd);
     return;
@@ -35,9 +35,9 @@ function broadcast(actionCmd: any, ...rest: any[]) {
 
 // subscribe to be notified about an action.
 // returns an id that can be used to unsubscribe with off()
-export function on(actionCmd, cb, owner) {
+export function on(actionCmd: any, cb: any, owner: any) {
   currCid++;
-  const callbacks = registeredActions[actionCmd];
+  const callbacks: any = registeredActions[actionCmd];
   const cbInfo = [cb, currCid, owner];
   if (!callbacks) {
     registeredActions[actionCmd] = [cbInfo];
@@ -47,7 +47,7 @@ export function on(actionCmd, cb, owner) {
   return currCid;
 }
 
-export function off(actionCmd, cbIdOrOwner) {
+export function off(actionCmd: any, cbIdOrOwner: any): number {
   const callbacks = registeredActions[actionCmd] || [];
   const n = callbacks.length;
   for (let i = 0; i < n; i++) {
@@ -61,7 +61,7 @@ export function off(actionCmd, cbIdOrOwner) {
   //console.log("action.off: didn't find callback id", cbId, "for action", actionCmd);
 }
 
-export function offAllForOwner(owner) {
+export function offAllForOwner(owner: any) {
   for (let actionCmd in registeredActions) {
     off(actionCmd, owner);
   }
@@ -81,20 +81,20 @@ const clearSearchTermCmd = 'clearSearchTermCmd';
 const showTemporaryMessageCmd = 'showTemporaryMessageCmd';
 
 /* --------------------- */
-export function tagSelected(tag, op) {
+export function tagSelected(tag: any, op: any) {
   broadcast(tagSelectedCmd, tag, op);
 }
 
-export function onTagSelected(cb, owner) {
+export function onTagSelected(cb: any, owner: any) {
   return on(tagSelectedCmd, cb, owner);
 }
 
 /* --------------------- */
-export function onShowHideImportSimpleNote(cb, owner) {
+export function onShowHideImportSimpleNote(cb: any, owner: any) {
   return on(showHideImportSimpleNoteCmd, cb, owner);
 }
 
-export function showHideImportSimpleNote(shouldShow) {
+export function showHideImportSimpleNote(shouldShow: boolean) {
   broadcast(showHideImportSimpleNoteCmd, shouldShow);
 }
 
@@ -107,16 +107,16 @@ export function hideSettings() {
   broadcast(showHideSettingsCmd, false);
 }
 
-export function onShowHideSettings(cb, owner) {
+export function onShowHideSettings(cb: any, owner: any) {
   return on(showHideSettingsCmd, cb, owner);
 }
 
 /* --------------------- */
-export function reloadNotes(resetScroll) {
+export function reloadNotes(resetScroll: boolean) {
   broadcast(reloadNotesCmd, resetScroll);
 }
 
-export function onReloadNotes(cb, owner) {
+export function onReloadNotes(cb: any, owner: any) {
   return on(reloadNotesCmd, cb, owner);
 }
 
@@ -125,25 +125,25 @@ export function editNewNote() {
   broadcast(editNewNoteCmd);
 }
 
-export function onEditNewNote(cb, owner) {
+export function onEditNewNote(cb: any, owner: any) {
   return on(editNewNoteCmd, cb, owner);
 }
 
 /* --------------------- */
-export function editNote(note) {
+export function editNote(note: any) {
   broadcast(editNoteCmd, note);
 }
 
-export function onEditNote(cb, owner) {
+export function onEditNote(cb: any, owner: any) {
   return on(editNoteCmd, cb, owner);
 }
 
 /* --------------------- */
-export function startSearchDelayed(userHashID, term) {
+export function startSearchDelayed(userHashID: any, term: string) {
   broadcast(startSearchDelayedCmd, userHashID, term);
 }
 
-export function onStartSearchDelayed(cb, owner) {
+export function onStartSearchDelayed(cb: any, owner: any) {
   return on(startSearchDelayedCmd, cb, owner);
 }
 
@@ -152,7 +152,7 @@ export function clearSearchTerm() {
   broadcast(clearSearchTermCmd);
 }
 
-export function onClearSearchTerm(cb, owner) {
+export function onClearSearchTerm(cb: any, owner: any) {
   return on(clearSearchTermCmd, cb, owner);
 }
 
@@ -161,6 +161,6 @@ export function showTemporaryMessage(msg: any, delayMs?: any) {
   broadcast(showTemporaryMessageCmd, msg, delayMs);
 }
 
-export function onShowTemporaryMessage(cb, owner) {
+export function onShowTemporaryMessage(cb: any, owner: any) {
   return on(showTemporaryMessageCmd, cb, owner);
 }

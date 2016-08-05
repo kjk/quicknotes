@@ -8,7 +8,7 @@ import * as ni from './noteinfo';
 
 const maxInitialNotes = 50;
 
-function truncateNotes(notes, max) {
+function truncateNotes(notes: any, max: number) {
   if (max != -1 && notes && notes.length >= max) {
     return notes.slice(0, max);
   }
@@ -39,7 +39,7 @@ export default class NotesList extends Component<Props, State> {
 
   maxLoadedNotes: any;
 
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
     this.handleScroll = this.handleScroll.bind(this);
 
@@ -50,7 +50,7 @@ export default class NotesList extends Component<Props, State> {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps?: Props) {
     const resetScroll = nextProps.resetScroll;
     // console.log('NotesList.componentWillReceiveProps(), resetScroll: ', resetScroll);
     if (resetScroll) {
@@ -63,7 +63,7 @@ export default class NotesList extends Component<Props, State> {
     });
   }
 
-  handleScroll(e) {
+  handleScroll(e: any) {
     e.preventDefault();
     const nShowing = this.state.notes.length;
     const total = this.props.notes.length;
@@ -98,7 +98,7 @@ export default class NotesList extends Component<Props, State> {
     return (
       <div id='notes-list' onScroll={ this.handleScroll }>
         <div className='wrapper'>
-          { this.state.notes.map((note) => {
+          { this.state.notes.map((note: any) => {
             const key = `${ni.HashID(note)}-${ni.CurrentVersion(note)}`;
             return <Note compact={ this.props.compact }
               note={ note }

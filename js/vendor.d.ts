@@ -9,4 +9,5 @@ interface Window {
   runOnLoad: any;
   appUserStart: any;
   appNoteStart: any;
+  appIndexStart: any;
 }

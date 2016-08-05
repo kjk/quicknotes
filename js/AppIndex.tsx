@@ -19,7 +19,7 @@ interface State {
 }
 
 export default class AppIndex extends Component<{}, State> {
-  constructor(props, context) {
+  constructor(props: any, context: any) {
     super(props, context);
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
@@ -35,7 +35,7 @@ export default class AppIndex extends Component<{}, State> {
     //action.offAllForOwner(this);
   }
 
-  handleSearchResultSelected(noteHashID) {
+  handleSearchResultSelected(noteHashID: any) {
     // console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
@@ -70,4 +70,4 @@ function appIndexStart() {
   );
 }
 
-window["appIndexStart"] = appIndexStart;
+window.appIndexStart = appIndexStart;

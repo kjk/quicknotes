@@ -4,11 +4,11 @@ import { ajax } from 'nanoajax';
 
 // TODO: audit for error handling
 
-function buildArgs(args) {
+function buildArgs(args: any) {
   if (!args) {
     return null;
   }
-  let parts = [];
+  let parts: any = [];
   for (let key in args) {
     const val = args[key];
     const p = encodeURIComponent(key) + '=' + encodeURIComponent(val);
@@ -17,11 +17,11 @@ function buildArgs(args) {
   return parts.join('&');
 }
 
-function handleResponse(code, respTxt, cb, cbErr) {
+function handleResponse(code: any, respTxt: any, cb: any, cbErr: any) {
   if (!cb) {
     return;
   }
-  let js = {};
+  let js: any = {};
   if (code == 200) {
     respTxt = respTxt || '{}';
     js = JSON.parse(respTxt);
@@ -55,8 +55,8 @@ function get(url: any, args: any, cb: any, cbErr?: any) {
   });
 }
 
-function post(url, args, cb, cbErr) {
-  const params = {
+function post(url: any, args: any, cb: any, cbErr: any) {
+  const params: any = {
     method: 'POST',
     url: url
   };

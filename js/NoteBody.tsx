@@ -20,7 +20,7 @@ interface State {
 };
 
 export default class NoteBody extends Component<Props, State> {
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
     this.handleCollapse = this.handleCollapse.bind(this);
     this.handleExpand = this.handleExpand.bind(this);
@@ -37,14 +37,14 @@ export default class NoteBody extends Component<Props, State> {
     this.getBodyIfNeeded(note);
   }
 
-  getBodyIfNeeded(note) {
+  getBodyIfNeeded(note: any) {
     if (!ni.IsExpanded(note)) {
       return;
     }
     if (!ni.NeedsExpansion(note)) {
       return;
     }
-    ni.FetchLatestContent(note, (note, body) => {
+    ni.FetchLatestContent(note, (note: any, body: any) => {
       this.setState({
         note: note,
         body: body
@@ -52,7 +52,7 @@ export default class NoteBody extends Component<Props, State> {
     });
   }
 
-  handleExpand(e) {
+  handleExpand(e: any) {
     e.preventDefault();
     const note = this.state.note;
     console.log('expand note', ni.HashID(note));
@@ -60,7 +60,7 @@ export default class NoteBody extends Component<Props, State> {
     this.getBodyIfNeeded(note);
   }
 
-  handleCollapse(e) {
+  handleCollapse(e: any) {
     e.preventDefault();
     const note = this.state.note;
     console.log('collapse note', ni.HashID(note));
@@ -70,7 +70,7 @@ export default class NoteBody extends Component<Props, State> {
     });
   }
 
-  renderCollapseOrExpand(note) {
+  renderCollapseOrExpand(note: any) {
     // if a note is not partial, there's neither collapse nor exapnd
     if (!ni.NeedsExpansion(note)) {
       return;
@@ -87,7 +87,7 @@ export default class NoteBody extends Component<Props, State> {
     );
   }
 
-  renderContent(note) {
+  renderContent(note: any) {
     const body = this.state.body;
     if (ni.IsCollapsed(note)) {
       return <pre className='note-body'>{ ni.Snippet(note) }</pre>;

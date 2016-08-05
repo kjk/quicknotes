@@ -46,7 +46,7 @@ class Router {
   // Unicode characters in `location.pathname` are percent encoded so they're
   // decoded for comparison. `%25` should not be decoded since it may be part
   // of an encoded parameter.
-  decodeFragment(fragment) {
+  decodeFragment(fragment: any) {
     return decodeURI(fragment.replace(/%25/g, '%2525'));
   }
 
@@ -154,7 +154,7 @@ class Router {
   // The options object can contain `trigger: true` if you wish to have the
   // route callback be fired (not usually desirable), or `replace: true`, if
   // you wish to modify the current URL without adding an entry to the history.
-  navigate(fragment, options) {
+  navigate(fragment?: any, options?: any) {
     if (!options || options === true)
       options = {
         trigger: !!options
@@ -201,7 +201,7 @@ class Router {
 
   // Update the hash location, either replacing the current entry, or adding
   // a new one to the browser history.
-  _updateHash(location, fragment, replace) {
+  _updateHash(location: any, fragment: any, replace: any) {
     if (replace) {
       var href = location.href.replace(/(javascript:|#).*$/, '');
       location.replace(href + '#' + fragment);

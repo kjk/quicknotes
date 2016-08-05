@@ -46,7 +46,7 @@ export default class CodeMirrorEditor extends Component<Props, {}> {
 
   cm: any;
 
-  constructor(props, context) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
 
     this.handleChange = this.handleChange.bind(this);
@@ -61,7 +61,7 @@ export default class CodeMirrorEditor extends Component<Props, {}> {
     this.props.onEditorCreated && this.props.onEditorCreated(this.cm);
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps?: Props) {
     return false;
   }
 
