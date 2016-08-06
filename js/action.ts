@@ -76,6 +76,8 @@ export function offAllForOwner(owner: any) {
 
 /* actions specific to an app */
 
+import { INote } from './noteinfo';
+
 // keys for registeredActions
 const tagSelectedCmd = 'tagSelectedCmd';
 const reloadNotesCmd = 'reloadNotesCmd';
@@ -88,7 +90,7 @@ const clearSearchTermCmd = 'clearSearchTermCmd';
 const showTemporaryMessageCmd = 'showTemporaryMessageCmd';
 
 /* --------------------- */
-export function tagSelected(tag: any, op: any) {
+export function tagSelected(tag: string, op: string) {
   broadcast(tagSelectedCmd, tag, op);
 }
 
@@ -137,7 +139,7 @@ export function onEditNewNote(cb: any, owner: any) {
 }
 
 /* --------------------- */
-export function editNote(note: any) {
+export function editNote(note: INote) {
   broadcast(editNoteCmd, note);
 }
 
@@ -146,28 +148,41 @@ export function onEditNote(cb: any, owner: any) {
 }
 
 /* --------------------- */
-export function startSearchDelayed(userHashID: any, term: string) {
+export interface StartSearchDelayedCb {
+  (userHashID: string, searchTerm: string): void
+}
+
+export function startSearchDelayed(userHashID: string, term: string) {
   broadcast(startSearchDelayedCmd, userHashID, term);
 }
 
-export function onStartSearchDelayed(cb: any, owner: any) {
+export function onStartSearchDelayed(cb: StartSearchDelayedCb, owner: any) {
   return on(startSearchDelayedCmd, cb, owner);
 }
 
 /* --------------------- */
+export interface ClearSearchTermCb {
+  (): void
+}
+
 export function clearSearchTerm() {
   broadcast(clearSearchTermCmd);
 }
 
-export function onClearSearchTerm(cb: any, owner: any) {
+export function onClearSearchTerm(cb: ClearSearchTermCb, owner: any) {
   return on(clearSearchTermCmd, cb, owner);
 }
 
 /* --------------------- */
-export function showTemporaryMessage(msg: any, delayMs?: any) {
+
+export interface ShowTemporaryMessageCb {
+  (msg: string, delay?: number): void
+}
+
+export function showTemporaryMessage(msg: string, delayMs?: number) {
   broadcast(showTemporaryMessageCmd, msg, delayMs);
 }
 
-export function onShowTemporaryMessage(cb: any, owner: any) {
+export function onShowTemporaryMessage(cb: ShowTemporaryMessageCb, owner: any) {
   return on(showTemporaryMessageCmd, cb, owner);
 }
