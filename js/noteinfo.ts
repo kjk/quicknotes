@@ -115,67 +115,70 @@ function clearBit(n: number, nBit: number) {
   return n & ~(1 << nBit);
 }
 
-function setFlagBit(note: any, nBit: number) {
-  var flags = note[noteFlagsIdx];
+// Note: needed to add casting because type of tuple element indexed
+// via const variable is incorrect.
+// see: https://github.com/Microsoft/TypeScript/issues/10186
+function setFlagBit(note: INote, nBit: number) {
+  const flags = note[noteFlagsIdx] as number;
   note[noteFlagsIdx] = setBit(flags, nBit);
 }
 
-function clearFlagBit(note: any, nBit: number) {
-  var flags = note[noteFlagsIdx];
+function clearFlagBit(note: INote, nBit: number) {
+  const flags = note[noteFlagsIdx] as number;
   note[noteFlagsIdx] = clearBit(flags, nBit);
 }
 
-export function IDVer(note: any): string {
-  return note[noteIDVerIdx];
+export function IDVer(note: INote): string {
+  return note[noteIDVerIdx] as string;
 }
 
-export function HashID(note: any): string {
-  const s = note[noteIDVerIdx];
+export function HashID(note: INote): string {
+  const s = note[noteIDVerIdx] as string;
   return s.split('-')[0];
 }
 
-export function Version(note: any): string {
-  const s = note[noteIDVerIdx];
+export function Version(note: INote): string {
+  const s = note[noteIDVerIdx] as string;
   return s.split('-')[1];
 }
 
-export function Title(note: any): string {
-  return note[noteTitleIdx];
+export function Title(note: INote): string {
+  return note[noteTitleIdx] as string;
 }
 
-export function Size(note: any): number {
-  return note[noteSizeIdx];
+export function Size(note: INote): number {
+  return note[noteSizeIdx] as number;
 }
 
-export function CreatedAt(note: any): Date {
-  const epochMs = note[noteCreatedAtIdx];
+export function CreatedAt(note: INote): Date {
+  const epochMs = note[noteCreatedAtIdx] as number;
   return new Date(epochMs);
 }
 
-export function UpdatedAt(note: any): Date {
-  const epochMs = note[noteUpdatedAtIdx];
+export function UpdatedAt(note: INote): Date {
+  const epochMs = note[noteUpdatedAtIdx] as number;
   return new Date(epochMs);
 }
 
-export function Tags(note: any): string[] {
-  return note[noteTagsIdx] || [];
+export function Tags(note: INote): string[] {
+  return note[noteTagsIdx] as string[] || [];
 }
 
-export function Snippet(note: any): string {
-  return note[noteSnippetIdx];
+export function Snippet(note: INote): string {
+  return note[noteSnippetIdx] as string;
 }
 
-export function Format(note: any): string {
-  return note[noteFormatIdx];
+export function Format(note: INote): string {
+  return note[noteFormatIdx] as string;
 }
 
-export function CurrentVersion(note: any): string {
-  const s = note[noteIDVerIdx];
+export function CurrentVersion(note: INote): string {
+  const s = note[noteIDVerIdx] as string;
   return s.split('-')[1];
 }
 
-export function GetContentDirect(note: any): string {
-  return note[noteContentIdx];
+export function GetContentDirect(note: INote): string {
+  return note[noteContentIdx] as string;
 }
 
 type VerContent = [string, string];
@@ -188,7 +191,7 @@ interface ContentCache {
 // TODO: cache in local storage
 let contentCache: ContentCache = {};
 
-function getCachedVersion(note: any): string {
+function getCachedVersion(note: INote): string {
   const id = HashID(note);
   const verContent = contentCache[id];
   if (isUndefined(verContent)) {
@@ -201,17 +204,17 @@ function getCachedVersion(note: any): string {
   return null;
 }
 
-function setCachedVersion(note: any): string {
+function setCachedVersion(note: INote): string {
   const noteID = HashID(note);
   const idVer = IDVer(note);
-  const content = note[noteContentIdx];
+  const content = note[noteContentIdx] as string;
   // this over-writes other versions of this note
   contentCache[noteID] = [idVer, content];
   return content;
 }
 
 // returns content if already has it or null
-export function Content(note: any): string {
+export function Content(note: INote): string {
   if (!IsPartial(note) && !IsTruncated(note)) {
     return Snippet(note);
   }
@@ -221,7 +224,7 @@ export function Content(note: any): string {
 // gets the latest version of content of a given note.
 // Call cb(note, content) on success
 // Note: it gets the latest version, not the version on noteOrig
-export function FetchLatestContent(noteOrig: any, cb: any) {
+export function FetchLatestContent(noteOrig: INote, cb: any) {
   const noteID = HashID(noteOrig);
   const content = Content(noteOrig);
   if (content !== null) {
@@ -230,61 +233,61 @@ export function FetchLatestContent(noteOrig: any, cb: any) {
     return;
   }
   // console.log('FetchLatestContent: starting to fetch content for note', noteID);
-  api.getNote(noteID, (note: any) => {
+  api.getNote(noteID, (note: INote) => {
     // console.log('FetchLatestContent: json=', note);
     // version might be newer than in noteOrig
-    let content = setCachedVersion(note);
+    const content = setCachedVersion(note);
     //console.log('FetchLatestContent: content=', content);
     cb(note, content);
   });
 }
 
-export function HumanSize(note: any): string {
+export function HumanSize(note: INote): string {
   return filesize(Size(note));
 }
 
-function isFlagSet(note: any, nBit: number): boolean {
-  return isBitSet(note[noteFlagsIdx], nBit);
+function isFlagSet(note: INote, nBit: number): boolean {
+  return isBitSet(note[noteFlagsIdx] as number, nBit);
 }
 
-export function IsStarred(note: any): boolean {
+export function IsStarred(note: INote): boolean {
   return isFlagSet(note, flagStarredBit);
 }
 
-export function IsDeleted(note: any): boolean {
+export function IsDeleted(note: INote): boolean {
   return isFlagSet(note, flagDeletedBit);
 }
 
-export function IsPublic(note: any): boolean {
+export function IsPublic(note: INote): boolean {
   return isFlagSet(note, flagPublicBit);
 }
 
-export function IsPrivate(note: any): boolean {
+export function IsPrivate(note: INote): boolean {
   return !IsPublic(note);
 }
 
 // partial is if full content is != snippet
-export function IsPartial(note: any): boolean {
+export function IsPartial(note: INote): boolean {
   return isFlagSet(note, flagPartialBit);
 }
 
-export function IsTruncated(note: any): boolean {
+export function IsTruncated(note: INote): boolean {
   return isFlagSet(note, flagTruncatedBit);
 }
 
-export function NeedsExpansion(note: any): boolean {
+export function NeedsExpansion(note: INote): boolean {
   return IsPartial(note) || IsTruncated(note);
 }
 
-export function SetTitle(note: any, title: string) {
+export function SetTitle(note: INote, title: string) {
   note[noteTitleIdx] = title;
 }
 
-export function SetTags(note: any, tags: any) {
+export function SetTags(note: INote, tags: string[]) {
   note[noteTagsIdx] = tags;
 }
 
-export function SetFormat(note: any, format: string) {
+export function SetFormat(note: INote, format: string) {
   note[noteFormatIdx] = format;
 }
 
@@ -296,26 +299,26 @@ interface ExpandedNotes {
 
 let expandedNotes: ExpandedNotes = {};
 
-export function IsExpanded(note: any): boolean {
+export function IsExpanded(note: INote): boolean {
   const id = HashID(note);
   return expandedNotes.hasOwnProperty(id);
 }
 
-export function IsCollapsed(note: any): boolean {
+export function IsCollapsed(note: INote): boolean {
   return !IsExpanded(note);
 }
 
-export function Expand(note: any) {
+export function Expand(note: INote) {
   const id = HashID(note);
   expandedNotes[id] = true;
 }
 
-export function Collapse(note: any) {
+export function Collapse(note: INote) {
   const id = HashID(note);
   delete expandedNotes[id];
 }
 
-function cmpDescByField(n1: any, n2: any, idx: any): number {
+function cmpDescByField(n1: INote, n2: INote, idx: number): number {
   const v1 = n1[idx];
   const v2 = n2[idx];
   if (v1 < v2) {
@@ -327,23 +330,23 @@ function cmpDescByField(n1: any, n2: any, idx: any): number {
   return 0;
 }
 
-function cmpAscByField(n1: any, n2: any, idx: any): number {
+function cmpAscByField(n1: INote, n2: INote, idx: any): number {
   return -cmpDescByField(n1, n2, idx);
 }
 
-export function sortNotesByUpdatedAt(notes: any): any {
+export function sortNotesByUpdatedAt(notes: INote[]): INote[] {
   return notes.sort(function(n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteUpdatedAtIdx);
   });
 }
 
-export function sortNotesByCreatedAt(notes: any): any {
+export function sortNotesByCreatedAt(notes: INote[]): INote[] {
   return notes.sort(function(n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteCreatedAtIdx);
   });
 }
 
-export function sortNotesBySize(notes: any): any {
+export function sortNotesBySize(notes: INote[]): INote[] {
   return notes.sort(function(n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteSizeIdx);
   });
