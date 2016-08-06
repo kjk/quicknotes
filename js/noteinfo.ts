@@ -18,6 +18,20 @@ const noteContentIdx = 9;
 // those are only for notes returned by recent notes
 const noteUserIdx = 10; // user that created the note TODO: not sure if will keep
 
+type INote = [
+  string, // noteIDVerIdx
+  string, // noteTitleIdx
+  number, // noteSizeIdx
+  number, // noteFlagsIdx
+  string, // noteCreatedAtIdx
+  string, // noteUpdatedAtIdx
+  string, // noteFormatIdx
+  string, // noteTagsIdx
+  string, // noteSnippetIdx
+  string, // noteContentIdx
+  number  // noteUserIdx
+];
+
 // must match handlers.go
 const flagStarredBit = 0;
 const flagDeletedBit = 1;
@@ -34,11 +48,15 @@ const formatCodePrefix = 'code:';
 // note properties that can be compared for equality with ==
 const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx, noteUserIdx];
 
-function arrEmpty(a: any) {
+interface StringSet {
+  [idx: string]: number
+}
+
+function arrEmpty(a?: any[]) {
   return !a || (a.length === 0);
 }
 
-function strArrEq(a1: any, a2: any) {
+function strArrEq(a1?: string[], a2?: string[]) {
   if (arrEmpty(a1) && arrEmpty(a2)) {
     // both empty
     return true;
@@ -51,8 +69,8 @@ function strArrEq(a1: any, a2: any) {
   // Note: can't short-circuit by checking the lengths because
   // that doesn't handle duplicate keys
 
-  let d: any = {};
-  let i: any, s: any;
+  let d: StringSet = {};
+  let i: number, s: string;
   for (i = 0; i < a1.length; i++) {
     s = a1[i];
     d[s] = 1;
@@ -263,7 +281,7 @@ export function NeedsExpansion(note: any) {
   return IsPartial(note) || IsTruncated(note);
 }
 
-export function SetTitle(note: any, title: any) {
+export function SetTitle(note: any, title: string) {
   note[noteTitleIdx] = title;
 }
 

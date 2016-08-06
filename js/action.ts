@@ -7,16 +7,23 @@
 // module. Other parts of the code can provide callbacks to be called when
 // action is triggered.
 
-// index is one of the above constants.
+type CallbackFunctionVariadic = (...args: any[]) => void;
+
+type CallbackInfo = [CallbackFunctionVariadic, number, any];
+
+interface RegisteredActions {
+  [idx: string]: CallbackInfo[]
+}
+
 // value at a given index is [[cbFunc, cbId], ...]
-let registeredActions: any = {};
+let registeredActions: RegisteredActions = {};
 
 // current global callback id to hand out in on()
 // we don't bother recycling them after off()
 let currCid = 0;
 
-function broadcast(actionCmd: any, ...rest: any[]) {
-  const callbacks: any = registeredActions[actionCmd];
+function broadcast(actionCmd: string, ...rest: any[]) {
+  const callbacks: CallbackInfo[] = registeredActions[actionCmd];
   if (!callbacks || callbacks.length === 0) {
     console.log('action.broadcast: no callback for action', actionCmd);
     return;
@@ -35,10 +42,10 @@ function broadcast(actionCmd: any, ...rest: any[]) {
 
 // subscribe to be notified about an action.
 // returns an id that can be used to unsubscribe with off()
-export function on(actionCmd: any, cb: any, owner: any) {
+export function on(actionCmd: string, cb: CallbackFunctionVariadic, owner: any): number {
   currCid++;
-  const callbacks: any = registeredActions[actionCmd];
-  const cbInfo = [cb, currCid, owner];
+  const callbacks: CallbackInfo[] = registeredActions[actionCmd];
+  const cbInfo: CallbackInfo = [cb, currCid, owner];
   if (!callbacks) {
     registeredActions[actionCmd] = [cbInfo];
   } else {
@@ -47,11 +54,11 @@ export function on(actionCmd: any, cb: any, owner: any) {
   return currCid;
 }
 
-export function off(actionCmd: any, cbIdOrOwner: any): number {
-  const callbacks = registeredActions[actionCmd] || [];
+export function off(actionCmd: string, cbIdOrOwner: any): number {
+  const callbacks: CallbackInfo[] = registeredActions[actionCmd] || [];
   const n = callbacks.length;
   for (let i = 0; i < n; i++) {
-    const cbInfo = callbacks[i];
+    const cbInfo: CallbackInfo = callbacks[i];
     if (cbInfo[1] === cbIdOrOwner || cbInfo[2] === cbIdOrOwner) {
       callbacks.splice(i, 1);
       return 1 + off(actionCmd, cbIdOrOwner);
@@ -85,7 +92,7 @@ export function tagSelected(tag: any, op: any) {
   broadcast(tagSelectedCmd, tag, op);
 }
 
-export function onTagSelected(cb: any, owner: any) {
+export function onTagSelected(cb: any, owner: any): number {
   return on(tagSelectedCmd, cb, owner);
 }
 
