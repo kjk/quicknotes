@@ -4,12 +4,11 @@
     "filesize": "registry:dt/filesize#3.2.1+20160412140448",
     "highlightjs": "registry:dt/highlightjs#9.1.0+20160317120654",
     "keymaster": "registry:dt/keymaster#1.6.2+20160316155526",
-    "marked": "registry:dt/marked#0.0.0+20160325085301",
-    "nanoajax": "registry:dt/nanoajax#0.2.4+20160316155526",
-    "react": "registry:dt/react#0.14.0+20160720060442",
-    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040"
+    "marked": "registry:dt/marked#0.0.0+20160325085301"
   },
   "dependencies": {
-    "markdown-it": "registry:npm/markdown-it#4.0.0+20160704212804"
+    "markdown-it": "registry:npm/markdown-it#4.0.0+20160704212804",
+    "react": "registry:npm/react#15.0.1+20160601175240",
+    "react-dom": "registry:npm/react-dom#15.0.1+20160705210405"
   }
 }
