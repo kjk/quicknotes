@@ -15,21 +15,18 @@ const noteFormatIdx = 6;
 const noteTagsIdx = 7;
 const noteSnippetIdx = 8;
 const noteContentIdx = 9;
-// those are only for notes returned by recent notes
-const noteUserIdx = 10; // user that created the note TODO: not sure if will keep
 
 type INote = [
   string, // noteIDVerIdx
   string, // noteTitleIdx
   number, // noteSizeIdx
   number, // noteFlagsIdx
-  string, // noteCreatedAtIdx
-  string, // noteUpdatedAtIdx
+  number, // noteCreatedAtIdx
+  number, // noteUpdatedAtIdx
   string, // noteFormatIdx
-  string, // noteTagsIdx
+  string[], // noteTagsIdx
   string, // noteSnippetIdx
-  string, // noteContentIdx
-  number  // noteUserIdx
+  string // noteContentIdx
 ];
 
 // must match handlers.go
@@ -46,7 +43,7 @@ const formatHTML = 'html';
 const formatCodePrefix = 'code:';
 
 // note properties that can be compared for equality with ==
-const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx, noteUserIdx];
+const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx];
 
 interface StringSet {
   [idx: string]: number
@@ -106,11 +103,11 @@ function notesEq(n1: any, n2: any) {
   return strArrEq(n1[noteTagsIdx], n2[noteTagsIdx]);
 }
 
-function isBitSet(n: number, nBit: number) {
+function isBitSet(n: number, nBit: number): boolean {
   return (n & (1 << nBit)) !== 0;
 }
 
-function setBit(n: number, nBit: number) {
+function setBit(n: number, nBit: number): number {
   return n | (1 << nBit);
 }
 
@@ -128,64 +125,70 @@ function clearFlagBit(note: any, nBit: number) {
   note[noteFlagsIdx] = clearBit(flags, nBit);
 }
 
-export function IDVer(note: any) {
+export function IDVer(note: any): string {
   return note[noteIDVerIdx];
 }
 
-export function HashID(note: any) {
+export function HashID(note: any): string {
   const s = note[noteIDVerIdx];
   return s.split('-')[0];
 }
 
-export function Version(note: any) {
+export function Version(note: any): string {
   const s = note[noteIDVerIdx];
   return s.split('-')[1];
 }
 
-export function Title(note: any) {
+export function Title(note: any): string {
   return note[noteTitleIdx];
 }
 
-export function Size(note: any) {
+export function Size(note: any): number {
   return note[noteSizeIdx];
 }
 
-export function CreatedAt(note: any) {
+export function CreatedAt(note: any): Date {
   const epochMs = note[noteCreatedAtIdx];
   return new Date(epochMs);
 }
 
-export function UpdatedAt(note: any) {
+export function UpdatedAt(note: any): Date {
   const epochMs = note[noteUpdatedAtIdx];
   return new Date(epochMs);
 }
 
-export function Tags(note: any) {
+export function Tags(note: any): string[] {
   return note[noteTagsIdx] || [];
 }
 
-export function Snippet(note: any) {
+export function Snippet(note: any): string {
   return note[noteSnippetIdx];
 }
 
-export function Format(note: any) {
+export function Format(note: any): string {
   return note[noteFormatIdx];
 }
 
-export function CurrentVersion(note: any) {
+export function CurrentVersion(note: any): string {
   const s = note[noteIDVerIdx];
   return s.split('-')[1];
 }
 
-export function GetContentDirect(note: any) {
+export function GetContentDirect(note: any): string {
   return note[noteContentIdx];
+}
+
+type VerContent = [string, string];
+
+interface ContentCache {
+  [idx: string]: VerContent
 }
 
 // the key is id, the value is [idVer, content]
 // TODO: cache in local storage
-let contentCache: any = {};
+let contentCache: ContentCache = {};
 
-function getCachedVersion(note: any) {
+function getCachedVersion(note: any): string {
   const id = HashID(note);
   const verContent = contentCache[id];
   if (isUndefined(verContent)) {
@@ -198,7 +201,7 @@ function getCachedVersion(note: any) {
   return null;
 }
 
-function setCachedVersion(note: any) {
+function setCachedVersion(note: any): string {
   const noteID = HashID(note);
   const idVer = IDVer(note);
   const content = note[noteContentIdx];
@@ -208,20 +211,12 @@ function setCachedVersion(note: any) {
 }
 
 // returns content if already has it or null
-export function Content(note: any) {
+export function Content(note: any): string {
   if (!IsPartial(note) && !IsTruncated(note)) {
     return Snippet(note);
   }
   return getCachedVersion(note);
 }
-
-/*
-// returns the creator of the note
-export function User(note) {
-  assert(noteUserIdx <= note.length);
-  return note[noteUserIdx];
-}
-*/
 
 // gets the latest version of content of a given note.
 // Call cb(note, content) on success
@@ -244,40 +239,40 @@ export function FetchLatestContent(noteOrig: any, cb: any) {
   });
 }
 
-export function HumanSize(note: any) {
+export function HumanSize(note: any): string {
   return filesize(Size(note));
 }
 
-function isFlagSet(note: any, nBit: number) {
+function isFlagSet(note: any, nBit: number): boolean {
   return isBitSet(note[noteFlagsIdx], nBit);
 }
 
-export function IsStarred(note: any) {
+export function IsStarred(note: any): boolean {
   return isFlagSet(note, flagStarredBit);
 }
 
-export function IsDeleted(note: any) {
+export function IsDeleted(note: any): boolean {
   return isFlagSet(note, flagDeletedBit);
 }
 
-export function IsPublic(note: any) {
+export function IsPublic(note: any): boolean {
   return isFlagSet(note, flagPublicBit);
 }
 
-export function IsPrivate(note: any) {
+export function IsPrivate(note: any): boolean {
   return !IsPublic(note);
 }
 
 // partial is if full content is != snippet
-export function IsPartial(note: any) {
+export function IsPartial(note: any): boolean {
   return isFlagSet(note, flagPartialBit);
 }
 
-export function IsTruncated(note: any) {
+export function IsTruncated(note: any): boolean {
   return isFlagSet(note, flagTruncatedBit);
 }
 
-export function NeedsExpansion(note: any) {
+export function NeedsExpansion(note: any): boolean {
   return IsPartial(note) || IsTruncated(note);
 }
 
@@ -289,20 +284,24 @@ export function SetTags(note: any, tags: any) {
   note[noteTagsIdx] = tags;
 }
 
-export function SetFormat(note: any, format: any) {
+export function SetFormat(note: any, format: string) {
   note[noteFormatIdx] = format;
 }
 
 /* locally manage expanded/collapsed state of notes */
 
-let expandedNotes: any = {};
+interface ExpandedNotes {
+  [idx: string]: boolean
+}
 
-export function IsExpanded(note: any) {
+let expandedNotes: ExpandedNotes = {};
+
+export function IsExpanded(note: any): boolean {
   const id = HashID(note);
   return expandedNotes.hasOwnProperty(id);
 }
 
-export function IsCollapsed(note: any) {
+export function IsCollapsed(note: any): boolean {
   return !IsExpanded(note);
 }
 
@@ -316,7 +315,7 @@ export function Collapse(note: any) {
   delete expandedNotes[id];
 }
 
-function cmpDescByField(n1: any, n2: any, idx: any) {
+function cmpDescByField(n1: any, n2: any, idx: any): number {
   const v1 = n1[idx];
   const v2 = n2[idx];
   if (v1 < v2) {
@@ -328,23 +327,23 @@ function cmpDescByField(n1: any, n2: any, idx: any) {
   return 0;
 }
 
-function cmpAscByField(n1: any, n2: any, idx: any) {
+function cmpAscByField(n1: any, n2: any, idx: any): number {
   return -cmpDescByField(n1, n2, idx);
 }
 
-export function sortNotesByUpdatedAt(notes: any) {
+export function sortNotesByUpdatedAt(notes: any): any {
   return notes.sort(function(n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteUpdatedAtIdx);
   });
 }
 
-export function sortNotesByCreatedAt(notes: any) {
+export function sortNotesByCreatedAt(notes: any): any {
   return notes.sort(function(n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteCreatedAtIdx);
   });
 }
 
-export function sortNotesBySize(notes: any) {
+export function sortNotesBySize(notes: any): any {
   return notes.sort(function(n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteSizeIdx);
   });
