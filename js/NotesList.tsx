@@ -37,7 +37,7 @@ interface State {
 
 export default class NotesList extends Component<Props, State> {
 
-  maxLoadedNotes: any;
+  maxLoadedNotes: number;
 
   constructor(props?: Props, context?: any) {
     super(props, context);
