@@ -2,6 +2,10 @@
 
 import * as ni from './noteinfo';
 
+export interface Dict<V> {
+  [idx: string]: V;
+}
+
 export function isUndefined(v: any) {
   return typeof v === 'undefined';
 }
