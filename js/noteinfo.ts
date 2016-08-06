@@ -16,7 +16,7 @@ const noteTagsIdx = 7;
 const noteSnippetIdx = 8;
 const noteContentIdx = 9;
 
-type INote = [
+export type INote = [
   string, // noteIDVerIdx
   string, // noteTitleIdx
   number, // noteSizeIdx
