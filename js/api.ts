@@ -1,6 +1,6 @@
 /// <reference path="../typings/index.d.ts" />
 
-import { ajax } from 'nanoajax';
+import { ajax, Params } from './ajax';
 import { Dict } from './utils';
 
 type ArgsDict = Dict<string>;
