@@ -1,7 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 
 import * as api from './api';
-import { assert, isUndefined } from './utils';
+import { assert, isUndefined, Dict } from './utils';
 import filesize from 'filesize';
 
 // must match handlers.go
@@ -45,10 +45,6 @@ const formatCodePrefix = 'code:';
 // note properties that can be compared for equality with ==
 const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx];
 
-interface StringSet {
-  [idx: string]: number
-}
-
 function arrEmpty(a?: any[]) {
   return !a || (a.length === 0);
 }
@@ -66,7 +62,7 @@ function strArrEq(a1?: string[], a2?: string[]) {
   // Note: can't short-circuit by checking the lengths because
   // that doesn't handle duplicate keys
 
-  let d: StringSet = {};
+  let d: Dict<number> = {};
   let i: number, s: string;
   for (i = 0; i < a1.length; i++) {
     s = a1[i];
