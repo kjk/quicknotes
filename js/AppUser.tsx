@@ -74,7 +74,7 @@ interface Props {
 interface State {
   allNotes?: any;
   selectedNotes?: any;
-  selectedTags?: any;
+  selectedTags?: string[];
   tags?: any;
   notesUserHashID?: any;
   notesUserHandle?: any;
@@ -134,7 +134,7 @@ export default class AppUser extends Component<Props, State> {
   }
 
   // op = toggle or set
-  handleTagSelected(tag: any, op: any) {
+  handleTagSelected(tag: string, op: any) {
     //console.log("selected tag: ", tag);
     var tags = this.state.selectedTags;
     if (op == 'set') {
