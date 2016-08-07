@@ -16,7 +16,7 @@ import * as ni from './noteinfo';
 import * as action from './action';
 import * as api from './api';
 
-function tagsFromNotes(notes: ni.INote[]): ni.TagToCount  {
+function tagsFromNotes(notes: ni.INote[]): ni.TagToCount {
   let tags: ni.TagToCount = {
     __all: 0,
     __deleted: 0,

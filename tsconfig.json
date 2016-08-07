@@ -32,7 +32,6 @@
         "js/noteinfo.ts",
         "js/NotesList.tsx",
         "js/Overlay.tsx",
-        "js/RecentNotes.tsx",
         "js/Router.ts",
         "js/TagCount.tsx",
         "js/TagsList.tsx",
