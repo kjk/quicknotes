@@ -1,5 +1,3 @@
-/// <reference path="../typings/index.d.ts" />
-
 import React, { Component } from 'react';
 import * as ni from './noteinfo';
 
@@ -9,6 +7,7 @@ NoteBody.propTypes = {
   compact: PropTypes.bool.isRequired
 };
 */
+
 interface Props {
   note?: any;
   compact?: boolean;

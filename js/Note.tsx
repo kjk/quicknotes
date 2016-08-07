@@ -1,7 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import NoteBody from './NoteBody';
 import * as ni from './noteinfo';
 import * as action from './action';

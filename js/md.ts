@@ -1,5 +1,3 @@
-/// <reference path="../typings/index.d.ts" />
-
 import * as marked from 'marked';
 import MarkdownIt from 'markdown-it';
 import * as hljs from 'highlight.js';
@@ -20,7 +18,6 @@ function unescape(html: string) {
     return '';
   });
 }
-
 
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"

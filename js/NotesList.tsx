@@ -1,10 +1,9 @@
-/// <reference path="../typings/index.d.ts" />
-
-// http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import Note from './Note';
 import * as ni from './noteinfo';
+
+// http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 
 const maxInitialNotes = 50;
 

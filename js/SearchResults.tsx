@@ -1,9 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-
 import React from 'react';
-
 import Overlay from './Overlay';
-
 import * as action from './action';
 import * as api from './api';
 

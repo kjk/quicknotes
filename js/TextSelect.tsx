@@ -1,10 +1,8 @@
-/// <reference path="../typings/index.d.ts" />
-
-// based on https://github.com/javierbyte/react-textselect
 import React, { Component, PropTypes } from 'react';
 
-/*
+// based on https://github.com/javierbyte/react-textselect
 
+/*
 TextSelect.propTypes = {
   values: PropTypes.array.isRequired,
   selectedIdx: PropTypes.number.isRequired,

@@ -1,7 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-
-import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 /*
 
@@ -26,7 +24,7 @@ interface State {
   dragging?: boolean;
 }
 
-export default class DragBarHoriz extends Component<Props, State> {
+export default class DragBarHoriz extends React.Component<Props, State> {
   y: number;
 
   constructor(props?: Props, context?: any) {

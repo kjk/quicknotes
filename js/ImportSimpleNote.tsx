@@ -1,6 +1,4 @@
-/// <reference path="../typings/index.d.ts" />
-
-import React, { Component } from 'react';
+import * as React from 'react';
 import * as action from './action';
 import * as api from './api';
 
@@ -39,7 +37,7 @@ interface State {
   statusMessage?: any;
 }
 
-export default class ImportSimpleNote extends Component<{}, State> {
+export default class ImportSimpleNote extends React.Component<{}, State> {
 
   inputValues: any;
 
