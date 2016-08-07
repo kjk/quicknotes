@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import NotesList from './NotesList';
+import { INote } from './noteinfo';
 
 interface State {
-  notes: any;
+  notes: INote[];
 }
 
 export default class RecentNotes extends Component<{}, State> {
