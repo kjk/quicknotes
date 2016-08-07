@@ -31,7 +31,7 @@ const cmOptions = {
   'tabindex': 3
 };
 
-function formatPrettyName(fmt: any) {
+function formatPrettyName(fmt: string): string {
   if (fmt === ni.formatText) {
     return 'text';
   }
@@ -41,7 +41,7 @@ function formatPrettyName(fmt: any) {
   return fmt;
 }
 
-function formatShortName(fmt: any) {
+function formatShortName(fmt: string): string {
   if (fmt === 'text') {
     return ni.formatText;
   }
@@ -56,23 +56,24 @@ function getWindowMiddle() {
   return dy / 3;
 }
 
-function tagsToText(tags: any) {
+function tagsToText(tags?: string[]): string {
   if (!tags) {
     return '';
   }
   let s = '';
-  tags.forEach((tag: any) => {
+  for (const tag of tags) {
     if (s !== '') {
       s += ' ';
     }
     s += '#' + tag;
-  });
+  }
   return s;
 }
 
-function textToTags(s: any) {
-  let tags: any = [];
-  s.split(' ').forEach((tag: any) => {
+function textToTags(s: string): string[] {
+  let tags: string[] = [];
+  const tagsTmp = s.split(' ');
+  for (let tag of tagsTmp) {
     tag = tag.trim();
     if (tag.startsWith('#')) {
       tag = tag.substring(1);
@@ -80,7 +81,7 @@ function textToTags(s: any) {
     if (tag.length > 0) {
       tags.push(tag);
     }
-  });
+  }
   return strArrRemoveDups(tags);
 }
 
@@ -88,15 +89,15 @@ function editorHeight(y: number) {
   return window.innerHeight - y - kDragBarDy;
 }
 
-class Note {
-  id: any;
-  title: any;
-  tags: any;
-  body: any;
-  isPublic: any;
-  formatName: any;
+class NoteInEditor {
+  id: string;
+  title: string;
+  tags: string;
+  body: string;
+  isPublic: boolean;
+  formatName: string;
 
-  constructor(id: any, title: any, tags: any, body: any, isPublic: any, formatName: any) {
+  constructor(id: string, title: string, tags: string, body: string, isPublic: boolean, formatName: string) {
     this.id = id;
     this.title = title;
     this.tags = tags;
@@ -105,50 +106,40 @@ class Note {
     this.formatName = formatName;
   }
 
-  isText() {
+  isText(): boolean {
     return this.formatName === ni.formatText;
   }
 
-  isMarkdown() {
+  isMarkdown(): boolean {
     return this.formatName === ni.formatMarkdown;
   }
 
-  isEmpty() {
+  isEmpty(): boolean {
     return this.title == '' && this.tags == '' && this.body == '';
   }
 }
 
-function noteFromCompact(noteCompact: any, body: any) {
-  const id = ni.HashID(noteCompact);
-  const title = ni.Title(noteCompact);
-  const tags = ni.Tags(noteCompact);
+function noteFromCompact(note: ni.INote, body: string): NoteInEditor {
+  const id = ni.HashID(note);
+  const title = ni.Title(note);
+  const tags = ni.Tags(note);
   const tagsStr = tagsToText(tags);
-  const isPublic = ni.IsPublic(noteCompact);
-  const formatName = ni.Format(noteCompact);
-  return new Note(id, title, tagsStr, body, isPublic, formatName);
+  const isPublic = ni.IsPublic(note);
+  const formatName = ni.Format(note);
+  return new NoteInEditor(id, title, tagsStr, body, isPublic, formatName);
 }
 
-interface Note {
-  HashID: any;
-  Title: any;
-  Format: any;
-  Content: any;
-  Tags: any;
-  IsPublic: any;
+interface NoteJSON {
+  HashID: string;
+  Title: string;
+  Format: string;
+  Content: string;
+  Tags: string[];
+  IsPublic: boolean;
 }
 
-/* convert Note note to
-type NewNoteFromBrowser struct {
-	HashID   string
-	Title    string
-	Format   int
-	Content  string
-	Tags     []string
-	IsPublic bool
-}
-*/
-function toNewNoteJSON(note: any) {
-  var n: Note;
+function toNewNoteJSON(note: NoteInEditor) {
+  var n: NoteJSON;
   n.HashID = note.id;
   n.Title = note.title;
   n.Format = note.formatName;
@@ -158,11 +149,11 @@ function toNewNoteJSON(note: any) {
   return JSON.stringify(n);
 }
 
-function newEmptyNote() {
-  return new Note(null, '', '', '', false, ni.formatMarkdown);
+function newEmptyNote(): NoteInEditor {
+  return new NoteInEditor(null, '', '', '', false, ni.formatMarkdown);
 }
 
-function didNoteChange(n1: any, n2: any) {
+function didNoteChange(n1: NoteInEditor, n2: NoteInEditor): boolean {
   if (n1.title != n2.title) {
     return true;
   }
@@ -505,7 +496,7 @@ function restoreCodeMirrorState(cm: any, state: any) {
 const wordCountPattern = /[a-zA-Z0-9_\u0392-\u03c9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
 
 /* The right word count in respect for CJK. */
-function wordCount(data: any) {
+function wordCount(data: string): number {
   const m = data.match(wordCountPattern);
   if (m === null) {
     return 0;
@@ -529,19 +520,19 @@ function isNullMsg(o: any) {
 }
 
 interface State {
-  isShowing?: any;
-  isShowingPreview?: any;
-  note?: any;
+  isShowing?: boolean;
+  isShowingPreview?: boolean;
+  note?: NoteInEditor;
 }
 
 export default class Editor extends Component<{}, State> {
 
-  initialNote: any;
+  initialNote: NoteInEditor;
   cm: any;
-  top: any;
-  firstRender: any;
-  isNewCM: any;
-  setFocusInUpdate: any;
+  top: number;
+  firstRender: boolean;
+  isNewCM: boolean;
+  setFocusInUpdate: boolean;
   savedCodeMirrorState: any;
 
   constructor(props?: any, context?: any) {
@@ -851,7 +842,7 @@ export default class Editor extends Component<{}, State> {
     return state.note.isMarkdown() && state.isShowingPreview;
   }
 
-  startEditingNote(note: any) {
+  startEditingNote(note: NoteInEditor) {
     // at this point we might not be rendered yet, so we use variables
     // to communicate with componentDidUpdate
     this.firstRender = true;
@@ -870,9 +861,9 @@ export default class Editor extends Component<{}, State> {
     this.startEditingNote(newEmptyNote());
   }
 
-  editNote(noteCompactInitial: any) {
+  editNote(noteCompactInitial: ni.INote) {
     //console.log('Editor.editNote: noteCompact=', noteCompact);
-    ni.FetchLatestContent(noteCompactInitial, (noteCompact: any, body: any) => {
+    ni.FetchLatestContent(noteCompactInitial, (noteCompact: ni.INote, body: string) => {
       const note = noteFromCompact(noteCompact, body);
       this.startEditingNote(note);
     });
@@ -1026,7 +1017,7 @@ export default class Editor extends Component<{}, State> {
     );
   }
 
-  renderMarkdownButtons(isText: any) {
+  renderMarkdownButtons(isText: boolean) {
     if (isText) {
       return;
     }
