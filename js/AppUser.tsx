@@ -16,9 +16,8 @@ import * as ni from './noteinfo';
 import * as action from './action';
 import * as api from './api';
 
-// returns { tagName1: count, ... }
-function tagsFromNotes(notes: any) {
-  let tags = {
+function tagsFromNotes(notes: ni.INote[]): ni.TagToCount  {
+  let tags: ni.TagToCount = {
     __all: 0,
     __deleted: 0,
     __public: 0,
@@ -32,19 +31,19 @@ function tagsFromNotes(notes: any) {
   for (let note of notes) {
     // a deleted note won't show up under other tags or under "all" or "public"
     if (ni.IsDeleted(note)) {
-      tags.__deleted += 1;
+      tags["__deleted"] += 1;
       continue;
     }
 
-    tags.__all += 1;
+    tags["__all"] += 1;
     if (ni.IsStarred(note)) {
-      tags.__starred += 1;
+      tags["__starred"] += 1;
     }
 
     if (ni.IsPublic(note)) {
-      tags.__public += 1;
+      tags["__public"] += 1;
     } else {
-      tags.__private += 1;
+      tags["__private"] += 1;
     }
 
     const noteTags = ni.Tags(note);
@@ -64,15 +63,15 @@ interface Props {
 }
 
 interface State {
-  allNotes?: any;
-  selectedNotes?: any;
+  allNotes?: ni.INote[];
+  selectedNotes?: ni.INote[];
   selectedTags?: string[];
-  tags?: any;
-  notesUserHashID?: any;
-  notesUserHandle?: any;
-  loggedUserHashID?: any;
-  loggedUserHandle?: any;
-  resetScroll?: any;
+  tags?: ni.TagToCount;
+  notesUserHashID?: string;
+  notesUserHandle?: string;
+  loggedUserHashID?: string;
+  loggedUserHandle?: string;
+  resetScroll?: boolean;
 }
 
 export default class AppUser extends Component<Props, State> {
@@ -85,9 +84,9 @@ export default class AppUser extends Component<Props, State> {
 
     const initialNotesJSON = props.initialNotesJSON;
     let allNotes: ni.INote[] = [];
-    let selectedNotes: any = [];
+    let selectedNotes: ni.INote[] = [];
     let selectedTags = [props.initialTag];
-    let tags = {};
+    let tags: ni.TagToCount = {};
 
     let loggedUserHandle = '';
     let loggedUserHashID = '';
@@ -126,7 +125,7 @@ export default class AppUser extends Component<Props, State> {
   }
 
   // op = toggle or set
-  handleTagSelected(tag: string, op: any) {
+  handleTagSelected(tag: string, op: string) {
     //console.log("selected tag: ", tag);
     var tags = this.state.selectedTags;
     if (op == 'set') {
@@ -184,7 +183,7 @@ export default class AppUser extends Component<Props, State> {
     });
   }
 
-  handleSearchResultSelected(noteHashID: any) {
+  handleSearchResultSelected(noteHashID: string) {
     console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
@@ -214,9 +213,9 @@ export default class AppUser extends Component<Props, State> {
 }
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
-function tagsFromRoute(s: any) {
+function tagsFromRoute(s: string): string[] {
   const parts = s.split('/t:');
-  const res = parts.filter((s: any) => s !== '');
+  const res = parts.filter((s: string) => s !== '');
   if (res.length === 0) {
     return ['__all'];
   }
