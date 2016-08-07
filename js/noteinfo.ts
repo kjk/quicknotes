@@ -43,7 +43,7 @@ const formatCodePrefix = 'code:';
 // note properties that can be compared for equality with ==
 const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx];
 
-export type TagsWithCount = Dict<number>;
+export type TagToCount = Dict<number>;
 
 function arrEmpty(a?: any[]): boolean {
   return !a || (a.length === 0);

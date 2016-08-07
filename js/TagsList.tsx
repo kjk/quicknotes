@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount';
 import * as u from './utils';
-import { TagsWithCount } from './noteinfo';
+import { TagToCount } from './noteinfo';
 
 function isTagSelected(selectedTags: string[], tag: string) {
   return selectedTags.indexOf(tag) != -1;
@@ -9,7 +9,7 @@ function isTagSelected(selectedTags: string[], tag: string) {
 
 interface Props {
   tagNames: string[];
-  tags: TagsWithCount;
+  tags: TagToCount;
   selectedTags: string[];
   sectionName: string;
 }
