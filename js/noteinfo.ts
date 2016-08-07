@@ -1,5 +1,3 @@
-/// <reference path="../typings/index.d.ts" />
-
 import * as api from './api';
 import { assert, isUndefined, Dict } from './utils';
 import filesize from 'filesize';

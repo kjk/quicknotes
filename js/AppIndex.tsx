@@ -1,8 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-/// <reference path="./vendor.d.ts" />
-
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 
 import Editor from './Editor';
 import ImportSimpleNote from './ImportSimpleNote';

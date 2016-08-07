@@ -1,5 +1,3 @@
-/// <reference path="../typings/index.d.ts" />
-
 import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount';
 import * as u from './utils';

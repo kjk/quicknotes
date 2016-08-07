@@ -1,7 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-
 import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import TagsList from './TagsList';
 import * as u from './utils';
 

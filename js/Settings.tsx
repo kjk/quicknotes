@@ -1,7 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as action from './action';
 
 const allThemes = [

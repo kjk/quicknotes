@@ -12,6 +12,7 @@
         "sourceMap": true
     },
     "files": [
+        "typings/index.d.ts",
         "js/action.ts",
         "js/api.ts",
         "js/App.tsx",
