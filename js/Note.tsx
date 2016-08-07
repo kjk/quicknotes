@@ -14,16 +14,8 @@ interface State {
   showActions: boolean;
 }
 
-/*
-Note.propTypes = {
-  note: PropTypes.array.isRequired,
-  compact: PropTypes.bool.isRequired,
-  showingMyNotes: PropTypes.bool.isRequired
-};
-*/
-
 interface Props {
-  note: any;
+  note: ni.INote;
   compact: boolean;
   showingMyNotes: boolean;
 }
@@ -48,8 +40,9 @@ export default class Note extends Component<Props, State> {
     };
   }
 
-  handleTagClicked(e: any) {
-    let tag = e.target.textContent;
+  handleTagClicked(e: React.MouseEvent) {
+    const target = e.target as Element;
+    let tag = target.textContent;
     if (tag.startsWith('#')) {
       tag = tag.substr(1);
     }
@@ -57,14 +50,14 @@ export default class Note extends Component<Props, State> {
     action.tagSelected(tag, op);
   }
 
-  handleMouseEnter(e: any) {
+  handleMouseEnter(e: React.MouseEvent) {
     e.preventDefault();
     this.setState({
       showActions: true
     });
   }
 
-  handleMouseLeave(e: any) {
+  handleMouseLeave(e: React.MouseEvent) {
     e.preventDefault();
     this.setState({
       showActions: false
@@ -83,12 +76,12 @@ export default class Note extends Component<Props, State> {
     });
   }
 
-  handleDoubleClick(e: any) {
+  handleDoubleClick(e: React.MouseEvent) {
     e.preventDefault();
     this.editCurrentNote();
   }
 
-  handleDelUndel(e: any) {
+  handleDelUndel(e: React.MouseEvent) {
     e.preventDefault();
     const note = this.props.note;
     const noteID = ni.HashID(note);
@@ -109,7 +102,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  handlePermanentDelete(e: any) {
+  handlePermanentDelete(e: React.MouseEvent) {
     e.preventDefault();
     const note = this.props.note;
     const noteID = ni.HashID(note);
@@ -122,7 +115,7 @@ export default class Note extends Component<Props, State> {
     });
   }
 
-  handleMakePublicPrivate(e: any) {
+  handleMakePublicPrivate(e: React.MouseEvent) {
     e.preventDefault();
     const note = this.props.note;
     // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
@@ -144,7 +137,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  handleStarUnstarNote(e: any) {
+  handleStarUnstarNote(e: React.MouseEvent) {
     const note = this.props.note;
     // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
     const noteID = ni.HashID(note);
@@ -165,7 +158,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderTitle(note: any) {
+  renderTitle(note: ni.INote) {
     const title = ni.Title(note);
     if (title !== '') {
       return (
@@ -174,8 +167,8 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderTags(tags: any) {
-    const tagEls = tags.map((tag: any) => {
+  renderTags(tags: string[]) {
+    const tagEls = tags.map((tag) => {
       tag = '#' + tag;
       return (
         <span className='note-tag' key={ tag } onClick={ this.handleTagClicked }>{ tag }</span>
@@ -187,7 +180,7 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderPublicPrivate(note: any) {
+  renderPublicPrivate(note: ni.INote) {
     const isPublic = ni.IsPublic(note);
     if (isPublic) {
       return <span className='is-public'>public </span>;
@@ -196,14 +189,14 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderDeletedState(note: any) {
+  renderDeletedState(note: ni.INote) {
     const isDeleted = ni.IsDeleted(note);
     if (isDeleted) {
       return <span className='is-deleted'>deleted</span>;
     }
   }
 
-  renderTrashUntrash(note: any) {
+  renderTrashUntrash(note: ni.INote) {
     if (ni.IsDeleted(note)) {
       return (
         <a className='note-action'
@@ -220,7 +213,7 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderPermanentDelete(note: any) {
+  renderPermanentDelete(note: ni.INote) {
     if (ni.IsDeleted(note)) {
       return (
         <a className='note-action delete'
@@ -231,12 +224,12 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  handleEdit(e: any) {
+  handleEdit(e: React.MouseEvent) {
     // console.log('Note.handleEdit');
     this.editCurrentNote();
   }
 
-  renderEdit(note: any) {
+  renderEdit(note: ni.INote) {
     if (!ni.IsDeleted(note)) {
       return (
         <a className='note-action'
@@ -247,7 +240,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderViewLink(note: any) {
+  renderViewLink(note: ni.INote) {
     let title = ni.Title(note);
     if (title.length > 0) {
       title = '-' + urlifyTitle(title);
@@ -261,13 +254,13 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderSize(note: any) {
+  renderSize(note: ni.INote) {
     return (
       <span className='note-size'>{ ni.HumanSize(note) }</span>
     );
   }
 
-  renderMakePublicPrivate(note: any) {
+  renderMakePublicPrivate(note: ni.INote) {
     if (ni.IsDeleted(note)) {
       return;
     }
@@ -288,7 +281,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderStarUnstar(note: any) {
+  renderStarUnstar(note: ni.INote) {
     if (!this.props.showingMyNotes || ni.IsDeleted(note)) {
       return;
     }
@@ -311,7 +304,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderActionsIfMyNotes(note: any) {
+  renderActionsIfMyNotes(note: ni.INote) {
     if (this.state.showActions) {
       return (
         <div className='note-actions'>
@@ -325,7 +318,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderActionsIfNotMyNotes(note: any) {
+  renderActionsIfNotMyNotes(note: ni.INote) {
     if (this.state.showActions) {
       return (
         <div className='note-actions'>
@@ -338,7 +331,7 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderActions(note: any) {
+  renderActions(note: ni.INote) {
     if (this.props.showingMyNotes) {
       return this.renderActionsIfMyNotes(note);
     } else {

@@ -58,12 +58,6 @@ function tagsFromNotes(notes: any) {
   return tags;
 }
 
-/*
-AppUser.propTypes = {
-  initialTag: PropTypes.string,
-  initialNotesJSON: PropTypes.object
-};
-*/
 interface Props {
   initialTag?: string;
   initialNotesJSON?: any;
@@ -90,7 +84,7 @@ export default class AppUser extends Component<Props, State> {
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
-    let allNotes: any = [];
+    let allNotes: ni.INote[] = [];
     let selectedNotes: any = [];
     let selectedTags = [props.initialTag];
     let tags = {};

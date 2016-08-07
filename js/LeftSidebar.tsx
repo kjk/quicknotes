@@ -5,22 +5,14 @@ import * as u from './utils';
 
 const showDeletedTag = true;
 
-/*
-LeftSidebar.propTypes = {
-  tags: PropTypes.object, // TODO: more specific
-  showingMyNotes: PropTypes.bool.isRequired,
-  selectedTags: PropTypes.array
-};
-*/
-
 interface Props {
   tags: any;
-  showingMyNotes: any;
-  selectedTags: any;
+  showingMyNotes: boolean;
+  selectedTags: string[];
 }
 
 export default class LeftSidebar extends Component<Props, {}> {
-  renderTagsList(sectionName: any, tagNames: any, tags: any) {
+  renderTagsList(sectionName: string, tagNames: any, tags: any) {
     if (tagNames.length === 0) {
       return;
     }
@@ -41,7 +33,7 @@ export default class LeftSidebar extends Component<Props, {}> {
         </div>
       );
     }
-    let tagNames: any = [];
+    let tagNames: string[] = [];
     let specialTagNames: any = [];
 
     for (let tagName in tags) {

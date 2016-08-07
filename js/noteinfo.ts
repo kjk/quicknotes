@@ -43,11 +43,13 @@ const formatCodePrefix = 'code:';
 // note properties that can be compared for equality with ==
 const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx];
 
-function arrEmpty(a?: any[]) {
+export type TagsWithCount = Dict<number>;
+
+function arrEmpty(a?: any[]): boolean {
   return !a || (a.length === 0);
 }
 
-function strArrEq(a1?: string[], a2?: string[]) {
+function strArrEq(a1?: string[], a2?: string[]): boolean {
   if (arrEmpty(a1) && arrEmpty(a2)) {
     // both empty
     return true;
@@ -215,10 +217,14 @@ export function Content(note: INote): string {
   return getCachedVersion(note);
 }
 
+interface FetchLatestContentCallback {
+  (note: INote, body: string): void
+}
+
 // gets the latest version of content of a given note.
 // Call cb(note, content) on success
 // Note: it gets the latest version, not the version on noteOrig
-export function FetchLatestContent(noteOrig: INote, cb: any) {
+export function FetchLatestContent(noteOrig: INote, cb: FetchLatestContentCallback) {
   const noteID = HashID(noteOrig);
   const content = Content(noteOrig);
   if (content !== null) {

@@ -9,10 +9,11 @@ import Settings from './Settings';
 import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
+import { INote } from './noteinfo';
 import * as action from './action';
 
 interface State {
-  notes: any;
+  notes: INote[];
 }
 
 export default class AppIndex extends Component<{}, State> {
@@ -32,7 +33,7 @@ export default class AppIndex extends Component<{}, State> {
     //action.offAllForOwner(this);
   }
 
-  handleSearchResultSelected(noteHashID: any) {
+  handleSearchResultSelected(noteHashID: string) {
     // console.log('search note selected: ' + noteHashID);
     // TODO: probably should display in-line
     const url = '/n/' + noteHashID;
