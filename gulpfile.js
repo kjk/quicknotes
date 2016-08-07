@@ -46,6 +46,13 @@ var browserify_opts = {
   debug: true
 };
 
+var browserify_prod_opts = {
+  entries: ['js/App.tsx'],
+  transform: [t_envify],
+  debug: true
+};
+
+
 gulp.task('js', function() {
   browserify(browserify_opts)
     .plugin("tsify", tsify_opts)
@@ -57,12 +64,9 @@ gulp.task('js', function() {
 });
 
 gulp.task('jsprod', function() {
-  browserify({
-    entries: ['js/App.tsx'],
-    'transform': [t_babelify, t_envify],
-    debug: true
-  })
-    .plugin(tsify, { target: 'es6' })
+  browserify(browserify_prod_opts)
+    .plugin("tsify", tsify_opts)
+    .transform(babelify, babelify_opts)
     .bundle()
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
