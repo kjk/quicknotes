@@ -1,15 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import * as action from './action';
 
-/*
-TagCount.propTypes = {
-  count: PropTypes.number,
-  displayName: PropTypes.string,
-  isSelected: PropTypes.bool,
-  tagName: PropTypes.string
-};
-*/
-
 interface Props {
   count: number;
   displayName: string;

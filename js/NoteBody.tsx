@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import * as ni from './noteinfo';
 
-/*
-NoteBody.propTypes = {
-  note: PropTypes.array.isRequired,
-  compact: PropTypes.bool.isRequired
-};
-*/
-
 interface Props {
-  note?: any;
+  note?: ni.INote;
   compact?: boolean;
 };
 
 interface State {
-  note?: any;
+  note?: ni.INote;
   body?: string;
 };
 
@@ -43,7 +36,7 @@ export default class NoteBody extends Component<Props, State> {
     if (!ni.NeedsExpansion(note)) {
       return;
     }
-    ni.FetchLatestContent(note, (note: any, body: any) => {
+    ni.FetchLatestContent(note, (note: ni.INote, body: string) => {
       this.setState({
         note: note,
         body: body

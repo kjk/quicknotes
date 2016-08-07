@@ -1,37 +1,28 @@
 import React, { Component, PropTypes } from 'react';
 import * as ReactDOM from 'react-dom';
 import Note from './Note';
-import * as ni from './noteinfo';
+import { INote, HashID, CurrentVersion } from './noteinfo';
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 
 const maxInitialNotes = 50;
 
-function truncateNotes(notes: any, max: number) {
+function truncateNotes(notes: INote[], max: number): INote[] {
   if (max != -1 && notes && notes.length >= max) {
     return notes.slice(0, max);
   }
   return notes;
 }
 
-/*
-NotesList.propTypes = {
-  notes: PropTypes.array,
-  compact: PropTypes.bool.isRequired,
-  showingMyNotes: PropTypes.bool.isRequired,
-  resetScroll: PropTypes.bool
-};
-*/
-
 interface Props {
-  notes: any;
+  notes: INote[];
   compact: boolean;
   showingMyNotes: boolean;
   resetScroll?: boolean;
 }
 
 interface State {
-  notes: any;
+  notes: INote[];
 }
 
 export default class NotesList extends Component<Props, State> {
@@ -62,14 +53,14 @@ export default class NotesList extends Component<Props, State> {
     });
   }
 
-  handleScroll(e: any) {
+  handleScroll(e: React.UIEvent) {
     e.preventDefault();
     const nShowing = this.state.notes.length;
     const total = this.props.notes.length;
     if (nShowing >= total) {
       return;
     }
-    const node = e.target;
+    const node = e.target as Element;
     const top = node.scrollTop;
     const dy = node.scrollHeight;
     // a heuristic, maybe push it down
@@ -98,7 +89,7 @@ export default class NotesList extends Component<Props, State> {
       <div id='notes-list' onScroll={ this.handleScroll }>
         <div className='wrapper'>
           { this.state.notes.map((note: any) => {
-            const key = `${ni.HashID(note)}-${ni.CurrentVersion(note)}`;
+            const key = `${HashID(note)}-${CurrentVersion(note)}`;
             return <Note compact={ this.props.compact }
               note={ note }
               key={ key }

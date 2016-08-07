@@ -4,11 +4,13 @@ export interface Dict<V> {
   [idx: string]: V;
 }
 
+export type TagToNotes = Dict<ni.INote[]>;
+
 export function isUndefined(v: any) {
   return typeof v === 'undefined';
 }
 
-export function noteHasTag(note: any, tag: any) {
+export function noteHasTag(note: ni.INote, tag: string) {
   const tags = ni.Tags(note);
   if (!tags) {
     return false;
@@ -21,12 +23,12 @@ export function noteHasTag(note: any, tag: any) {
   return false;
 }
 
-function getSpecialNotes(notes: any) {
-  let deletedNotes: any = [];
-  let notDeletedNotes: any = [];
-  let publicNotes: any = [];
-  let privateNotes: any = [];
-  let starredNotes: any = [];
+function getSpecialNotes(notes: ni.INote[]): TagToNotes {
+  let deletedNotes: ni.INote[] = [];
+  let notDeletedNotes: ni.INote[] = [];
+  let publicNotes: ni.INote[] = [];
+  let privateNotes: ni.INote[] = [];
+  let starredNotes: ni.INote[] = [];
 
   for (let note of notes) {
     if (ni.IsDeleted(note)) {
@@ -52,7 +54,7 @@ function getSpecialNotes(notes: any) {
   };
 }
 
-const specialTagNames: any = {
+const specialTagNames: Dict<string> = {
   __all: 'all',
   __public: 'public',
   __private: 'private',
@@ -60,25 +62,21 @@ const specialTagNames: any = {
   __starred: 'starred'
 };
 
-export function isSpecialTag(tag: any) {
-  return specialTagNames[tag];
+export function isSpecialTag(tag: string): boolean {
+  return specialTagNames[tag] !== undefined;
 }
 
-export function tagNameToDisplayName(tagName: any) {
-  const translated = specialTagNames[tagName];
-  if (!translated) {
-    return tagName;
-  }
-  return translated;
+export function tagNameToDisplayName(tagName: string): string {
+  return specialTagNames[tagName] || tagName;
 }
 
-export function filterNotesByTag(notes: any, tag: any): any {
+export function filterNotesByTag(notes: ni.INote[], tag: string): ni.INote[] {
   if (isSpecialTag(tag)) {
-    const specialNotes: any = getSpecialNotes(notes);
+    const specialNotes: TagToNotes = getSpecialNotes(notes);
     return specialNotes[tag];
   }
 
-  let res: any = [];
+  let res: ni.INote[] = [];
   for (let note of notes) {
     if (ni.IsDeleted(note)) {
       continue;
@@ -90,15 +88,14 @@ export function filterNotesByTag(notes: any, tag: any): any {
   return res;
 }
 
-export function filterNotesByTags(notes: any, tags: any) {
-  var res = notes;
-  for (var i = 0; i < tags.length; i++) {
-    res = filterNotesByTag(res, tags[i]);
+export function filterNotesByTags(notes: ni.INote[], tags: string[]): ni.INote[] {
+  for (const tag of tags) {
+    notes = filterNotesByTag(notes, tag);
   }
-  return res;
+  return notes;
 }
 
-export function dictInc(d: any, key: any) {
+export function dictInc(d: any, key: string) {
   if (d[key]) {
     d[key] += 1;
   } else {
@@ -125,7 +122,7 @@ function runOnLoad(f: any) {
 }
 
 // helps to use map() in cases where the value can be null
-export function arrNotNull(a: any) {
+export function arrNotNull(a?: any[]): any[] {
   return a ? a : [];
 }
 

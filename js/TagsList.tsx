@@ -1,24 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount';
 import * as u from './utils';
+import { TagsWithCount } from './noteinfo';
 
-function isTagSelected(selectedTags: any, tag: any) {
+function isTagSelected(selectedTags: string[], tag: string) {
   return selectedTags.indexOf(tag) != -1;
 }
 
-/*
-TagsList.propTypes = {
-  tagNames: PropTypes.arrayOf(PropTypes.string),
-  tags: PropTypes.object, // TODO: more specific
-  selectedTags: PropTypes.array
-};
-*/
-
 interface Props {
   tagNames: string[];
-  tags: any;
-  selectedTags: any;
-  sectionName: any;
+  tags: TagsWithCount;
+  selectedTags: string[];
+  sectionName: string;
 }
 
 export default class TagsList extends Component<Props, {}> {
