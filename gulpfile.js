@@ -14,7 +14,9 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var source = require('vinyl-source-stream');
+var tsify = require('tsify');
 var uglify = require('gulp-uglify');
+var debug = require('gulp-debug');
 
 require('babel-register');
 
@@ -29,12 +31,32 @@ var t_babelify = ['babelify', {
   'presets': ['es2015', 'react']
 }];
 
+var babelify_opts = {
+  presets: ['es2015', 'react'],
+  extensions: ['.tsx', '.ts', '.js', '.jsx']
+};
+
+var tsify_opts = {
+  target: 'es6',
+  module: 'es2015'
+};
+
+var browserify_opts = {
+  entries: ['js/App.tsx'],
+  debug: true
+};
+
+var browserify_prod_opts = {
+  entries: ['js/App.tsx'],
+  transform: [t_envify],
+  debug: true
+};
+
+
 gulp.task('js', function() {
-  browserify({
-    entries: ['js/App.jsx'],
-    'transform': [t_babelify],
-    debug: true
-  })
+  browserify(browserify_opts)
+    .plugin("tsify", tsify_opts)
+    .transform(babelify, babelify_opts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
@@ -42,11 +64,9 @@ gulp.task('js', function() {
 });
 
 gulp.task('jsprod', function() {
-  browserify({
-    entries: ['js/App.jsx'],
-    'transform': [t_babelify, t_envify],
-    debug: true
-  })
+  browserify(browserify_prod_opts)
+    .plugin("tsify", tsify_opts)
+    .transform(babelify, babelify_opts)
     .bundle()
     .pipe(source('bundle.min.js'))
     .pipe(buffer())

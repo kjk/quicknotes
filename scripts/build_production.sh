@@ -7,7 +7,7 @@ set -o verbose
 
 . scripts/lint.sh
 
-rm -rf s/dist/*.map s/dist/*.js s/dist/*.css resources.go
+rm -rf s/dist/*.map s/dist/*.js s/dist/*.css tsbuild/ resources.go
 
 ./node_modules/.bin/gulp prod
 

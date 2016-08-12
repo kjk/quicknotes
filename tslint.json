@@ -1,0 +1,7 @@
+{
+  "linebreak-style": "lf",
+  "no-trailing-whitespace": true,
+  "no-consecutive-blank-lines": true,
+  "quotemark": ["single", "jsx-single"],
+  "semicolon": "always"
+}
