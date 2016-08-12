@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./node_modules/.bin/esformatter -i js/*js*
+./node_modules/.bin/tsfmt -r js/*ts*

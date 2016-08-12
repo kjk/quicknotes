@@ -5,6 +5,7 @@
     "**/bower_components": true,
     "**/s/dist": true,
     "**/s/js/lib": true,
-    "**/Godeps": true
+    "**/Godeps": true,
+    "**/tsbuild": true
   }
 }
