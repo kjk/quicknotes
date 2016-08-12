@@ -139,13 +139,14 @@ interface NoteJSON {
 }
 
 function toNewNoteJSON(note: NoteInEditor) {
-  var n: NoteJSON;
-  n.HashID = note.id;
-  n.Title = note.title;
-  n.Format = note.formatName;
-  n.Content = note.body.trim() + '\n';
-  n.Tags = textToTags(note.tags);
-  n.IsPublic = note.isPublic;
+  const n: NoteJSON = {
+    HashID: note.id,
+    Title: note.title,
+    Format: note.formatName,
+    Content: note.body.trim() + '\n',
+    Tags: textToTags(note.tags),
+    IsPublic: note.isPublic,
+  }
   return JSON.stringify(n);
 }
 
