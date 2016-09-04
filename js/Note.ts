@@ -168,7 +168,7 @@ export class Note extends Array {
   }
 }
 
-function toNote(note: any): Note {
+export function toNote(note: any): Note {
   note.__proto__ = Note.prototype;
   return note as Note;
 }

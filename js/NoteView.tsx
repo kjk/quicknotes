@@ -70,9 +70,9 @@ export default class NoteView extends Component<Props, State> {
     const note = this.props.note;
     const id = note.HashID();
     // console.log('editCurrentNote id: ', id);
-    api.getNote(id, (json: any) => {
+    api.getNote(id, (note: Note) => {
       // TODO: handle error
-      action.editNote(json);
+      action.editNote(note);
     });
   }
 

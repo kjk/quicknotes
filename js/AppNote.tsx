@@ -84,13 +84,13 @@ export default class AppNote extends Component<{}, State> {
     const note = this.state.note;
     const id = note.HashID();
     // console.log('editCurrentNote id: ', id);
-    api.getNote(id, (json: any) => {
+    api.getNote(id, (note: Note) => {
       // TODO: handle error
-      action.editNote(json);
+      action.editNote(note);
     });
   }
 
-  setNote(note: any) {
+  setNote(note: Note) {
     // TODO: handle the error
     this.setState({
       note: note
@@ -101,7 +101,7 @@ export default class AppNote extends Component<{}, State> {
   handleReloadNotes(resetScroll: boolean) {
     const note = this.state.note;
     const noteID = note.HashID();
-    api.getNote(noteID, (note: any) => {
+    api.getNote(noteID, (note: Note) => {
       this.setNote(note);
     });
   }

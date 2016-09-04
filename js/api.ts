@@ -1,5 +1,6 @@
 import { ajax, Params } from './ajax';
 import { Dict } from './utils';
+import { toNote, toNotes } from './Note';
 
 type ArgsDict = Dict<string>;
 
@@ -70,18 +71,31 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   });
 }
 
+// calls cb with []Note
 export function getNotes(userHandle: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
     'user': userHandle
   };
+  function getNotesCb(json: any) {
+    if (!json || !json.Notes) {
+      cb([]);
+    }
+    let notes = toNotes(json.Notes);
+    cb(notes);
+  }
   get('/api/getnotes', args, cb, cbErr);
 }
 
+// calls cb with Note
 export function getNote(noteId: any, cb: any, cbErr?: any) {
   const args: ArgsDict = {
     'id': noteId
   };
-  get('/api/getnote', args, cb, cbErr);
+  function getNoteCb(note: any) {
+    note = toNote(note);
+    cb(note);
+  }
+  get('/api/getnote', args, getNoteCb, cbErr);
 }
 
 export function undeleteNote(noteId: string, cb: any, cbErr?: any) {
