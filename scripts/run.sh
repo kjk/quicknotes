@@ -69,8 +69,10 @@ def docker_container_info(containerName):
   # 6c5a934e00fb|Exited (0) 3 months ago|0.0.0.0:7200->3306/tcp|mysql-56-for-quicknotes
   lines = s.split("\n")
   for l in lines:
+    if len(l) == 0:
+      continue
     parts = l.split("|")
-    assert len(parts) == 4
+    assert len(parts) == 4, "parts: %s" % parts
     id, status, mappings, names = parts
     if containerName in names:
       status = decode_status(status)
