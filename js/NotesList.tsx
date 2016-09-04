@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import * as ReactDOM from 'react-dom';
 import NoteView from './NoteView';
-import { Note, HashID, CurrentVersion } from './noteinfo';
+import { Note } from './noteinfo';
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 
@@ -89,7 +89,7 @@ export default class NotesList extends Component<Props, State> {
       <div id='notes-list' onScroll={ this.handleScroll }>
         <div className='wrapper'>
           { this.state.notes.map((note: any) => {
-            const key = `${HashID(note)}-${CurrentVersion(note)}`;
+            const key = `${note.HashID()}-${note.CurrentVersion()}`;
             return <NoteView compact={ this.props.compact }
               note={ note }
               key={ key }

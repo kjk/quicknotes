@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import * as ni from './noteinfo';
+import { Note, FetchLatestContent } from './noteinfo';
 
 interface Props {
-  note?: ni.Note;
+  note?: Note;
   compact?: boolean;
 };
 
 interface State {
-  note?: ni.Note;
+  note?: Note;
   body?: string;
 };
 
@@ -30,13 +30,13 @@ export default class NoteBody extends Component<Props, State> {
   }
 
   getBodyIfNeeded(note: any) {
-    if (!ni.IsExpanded(note)) {
+    if (!note.IsExpanded()) {
       return;
     }
-    if (!ni.NeedsExpansion(note)) {
+    if (!note.NeedsExpansion()) {
       return;
     }
-    ni.FetchLatestContent(note, (note: ni.Note, body: string) => {
+    FetchLatestContent(note, (note: Note, body: string) => {
       this.setState({
         note: note,
         body: body
@@ -47,16 +47,16 @@ export default class NoteBody extends Component<Props, State> {
   handleExpand(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    console.log('expand note', ni.HashID(note));
-    ni.Expand(note);
+    console.log('expand note', note.HashID());
+    note.Expand();
     this.getBodyIfNeeded(note);
   }
 
   handleCollapse(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    console.log('collapse note', ni.HashID(note));
-    ni.Collapse(note);
+    console.log('collapse note', note.HashID());
+    note.Collapse();
     this.setState({
       note: note
     });
@@ -64,11 +64,11 @@ export default class NoteBody extends Component<Props, State> {
 
   renderCollapseOrExpand(note: any) {
     // if a note is not partial, there's neither collapse nor exapnd
-    if (!ni.NeedsExpansion(note)) {
+    if (!note.NeedsExpansion()) {
       return;
     }
 
-    if (ni.IsCollapsed(note)) {
+    if (note.IsCollapsed()) {
       return (
         <a href='#' className='expand' onClick={ this.handleExpand }>Expand</a>
       );
@@ -81,8 +81,8 @@ export default class NoteBody extends Component<Props, State> {
 
   renderContent(note: any) {
     const body = this.state.body;
-    if (ni.IsCollapsed(note)) {
-      return <pre className='note-body'>{ ni.Snippet(note) }</pre>;
+    if (note.IsCollapsed()) {
+      return <pre className='note-body'>{ note.Snippet() }</pre>;
     }
     // TODO: set a reasonable limit
     return <pre className='note-body'>{ body }</pre>;
@@ -93,7 +93,7 @@ export default class NoteBody extends Component<Props, State> {
       return;
     }
     const note = this.state.note;
-    //console.log("NoteBody.render() note: ", ni.HashID(note), "collapsed:", ni.IsCollapsed(note));
+    //console.log("NoteBody.render() note: ", note.HashID(), "collapsed:", note.IsCollapsed());
     return (
       <div className='note-content'>
         { this.renderContent(note) }

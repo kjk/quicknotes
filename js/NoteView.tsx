@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import NoteBody from './NoteBody';
-import * as ni from './noteinfo';
+import { Note } from './noteinfo';
 import * as action from './action';
 import * as api from './api';
 
@@ -15,7 +15,7 @@ interface State {
 }
 
 interface Props {
-  note: ni.Note;
+  note: Note;
   compact: boolean;
   showingMyNotes: boolean;
 }
@@ -68,7 +68,7 @@ export default class NoteView extends Component<Props, State> {
   // browser window), so re-get the content
   editCurrentNote() {
     const note = this.props.note;
-    const id = ni.HashID(note);
+    const id = note.HashID();
     // console.log('editCurrentNote id: ', id);
     api.getNote(id, (json: any) => {
       // TODO: handle error
@@ -84,8 +84,8 @@ export default class NoteView extends Component<Props, State> {
   handleDelUndel(e: React.MouseEvent) {
     e.preventDefault();
     const note = this.props.note;
-    const noteID = ni.HashID(note);
-    if (ni.IsDeleted(note)) {
+    const noteID = note.HashID();
+    if (note.IsDeleted()) {
       action.showTemporaryMessage('Undeleting note...', 500);
       api.undeleteNote(noteID, () => {
         // TODO: handle error
@@ -105,7 +105,7 @@ export default class NoteView extends Component<Props, State> {
   handlePermanentDelete(e: React.MouseEvent) {
     e.preventDefault();
     const note = this.props.note;
-    const noteID = ni.HashID(note);
+    const noteID = note.HashID();
     action.showTemporaryMessage('Permanently deleting note...', 500);
     api.permanentDeleteNote(noteID, () => {
       // TODO: handle error
@@ -118,9 +118,9 @@ export default class NoteView extends Component<Props, State> {
   handleMakePublicPrivate(e: React.MouseEvent) {
     e.preventDefault();
     const note = this.props.note;
-    // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
-    const noteID = ni.HashID(note);
-    if (ni.IsPublic(note)) {
+    // console.log('handleMakePublicPrivate, note.IsPublic: ', note.IsPublic());
+    const noteID = note.HashID();
+    if (note.IsPublic()) {
       action.showTemporaryMessage('Making note private...', 500);
       api.makeNotePrivate(noteID, () => {
         // TODO: handle error
@@ -139,9 +139,9 @@ export default class NoteView extends Component<Props, State> {
 
   handleStarUnstarNote(e: React.MouseEvent) {
     const note = this.props.note;
-    // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
-    const noteID = ni.HashID(note);
-    if (ni.IsStarred(note)) {
+    // console.log('handleStarUnstarNote, note.IsStarred: ', note.IsStarred());
+    const noteID = note.HashID();
+    if (note.IsStarred()) {
       action.showTemporaryMessage('Un-starring a note...', 500);
       api.unstarNote(noteID, () => {
         // TODO: handle error
@@ -158,8 +158,8 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  renderTitle(note: ni.Note) {
-    const title = ni.Title(note);
+  renderTitle(note: Note) {
+    const title = note.Title();
     if (title !== '') {
       return (
         <span className='note-title'>{ title }</span>
@@ -180,8 +180,8 @@ export default class NoteView extends Component<Props, State> {
     );
   }
 
-  renderPublicPrivate(note: ni.Note) {
-    const isPublic = ni.IsPublic(note);
+  renderPublicPrivate(note: Note) {
+    const isPublic = note.IsPublic();
     if (isPublic) {
       return <span className='is-public'>public </span>;
     } else {
@@ -189,15 +189,15 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  renderDeletedState(note: ni.Note) {
-    const isDeleted = ni.IsDeleted(note);
+  renderDeletedState(note: Note) {
+    const isDeleted = note.IsDeleted();
     if (isDeleted) {
       return <span className='is-deleted'>deleted</span>;
     }
   }
 
-  renderTrashUntrash(note: ni.Note) {
-    if (ni.IsDeleted(note)) {
+  renderTrashUntrash(note: Note) {
+    if (note.IsDeleted()) {
       return (
         <a className='note-action'
           href='#'
@@ -213,8 +213,8 @@ export default class NoteView extends Component<Props, State> {
     );
   }
 
-  renderPermanentDelete(note: ni.Note) {
-    if (ni.IsDeleted(note)) {
+  renderPermanentDelete(note: Note) {
+    if (note.IsDeleted()) {
       return (
         <a className='note-action delete'
           href='#'
@@ -229,8 +229,8 @@ export default class NoteView extends Component<Props, State> {
     this.editCurrentNote();
   }
 
-  renderEdit(note: ni.Note) {
-    if (!ni.IsDeleted(note)) {
+  renderEdit(note: Note) {
+    if (!note.IsDeleted()) {
       return (
         <a className='note-action'
           href='#'
@@ -240,12 +240,12 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  renderViewLink(note: ni.Note) {
-    let title = ni.Title(note);
+  renderViewLink(note: Note) {
+    let title = note.Title();
     if (title.length > 0) {
       title = '-' + urlifyTitle(title);
     }
-    const url = '/n/' + ni.HashID(note) + title;
+    const url = '/n/' + note.HashID() + title;
     return (
       <a className='note-action'
         href={ url }
@@ -254,17 +254,17 @@ export default class NoteView extends Component<Props, State> {
     );
   }
 
-  renderSize(note: ni.Note) {
+  renderSize(note: Note) {
     return (
-      <span className='note-size'>{ ni.HumanSize(note) }</span>
+      <span className='note-size'>{ note.HumanSize() }</span>
     );
   }
 
-  renderMakePublicPrivate(note: ni.Note) {
-    if (ni.IsDeleted(note)) {
+  renderMakePublicPrivate(note: Note) {
+    if (note.IsDeleted()) {
       return;
     }
-    if (ni.IsPublic(note)) {
+    if (note.IsPublic()) {
       return (
         <a className='note-action'
           href='#'
@@ -281,12 +281,12 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  renderStarUnstar(note: ni.Note) {
-    if (!this.props.showingMyNotes || ni.IsDeleted(note)) {
+  renderStarUnstar(note: Note) {
+    if (!this.props.showingMyNotes || note.IsDeleted()) {
       return;
     }
 
-    const isStarred = ni.IsStarred(note);
+    const isStarred = note.IsStarred();
     if (isStarred) {
       return (
         <a className='note-action note-star note-starred'
@@ -304,7 +304,7 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  renderActionsIfMyNotes(note: ni.Note) {
+  renderActionsIfMyNotes(note: Note) {
     if (this.state.showActions) {
       return (
         <div className='note-actions'>
@@ -318,7 +318,7 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  renderActionsIfNotMyNotes(note: ni.Note) {
+  renderActionsIfNotMyNotes(note: Note) {
     if (this.state.showActions) {
       return (
         <div className='note-actions'>
@@ -331,7 +331,7 @@ export default class NoteView extends Component<Props, State> {
     );
   }
 
-  renderActions(note: ni.Note) {
+  renderActions(note: Note) {
     if (this.props.showingMyNotes) {
       return this.renderActionsIfMyNotes(note);
     } else {
@@ -342,7 +342,7 @@ export default class NoteView extends Component<Props, State> {
   render() {
     const note = this.props.note;
     let cls = 'note';
-    if (ni.IsPrivate(note)) {
+    if (note.IsPrivate()) {
       cls += ' note-private';
     }
     return (
@@ -353,7 +353,7 @@ export default class NoteView extends Component<Props, State> {
         <div className='note-header'>
           { this.renderStarUnstar(note) }
           { this.renderTitle(note) }
-          { this.renderTags(ni.Tags(note)) }
+          { this.renderTags(note.Tags()) }
           { this.renderPublicPrivate(note) }
           { this.renderDeletedState(note) }
           { this.renderActions(note) }
