@@ -10,8 +10,8 @@ import TextSelect from './TextSelect';
 import * as action from './action';
 import {
   Note,
-  formatText,
-  formatMarkdown,
+  FormatText,
+  FormatMarkdown,
   FetchLatestContent
 } from './Note';
 import { debounce } from './utils';
@@ -37,10 +37,10 @@ const cmOptions = {
 };
 
 function formatPrettyName(fmt: string): string {
-  if (fmt === formatText) {
+  if (fmt === FormatText) {
     return 'text';
   }
-  if (fmt === formatMarkdown) {
+  if (fmt === FormatMarkdown) {
     return 'markdown';
   }
   return fmt;
@@ -48,10 +48,10 @@ function formatPrettyName(fmt: string): string {
 
 function formatShortName(fmt: string): string {
   if (fmt === 'text') {
-    return formatText;
+    return FormatText;
   }
   if (fmt === 'markdown') {
-    return formatMarkdown;
+    return FormatMarkdown;
   }
   return fmt;
 }
@@ -112,11 +112,11 @@ class NoteInEditor {
   }
 
   isText(): boolean {
-    return this.formatName === formatText;
+    return this.formatName === FormatText;
   }
 
   isMarkdown(): boolean {
-    return this.formatName === formatMarkdown;
+    return this.formatName === FormatMarkdown;
   }
 
   isEmpty(): boolean {
@@ -156,7 +156,7 @@ function toNewNoteJSON(note: NoteInEditor) {
 }
 
 function newEmptyNote(): NoteInEditor {
-  return new NoteInEditor(null, '', '', '', false, formatMarkdown);
+  return new NoteInEditor(null, '', '', '', false, FormatMarkdown);
 }
 
 function didNoteChange(n1: NoteInEditor, n2: NoteInEditor): boolean {

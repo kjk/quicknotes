@@ -13,7 +13,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import { escapeHtml } from './utils';
-import { Note, formatText } from './Note';
+import { Note, FormatText } from './Note';
 import * as api from './api';
 import * as action from './action';
 
@@ -257,7 +257,7 @@ export default class AppNote extends Component<{}, State> {
   renderBody(note: any) {
     const body = note.GetContentDirect();
     const fmtName = note.Format();
-    const isTxt = fmtName == formatText;
+    const isTxt = fmtName == FormatText;
     if (isTxt) {
       const html = {
         __html: linkify2(body)
