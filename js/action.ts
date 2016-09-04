@@ -76,7 +76,7 @@ export function offAllForOwner(owner: any) {
 
 /* actions specific to an app */
 
-import { INote } from './noteinfo';
+import { Note } from './noteinfo';
 
 // keys for registeredActions
 const tagSelectedCmd = 'tagSelectedCmd';
@@ -139,7 +139,7 @@ export function onEditNewNote(cb: any, owner: any) {
 }
 
 /* --------------------- */
-export function editNote(note: INote) {
+export function editNote(note: Note) {
   broadcast(editNoteCmd, note);
 }
 

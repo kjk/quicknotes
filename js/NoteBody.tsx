@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import * as ni from './noteinfo';
 
 interface Props {
-  note?: ni.INote;
+  note?: ni.Note;
   compact?: boolean;
 };
 
 interface State {
-  note?: ni.INote;
+  note?: ni.Note;
   body?: string;
 };
 
@@ -36,7 +36,7 @@ export default class NoteBody extends Component<Props, State> {
     if (!ni.NeedsExpansion(note)) {
       return;
     }
-    ni.FetchLatestContent(note, (note: ni.INote, body: string) => {
+    ni.FetchLatestContent(note, (note: ni.Note, body: string) => {
       this.setState({
         note: note,
         body: body

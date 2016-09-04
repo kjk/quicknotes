@@ -16,7 +16,7 @@ import * as ni from './noteinfo';
 import * as action from './action';
 import * as api from './api';
 
-function tagsFromNotes(notes: ni.INote[]): ni.TagToCount {
+function tagsFromNotes(notes: ni.Note[]): ni.TagToCount {
   let tags: ni.TagToCount = {
     __all: 0,
     __deleted: 0,
@@ -63,8 +63,8 @@ interface Props {
 }
 
 interface State {
-  allNotes?: ni.INote[];
-  selectedNotes?: ni.INote[];
+  allNotes?: ni.Note[];
+  selectedNotes?: ni.Note[];
   selectedTags?: string[];
   tags?: ni.TagToCount;
   notesUserHashID?: string;
@@ -83,8 +83,8 @@ export default class AppUser extends Component<Props, State> {
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
-    let allNotes: ni.INote[] = [];
-    let selectedNotes: ni.INote[] = [];
+    let allNotes: ni.Note[] = [];
+    let selectedNotes: ni.Note[] = [];
     let selectedTags = [props.initialTag];
     let tags: ni.TagToCount = {};
 
