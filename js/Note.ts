@@ -21,12 +21,10 @@ Keep expanded/collapsed state of notes as an array. We could try
 to store it as a bit on note object but I worry about keeping
 things synced when they are copied, updated from the server.
  */
-interface ExpandedNotes {
-  [idx: string]: boolean
-}
 
-// we could keep it on Note object itself
-let expandedNotes: ExpandedNotes = {};
+// could be a map of string -> bool but for small number of items
+// array is more efficient
+let expandedNotes: string[] = [];
 
 // a note
 export class Note extends Array {
@@ -135,7 +133,7 @@ export class Note extends Array {
 
   IsExpanded(): boolean {
     const id = this.HashID();
-    return expandedNotes.hasOwnProperty(id);
+    return expandedNotes.indexOf(id) != -1;
   }
 
   IsCollapsed(): boolean {
@@ -144,12 +142,17 @@ export class Note extends Array {
 
   Expand(): void {
     const id = this.HashID();
-    expandedNotes[id] = true;
+    if (!this.IsExpanded()) {
+      expandedNotes.push(id);
+    }
   }
 
   Collapse(): void {
     const id = this.HashID();
-    delete expandedNotes[id];
+    const idx = expandedNotes.indexOf(id);
+    if (idx != -1) {
+      expandedNotes.splice(idx, 1);
+    }
   }
 
   getFlags(): number {
@@ -185,10 +188,10 @@ const flagPartialBit = 3;
 const flagTruncatedBit = 4;
 
 // must match db.go
-export const formatText = 'txt';
-export const formatMarkdown = 'md';
-const formatHTML = 'html';
-const formatCodePrefix = 'code:';
+export const FormatText = 'txt';
+export const FormatMarkdown = 'md';
+const FormatHTML = 'html';
+const FormatCodePrefix = 'code:';
 
 // note properties that can be compared for equality with ==
 const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx];
