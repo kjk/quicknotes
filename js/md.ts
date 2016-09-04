@@ -21,7 +21,7 @@ function unescape(html: string) {
 
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
-renderer.link = function(href, title, text) {
+renderer.link = function(href: string, title: string, text: string) {
   if (this.options.sanitize) {
     try {
       var prot = decodeURIComponent(unescape(href))
@@ -34,13 +34,8 @@ renderer.link = function(href, title, text) {
       return '';
     }
   }
-  var out = '<a href="' + href + '"';
-  if (title) {
-    out += ' title="' + title + '"';
-  }
-  out += 'target="_blank" rel="nofollow"';
-  out += '>' + text + '</a>';
-  return out;
+  const titleAttr = title ? ` title="${title}"` : '';
+  return `<a href="${href}" ${titleAttr} target="_blank" rel="nofollow">${text}</a>`;
 };
 
 const markedOpts = {
@@ -86,25 +81,26 @@ const preset: string = "default";
 const markdownIt = new MarkdownIt(preset, markdownItOpts);
 
 // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md
-// Remember old renderer, if overriden, or proxy to default renderer
+// Remember old renderer, if already over-written, or proxy to default renderer
 function myRenderer(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, md: MarkdownIt.MarkdownIt): string {
   return md.renderer.renderToken(tokens, idx, options);
 };
 
-var defaultRender = markdownIt.renderer.rules["link_open"] || myRenderer;
+const defaultRender = markdownIt.renderer.rules["link_open"] || myRenderer;
 
-markdownIt.renderer.rules["link_open"] = function(tokens, idx, options, env, self) {
+markdownIt.renderer.rules["link_open"] = function(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, self: any) {
   // If you are sure other plugins can't add `target` - drop check below
-  var aIndex = tokens[idx].attrIndex('target');
+  const i = tokens[idx].attrIndex('target');
 
-  if (aIndex < 0) {
+  if (i < 0) {
     tokens[idx].attrPush(['target', '_blank']); // add new attribute
   } else {
-    tokens[idx].attrs[aIndex][1] = '_blank'; // replace value of existing attr
+    tokens[idx].attrs[i][1] = '_blank'; // replace value of existing attr
   }
 
-  // pass token to default renderer.
-  return defaultRender(tokens, idx, options, env, self);
+  // typing says self is MarkdownIt object, in reality it's Render
+  const slf = markdownIt;
+  return defaultRender(tokens, idx, options, env, slf);
 };
 
 function toHtmlMarkdownIt(s: string) {
