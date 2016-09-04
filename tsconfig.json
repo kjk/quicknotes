@@ -29,7 +29,7 @@
         "js/md.ts",
         "js/Note.tsx",
         "js/NoteBody.tsx",
-        "js/noteinfo.ts",
+        "js/Note.ts",
         "js/NotesList.tsx",
         "js/Overlay.tsx",
         "js/Router.ts",

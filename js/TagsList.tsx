@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import TagCount from './TagCount';
 import * as u from './utils';
-import { TagToCount } from './noteinfo';
+import { TagToCount } from './Note';
 
 function isTagSelected(selectedTags: string[], tag: string) {
   return selectedTags.indexOf(tag) != -1;

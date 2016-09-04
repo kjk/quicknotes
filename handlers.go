@@ -392,7 +392,7 @@ func handleNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	execTemplate(w, tmplNote, model)
 }
 
-// must match noteinfo.js
+// must match Note.js
 const (
 	noteIDVerIdx     = 0
 	noteTitleIdx     = 1
@@ -407,7 +407,7 @@ const (
 	noteContentIdx   = 9
 )
 
-// must match noteinfo.js
+// must match Note.js
 const (
 	flagStarredBit   = 0
 	flagDeletedBit   = 1

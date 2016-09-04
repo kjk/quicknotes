@@ -76,7 +76,7 @@ export function offAllForOwner(owner: any) {
 
 /* actions specific to an app */
 
-import { Note } from './noteinfo';
+import { Note } from './Note';
 
 // keys for registeredActions
 const tagSelectedCmd = 'tagSelectedCmd';

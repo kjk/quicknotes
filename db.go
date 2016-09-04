@@ -25,7 +25,7 @@ const (
 	cachedContentSizeThresholed = 1024 * 1024 // 1 MB
 )
 
-// must match noteinfo.js
+// must match Note.js
 const (
 	formatText       = "txt"
 	formatMarkdown   = "md"

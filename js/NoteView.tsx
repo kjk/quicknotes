@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import NoteBody from './NoteBody';
-import { Note } from './noteinfo';
+import { Note } from './Note';
 import * as action from './action';
 import * as api from './api';
 

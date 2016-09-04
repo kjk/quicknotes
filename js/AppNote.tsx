@@ -13,7 +13,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import { escapeHtml } from './utils';
-import { Note, formatText } from './noteinfo';
+import { Note, formatText } from './Note';
 import * as api from './api';
 import * as action from './action';
 

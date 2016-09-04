@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import * as ReactDOM from 'react-dom';
 import NoteView from './NoteView';
-import { Note } from './noteinfo';
+import { Note } from './Note';
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 

@@ -8,7 +8,12 @@ import DragBarHoriz from './DragBarHoriz';
 import TextSelect from './TextSelect';
 
 import * as action from './action';
-import { Note, formatText, formatMarkdown, FetchLatestContent } from './noteinfo';
+import {
+  Note,
+  formatText,
+  formatMarkdown,
+  FetchLatestContent
+} from './Note';
 import { debounce } from './utils';
 import { toHtml } from './md';
 import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils';
