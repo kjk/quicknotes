@@ -15,12 +15,12 @@ interface State {
 }
 
 interface Props {
-  note: ni.INote;
+  note: ni.Note;
   compact: boolean;
   showingMyNotes: boolean;
 }
 
-export default class Note extends Component<Props, State> {
+export default class NoteView extends Component<Props, State> {
   constructor(props?: Props, context?: any) {
     super(props, context);
     this.handleDelUndel = this.handleDelUndel.bind(this);
@@ -158,7 +158,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderTitle(note: ni.INote) {
+  renderTitle(note: ni.Note) {
     const title = ni.Title(note);
     if (title !== '') {
       return (
@@ -180,7 +180,7 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderPublicPrivate(note: ni.INote) {
+  renderPublicPrivate(note: ni.Note) {
     const isPublic = ni.IsPublic(note);
     if (isPublic) {
       return <span className='is-public'>public </span>;
@@ -189,14 +189,14 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderDeletedState(note: ni.INote) {
+  renderDeletedState(note: ni.Note) {
     const isDeleted = ni.IsDeleted(note);
     if (isDeleted) {
       return <span className='is-deleted'>deleted</span>;
     }
   }
 
-  renderTrashUntrash(note: ni.INote) {
+  renderTrashUntrash(note: ni.Note) {
     if (ni.IsDeleted(note)) {
       return (
         <a className='note-action'
@@ -213,7 +213,7 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderPermanentDelete(note: ni.INote) {
+  renderPermanentDelete(note: ni.Note) {
     if (ni.IsDeleted(note)) {
       return (
         <a className='note-action delete'
@@ -229,7 +229,7 @@ export default class Note extends Component<Props, State> {
     this.editCurrentNote();
   }
 
-  renderEdit(note: ni.INote) {
+  renderEdit(note: ni.Note) {
     if (!ni.IsDeleted(note)) {
       return (
         <a className='note-action'
@@ -240,7 +240,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderViewLink(note: ni.INote) {
+  renderViewLink(note: ni.Note) {
     let title = ni.Title(note);
     if (title.length > 0) {
       title = '-' + urlifyTitle(title);
@@ -254,13 +254,13 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderSize(note: ni.INote) {
+  renderSize(note: ni.Note) {
     return (
       <span className='note-size'>{ ni.HumanSize(note) }</span>
     );
   }
 
-  renderMakePublicPrivate(note: ni.INote) {
+  renderMakePublicPrivate(note: ni.Note) {
     if (ni.IsDeleted(note)) {
       return;
     }
@@ -281,7 +281,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderStarUnstar(note: ni.INote) {
+  renderStarUnstar(note: ni.Note) {
     if (!this.props.showingMyNotes || ni.IsDeleted(note)) {
       return;
     }
@@ -304,7 +304,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderActionsIfMyNotes(note: ni.INote) {
+  renderActionsIfMyNotes(note: ni.Note) {
     if (this.state.showActions) {
       return (
         <div className='note-actions'>
@@ -318,7 +318,7 @@ export default class Note extends Component<Props, State> {
     }
   }
 
-  renderActionsIfNotMyNotes(note: ni.INote) {
+  renderActionsIfNotMyNotes(note: ni.Note) {
     if (this.state.showActions) {
       return (
         <div className='note-actions'>
@@ -331,7 +331,7 @@ export default class Note extends Component<Props, State> {
     );
   }
 
-  renderActions(note: ni.INote) {
+  renderActions(note: ni.Note) {
     if (this.props.showingMyNotes) {
       return this.renderActionsIfMyNotes(note);
     } else {

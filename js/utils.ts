@@ -4,13 +4,13 @@ export interface Dict<V> {
   [idx: string]: V;
 }
 
-export type TagToNotes = Dict<ni.INote[]>;
+export type TagToNotes = Dict<ni.Note[]>;
 
 export function isUndefined(v: any) {
   return typeof v === 'undefined';
 }
 
-export function noteHasTag(note: ni.INote, tag: string) {
+export function noteHasTag(note: ni.Note, tag: string) {
   const tags = ni.Tags(note);
   if (!tags) {
     return false;
@@ -23,12 +23,12 @@ export function noteHasTag(note: ni.INote, tag: string) {
   return false;
 }
 
-function getSpecialNotes(notes: ni.INote[]): TagToNotes {
-  let deletedNotes: ni.INote[] = [];
-  let notDeletedNotes: ni.INote[] = [];
-  let publicNotes: ni.INote[] = [];
-  let privateNotes: ni.INote[] = [];
-  let starredNotes: ni.INote[] = [];
+function getSpecialNotes(notes: ni.Note[]): TagToNotes {
+  let deletedNotes: ni.Note[] = [];
+  let notDeletedNotes: ni.Note[] = [];
+  let publicNotes: ni.Note[] = [];
+  let privateNotes: ni.Note[] = [];
+  let starredNotes: ni.Note[] = [];
 
   for (let note of notes) {
     if (ni.IsDeleted(note)) {
@@ -70,13 +70,13 @@ export function tagNameToDisplayName(tagName: string): string {
   return specialTagNames[tagName] || tagName;
 }
 
-export function filterNotesByTag(notes: ni.INote[], tag: string): ni.INote[] {
+export function filterNotesByTag(notes: ni.Note[], tag: string): ni.Note[] {
   if (isSpecialTag(tag)) {
     const specialNotes: TagToNotes = getSpecialNotes(notes);
     return specialNotes[tag];
   }
 
-  let res: ni.INote[] = [];
+  let res: ni.Note[] = [];
   for (let note of notes) {
     if (ni.IsDeleted(note)) {
       continue;
@@ -88,7 +88,7 @@ export function filterNotesByTag(notes: ni.INote[], tag: string): ni.INote[] {
   return res;
 }
 
-export function filterNotesByTags(notes: ni.INote[], tags: string[]): ni.INote[] {
+export function filterNotesByTags(notes: ni.Note[], tags: string[]): ni.Note[] {
   for (const tag of tags) {
     notes = filterNotesByTag(notes, tag);
   }

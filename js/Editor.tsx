@@ -119,7 +119,7 @@ class NoteInEditor {
   }
 }
 
-function noteFromCompact(note: ni.INote, body: string): NoteInEditor {
+function noteFromCompact(note: ni.Note, body: string): NoteInEditor {
   const id = ni.HashID(note);
   const title = ni.Title(note);
   const tags = ni.Tags(note);
@@ -862,9 +862,9 @@ export default class Editor extends Component<{}, State> {
     this.startEditingNote(newEmptyNote());
   }
 
-  editNote(noteCompactInitial: ni.INote) {
+  editNote(noteCompactInitial: ni.Note) {
     //console.log('Editor.editNote: noteCompact=', noteCompact);
-    ni.FetchLatestContent(noteCompactInitial, (noteCompact: ni.INote, body: string) => {
+    ni.FetchLatestContent(noteCompactInitial, (noteCompact: ni.Note, body: string) => {
       const note = noteFromCompact(noteCompact, body);
       this.startEditingNote(note);
     });

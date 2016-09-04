@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import * as ReactDOM from 'react-dom';
-import Note from './Note';
-import { INote, HashID, CurrentVersion } from './noteinfo';
+import NoteView from './NoteView';
+import { Note, HashID, CurrentVersion } from './noteinfo';
 
 // http://blog.vjeux.com/2013/javascript/scroll-position-with-react.html
 
 const maxInitialNotes = 50;
 
-function truncateNotes(notes: INote[], max: number): INote[] {
+function truncateNotes(notes: Note[], max: number): Note[] {
   if (max != -1 && notes && notes.length >= max) {
     return notes.slice(0, max);
   }
@@ -15,14 +15,14 @@ function truncateNotes(notes: INote[], max: number): INote[] {
 }
 
 interface Props {
-  notes: INote[];
+  notes: Note[];
   compact: boolean;
   showingMyNotes: boolean;
   resetScroll?: boolean;
 }
 
 interface State {
-  notes: INote[];
+  notes: Note[];
 }
 
 export default class NotesList extends Component<Props, State> {
@@ -90,7 +90,7 @@ export default class NotesList extends Component<Props, State> {
         <div className='wrapper'>
           { this.state.notes.map((note: any) => {
             const key = `${HashID(note)}-${CurrentVersion(note)}`;
-            return <Note compact={ this.props.compact }
+            return <NoteView compact={ this.props.compact }
               note={ note }
               key={ key }
               showingMyNotes={ this.props.showingMyNotes } />;

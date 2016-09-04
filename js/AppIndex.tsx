@@ -9,11 +9,11 @@ import Settings from './Settings';
 import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
-import { INote } from './noteinfo';
+import { Note } from './noteinfo';
 import * as action from './action';
 
 interface State {
-  notes: INote[];
+  notes: Note[];
 }
 
 export default class AppIndex extends Component<{}, State> {
