@@ -8,7 +8,7 @@ import DragBarHoriz from './DragBarHoriz';
 import TextSelect from './TextSelect';
 
 import * as action from './action';
-import * as ni from './noteinfo';
+import { Note, formatText, formatMarkdown, FetchLatestContent } from './noteinfo';
 import { debounce } from './utils';
 import { toHtml } from './md';
 import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils';
@@ -32,10 +32,10 @@ const cmOptions = {
 };
 
 function formatPrettyName(fmt: string): string {
-  if (fmt === ni.formatText) {
+  if (fmt === formatText) {
     return 'text';
   }
-  if (fmt === ni.formatMarkdown) {
+  if (fmt === formatMarkdown) {
     return 'markdown';
   }
   return fmt;
@@ -43,10 +43,10 @@ function formatPrettyName(fmt: string): string {
 
 function formatShortName(fmt: string): string {
   if (fmt === 'text') {
-    return ni.formatText;
+    return formatText;
   }
   if (fmt === 'markdown') {
-    return ni.formatMarkdown;
+    return formatMarkdown;
   }
   return fmt;
 }
@@ -107,11 +107,11 @@ class NoteInEditor {
   }
 
   isText(): boolean {
-    return this.formatName === ni.formatText;
+    return this.formatName === formatText;
   }
 
   isMarkdown(): boolean {
-    return this.formatName === ni.formatMarkdown;
+    return this.formatName === formatMarkdown;
   }
 
   isEmpty(): boolean {
@@ -119,13 +119,13 @@ class NoteInEditor {
   }
 }
 
-function noteFromCompact(note: ni.Note, body: string): NoteInEditor {
-  const id = ni.HashID(note);
-  const title = ni.Title(note);
-  const tags = ni.Tags(note);
+function noteFromCompact(note: Note, body: string): NoteInEditor {
+  const id = note.HashID();
+  const title = note.Title();
+  const tags = note.Tags();
   const tagsStr = tagsToText(tags);
-  const isPublic = ni.IsPublic(note);
-  const formatName = ni.Format(note);
+  const isPublic = note.IsPublic();
+  const formatName = note.Format();
   return new NoteInEditor(id, title, tagsStr, body, isPublic, formatName);
 }
 
@@ -151,7 +151,7 @@ function toNewNoteJSON(note: NoteInEditor) {
 }
 
 function newEmptyNote(): NoteInEditor {
-  return new NoteInEditor(null, '', '', '', false, ni.formatMarkdown);
+  return new NoteInEditor(null, '', '', '', false, formatMarkdown);
 }
 
 function didNoteChange(n1: NoteInEditor, n2: NoteInEditor): boolean {
@@ -862,9 +862,9 @@ export default class Editor extends Component<{}, State> {
     this.startEditingNote(newEmptyNote());
   }
 
-  editNote(noteCompactInitial: ni.Note) {
+  editNote(noteCompactInitial: Note) {
     //console.log('Editor.editNote: noteCompact=', noteCompact);
-    ni.FetchLatestContent(noteCompactInitial, (noteCompact: ni.Note, body: string) => {
+    FetchLatestContent(noteCompactInitial, (noteCompact: Note, body: string) => {
       const note = noteFromCompact(noteCompact, body);
       this.startEditingNote(note);
     });

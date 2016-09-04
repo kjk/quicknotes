@@ -13,7 +13,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import { escapeHtml } from './utils';
-import * as ni from './noteinfo';
+import { Note, formatText } from './noteinfo';
 import * as api from './api';
 import * as action from './action';
 
@@ -82,7 +82,7 @@ export default class AppNote extends Component<{}, State> {
   // browser window), so re-get the content
   editCurrentNote() {
     const note = this.state.note;
-    const id = ni.HashID(note);
+    const id = note.HashID();
     // console.log('editCurrentNote id: ', id);
     api.getNote(id, (json: any) => {
       // TODO: handle error
@@ -100,7 +100,7 @@ export default class AppNote extends Component<{}, State> {
   // sent when editor saved a note, so reload it
   handleReloadNotes(resetScroll: boolean) {
     const note = this.state.note;
-    const noteID = ni.HashID(note);
+    const noteID = note.HashID();
     api.getNote(noteID, (note: any) => {
       this.setNote(note);
     });
@@ -130,8 +130,8 @@ export default class AppNote extends Component<{}, State> {
   handleDelUndel(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    const noteID = ni.HashID(note);
-    if (ni.IsDeleted(note)) {
+    const noteID = note.HashID();
+    if (note.IsDeleted()) {
       action.showTemporaryMessage('Undeleting note...', 500);
       api.undeleteNote(noteID, (note: any) => {
         // TODO: handle error
@@ -151,7 +151,7 @@ export default class AppNote extends Component<{}, State> {
   handlePermanentDelete(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    const noteID = ni.HashID(note);
+    const noteID = note.HashID();
     action.showTemporaryMessage('Permanently deleting note...', 500);
     api.permanentDeleteNote(noteID, () => {
       // TODO: handle error
@@ -164,9 +164,9 @@ export default class AppNote extends Component<{}, State> {
   handleMakePublicPrivate(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    // console.log('handleMakePublicPrivate, note.IsPublic: ', ni.IsPublic(note));
-    const noteID = ni.HashID(note);
-    if (ni.IsPublic(note)) {
+    // console.log('handleMakePublicPrivate, note.IsPublic: ', note.IsPublic());
+    const noteID = note.HashID();
+    if (note.IsPublic()) {
       action.showTemporaryMessage('Making note private...', 500);
       api.makeNotePrivate(noteID, (note: any) => {
         // TODO: handle error
@@ -186,9 +186,9 @@ export default class AppNote extends Component<{}, State> {
   handleStarUnstarNote(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    // console.log('handleStarUnstarNote, note.IsStarred: ', ni.IsStarred(note));
-    const noteID = ni.HashID(note);
-    if (ni.IsStarred(note)) {
+    // console.log('handleStarUnstarNote, note.IsStarred: ', note.IsStarred());
+    const noteID = note.HashID();
+    if (note.IsStarred()) {
       action.showTemporaryMessage('Un-starring the note...', 500);
       api.unstarNote(noteID, (note: any) => {
         // TODO: handle error
@@ -211,7 +211,7 @@ export default class AppNote extends Component<{}, State> {
   }
 
   renderEdit(note: any) {
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       return;
     }
     return <a href='#' onClick={ this.handleEditNote }>Edit</a>;
@@ -222,42 +222,42 @@ export default class AppNote extends Component<{}, State> {
   }
 
   renderStarUnstar(note: any) {
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       return;
     }
-    const s = ni.IsStarred(note) ? 'Unstar' : 'Star';
+    const s = note.IsStarred() ? 'Unstar' : 'Star';
     return <a href='#' onClick={ this.handleStarUnstarNote }>
       { s }
     </a>;
   }
 
   renderMakePublicPrivate(note: any) {
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       return;
     }
-    const s = ni.IsPublic(note) ? 'Make private' : 'Make public';
+    const s = note.IsPublic() ? 'Make private' : 'Make public';
     return <a href='#' onClick={ this.handleMakePublicPrivate }>
       { s }
     </a>;
   }
 
   renderTrashUntrash(note: any) {
-    const s = ni.IsDeleted(note) ? 'Undelete' : 'Move to Trash';
+    const s = note.IsDeleted() ? 'Undelete' : 'Move to Trash';
     return <a href='#' onClick={ this.handleDelUndel }>
       { s }
     </a>;
   }
 
   renderPermanentDelete(note: any) {
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       return <a href='#' onClick={ this.handlePermanentDelete }>Delete permanently</a>;
     }
   }
 
   renderBody(note: any) {
-    const body = ni.GetContentDirect(note);
-    const fmtName = ni.Format(note);
-    const isTxt = fmtName == ni.formatText;
+    const body = note.GetContentDirect();
+    const fmtName = note.Format();
+    const isTxt = fmtName == formatText;
     if (isTxt) {
       const html = {
         __html: linkify2(body)
@@ -285,7 +285,7 @@ export default class AppNote extends Component<{}, State> {
   }
 
   renderPublicPrivate(note: any) {
-    const isPublic = ni.IsPublic(note);
+    const isPublic = note.IsPublic();
     if (isPublic) {
       return <span className='is-public'>public </span>;
     } else {
@@ -294,7 +294,7 @@ export default class AppNote extends Component<{}, State> {
   }
 
   renderDeletedState(note: any) {
-    const isDeleted = ni.IsDeleted(note);
+    const isDeleted = note.IsDeleted();
     if (isDeleted) {
       return <span className='is-deleted'>deleted</span>;
     }
@@ -338,11 +338,11 @@ export default class AppNote extends Component<{}, State> {
       return this.renderNoteDeleted();
     }
 
-    // console.log('AppNote.render: gLoggedUser: ', gLoggedUser, ' note.IsPublic:', ni.IsPublic(note));
-    const title = ni.Title(note);
+    // console.log('AppNote.render: gLoggedUser: ', gLoggedUser, ' note.IsPublic:', note.IsPublic());
+    const title = note.Title();
     const nu = gNoteUser;
     const url = `/u/${nu.HashID}/${nu.Handle}`;
-    const tags = ni.Tags(note);
+    const tags = note.Tags();
 
     return (
       <div>

@@ -1,17 +1,17 @@
-import * as ni from './noteinfo';
+import { Note } from './noteinfo';
 
 export interface Dict<V> {
   [idx: string]: V;
 }
 
-export type TagToNotes = Dict<ni.Note[]>;
+export type TagToNotes = Dict<Note[]>;
 
 export function isUndefined(v: any) {
   return typeof v === 'undefined';
 }
 
-export function noteHasTag(note: ni.Note, tag: string) {
-  const tags = ni.Tags(note);
+export function noteHasTag(note: Note, tag: string) {
+  const tags = note.Tags();
   if (!tags) {
     return false;
   }
@@ -23,24 +23,24 @@ export function noteHasTag(note: ni.Note, tag: string) {
   return false;
 }
 
-function getSpecialNotes(notes: ni.Note[]): TagToNotes {
-  let deletedNotes: ni.Note[] = [];
-  let notDeletedNotes: ni.Note[] = [];
-  let publicNotes: ni.Note[] = [];
-  let privateNotes: ni.Note[] = [];
-  let starredNotes: ni.Note[] = [];
+function getSpecialNotes(notes: Note[]): TagToNotes {
+  let deletedNotes: Note[] = [];
+  let notDeletedNotes: Note[] = [];
+  let publicNotes: Note[] = [];
+  let privateNotes: Note[] = [];
+  let starredNotes: Note[] = [];
 
   for (let note of notes) {
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       deletedNotes.push(note);
     } else {
       notDeletedNotes.push(note);
-      if (ni.IsPublic(note)) {
+      if (note.IsPublic()) {
         publicNotes.push(note);
       } else {
         privateNotes.push(note);
       }
-      if (ni.IsStarred(note)) {
+      if (note.IsStarred()) {
         starredNotes.push(note);
       }
     }
@@ -70,15 +70,15 @@ export function tagNameToDisplayName(tagName: string): string {
   return specialTagNames[tagName] || tagName;
 }
 
-export function filterNotesByTag(notes: ni.Note[], tag: string): ni.Note[] {
+export function filterNotesByTag(notes: Note[], tag: string): Note[] {
   if (isSpecialTag(tag)) {
     const specialNotes: TagToNotes = getSpecialNotes(notes);
     return specialNotes[tag];
   }
 
-  let res: ni.Note[] = [];
+  let res: Note[] = [];
   for (let note of notes) {
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       continue;
     }
     if (noteHasTag(note, tag)) {
@@ -88,7 +88,7 @@ export function filterNotesByTag(notes: ni.Note[], tag: string): ni.Note[] {
   return res;
 }
 
-export function filterNotesByTags(notes: ni.Note[], tags: string[]): ni.Note[] {
+export function filterNotesByTags(notes: Note[], tags: string[]): Note[] {
   for (const tag of tags) {
     notes = filterNotesByTag(notes, tag);
   }

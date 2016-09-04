@@ -12,12 +12,17 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import * as u from './utils';
-import * as ni from './noteinfo';
+import {
+  Note,
+  TagToCount,
+  sortNotesByUpdatedAt,
+  toNotes
+} from './noteinfo';
 import * as action from './action';
 import * as api from './api';
 
-function tagsFromNotes(notes: ni.Note[]): ni.TagToCount {
-  let tags: ni.TagToCount = {
+function tagsFromNotes(notes: Note[]): TagToCount {
+  let tags: TagToCount = {
     __all: 0,
     __deleted: 0,
     __public: 0,
@@ -30,23 +35,23 @@ function tagsFromNotes(notes: ni.Note[]): ni.TagToCount {
 
   for (let note of notes) {
     // a deleted note won't show up under other tags or under "all" or "public"
-    if (ni.IsDeleted(note)) {
+    if (note.IsDeleted()) {
       tags["__deleted"] += 1;
       continue;
     }
 
     tags["__all"] += 1;
-    if (ni.IsStarred(note)) {
+    if (note.IsStarred()) {
       tags["__starred"] += 1;
     }
 
-    if (ni.IsPublic(note)) {
+    if (note.IsPublic()) {
       tags["__public"] += 1;
     } else {
       tags["__private"] += 1;
     }
 
-    const noteTags = ni.Tags(note);
+    const noteTags = note.Tags();
     if (noteTags !== null) {
       for (let tag of noteTags) {
         u.dictInc(tags, tag);
@@ -63,10 +68,10 @@ interface Props {
 }
 
 interface State {
-  allNotes?: ni.Note[];
-  selectedNotes?: ni.Note[];
+  allNotes?: Note[];
+  selectedNotes?: Note[];
   selectedTags?: string[];
-  tags?: ni.TagToCount;
+  tags?: TagToCount;
   notesUserHashID?: string;
   notesUserHandle?: string;
   loggedUserHashID?: string;
@@ -83,10 +88,10 @@ export default class AppUser extends Component<Props, State> {
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
 
     const initialNotesJSON = props.initialNotesJSON;
-    let allNotes: ni.Note[] = [];
-    let selectedNotes: ni.Note[] = [];
+    let allNotes: Note[] = [];
+    let selectedNotes: Note[] = [];
     let selectedTags = [props.initialTag];
-    let tags: ni.TagToCount = {};
+    let tags: TagToCount = {};
 
     let loggedUserHandle = '';
     let loggedUserHashID = '';
@@ -96,8 +101,8 @@ export default class AppUser extends Component<Props, State> {
     }
 
     if (initialNotesJSON && initialNotesJSON.Notes) {
-      allNotes = initialNotesJSON.Notes;
-      ni.sortNotesByUpdatedAt(allNotes);
+      allNotes = toNotes(initialNotesJSON.Notes);
+      sortNotesByUpdatedAt(allNotes);
       selectedNotes = u.filterNotesByTags(allNotes, selectedTags);
       tags = tagsFromNotes(allNotes);
     }
@@ -157,8 +162,9 @@ export default class AppUser extends Component<Props, State> {
   }
 
   setNotes(json: any, resetScroll: boolean) {
-    const allNotes = json.Notes || [];
-    ni.sortNotesByUpdatedAt(allNotes);
+    // TODO: move toNotes() to api.getNotes()
+    const allNotes = toNotes(json.Notes || []);
+    sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
     let selectedTags = this.state.selectedTags.filter((tag: any) => tag in tags);
     if (selectedTags.length === 0) {
