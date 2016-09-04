@@ -22,6 +22,10 @@ import * as action from './action';
 import * as api from './api';
 
 function tagsFromNotes(notes: Note[]): TagToCount {
+  if (!notes) {
+    return {};
+  }
+
   let tags: TagToCount = {
     __all: 0,
     __deleted: 0,
@@ -29,9 +33,6 @@ function tagsFromNotes(notes: Note[]): TagToCount {
     __private: 0,
     __starred: 0,
   };
-  if (!notes) {
-    return {};
-  }
 
   for (let note of notes) {
     // a deleted note won't show up under other tags or under "all" or "public"
@@ -51,11 +52,8 @@ function tagsFromNotes(notes: Note[]): TagToCount {
       tags["__private"] += 1;
     }
 
-    const noteTags = note.Tags();
-    if (noteTags !== null) {
-      for (let tag of noteTags) {
-        u.dictInc(tags, tag);
-      }
+    for (let tag of note.Tags()) {
+      u.dictInc(tags, tag);
     }
   }
 
@@ -161,9 +159,7 @@ export default class AppUser extends Component<Props, State> {
     });
   }
 
-  setNotes(json: any, resetScroll: boolean) {
-    // TODO: move toNotes() to api.getNotes()
-    const allNotes = toNotes(json.Notes || []);
+  setNotes(allNotes: Note[], resetScroll: boolean) {
     sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
     let selectedTags = this.state.selectedTags.filter((tag: any) => tag in tags);
@@ -184,8 +180,8 @@ export default class AppUser extends Component<Props, State> {
   handleReloadNotes(resetScroll: boolean) {
     const userID = this.state.notesUserHashID;
     // console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
-    api.getNotes(userID, (json: any) => {
-      this.setNotes(json, resetScroll);
+    api.getNotes(userID, (notes: Note[]) => {
+      this.setNotes(notes, resetScroll);
     });
   }
 
