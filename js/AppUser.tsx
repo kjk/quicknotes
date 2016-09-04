@@ -17,7 +17,7 @@ import {
   TagToCount,
   sortNotesByUpdatedAt,
   toNotes
-} from './noteinfo';
+} from './Note';
 import * as action from './action';
 import * as api from './api';
 

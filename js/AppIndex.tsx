@@ -9,7 +9,7 @@ import Settings from './Settings';
 import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
-import { Note } from './noteinfo';
+import { Note } from './Note';
 import * as action from './action';
 
 interface State {

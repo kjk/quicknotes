@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Note, FetchLatestContent } from './noteinfo';
+import { Note, FetchLatestContent } from './Note';
 
 interface Props {
   note?: Note;
