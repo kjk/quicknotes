@@ -16,15 +16,20 @@ const noteTagsIdx = 7;
 const noteSnippetIdx = 8;
 const noteContentIdx = 9;
 
-/* locally manage expanded/collapsed state of notes */
-
+/*
+Keep expanded/collapsed state of notes as an array. We could try
+to store it as a bit on note object but I worry about keeping
+things synced when they are copied, updated from the server.
+ */
 interface ExpandedNotes {
   [idx: string]: boolean
 }
 
+// we could keep it on Note object itself
 let expandedNotes: ExpandedNotes = {};
 
-class NoteArrayWrapper extends Array {
+// a note
+export class Note extends Array {
 
   constructor() {
     super();
@@ -160,44 +165,8 @@ class NoteArrayWrapper extends Array {
   }
 }
 
-export interface Note {
-  IDVer(): string
-  HashID(): string
-  Version(): string
-  Title(): string
-  Size(): number
-  HumanSize(): string
-  CreatedAt(): Date
-  UpdatedAt(): Date
-  Tags(): string[]
-  Snippet(): string
-  Format(): string
-  CurrentVersion(): string
-  GetContentDirect(): string
-  SetTitle(title: string): void
-  SetTags(tags: string[]): void
-  SetFormat(format: string): void
-
-  IsStarred(): boolean
-  IsDeleted(): boolean
-  IsPublic(): boolean
-  IsPrivate(): boolean
-  IsPartial(): boolean
-  IsTruncated(): boolean
-  NeedsExpansion(): boolean
-
-  IsExpanded(): boolean
-  IsCollapsed(): boolean
-  Expand(): void
-  Collapse(): void
-
-  // private
-  getFlags(): number
-  setFlags(n: number): void
-}
-
-export function toNote(note: any): Note {
-  note.__proto__ = NoteArrayWrapper.prototype;
+function toNote(note: any): Note {
+  note.__proto__ = Note.prototype;
   return note as Note;
 }
 
