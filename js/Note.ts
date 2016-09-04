@@ -24,138 +24,140 @@ interface ExpandedNotes {
 
 let expandedNotes: ExpandedNotes = {};
 
-function NoteArray() {
-}
+class NoteArrayWrapper extends Array {
 
-NoteArray.prototype = Array.prototype;
+  constructor() {
+    super();
+  }
 
-NoteArray.prototype.IDVer = function(): string {
-  return this[noteIDVerIdx] as string;
-}
+  IDVer(): string {
+    return this[noteIDVerIdx] as string;
+  }
 
-NoteArray.prototype.HashID = function(): string {
-  const s = this[noteIDVerIdx] as string;
-  return s.split('-')[0];
-}
+  HashID(): string {
+    const s = this[noteIDVerIdx] as string;
+    return s.split('-')[0];
+  }
 
-NoteArray.prototype.Version = function(): string {
-  const s = this[noteIDVerIdx] as string;
-  return s.split('-')[1];
-}
+  Version(): string {
+    const s = this[noteIDVerIdx] as string;
+    return s.split('-')[1];
+  }
 
-NoteArray.prototype.Title = function(): string {
-  return this[noteTitleIdx] as string;
-}
+  Title(): string {
+    return this[noteTitleIdx] as string;
+  }
 
-NoteArray.prototype.Size = function(): number {
-  return this[noteSizeIdx] as number;
-}
+  Size(): number {
+    return this[noteSizeIdx] as number;
+  }
 
-NoteArray.prototype.CreatedAt = function(): Date {
-  const epochMs = this[noteCreatedAtIdx] as number;
-  return new Date(epochMs);
-}
+  CreatedAt(): Date {
+    const epochMs = this[noteCreatedAtIdx] as number;
+    return new Date(epochMs);
+  }
 
-NoteArray.prototype.UpdatedAt = function(): Date {
-  const epochMs = this[noteUpdatedAtIdx] as number;
-  return new Date(epochMs);
-}
+  UpdatedAt(): Date {
+    const epochMs = this[noteUpdatedAtIdx] as number;
+    return new Date(epochMs);
+  }
 
-NoteArray.prototype.Tags = function(): string[] {
-  return this[noteTagsIdx] as string[] || [];
-}
+  Tags(): string[] {
+    return this[noteTagsIdx] as string[] || [];
+  }
 
-NoteArray.prototype.Snippet = function(): string {
-  return this[noteSnippetIdx] as string;
-}
+  Snippet(): string {
+    return this[noteSnippetIdx] as string;
+  }
 
-NoteArray.prototype.Format = function(): string {
-  return this[noteFormatIdx] as string;
-}
+  Format(): string {
+    return this[noteFormatIdx] as string;
+  }
 
-NoteArray.prototype.CurrentVersion = function(): string {
-  const s = this[noteIDVerIdx] as string;
-  return s.split('-')[1];
-}
+  CurrentVersion(): string {
+    const s = this[noteIDVerIdx] as string;
+    return s.split('-')[1];
+  }
 
-NoteArray.prototype.GetContentDirect = function(): string {
-  return this[noteContentIdx] as string;
-}
+  GetContentDirect(): string {
+    return this[noteContentIdx] as string;
+  }
 
-NoteArray.prototype.getFlags = function(): number {
-  return this[noteFlagsIdx] as number;
-}
+  SetTitle(title: string) {
+    this[noteTitleIdx] = title;
+  }
 
-NoteArray.prototype.setFlags = function(n: number): void {
-  this[noteFlagsIdx] = n;
-}
+  SetTags(tags: string[]): void {
+    this[noteTagsIdx] = tags;
+  }
 
-NoteArray.prototype.SetTitle = function(title: string) {
-  this[noteTitleIdx] = title;
-}
+  SetFormat(format: string): void {
+    this[noteFormatIdx] = format;
+  }
 
-NoteArray.prototype.SetTags = function(tags: string[]): void {
-  this[noteTagsIdx] = tags;
-}
+  HumanSize(): string {
+    return filesize(this.Size());
+  }
 
-NoteArray.prototype.SetFormat = function(format: string): void {
-  this[noteFormatIdx] = format;
-}
+  IsStarred(): boolean {
+    return this.isFlagSet(flagStarredBit);
+  }
 
-NoteArray.prototype.HumanSize = function(): string {
-  return filesize(this.Size());
-}
+  IsDeleted(): boolean {
+    return this.isFlagSet(flagDeletedBit);
+  }
 
-function isFlagSet(note: Note, nBit: number): boolean {
-  return isBitSet(note.getFlags(), nBit);
-}
+  IsPublic(): boolean {
+    return this.isFlagSet(flagPublicBit);
+  }
 
-NoteArray.prototype.IsStarred = function(): boolean {
-  return isFlagSet(this, flagStarredBit);
-}
+  IsPrivate(): boolean {
+    return !this.IsPublic();
+  }
 
-NoteArray.prototype.IsDeleted = function(): boolean {
-  return isFlagSet(this, flagDeletedBit);
-}
+  // partial is if full content is != snippet
+  IsPartial(): boolean {
+    return this.isFlagSet(flagPartialBit);
+  }
 
-NoteArray.prototype.IsPublic = function(): boolean {
-  return isFlagSet(this, flagPublicBit);
-}
+  IsTruncated(): boolean {
+    return this.isFlagSet(flagTruncatedBit);
+  }
 
-NoteArray.prototype.IsPrivate = function(): boolean {
-  return !this.IsPublic();
-}
+  NeedsExpansion(): boolean {
+    return this.IsPartial() || this.IsTruncated();
+  }
 
-// partial is if full content is != snippet
-NoteArray.prototype.IsPartial = function(): boolean {
-  return isFlagSet(this, flagPartialBit);
-}
+  IsExpanded(): boolean {
+    const id = this.HashID();
+    return expandedNotes.hasOwnProperty(id);
+  }
 
-NoteArray.prototype.IsTruncated = function(): boolean {
-  return isFlagSet(this, flagTruncatedBit);
-}
+  IsCollapsed(): boolean {
+    return !this.IsExpanded();
+  }
 
-NoteArray.prototype.NeedsExpansion = function(): boolean {
-  return this.IsPartial() || this.IsTruncated();
-}
+  Expand(): void {
+    const id = this.HashID();
+    expandedNotes[id] = true;
+  }
 
-NoteArray.prototype.IsExpanded = function(): boolean {
-  const id = this.HashID();
-  return expandedNotes.hasOwnProperty(id);
-}
+  Collapse(): void {
+    const id = this.HashID();
+    delete expandedNotes[id];
+  }
 
-NoteArray.prototype.IsCollapsed = function(): boolean {
-  return !this.IsExpanded();
-}
+  getFlags(): number {
+    return this[noteFlagsIdx] as number;
+  }
 
-NoteArray.prototype.Expand = function(): void {
-  const id = this.HashID();
-  expandedNotes[id] = true;
-}
+  setFlags(n: number): void {
+    this[noteFlagsIdx] = n;
+  }
 
-NoteArray.prototype.Collapse = function(): void {
-  const id = this.HashID();
-  delete expandedNotes[id];
+  isFlagSet(nBit: number): boolean {
+    return isBitSet(this.getFlags(), nBit);
+  }
 }
 
 export interface Note {
@@ -195,7 +197,7 @@ export interface Note {
 }
 
 export function toNote(note: any): Note {
-  note.prototype = NoteArray.prototype;
+  note.__proto__ = NoteArrayWrapper.prototype;
   return note as Note;
 }
 
