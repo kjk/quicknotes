@@ -167,7 +167,7 @@ export default class ImportSimpleNote extends React.Component<{}, State> {
     }
     return (
       <tr>
-        <td colSpan='2'>
+        <td colSpan={2}>
           <div className='error'>
             {this.state.errorMessage}
           </div>
@@ -182,7 +182,7 @@ export default class ImportSimpleNote extends React.Component<{}, State> {
     }
     return (
       <tr>
-        <td colSpan='2'>
+        <td colSpan={2}>
           {this.state.statusMessage}
         </td>
       </tr>
@@ -193,7 +193,7 @@ export default class ImportSimpleNote extends React.Component<{}, State> {
     if (this.state.finishedImporting) {
       return (
         <tr style={styleMarginTop}>
-          <td colSpan='2'>
+          <td colSpan={2}>
             {this.state.statusMessage}
           </td>
         </tr>

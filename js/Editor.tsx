@@ -1134,19 +1134,37 @@ export default class Editor extends Component<{}, State> {
       height: editorHeight(y)
     };
 
-    /*
-                <button className="ebtn" onClick={ this.handleOpenInNewWindow } title="Open in New Window">
-                  <i className="fa fa-expand"></i>
-                </button>
-    */
+    const dragBar = (
+      <DragBarHoriz initialY={y}
+        dy={kDragBarDy}
+        min={kDragBarMin}
+        max={dragBarMax}
+        onPosChanged={this.handleDragBarMoved} />
+    );
+
+    const input1 = (
+      <input id='editor-title'
+        className='editor-input'
+        placeholder='title here...'
+        value={note.title}
+        onChange={this.handleTitleChanged}
+        ref='title'
+        tabIndex={1}
+        />
+    );
+
+    const input2 = (
+      <input id='editor-tags'
+        className='editor-input'
+        placeholder='#enter #tags'
+        value={note.tags}
+        onChange={this.handleTagsChanged}
+        tabIndex={2} />
+    );
 
     return (
       <Overlay>
-        <DragBarHoriz initialY={y}
-          dy={kDragBarDy}
-          min={kDragBarMin}
-          max={dragBarMax}
-          onPosChanged={this.handleDragBarMoved} />
+        {dragBar}
         <div id='editor-wrapper'
           className='flex-col'
           style={style}
@@ -1163,19 +1181,8 @@ export default class Editor extends Component<{}, State> {
             </button>
             {publicSelect}
             {formatSelect}
-            <input id='editor-title'
-              className='editor-input'
-              placeholder='title here...'
-              value={note.title}
-              onChange={this.handleTitleChanged}
-              ref='title'
-              tabIndex='1' />
-            <input id='editor-tags'
-              className='editor-input'
-              placeholder='#enter #tags'
-              value={note.tags}
-              onChange={this.handleTagsChanged}
-              tabIndex='2' />
+            {input1}
+            {input2}
             <div className='editor-spacer2'></div>
           </div>
           {this.renderMarkdownButtons(isText)}
