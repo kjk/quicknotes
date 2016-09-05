@@ -13,7 +13,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import { escapeHtml } from './utils';
-import { Note, FormatText } from './Note';
+import { Note, toNote, FormatText } from './Note';
 import * as api from './api';
 import * as action from './action';
 
@@ -31,7 +31,7 @@ function linkify2(s: any) {
 }
 
 interface State {
-  note?: any;
+  note?: Note;
 }
 
 export default class AppNote extends Component<any, State> {
@@ -53,8 +53,9 @@ export default class AppNote extends Component<any, State> {
     this.isMyNote = this.isMyNote.bind(this);
     this.setNote = this.setNote.bind(this);
 
+    const note = toNote(gInitialNote);
     this.state = {
-      note: gInitialNote
+      note: note
     };
   }
 
