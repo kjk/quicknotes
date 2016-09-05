@@ -54,7 +54,7 @@ export default class DragBarHoriz extends React.Component<Props, State> {
     }
   }
 
-  handleMouseDown(e: MouseEvent): any {
+  handleMouseDown(e: React.MouseEvent): void {
     // only left mouse button
     if (e.button !== 0)
       return;
