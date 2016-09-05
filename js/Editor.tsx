@@ -760,7 +760,7 @@ export default class Editor extends Component<{}, State> {
     return false;
   }
 
-  handleDragBarMoved(y: any) {
+  handleDragBarMoved(y: number) {
     // console.log('Editor.handleDragBarMoved: y=', y);
     this.top = y;
     const node = ReactDOM.findDOMNode(this.refs["editorWrapper"]) as HTMLElement;

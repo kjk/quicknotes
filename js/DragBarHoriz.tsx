@@ -1,19 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-/*
-
-DragBarHoriz.propTypes = {
-  onPosChanged: PropTypes.func.isRequired,
-  initialY: PropTypes.number.isRequired,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  dy: PropTypes.number.isRequired
-};
-*/
+interface OnPosChangedCallback {
+  (y: number): void
+}
 
 interface Props {
-  onPosChanged: any;
+  onPosChanged: OnPosChangedCallback;
   initialY: number;
   min: number;
   max: number;
@@ -95,10 +88,10 @@ export default class DragBarHoriz extends React.Component<Props, State> {
       return;
     }
     this.y = y;
-    const yDelta = this.props.initialY - y;
+    // const yDelta = this.props.initialY - y;
     const el = ReactDOM.findDOMNode(this) as HTMLElement;
     el.style.bottom = this.calcBottom() + 'px';
-    this.props.onPosChanged(y, yDelta);
+    this.props.onPosChanged(y);
   }
 
   render() {
