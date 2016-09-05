@@ -14,7 +14,7 @@ interface Props {
   sectionName: string;
 }
 
-export default class TagsList extends Component<Props, {}> {
+export default class TagsList extends Component<Props, any> {
 
   render() {
     //console.log("TagsList render");

@@ -37,7 +37,7 @@ interface State {
   statusMessage?: any;
 }
 
-export default class ImportSimpleNote extends React.Component<{}, State> {
+export default class ImportSimpleNote extends React.Component<any, State> {
 
   inputValues: any;
 

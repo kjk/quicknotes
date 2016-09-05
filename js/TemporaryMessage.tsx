@@ -7,7 +7,7 @@ interface State {
   message?: string;
 }
 
-export default class TemporaryMessage extends Component<{}, State> {
+export default class TemporaryMessage extends Component<any, State> {
 
   currTimerID: number;
 

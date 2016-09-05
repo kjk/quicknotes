@@ -23,7 +23,7 @@ interface State {
   searchTerm: any,
 }
 
-export default class Top extends Component<{}, State> {
+export default class Top extends Component<any, State> {
 
   searchNotesUser: any;
 

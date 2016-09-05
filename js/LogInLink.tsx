@@ -14,7 +14,7 @@ function showSettings(e: React.MouseEvent) {
   action.showSettings();
 }
 
-export default class LogInLink extends Component<{}, {}> {
+export default class LogInLink extends Component<any, any> {
 
   constructor(props?: any, context?: any) {
     super(props, context);

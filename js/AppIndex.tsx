@@ -16,7 +16,7 @@ interface State {
   notes: Note[];
 }
 
-export default class AppIndex extends Component<{}, State> {
+export default class AppIndex extends Component<any, State> {
   constructor(props: any, context: any) {
     super(props, context);
 
