@@ -318,10 +318,7 @@ export default class AppNote extends Component<any, State> {
           </div>
           <hr className='light' />
           <div className='note-footer center'>
-            A note by
-            <a href={url}>
-              {nu.Handle}
-            </a>.
+            A note by <a href={url}>{nu.Handle}</a>.
           </div>
         </div>
         <Settings />
@@ -374,10 +371,7 @@ export default class AppNote extends Component<any, State> {
           </div>
           <hr className='light' />
           <div className='note-footer center'>
-            A note by
-            <a href={url}>
-              {nu.Handle}
-            </a>.
+            A note by <a href={url}>{nu.Handle}</a>.
           </div>
         </div>
         <Settings />
