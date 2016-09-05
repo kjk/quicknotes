@@ -9,7 +9,7 @@ import Settings from './Settings';
 import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
-import { Note } from './Note';
+import { Note, toNotes } from './Note';
 import * as action from './action';
 
 interface State {
@@ -22,8 +22,9 @@ export default class AppIndex extends Component<any, State> {
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
 
+    const notes = toNotes(gRecentNotesInitial);
     this.state = {
-      notes: gRecentNotesInitial
+      notes: notes
     };
   }
 
