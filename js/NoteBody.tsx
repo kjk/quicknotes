@@ -70,22 +70,22 @@ export default class NoteBody extends Component<Props, State> {
 
     if (note.IsCollapsed()) {
       return (
-        <a href='#' className='expand' onClick={ this.handleExpand }>Expand</a>
+        <a href='#' className='expand' onClick={this.handleExpand}>Expand</a>
       );
     }
 
     return (
-      <a href='#' className='collapse' onClick={ this.handleCollapse }>Collapse</a>
+      <a href='#' className='collapse' onClick={this.handleCollapse}>Collapse</a>
     );
   }
 
   renderContent(note: any) {
     const body = this.state.body;
     if (note.IsCollapsed()) {
-      return <pre className='note-body'>{ note.Snippet() }</pre>;
+      return <pre className='note-body'>{note.Snippet()}</pre>;
     }
     // TODO: set a reasonable limit
-    return <pre className='note-body'>{ body }</pre>;
+    return <pre className='note-body'>{body}</pre>;
   }
 
   render() {
@@ -96,8 +96,8 @@ export default class NoteBody extends Component<Props, State> {
     //console.log("NoteBody.render() note: ", note.HashID(), "collapsed:", note.IsCollapsed());
     return (
       <div className='note-content'>
-        { this.renderContent(note) }
-        { this.renderCollapseOrExpand(note) }
+        {this.renderContent(note)}
+        {this.renderCollapseOrExpand(note)}
       </div>
     );
   }

@@ -136,9 +136,9 @@ export default class SearchResults extends React.Component<Props, State> {
       lineNo = '';
     }
     return (
-      <div key={ k } className={ cls }>
-        <span className='line-no'>{ lineNo }</span>
-        <span dangerouslySetInnerHTML={ { __html: i.HTML } }></span>
+      <div key={k} className={cls}>
+        <span className='line-no'>{lineNo}</span>
+        <span dangerouslySetInnerHTML={{ __html: i.HTML }}></span>
       </div>
     );
   }
@@ -152,8 +152,8 @@ export default class SearchResults extends React.Component<Props, State> {
       return this.renderResultItem(noteID, i, n);
     });
     return (
-      <div key={ noteID } className='search-result-note' onClick={ cb }>
-        { children }
+      <div key={noteID} className='search-result-note' onClick={cb}>
+        {children}
       </div>
     );
   }
@@ -162,7 +162,7 @@ export default class SearchResults extends React.Component<Props, State> {
     return (
       <div className='box'>
         <p>
-          No results for: <b>{ term }</b>
+          No results for: <b>{term}</b>
         </p>
       </div>
     );
@@ -186,11 +186,11 @@ export default class SearchResults extends React.Component<Props, State> {
     }
 
     return (
-      <Overlay onClick={ this.handleOverlayClick }>
+      <Overlay onClick={this.handleOverlayClick}>
         <div id='search-results-wrapper'>
           <div id='search-results-triangle-wrapper'></div>
           <div className='search-results-list'>
-            { inner }
+            {inner}
           </div>
         </div>
       </Overlay>

@@ -29,19 +29,19 @@ export default class LogInLink extends Component<{}, {}> {
     const userUrl = '/u/' + u.HashID + '/' + u.Handle;
     return (
       <div id='login-link'>
-        <a href={ userUrl } className='header-link'>
-          { u.Handle } <i className='fa fa-chevron-down login-chevron'></i></a>
+        <a href={userUrl} className='header-link'>
+          {u.Handle} <i className='fa fa-chevron-down login-chevron'></i></a>
         <div className='dropdown-content'>
-          <a href={ userUrl }>My notes</a>
-          { false ?
-            <a href='#' onClick={ showSettings }>Settings</a>
-            : null }
-          { false ?
+          <a href={userUrl}>My notes</a>
+          {false ?
+            <a href='#' onClick={showSettings}>Settings</a>
+            : null}
+          {false ?
             <span className='divider'></span>
-            : null }
-          <a href='/import' onClick={ showImportSimpleNote }>Import from Simplenote</a>
+            : null}
+          <a href='/import' onClick={showImportSimpleNote}>Import from Simplenote</a>
           <span className='divider'></span>
-          <a href={ url }>Sign Out</a>
+          <a href={url}>Sign Out</a>
         </div>
       </div>
     );
@@ -58,13 +58,13 @@ export default class LogInLink extends Component<{}, {}> {
         <div className='log-in-dropdown-content'>
           <ul className='log-in'>
             <li>
-              <a className='twitter' href={ twitterUrl }>Sign in with Twitter</a>
+              <a className='twitter' href={twitterUrl}>Sign in with Twitter</a>
             </li>
             <li>
-              <a className='google' href={ googleUrl }>Sign in with Google</a>
+              <a className='google' href={googleUrl}>Sign in with Google</a>
             </li>
             <li>
-              <a className='github' href={ githubUrl }>Sign in with GitHub</a>
+              <a className='github' href={githubUrl}>Sign in with GitHub</a>
             </li>
           </ul>
         </div>

@@ -40,16 +40,16 @@ export default class TextSelect extends Component<Props, {}> {
     const selected = values[selectedIdx];
     const vals = values.map((val: any, key: any) => {
       return (
-        <option value={ key } key={ key }>
-          { val }
+        <option value={key} key={key}>
+          {val}
         </option>
       );
     });
     return (
-      <div className={ classes }>
-        { selected }
-        <select className='text-select-select' onChange={ this.handleChange } value={ selectedIdx }>
-          { vals }
+      <div className={classes}>
+        {selected}
+        <select className='text-select-select' onChange={this.handleChange} value={selectedIdx}>
+          {vals}
         </select>
       </div>
     );

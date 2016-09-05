@@ -54,6 +54,6 @@ export default class TemporaryMessage extends Component<{}, State> {
     const html = {
       __html: this.state.message
     };
-    return <div className='temporary-message' dangerouslySetInnerHTML={ html }></div>;
+    return <div className='temporary-message' dangerouslySetInnerHTML={html}></div>;
   }
 }

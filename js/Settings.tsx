@@ -70,26 +70,26 @@ export default class Settings extends React.Component<{}, State> {
 
   renderThemesSelect(themes: any, selected: any) {
     const options = themes.map(function(theme: any) {
-      return <option key={ theme }>
-        { theme }
+      return <option key={theme}>
+        {theme}
       </option>;
     });
     return (
-      <select value={ selected } onChange={ this.handleThemeChanged }>
-        { options }
+      <select value={selected} onChange={this.handleThemeChanged}>
+        {options}
       </select>
     );
   }
 
   renderLayoutsSelect(layouts: any, selected: any) {
     const options = layouts.map(function(layout: any) {
-      return <option key={ layout }>
-        { layout }
+      return <option key={layout}>
+        {layout}
       </option>;
     });
     return (
-      <select value={ selected } onChange={ this.handleLayoutChanged }>
-        { options }
+      <select value={selected} onChange={this.handleLayoutChanged}>
+        {options}
       </select>
     );
   }
@@ -118,17 +118,17 @@ export default class Settings extends React.Component<{}, State> {
       <div id='settings'>
         <div className='settings-div'>
           Layout:
-          { layouts }
+          {layouts}
         </div>
         <div className='settings-div'>
           Theme:
-          { themes }
+          {themes}
         </div>
         <div className='settings-buttons'>
-          <button onClick={ this.handleOk }>
+          <button onClick={this.handleOk}>
             Ok
           </button>
-          <button onClick={ this.handleCancel }>
+          <button onClick={this.handleCancel}>
             Cancel
           </button>
         </div>

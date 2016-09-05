@@ -26,8 +26,8 @@ export default class Overlay extends Component<Props, {}> {
 
   render() {
     return (
-      <div className='modal-overlay' onClick={ this.props.onClick }>
-        { this.props.children }
+      <div className='modal-overlay' onClick={this.props.onClick}>
+        {this.props.children}
       </div>
     );
   }

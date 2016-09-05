@@ -214,7 +214,7 @@ export default class AppNote extends Component<{}, State> {
     if (note.IsDeleted()) {
       return;
     }
-    return <a href='#' onClick={ this.handleEditNote }>Edit</a>;
+    return <a href='#' onClick={this.handleEditNote}>Edit</a>;
   }
 
   renderVersions(note: any) {
@@ -226,8 +226,8 @@ export default class AppNote extends Component<{}, State> {
       return;
     }
     const s = note.IsStarred() ? 'Unstar' : 'Star';
-    return <a href='#' onClick={ this.handleStarUnstarNote }>
-      { s }
+    return <a href='#' onClick={this.handleStarUnstarNote}>
+      {s}
     </a>;
   }
 
@@ -236,21 +236,21 @@ export default class AppNote extends Component<{}, State> {
       return;
     }
     const s = note.IsPublic() ? 'Make private' : 'Make public';
-    return <a href='#' onClick={ this.handleMakePublicPrivate }>
-      { s }
+    return <a href='#' onClick={this.handleMakePublicPrivate}>
+      {s}
     </a>;
   }
 
   renderTrashUntrash(note: any) {
     const s = note.IsDeleted() ? 'Undelete' : 'Move to Trash';
-    return <a href='#' onClick={ this.handleDelUndel }>
-      { s }
+    return <a href='#' onClick={this.handleDelUndel}>
+      {s}
     </a>;
   }
 
   renderPermanentDelete(note: any) {
     if (note.IsDeleted()) {
-      return <a href='#' onClick={ this.handlePermanentDelete }>Delete permanently</a>;
+      return <a href='#' onClick={this.handlePermanentDelete}>Delete permanently</a>;
     }
   }
 
@@ -262,25 +262,25 @@ export default class AppNote extends Component<{}, State> {
       const html = {
         __html: linkify2(body)
       };
-      return <pre onDoubleClick={ this.handleDoubleClick } dangerouslySetInnerHTML={ html }></pre>;
+      return <pre onDoubleClick={this.handleDoubleClick} dangerouslySetInnerHTML={html}></pre>;
     }
     const html = {
       __html: toHtml(body)
     };
 
-    return <div onDoubleClick={ this.handleDoubleClick } dangerouslySetInnerHTML={ html }></div>;
+    return <div onDoubleClick={this.handleDoubleClick} dangerouslySetInnerHTML={html}></div>;
   }
 
   renderTags(tags: any) {
     const tagEls = tags.map((tag: any) => {
       tag = '#' + tag;
       return (
-        <span className='note-tag' key={ tag }>{ tag }</span>
+        <span className='note-tag' key={tag}>{tag}</span>
       );
     });
 
     return (
-      <span className='note-tags'>{ tagEls }</span>
+      <span className='note-tags'>{tagEls}</span>
     );
   }
 
@@ -318,13 +318,13 @@ export default class AppNote extends Component<{}, State> {
           <hr className='light' />
           <div className='note-footer center'>
             A note by
-            <a href={ url }>
-              { nu.Handle }
+            <a href={url}>
+              {nu.Handle}
             </a>.
           </div>
         </div>
         <Settings />
-        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
+        <SearchResults onSearchResultSelected={this.handleSearchResultSelected} />
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />
@@ -352,35 +352,35 @@ export default class AppNote extends Component<{}, State> {
         <div id='full-note'>
           <div className='note-content-wrapper'>
             <div className='full-note-top'>
-              <h1>{ title }</h1>
-              { this.renderTags(tags) }
-              { this.renderPublicPrivate(note) }
-              { this.renderDeletedState(note) }
+              <h1>{title}</h1>
+              {this.renderTags(tags)}
+              {this.renderPublicPrivate(note)}
+              {this.renderDeletedState(note)}
               <div className='flex-spacer'></div>
-              { this.isMyNote() ?
+              {this.isMyNote() ?
                 <div className='menu-trigger'>
                   <i className='fa fa-ellipsis-v'></i>
                   <div className='menu-content'>
-                    { this.renderEdit(note) }
-                    { this.renderStarUnstar(note) }
-                    { this.renderMakePublicPrivate(note) }
-                    { this.renderTrashUntrash(note) }
-                    { this.renderPermanentDelete(note) }
+                    {this.renderEdit(note)}
+                    {this.renderStarUnstar(note)}
+                    {this.renderMakePublicPrivate(note)}
+                    {this.renderTrashUntrash(note)}
+                    {this.renderPermanentDelete(note)}
                   </div>
-                </div> : null }
+                </div> : null}
             </div>
-            { this.renderBody(note) }
+            {this.renderBody(note)}
           </div>
           <hr className='light' />
           <div className='note-footer center'>
             A note by
-            <a href={ url }>
-              { nu.Handle }
+            <a href={url}>
+              {nu.Handle}
             </a>.
           </div>
         </div>
         <Settings />
-        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
+        <SearchResults onSearchResultSelected={this.handleSearchResultSelected} />
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />

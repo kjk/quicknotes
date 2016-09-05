@@ -971,7 +971,7 @@ export default class Editor extends Component<{}, State> {
     const values = ['public', 'private'];
     const selectedIdx = isPublic ? 0 : 1;
     return (
-      <TextSelect values={ values } selectedIdx={ selectedIdx } onChange={ this.handlePublicOrPrivateChanged } />
+      <TextSelect values={values} selectedIdx={selectedIdx} onChange={this.handlePublicOrPrivateChanged} />
     );
   }
 
@@ -1019,7 +1019,7 @@ export default class Editor extends Component<{}, State> {
     const formatPretty = formatPrettyName(formatSelected);
     const selectedIdx = formats.indexOf(formatPretty);
     return (
-      <TextSelect values={ formats } selectedIdx={ selectedIdx } onChange={ this.handleFormatChanged } />
+      <TextSelect values={formats} selectedIdx={selectedIdx} onChange={this.handleFormatChanged} />
     );
   }
 
@@ -1030,37 +1030,37 @@ export default class Editor extends Component<{}, State> {
     // TODO: translate shortcuts for Windows
     return (
       <div id='editor-buttons' className='flex-row'>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdBold } data-hint='Bold (⌘B)'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdBold} data-hint='Bold (⌘B)'>
           <i className='fa fa-bold'></i>
         </button>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdItalic } data-hint='Italic (⌘I)'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdItalic} data-hint='Italic (⌘I)'>
           <i className='fa fa-italic'></i>
         </button>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdHeading } data-hint='Heading (⌘H)'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdHeading} data-hint='Heading (⌘H)'>
           <i className='fa fa-header'></i>
         </button>
         <div className='editor-btn-spacer'></div>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdQuote } data-hint="Blockquote (⌘-')">
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdQuote} data-hint="Blockquote (⌘-')">
           <i className='fa fa-quote-right'></i>
         </button>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdCode } data-hint='Code block'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdCode} data-hint='Code block'>
           <i className='fa fa-code'></i>
         </button>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdListUnordered } data-hint='Bulleted List (Ctrl-L)'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdListUnordered} data-hint='Bulleted List (Ctrl-L)'>
           <i className='fa fa-list-ul'></i>
         </button>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdListOrdered } data-hint='Numbered List (⌘-Alt-L'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdListOrdered} data-hint='Numbered List (⌘-Alt-L'>
           <i className='fa fa-list-ol'></i>
         </button>
         <div className='editor-btn-spacer'></div>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdLink } data-hint='Link (Ctrl-K)'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdLink} data-hint='Link (Ctrl-K)'>
           <i className='fa fa-link'></i>
         </button>
-        <button className='ebtn hint--bottom' onClick={ this.handleEditCmdImage } data-hint='Image'>
+        <button className='ebtn hint--bottom' onClick={this.handleEditCmdImage} data-hint='Image'>
           <i className='fa fa-picture-o'></i>
         </button>
         <div className='editor-btn-spacer'></div>
-        <button className='ebtn hint--bottom' onClick={ this.handleTogglePreview } data-hint='Toggle Preview (F9)'>
+        <button className='ebtn hint--bottom' onClick={this.handleTogglePreview} data-hint='Toggle Preview (F9)'>
           <i className='fa fa-columns'></i>
         </button>
       </div>
@@ -1097,14 +1097,14 @@ export default class Editor extends Component<{}, State> {
         borderTop: '1px solid lightgray'
       };
       editor = (
-        <div id='cm-wrapper' ref='editorTextAreaWrapper' style={ style }>
+        <div id='cm-wrapper' ref='editorTextAreaWrapper' style={style}>
           <CodeMirrorEditor className='codemirror-div'
             textAreaClassName='cm-textarea'
             placeholder='Enter text here...'
-            defaultValue={ note.body }
-            cmOptions={ cmOptions }
-            onChange={ this.handleTextChanged }
-            onEditorCreated={ this.handleEditorCreated } />
+            defaultValue={note.body}
+            cmOptions={cmOptions}
+            onChange={this.handleTextChanged}
+            onEditorCreated={this.handleEditorCreated} />
         </div>
       );
     } else {
@@ -1118,13 +1118,13 @@ export default class Editor extends Component<{}, State> {
             <CodeMirrorEditor className='codemirror-div'
               textAreaClassName='cm-textarea'
               placeholder='Enter text here...'
-              defaultValue={ note.body }
-              cmOptions={ cmOptions }
-              onChange={ this.handleTextChanged }
-              onEditorCreated={ this.handleEditorCreated } />
+              defaultValue={note.body}
+              cmOptions={cmOptions}
+              onChange={this.handleTextChanged}
+              onEditorCreated={this.handleEditorCreated} />
           </div>
           <div id='editor-preview' ref='preview'>
-            <div id='editor-preview-inner' dangerouslySetInnerHTML={ html }></div>
+            <div id='editor-preview-inner' dangerouslySetInnerHTML={html}></div>
           </div>
         </div>
       );
@@ -1142,44 +1142,44 @@ export default class Editor extends Component<{}, State> {
 
     return (
       <Overlay>
-        <DragBarHoriz initialY={ y }
-          dy={ kDragBarDy }
-          min={ kDragBarMin }
-          max={ dragBarMax }
-          onPosChanged={ this.handleDragBarMoved } />
+        <DragBarHoriz initialY={y}
+          dy={kDragBarDy}
+          min={kDragBarMin}
+          max={dragBarMax}
+          onPosChanged={this.handleDragBarMoved} />
         <div id='editor-wrapper'
           className='flex-col'
-          style={ style }
+          style={style}
           ref='editorWrapper'>
           <div id='editor-top' className='flex-row'>
             <button className='btn btn-primary hint--bottom'
-              disabled={ saveDisabled }
-              onClick={ this.handleSave }
+              disabled={saveDisabled}
+              onClick={this.handleSave}
               data-hint='Ctrl-Enter'>
               Save
             </button>
-            <button className='btn btn-cancel' onClick={ this.handleCancel }>
+            <button className='btn btn-cancel' onClick={this.handleCancel}>
               Cancel
             </button>
-            { publicSelect }
-            { formatSelect }
+            {publicSelect}
+            {formatSelect}
             <input id='editor-title'
               className='editor-input'
               placeholder='title here...'
-              value={ note.title }
-              onChange={ this.handleTitleChanged }
+              value={note.title}
+              onChange={this.handleTitleChanged}
               ref='title'
               tabIndex='1' />
             <input id='editor-tags'
               className='editor-input'
               placeholder='#enter #tags'
-              value={ note.tags }
-              onChange={ this.handleTagsChanged }
+              value={note.tags}
+              onChange={this.handleTagsChanged}
               tabIndex='2' />
             <div className='editor-spacer2'></div>
           </div>
-          { this.renderMarkdownButtons(isText) }
-          { editor }
+          {this.renderMarkdownButtons(isText)}
+          {editor}
         </div>
       </Overlay>
     );
