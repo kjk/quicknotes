@@ -531,7 +531,7 @@ interface State {
   note?: NoteInEditor;
 }
 
-export default class Editor extends Component<{}, State> {
+export default class Editor extends Component<any, State> {
 
   initialNote: NoteInEditor;
   cm: any;

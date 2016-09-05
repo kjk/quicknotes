@@ -7,7 +7,6 @@ TextSelect.propTypes = {
   values: PropTypes.array.isRequired,
   selectedIdx: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
-  className: PropTypes.string
 };
 */
 
@@ -15,10 +14,10 @@ interface Props {
   values?: any;
   selectedIdx?: any;
   onChange?: any;
-  className?: any;
+  className?: string;
 }
 
-export default class TextSelect extends Component<Props, {}> {
+export default class TextSelect extends Component<Props, any> {
   constructor(props?: Props, context?: any) {
     super(props, context);
 

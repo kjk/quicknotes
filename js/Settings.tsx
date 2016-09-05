@@ -19,7 +19,7 @@ interface State {
   layout?: any;
 }
 
-export default class Settings extends React.Component<{}, State> {
+export default class Settings extends React.Component<any, State> {
   constructor(props?: any, context?: any) {
     super(props, context);
     this.handleCancel = this.handleCancel.bind(this);

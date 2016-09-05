@@ -8,7 +8,7 @@ interface Props {
   tagName: string;
 }
 
-export default class TagCount extends Component<Props, {}> {
+export default class TagCount extends Component<Props, any> {
   constructor(props?: Props, context?: any) {
     super(props, context);
     this.handleClick = this.handleClick.bind(this);

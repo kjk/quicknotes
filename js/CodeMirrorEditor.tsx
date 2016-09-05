@@ -40,7 +40,7 @@ interface Props {
   placeholder?: string;
 }
 
-export default class CodeMirrorEditor extends Component<Props, {}> {
+export default class CodeMirrorEditor extends Component<Props, any> {
 
   cm: any;
 

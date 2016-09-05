@@ -12,7 +12,7 @@ interface Props {
   onClick?: any;
 }
 
-export default class Overlay extends Component<Props, {}> {
+export default class Overlay extends Component<Props, any> {
 
   constructor(props?: Props, context?: any) {
     super(props, context);

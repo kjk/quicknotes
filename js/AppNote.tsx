@@ -34,7 +34,7 @@ interface State {
   note?: any;
 }
 
-export default class AppNote extends Component<{}, State> {
+export default class AppNote extends Component<any, State> {
   constructor(props?: any, context?: any) {
     super(props, context);
 

@@ -11,7 +11,7 @@ interface Props {
   selectedTags: string[];
 }
 
-export default class LeftSidebar extends Component<Props, {}> {
+export default class LeftSidebar extends Component<Props, any> {
   renderTagsList(sectionName: string, tagNames: any, tags: any) {
     if (tagNames.length === 0) {
       return;
