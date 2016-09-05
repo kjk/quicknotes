@@ -118,23 +118,23 @@ export default class Top extends Component<{}, State> {
     return (
       <div id='header' className='flex-row'>
         <a id='logo' className='logo colored' href='/'>QuickNotes</a>
-        { userUrl ?
-          <button className='btn btn-new-note hint--bottom' data-hint='shortcut: n' onClick={ this.handleEditNewNote }>
+        {userUrl ?
+          <button className='btn btn-new-note hint--bottom' data-hint='shortcut: n' onClick={this.handleEditNewNote}>
             New note
-          </button> : null }
-        { withSearchInput ?
+          </button> : null}
+        {withSearchInput ?
           <input name='search'
             id='search-input'
-            value={ this.state.searchTerm }
-            onKeyDown={ this.handleInputKeyDown }
-            onChange={ this.handleInputChange }
+            value={this.state.searchTerm}
+            onKeyDown={this.handleInputKeyDown}
+            onChange={this.handleInputChange}
             type='text'
             autoComplete='off'
             autoCapitalize='off'
-            placeholder={ placeholder } /> : null }
+            placeholder={placeholder} /> : null}
         <div className='flex-push-right'></div>
-        { userUrl ?
-          <a href={ userUrl } className='header-link'>My Notes</a> : null }
+        {userUrl ?
+          <a href={userUrl} className='header-link'>My Notes</a> : null}
         <LogInLink />
       </div>
     );

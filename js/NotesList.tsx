@@ -86,15 +86,15 @@ export default class NotesList extends Component<Props, State> {
 
   render() {
     return (
-      <div id='notes-list' onScroll={ this.handleScroll }>
+      <div id='notes-list' onScroll={this.handleScroll}>
         <div className='wrapper'>
-          { this.state.notes.map((note: any) => {
+          {this.state.notes.map((note: any) => {
             const key = `${note.HashID()}-${note.CurrentVersion()}`;
-            return <NoteView compact={ this.props.compact }
-              note={ note }
-              key={ key }
-              showingMyNotes={ this.props.showingMyNotes } />;
-          }) }
+            return <NoteView compact={this.props.compact}
+              note={note}
+              key={key}
+              showingMyNotes={this.props.showingMyNotes} />;
+          })}
         </div>
       </div>
     );

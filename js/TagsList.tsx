@@ -28,17 +28,17 @@ export default class TagsList extends Component<Props, {}> {
       const displayName = u.tagNameToDisplayName(tagName);
       const isSelected = isTagSelected(selectedTags, tagName);
       return (
-        <TagCount isSelected={ isSelected }
-          displayName={ displayName }
-          tagName={ tagName }
-          count={ count }
-          key={ tagName } />
+        <TagCount isSelected={isSelected}
+          displayName={displayName}
+          tagName={tagName}
+          count={count}
+          key={tagName} />
       );
     });
 
     return (
       <div className='tags-list'>
-        { tagEls }
+        {tagEls}
       </div>
     );
   }

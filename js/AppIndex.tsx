@@ -50,9 +50,9 @@ export default class AppIndex extends Component<{}, State> {
         <div id='tagline'>
           <h1>QuickNotes is the fastest way to take notes</h1>
         </div>
-        <NotesList notes={ notes } compact={ false } showingMyNotes={ false } />
+        <NotesList notes={notes} compact={false} showingMyNotes={false} />
         <Settings />
-        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
+        <SearchResults onSearchResultSelected={this.handleSearchResultSelected} />
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />

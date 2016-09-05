@@ -199,13 +199,13 @@ export default class AppUser extends Component<Props, State> {
     return (
       <div>
         <Top />
-        <LeftSidebar tags={ this.state.tags } showingMyNotes={ showingMyNotes } selectedTags={ this.state.selectedTags } />
-        <NotesList notes={ this.state.selectedNotes }
-          showingMyNotes={ showingMyNotes }
-          compact={ false }
-          resetScroll={ this.state.resetScroll } />
+        <LeftSidebar tags={this.state.tags} showingMyNotes={showingMyNotes} selectedTags={this.state.selectedTags} />
+        <NotesList notes={this.state.selectedNotes}
+          showingMyNotes={showingMyNotes}
+          compact={false}
+          resetScroll={this.state.resetScroll} />
         <Settings />
-        <SearchResults onSearchResultSelected={ this.handleSearchResultSelected } />
+        <SearchResults onSearchResultSelected={this.handleSearchResultSelected} />
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />
@@ -232,7 +232,7 @@ export function appUserStart() {
   //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
 
   ReactDOM.render(
-    <AppUser initialNotesJSON={ gInitialNotesJSON } initialTag={ initialTag } />,
+    <AppUser initialNotesJSON={gInitialNotesJSON} initialTag={initialTag} />,
     document.getElementById('root')
   );
 }

@@ -2,5 +2,8 @@
   "indentSize": 2,
   "tabSize": 2,
   "newLineCharacter": "\n",
-  "convertTabsToSpaces": true
+  "convertTabsToSpaces": true,
+  "insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+  "insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+  "insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false
 }
