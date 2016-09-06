@@ -76,7 +76,7 @@ export default class SearchResults extends React.Component<Props, State> {
       return;
     }
     api.searchUserNotes(userID, searchTerm, (json: any) => {
-      console.log('finished search for ' + json.Term);
+      // console.log('finished search for ' + json.Term);
       if (json.Term != this.currSearchTerm) {
         console.log('discarding search results because not for ' + this.currSearchTerm);
         return;
@@ -103,7 +103,7 @@ export default class SearchResults extends React.Component<Props, State> {
       clearTimeout(this.searchDelayTimerID);
     }
     this.searchDelayTimerID = setTimeout(() => {
-      console.log('starting search for ' + searchTerm);
+      // console.log('starting search for ' + searchTerm);
       this.startSearch(userHashID, searchTerm);
     }, 300);
   }
