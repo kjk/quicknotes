@@ -105,6 +105,8 @@ export function ajax(params: Params, callback: AjaxCallback) {
   return req;
 }
 
-function setDefault(obj: Dict<string>, key: string, value: string) {
-  obj[key] = obj[key] || value
+function setDefault(d: Dict<string>, key: string, value: string) {
+  if (!d[key]) {
+    d[key] = value;
+  }
 }
