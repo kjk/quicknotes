@@ -180,9 +180,11 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     if (this.state.finishedImporting || !this.state.statusMessage) {
       return null;
     }
+    const spinner = this.state.isImporting ? <i className='fa fa-spinner fa-pulse right' style={styleSpinner}></i> : null;
     return (
       <tr>
         <td colSpan={2}>
+          {spinner}
           {this.state.statusMessage}
         </td>
       </tr>
@@ -242,41 +244,37 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   }
 
   renderFormInner3() {
-    if (this.state.finishedImporting) {
-      return (
-        <tr>
-          <td></td>
-          <td>
-            <button className='btn btn-primary right no-margin-x' onClick={this.handleCloseFinished}>
-              Ok
-            </button>
-          </td>
-        </tr>
-      );
-    }
+    let inner = (
+      <td>
+        <button className='btn btn-primary right no-margin-x' onClick={this.handleImport}>
+          Import
+        </button>
+        <button className='btn btn-cancel right' onClick={this.handleClose}>
+          Cancel
+        </button>
+      </td>
+    );
 
-    if (this.state.isImporting) {
-      return (
-        <tr>
-          <td></td>
-          <td>
-            <i className='fa fa-spinner fa-pulse right' style={styleSpinner}></i>
-          </td>
-        </tr>
+    if (this.state.finishedImporting) {
+      inner = (
+        <td>
+          <button className='btn btn-primary right no-margin-x' onClick={this.handleCloseFinished}>
+            Ok
+            </button>
+        </td>
+      );
+    } else if (this.state.isImporting) {
+      // TODO: could have "Cancel" button
+      inner = (
+        <td>
+        </td>
       );
     }
 
     return (
       <tr>
         <td></td>
-        <td>
-          <button className='btn btn-primary right no-margin-x' onClick={this.handleImport}>
-            Import
-          </button>
-          <button className='btn btn-cancel right' onClick={this.handleClose}>
-            Cancel
-          </button>
-        </td>
+        {inner}
       </tr>
     );
   }
