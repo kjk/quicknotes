@@ -73,20 +73,20 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   }
 
   showHide(shouldShow: boolean) {
-    console.log('ImportSimpleNote.showHide: shouldShow: ", shouldShow');
+    // console.log('ImportSimpleNote.showHide: shouldShow: ", shouldShow');
     this.setState({
       isShowing: shouldShow
     });
   }
 
   handleClose(e: any) {
-    console.log('ImportSimpleNote.handleClose()');
+    // console.log('ImportSimpleNote.handleClose()');
     e.preventDefault();
     action.showHideImportSimpleNote(false);
   }
 
   handleCloseFinished(e: any) {
-    console.log('ImportSimpleNote.handleCloseFinished()');
+    // console.log('ImportSimpleNote.handleCloseFinished()');
     e.preventDefault();
     action.showHideImportSimpleNote(false);
     // TODO: reload notes via action
@@ -95,7 +95,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   handleInputChanged(e: any) {
     const id = e.target.id;
     const val = e.target.value;
-    console.log(`ImportSimpleNote.handleClose: id=${id} val=${val}`);
+    // console.log(`ImportSimpleNote.handleClose: id=${id} val=${val}`);
     this.inputValues[id] = val;
   }
 
@@ -106,7 +106,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   }
 
   handleCheckStatusResp(res: any) {
-    console.log('handleCheckStatusResp: res=', res);
+    // console.log('handleCheckStatusResp: res=', res);
     if (res.Error) {
       this.setState({
         isImporting: false,
@@ -141,7 +141,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   }
 
   handleImport(e: any) {
-    console.log('ImportSimpleNote.handleImport()');
+    // console.log('ImportSimpleNote.handleImport()');
     e.preventDefault();
     const email = this.inputValues['email'] || '';
     const pwd = this.inputValues['password'] || '';

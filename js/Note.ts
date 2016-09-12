@@ -174,6 +174,9 @@ export function toNote(note: any): Note {
 }
 
 export function toNotes(a: any): Note[] {
+  if (!a) {
+    return [];
+  }
   for (var i = 0; i < a.length; i++) {
     toNote(a[i]);
   }
