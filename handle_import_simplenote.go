@@ -311,7 +311,6 @@ func importPreviousVersions(state *SimpleNoteImport, noteLastVer *simplenote.Not
 }
 
 func importSimpleNote(state *SimpleNoteImport, email, password string) {
-	var counts ImportCounts
 	id := state.importID
 	state.shouldConvertPublic = dbIsUserMe(state.userID)
 	// for now only import previous versions for me
