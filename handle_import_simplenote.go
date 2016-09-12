@@ -120,14 +120,14 @@ func importSetError(importID int, err string) {
 		status.Error = err
 		status.IsFinished = true
 		status.Duration = time.Since(status.startedAt)
+		// free up large resources
+		status.client = nil
+		status.alreadyImported = nil
 	})
 }
 
 func importMarkFinished(importID int) {
-	withLockedImport(importID, func(status *SimpleNoteImport) {
-		status.IsFinished = true
-		status.Duration = time.Since(status.startedAt)
-	})
+	importSetError(importID, "")
 }
 
 func isSimpleNoteUnothorizedError(s string) bool {
@@ -353,9 +353,6 @@ func importSimpleNote(state *SimpleNoteImport, email, password string) {
 	} else {
 		importSetError(id, err.Error())
 	}
-	// free up large resources
-	state.client = nil
-	state.alreadyImported = nil
 }
 
 /* GET /api/import_simplenote_status
