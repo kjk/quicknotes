@@ -47,7 +47,7 @@ export default class NoteBody extends Component<Props, State> {
   handleExpand(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    console.log('expand note', note.HashID());
+    // console.log('expand note', note.HashID());
     note.Expand();
     this.getBodyIfNeeded(note);
   }
@@ -55,7 +55,7 @@ export default class NoteBody extends Component<Props, State> {
   handleCollapse(e: any) {
     e.preventDefault();
     const note = this.state.note;
-    console.log('collapse note', note.HashID());
+    // console.log('collapse note', note.HashID());
     note.Collapse();
     this.setState({
       note: note
