@@ -2,9 +2,11 @@
 
 import sys, os, os.path, time, subprocess
 
-g_imageName = "quicknotes/mysql-56"
+g_imageName = "mysql:5.6"
 g_containerName = "mysql-56-for-quicknotes"
-
+# this is where mysql database files are stored, so that
+# they persist even if container goes away
+g_dbDir = os.path.expanduser("~/data/quicknotes/db")
 kStatusRunning = "running"
 kStatusExited = "exited"
 
@@ -57,7 +59,6 @@ def decode_ip_port(mappings):
     return None
   return parts
 
-
 # returns:
 #  - container id
 #  - status
@@ -88,7 +89,8 @@ def start_container_if_needed(imageName, containerName, portMapping):
   if status == kStatusExited:
     cmd = ["docker", "start", containerId]
   else:
-    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, imageName]
+    volumeMapping = "%s:/var/lib/mysql" % g_dbDir
+    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, "-v", volumeMapping, "-e", "MYSQL_ALLOW_EMPTY_PASSWORD=yes", imageName]
   run_cmd(cmd)
   wait_for_container(containerName)
 
@@ -102,8 +104,16 @@ def wait_for_container(containerName):
     timeOut -= 1
   print("")
 
+def create_db_dir():
+  try:
+    os.makedirs(g_dbDir)
+  except:
+    # throws if already exists, which is ok
+    pass
+
 def main():
   verify_docker_running()
+  create_db_dir()
   start_container_if_needed(g_imageName, g_containerName, "7200:3306")
   (containerId, status, ip_port) = docker_container_info(g_containerName)
   assert ip_port is not None
