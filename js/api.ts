@@ -1,6 +1,6 @@
 import { ajax, Params } from './ajax';
 import { Dict } from './utils';
-import { toNote, toNotes } from './Note';
+import { Note, toNote, toNotes } from './Note';
 
 type ArgsDict = Dict<string>;
 
@@ -71,19 +71,28 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   });
 }
 
-// calls cb with []Note
+interface GetNotesResp {
+  LoggedUser?: any;
+  Notes?: any[];
+}
+
+interface GetNotesCallback {
+  (note: Note[]): void
+}
+
+// calls cb with Note[]
 export function getNotes(userHandle: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
     'user': userHandle
   };
-  function getNotesCb(json: any) {
+  function getNotesCb(json: GetNotesResp) {
     if (!json || !json.Notes) {
       cb([]);
     }
     let notes = toNotes(json.Notes);
     cb(notes);
   }
-  get('/api/getnotes', args, cb, cbErr);
+  get('/api/getnotes', args, getNotesCb, cbErr);
 }
 
 // calls cb with Note

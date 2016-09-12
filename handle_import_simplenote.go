@@ -106,9 +106,11 @@ func getImportStateCopyByID(id int) (SimpleNoteImport, bool) {
 	return SimpleNoteImport{}, false
 }
 
-func importUpdateCounts(importID int, counts ImportCounts) {
+func importUpdateCounts(importID int, counts *ImportCounts) {
 	withLockedImport(importID, func(status *SimpleNoteImport) {
-		status.ImportCounts = counts
+		status.ImportCounts.ImportedCount += counts.ImportedCount
+		status.ImportCounts.SkippedCount += counts.SkippedCount
+		status.ImportCounts.UpdatedCount += counts.UpdatedCount
 		status.Duration = time.Since(status.startedAt)
 	})
 }
@@ -216,14 +218,14 @@ func removePublicTag(tags []string) (bool, []string) {
 }
 
 func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
-	defer func(s *SimpleNoteImport) {
-		importUpdateCounts(s.importID, s.counts)
-	}(state)
+	var counts ImportCounts
+
+	defer importUpdateCounts(state.importID, &counts)
 
 	// skip empty notes
 	content := strings.TrimSpace(note.Content)
 	if len(content) == 0 {
-		state.SkippedCount++
+		counts.SkippedCount++
 		return nil
 	}
 
@@ -232,7 +234,7 @@ func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
 	snFullID := snKey(snID, snVer)
 	_, ok := state.alreadyImported[snFullID]
 	if ok {
-		state.counts.SkippedCount++
+		counts.SkippedCount++
 		log.Verbosef("skipping already imported simplenote %s\n", snFullID)
 		return nil
 	}
@@ -274,9 +276,9 @@ func importOneNote(state *SimpleNoteImport, note *simplenote.Note) error {
 		log.Verbosef("importing note %s as %d, modTime: %s, title: '%s'\n", snFullID, noteID, newNote.createdAt, newNote.title)
 	}
 	if ok {
-		state.counts.UpdatedCount++
+		counts.UpdatedCount++
 	} else {
-		state.counts.ImportedCount++
+		counts.ImportedCount++
 	}
 	return markSimpleNoteImported(state, noteID, note.ID, note.Version)
 }
@@ -309,6 +311,7 @@ func importPreviousVersions(state *SimpleNoteImport, noteLastVer *simplenote.Not
 }
 
 func importSimpleNote(state *SimpleNoteImport, email, password string) {
+	var counts ImportCounts
 	id := state.importID
 	state.shouldConvertPublic = dbIsUserMe(state.userID)
 	// for now only import previous versions for me
@@ -345,7 +348,7 @@ func importSimpleNote(state *SimpleNoteImport, email, password string) {
 			break
 		}
 	}
-	importUpdateCounts(id, state.counts)
+
 	if err == nil {
 		importMarkFinished(id)
 	} else {
