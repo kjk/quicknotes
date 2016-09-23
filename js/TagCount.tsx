@@ -14,7 +14,7 @@ export default class TagCount extends Component<Props, any> {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(e: React.MouseEvent) {
+  handleClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     const op = e.altKey ? 'toggle' : 'set';
     action.tagSelected(this.props.tagName, op);

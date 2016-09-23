@@ -53,7 +53,7 @@ export default class NotesList extends Component<Props, State> {
     });
   }
 
-  handleScroll(e: React.UIEvent) {
+  handleScroll(e: React.UIEvent<HTMLDivElement>) {
     e.preventDefault();
     const nShowing = this.state.notes.length;
     const total = this.props.notes.length;

@@ -3,12 +3,12 @@ import * as ReactDOM from 'react-dom';
 import * as action from './action';
 import { isLoggedIn } from './utils';
 
-function showImportSimpleNote(e: React.MouseEvent) {
+function showImportSimpleNote(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
   action.showHideImportSimpleNote(true);
 }
 
-function showSettings(e: React.MouseEvent) {
+function showSettings(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
   console.log('showSettings');
   action.showSettings();
