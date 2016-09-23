@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es6",
         "declaration": false,
+        "moduleResolution": "node",
         "noImplicitAny": true,
         "removeComments": true,
         "noLib": false,
@@ -11,36 +12,19 @@
         "allowJs": true,
         "sourceMap": true
     },
-    "files": [
-        "typings/index.d.ts",
-        "js/action.ts",
-        "js/api.ts",
-        "js/App.tsx",
-        "js/AppIndex.tsx",
-        "js/AppNote.tsx",
-        "js/AppUser.tsx",
-        "js/CodeMirrorEditor.tsx",
-        "js/DragBarHoriz.tsx",
-        "js/Editor.tsx",
-        "js/ImportSimpleNote.tsx",
-        "js/LeftSidebar.tsx",
-        "js/linkify.ts",
-        "js/LogInLink.tsx",
-        "js/md.ts",
-        "js/Note.tsx",
-        "js/NoteBody.tsx",
-        "js/Note.ts",
-        "js/NotesList.tsx",
-        "js/Overlay.tsx",
-        "js/Router.ts",
-        "js/TagCount.tsx",
-        "js/TagsList.tsx",
-        "js/TemporaryMessage.tsx",
-        "js/TextSelect.tsx",
-        "js/Top.tsx",
-        "js/SearchResults.tsx",
-        "js/Settings.tsx",
-        "js/utils.ts",
-        "js/vendor.d.ts"
+    "include": [
+      "js/**/*",
+      "typings/index.d.ts"
+    ],
+    "exclude": [
+      "ansible",
+      "cmd",
+      "data",
+      "node_modules",
+      "s",
+      "sass",
+      "scripts",
+      "tools",
+      "tsbuild"
     ]
 }

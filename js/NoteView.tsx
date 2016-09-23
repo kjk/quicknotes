@@ -40,7 +40,7 @@ export default class NoteView extends Component<Props, State> {
     };
   }
 
-  handleTagClicked(e: React.MouseEvent) {
+  handleTagClicked(e: React.MouseEvent<HTMLSpanElement>) {
     const target = e.target as Element;
     let tag = target.textContent;
     if (tag.startsWith('#')) {
@@ -50,14 +50,14 @@ export default class NoteView extends Component<Props, State> {
     action.tagSelected(tag, op);
   }
 
-  handleMouseEnter(e: React.MouseEvent) {
+  handleMouseEnter(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     this.setState({
       showActions: true
     });
   }
 
-  handleMouseLeave(e: React.MouseEvent) {
+  handleMouseLeave(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     this.setState({
       showActions: false
@@ -76,12 +76,12 @@ export default class NoteView extends Component<Props, State> {
     });
   }
 
-  handleDoubleClick(e: React.MouseEvent) {
+  handleDoubleClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     this.editCurrentNote();
   }
 
-  handleDelUndel(e: React.MouseEvent) {
+  handleDelUndel(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
     const note = this.props.note;
     const noteID = note.HashID();
@@ -102,7 +102,7 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  handlePermanentDelete(e: React.MouseEvent) {
+  handlePermanentDelete(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
     const note = this.props.note;
     const noteID = note.HashID();
@@ -115,7 +115,7 @@ export default class NoteView extends Component<Props, State> {
     });
   }
 
-  handleMakePublicPrivate(e: React.MouseEvent) {
+  handleMakePublicPrivate(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
     const note = this.props.note;
     // console.log('handleMakePublicPrivate, note.IsPublic: ', note.IsPublic());
@@ -137,7 +137,7 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  handleStarUnstarNote(e: React.MouseEvent) {
+  handleStarUnstarNote(e: React.MouseEvent<HTMLAnchorElement>) {
     const note = this.props.note;
     // console.log('handleStarUnstarNote, note.IsStarred: ', note.IsStarred());
     const noteID = note.HashID();
@@ -224,7 +224,7 @@ export default class NoteView extends Component<Props, State> {
     }
   }
 
-  handleEdit(e: React.MouseEvent) {
+  handleEdit(e: React.MouseEvent<HTMLAnchorElement>) {
     // console.log('Note.handleEdit');
     this.editCurrentNote();
   }
