@@ -7,5 +7,6 @@
     "**/Godeps": true,
     "**/tsbuild": true,
     "**/typings": true
-  }
+  },
+"typescript.tsdk": "node_modules/typescript/lib"
 }
