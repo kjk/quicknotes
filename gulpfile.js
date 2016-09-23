@@ -26,11 +26,6 @@ var t_envify = ['envify', {
   NODE_ENV: 'production'
 }];
 
-// 'plugins': ['undeclared-variables-check'],
-var t_babelify = ['babelify', {
-  'presets': ['es2015', 'react']
-}];
-
 var babelify_opts = {
   presets: ['es2015', 'react'],
   extensions: ['.tsx', '.ts', '.js', '.jsx']
@@ -41,20 +36,12 @@ var tsify_opts = {
   module: 'es2015'
 };
 
-var browserify_opts = {
-  entries: ['js/App.tsx'],
-  debug: true
-};
-
-var browserify_prod_opts = {
-  entries: ['js/App.tsx'],
-  transform: [t_envify],
-  debug: true
-};
-
-
 gulp.task('js', function() {
-  browserify(browserify_opts)
+  var opts = {
+    entries: ['js/App.tsx'],
+    debug: true
+  };
+  browserify(opts)
     .plugin("tsify", tsify_opts)
     .transform(babelify, babelify_opts)
     .bundle()
@@ -64,7 +51,13 @@ gulp.task('js', function() {
 });
 
 gulp.task('jsprod', function() {
-  browserify(browserify_prod_opts)
+  var opts = {
+    entries: ['js/App.tsx'],
+    transform: [t_envify],
+    debug: true
+  };
+
+  browserify(opts)
     .plugin("tsify", tsify_opts)
     .transform(babelify, babelify_opts)
     .bundle()
