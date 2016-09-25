@@ -6,7 +6,6 @@ declare var gNoteUser: any;
 declare var gInitialNotesJSON: any;
 
 interface Window {
-  runOnLoad: any;
   appUserStart: any;
   appNoteStart: any;
   appIndexStart: any;

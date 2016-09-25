@@ -384,9 +384,7 @@ export default class AppNote extends Component<any, State> {
   }
 }
 
-function appNoteStart() {
+window.appNoteStart = function() {
   const el = document.getElementById('root');
   ReactDOM.render(<AppNote />, el);
 }
-
-window.appNoteStart = appNoteStart;
