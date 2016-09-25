@@ -224,7 +224,7 @@ function tagsFromRoute(s: string): string[] {
   return res;
 }
 
-export function appUserStart() {
+window.appUserStart = function() {
   //console.log("gNotesUserHandle: ", gNotesUserHandle);
   const initialTags = tagsFromRoute(Router.getHash());
   const initialTag = initialTags[0];
@@ -236,5 +236,3 @@ export function appUserStart() {
     document.getElementById('root')
   );
 }
-
-window.appUserStart = appUserStart;

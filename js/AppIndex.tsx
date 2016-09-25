@@ -62,11 +62,11 @@ export default class AppIndex extends Component<any, State> {
   }
 }
 
-function appIndexStart() {
+window.appIndexStart = function() {
   ReactDOM.render(
     <AppIndex />,
     document.getElementById('root')
   );
 }
 
-window.appIndexStart = appIndexStart;
+window.addEventListener('DOMContentLoaded', window.appIndexStart);

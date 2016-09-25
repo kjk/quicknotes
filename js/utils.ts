@@ -117,10 +117,6 @@ export function deepCloneObject(o: any) {
   return JSON.parse(JSON.stringify(o));
 }
 
-function runOnLoad(f: any) {
-  window.addEventListener('DOMContentLoaded', f);
-}
-
 // helps to use map() in cases where the value can be null
 export function arrNotNull(a?: any[]): any[] {
   return a ? a : [];
@@ -180,6 +176,3 @@ export function isLoggedIn() {
   const notLoggedIn = isUndefined(gLoggedUser) || gLoggedUser == null;
   return !notLoggedIn;
 }
-
-window.runOnLoad = runOnLoad;
-// console.log('iniialized window.runOnLoad');

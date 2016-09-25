@@ -26,13 +26,14 @@ var tsifyOpts = {
   module: 'es2015'
 };
 
+var browserifyOpts = {
+  entries: ['js/App.tsx'],
+  debug: true
+};
+
 gulp.task('js', function() {
-  var browserifyOpts = {
-    entries: ['js/App.tsx'],
-    debug: true
-  };
   browserify(browserifyOpts)
-    .plugin("tsify", tsifyOpts)
+    .plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
@@ -47,13 +48,8 @@ gulp.task('jsprod', function() {
     NODE_ENV: 'production'
   };
 
-  var browserifyOpts = {
-    entries: ['js/App.tsx'],
-    debug: true
-  };
-
   browserify(browserifyOpts)
-    .plugin("tsify", tsifyOpts)
+    .plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .transform(envify(envifyOpts))
     .bundle()
