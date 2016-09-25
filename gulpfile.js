@@ -1,6 +1,3 @@
-// Pre-requisites: need to install all the npm modules with:
-// npm install
-
 var babelify = require('babelify');
 var browserify = require('browserify');
 var buffer = require('vinyl-buffer');
@@ -10,7 +7,6 @@ var exorcist = require('exorcist');
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var prefix = require('gulp-autoprefixer');
-var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var source = require('vinyl-source-stream');
@@ -20,30 +16,24 @@ var debug = require('gulp-debug');
 
 require('babel-register');
 
-var t_envify = ['envify', {
-  'global': true,
-  '_': 'purge',
-  NODE_ENV: 'production'
-}];
-
-var babelify_opts = {
+var babelifyOpts = {
   presets: ['es2015', 'react'],
   extensions: ['.tsx', '.ts', '.js', '.jsx']
 };
 
-var tsify_opts = {
+var tsifyOpts = {
   target: 'es6',
   module: 'es2015'
 };
 
 gulp.task('js', function() {
-  var opts = {
+  var browserifyOpts = {
     entries: ['js/App.tsx'],
     debug: true
   };
-  browserify(opts)
-    .plugin("tsify", tsify_opts)
-    .transform(babelify, babelify_opts)
+  browserify(browserifyOpts)
+    .plugin("tsify", tsifyOpts)
+    .transform(babelify, babelifyOpts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
@@ -51,15 +41,21 @@ gulp.task('js', function() {
 });
 
 gulp.task('jsprod', function() {
-  var opts = {
+  var envifyOpts = {
+    'global': true,
+    '_': 'purge',
+    NODE_ENV: 'production'
+  };
+
+  var browserifyOpts = {
     entries: ['js/App.tsx'],
-    transform: [t_envify],
     debug: true
   };
 
-  browserify(opts)
-    .plugin("tsify", tsify_opts)
-    .transform(babelify, babelify_opts)
+  browserify(browserifyOpts)
+    .plugin("tsify", tsifyOpts)
+    .transform(babelify, babelifyOpts)
+    .transform(envify(envifyOpts))
     .bundle()
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
