@@ -13,4 +13,4 @@ rm -rf s/dist/*.map s/dist/*.js s/dist/*.css resources.go
 
 go run tools/gen_resources.go
 
-GOOS=linux GOARCH=amd64 gdep go build -o quicknotes_prod_linux -tags embeded_resources
+GOOS=linux GOARCH=amd64 go build -o quicknotes_prod_linux -tags embeded_resources

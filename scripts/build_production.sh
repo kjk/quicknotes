@@ -13,4 +13,4 @@ rm -rf s/dist/*.map s/dist/*.js s/dist/*.css tsbuild/ resources.go
 
 go run tools/gen_resources.go
 
-gdep go build -o quicknotes_prod -tags embeded_resources
+go build -o quicknotes_prod -tags embeded_resources

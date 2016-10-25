@@ -7,5 +7,5 @@ set -o pipefail
 rm -rf node_modules
 rm -rf typings
 
-npm install
+yarn
 ./node_modules/.bin/typings install

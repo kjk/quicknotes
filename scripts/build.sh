@@ -10,5 +10,5 @@ set -o pipefail
 echo "./node_modules/.bin/gulp default"
 ./node_modules/.bin/gulp default
 
-gdep go build -o quicknotes
-#gdep go build -race
+go build -o quicknotes
+#go build -race

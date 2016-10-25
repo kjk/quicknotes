@@ -1,16 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"time"
 
 	"github.com/kjk/log"
 
-	"golang.org/x/net/context"
+	"cloud.google.com/go/storage"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/cloud"
-	"google.golang.org/cloud/storage"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 const (
@@ -44,7 +45,7 @@ func initGoogleStorageMust() {
 	)
 	fatalIfErr(err, "google.JWTConfigFromJSON")
 	ctx := context.Background()
-	opt := cloud.WithTokenSource(conf.TokenSource(ctx))
+	opt := option.WithTokenSource(conf.TokenSource(ctx))
 	googleStorageClient, err = storage.NewClient(ctx, opt)
 	fatalIfErr(err, "storage.NewClient")
 }
@@ -54,21 +55,22 @@ func testListObjects() {
 	var query *storage.Query
 	nTotal := 0
 	timeStart := time.Now()
+
+	it := googleStorageClient.Bucket(quicknotesBucket).Objects(ctx, query)
 	for {
-		objects, err := googleStorageClient.Bucket(quicknotesBucket).List(ctx, query)
-		if err != nil {
-			log.Errorf("storage.ListObjects() failed with %s\n", err)
-			return
+		_, err := it.Next()
+		if err == iterator.Done {
+			break
 		}
+		if err != nil {
+			log.Errorf("testListObjects: it.Next() failed with '%s'\n", err)
+			break
+		}
+		nTotal++
 		//log.Verbosef("%d objects\n", len(objects.Results))
 		//for _, obj := range objects.Results {
 		//	fmt.Printf("name: %s, size: %v\n", obj.Name, obj.Size)
 		//}
-		nTotal += len(objects.Results)
-		query = objects.Next
-		if query == nil {
-			break
-		}
 	}
 	log.Verbosef("listed %d objects in %s\n", nTotal, time.Since(timeStart))
 }

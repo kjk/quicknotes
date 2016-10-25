@@ -2,7 +2,7 @@
 
 ./node_modules/.bin/tslint js/*.ts*
 
-gdep go vet github.com/kjk/quicknotes
+go vet github.com/kjk/quicknotes
 
 #echo "go vet"
 #go tool vet -printfuncs=LogInfof,LogErrorf,LogVerbosef .

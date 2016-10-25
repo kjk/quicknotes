@@ -1,0 +1,69 @@
+[submodule "vendor/github.com/SparkPost/gosparkpost"]
+	path = vendor/github.com/SparkPost/gosparkpost
+	url = https://github.com/SparkPost/gosparkpost
+[submodule "vendor/github.com/certifi/gocertifi"]
+	path = vendor/github.com/certifi/gocertifi
+	url = https://github.com/certifi/gocertifi
+[submodule "vendor/github.com/dustin/go-humanize"]
+	path = vendor/github.com/dustin/go-humanize
+	url = https://github.com/dustin/go-humanize
+[submodule "vendor/github.com/kjk/u"]
+	path = vendor/github.com/kjk/u
+	url = https://github.com/kjk/u
+[submodule "vendor/github.com/garyburd/go-oauth"]
+	path = vendor/github.com/garyburd/go-oauth
+	url = https://github.com/garyburd/go-oauth
+[submodule "vendor/github.com/go-sql-driver/mysql"]
+	path = vendor/github.com/go-sql-driver/mysql
+	url = https://github.com/go-sql-driver/mysql
+[submodule "vendor/github.com/google/go-github"]
+	path = vendor/github.com/google/go-github
+	url = https://github.com/google/go-github
+[submodule "vendor/github.com/google/go-querystring"]
+	path = vendor/github.com/google/go-querystring
+	url = https://github.com/google/go-querystring
+[submodule "vendor/github.com/gorilla/securecookie"]
+	path = vendor/github.com/gorilla/securecookie
+	url = https://github.com/gorilla/securecookie
+[submodule "vendor/github.com/kjk/log"]
+	path = vendor/github.com/kjk/log
+	url = https://github.com/kjk/log
+[submodule "vendor/github.com/kjk/lzmadec"]
+	path = vendor/github.com/kjk/lzmadec
+	url = https://github.com/kjk/lzmadec
+[submodule "vendor/github.com/kjk/simplenote"]
+	path = vendor/github.com/kjk/simplenote
+	url = https://github.com/kjk/simplenote
+[submodule "vendor/github.com/kjk/stackoverflow"]
+	path = vendor/github.com/kjk/stackoverflow
+	url = https://github.com/kjk/stackoverflow
+[submodule "vendor/github.com/speps/go-hashids"]
+	path = vendor/github.com/speps/go-hashids
+	url = https://github.com/speps/go-hashids
+[submodule "vendor/github.com/golang/snappy"]
+	path = vendor/github.com/golang/snappy
+	url = https://github.com/golang/snappy
+[submodule "vendor/github.com/syndtr/goleveldb"]
+	path = vendor/github.com/syndtr/goleveldb
+	url = https://github.com/syndtr/goleveldb
+[submodule "vendor/golang.org/x/net"]
+	path = vendor/golang.org/x/net
+	url = https://go.googlesource.com/net
+[submodule "vendor/golang.org/x/oauth2"]
+	path = vendor/golang.org/x/oauth2
+	url = https://go.googlesource.com/oauth2
+[submodule "vendor/google.golang.org/api"]
+	path = vendor/google.golang.org/api
+	url = https://code.googlesource.com/google-api-go-client
+[submodule "vendor/cloud.google.com/go"]
+	path = vendor/cloud.google.com/go
+	url = https://code.googlesource.com/gocloud
+[submodule "vendor/github.com/golang/protobuf"]
+	path = vendor/github.com/golang/protobuf
+	url = https://github.com/golang/protobuf
+[submodule "vendor/github.com/googleapis/gax-go"]
+	path = vendor/github.com/googleapis/gax-go
+	url = https://github.com/googleapis/gax-go
+[submodule "vendor/google.golang.org/grpc"]
+	path = vendor/google.golang.org/grpc
+	url = https://github.com/grpc/grpc-go
