@@ -60,7 +60,7 @@ gulp.task('jsprod', function() {
 });
 
 gulp.task('css', function() {
-  return gulp.src('./sass/*.scss')
+  return gulp.src('./sass/main.scss')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
@@ -69,7 +69,7 @@ gulp.task('css', function() {
 });
 
 gulp.task('cssprod', function() {
-  return gulp.src('./sass/*.scss')
+  return gulp.src('./sass/main.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
     .pipe(cssnano())
