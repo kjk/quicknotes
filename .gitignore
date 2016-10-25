@@ -9,3 +9,4 @@ quicknotes_prod_linux
 typings/
 tsbuild/
 .vscode/
+yarn.lock
