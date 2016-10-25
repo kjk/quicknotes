@@ -169,7 +169,7 @@ export class Note extends Array {
 }
 
 export function toNote(note: any): Note {
-  note.__proto__ = Note.prototype;
+  Object.setPrototypeOf(note, Note.prototype)
   return note as Note;
 }
 
