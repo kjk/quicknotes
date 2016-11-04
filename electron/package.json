@@ -7,7 +7,7 @@
   "author": "Krzysztof Kowalczyk",
   "license": "ISC",
   "build": {
-    "appId": "com.folsomlabs.helioscope",
+    "appId": "io.quicknotes",
     "win": {
       "target": [
         "nsis"
@@ -19,7 +19,7 @@
       "installerHeaderIcon": "icon.ico"
     },
     "mac": {
-      "category": "solar",
+      "category": "productivity",
       "icon": "icon.icns"
     },
     "dmg": {
