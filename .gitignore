@@ -1,5 +1,6 @@
 .DS_Store
-node_modules
+node_modules/
+electron/node_modules/
 s/dist
 quicknotes_resources.zip
 resources.go
@@ -9,4 +10,3 @@ quicknotes_prod_linux
 typings/
 tsbuild/
 .vscode/
-yarn.lock
