@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
 electron/node_modules/
+electron/dist/
 s/dist
 quicknotes_resources.zip
 resources.go
