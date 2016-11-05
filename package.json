@@ -21,7 +21,7 @@
     "@types/highlight.js": "^9.1.8",
     "@types/keymaster": "^1.6.28",
     "@types/marked": "0.0.28",
-    "@types/react": "^0.14.44",
+    "@types/react": "0.14",
     "@types/react-dom": "^0.14.17",
     "babel-preset-es2015": "6.18.0",
     "babel-preset-react": "6.16.0",
