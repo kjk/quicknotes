@@ -30,17 +30,19 @@ var browserifyOpts = {
   debug: true
 };
 
-gulp.task('js', function() {
+function js() {
   browserify(browserifyOpts)
     .plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('s/dist'));
-});
+    .pipe(gulp.dest('s/dist'));  
+}
+gulp.task('js', js);
 
-gulp.task('jsprod', function() {
+function jsprod() {
+  // strip react debug code
   process.env.NODE_ENV = 'production';
   browserify(browserifyOpts)
     .plugin(tsify, tsifyOpts)
@@ -50,29 +52,51 @@ gulp.task('jsprod', function() {
     .pipe(buffer())
     .pipe(uglify())
     .pipe(gulp.dest('s/dist'));
-});
+}
+gulp.task('jsprod', jsprod);
 
-gulp.task('css', function() {
+// TODO: could save 122.452 bytes from the bundle if minifying
+// via closure-sompiler instead of uglifyjs, like:
+// closure-compiler --js s/dist/bundle.js --js_output_file s/dist/bundle.min.js --compilation_level ADVANCED
+// but need to figure out how to run closure directly, in order to preserve
+// source maps
+function jsprod2() {
+  // strip react debug code
+  process.env.NODE_ENV = 'production';
+  browserify(browserifyOpts)
+    .plugin(tsify, tsifyOpts)
+    .transform(babelify, babelifyOpts)
+    .bundle()
+    .pipe(source('bundle.js'))
+    .pipe(buffer())
+    .pipe(gulp.dest('s/dist'));  
+}
+gulp.task('jsprod2', jsprod2);
+
+function css() {
   return gulp.src('./sass/main.scss')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
     .pipe(sourcemaps.write('.')) // this is relative to gulp.dest()
     .pipe(gulp.dest('./s/dist/'));
-});
+}
+gulp.task('css', css);
 
-gulp.task('cssprod', function() {
+function cssprod() {
   return gulp.src('./sass/main.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
     .pipe(cssnano())
     .pipe(gulp.dest('./s/dist/'));
-});
+}
+gulp.task('cssprod', cssprod);
 
-gulp.task('watch', function() {
+function watch() {
   gulp.watch('js/*', ['js']);
   gulp.watch('./sass/**/*', ['css']);
-});
+}
+gulp.task('watch', watch);
 
 gulp.task('prod', ['cssprod', 'jsprod']);
 gulp.task('default', ['css', 'js']);
