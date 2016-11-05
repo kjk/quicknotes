@@ -2,7 +2,6 @@ var babelify = require('babelify');
 var browserify = require('browserify');
 var buffer = require('vinyl-buffer');
 var cssnano = require('gulp-cssnano');
-var envify = require('envify/custom');
 var exorcist = require('exorcist');
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
@@ -42,16 +41,10 @@ gulp.task('js', function() {
 });
 
 gulp.task('jsprod', function() {
-  var envifyOpts = {
-    'global': true,
-    '_': 'purge',
-    NODE_ENV: 'production'
-  };
-
+  process.env.NODE_ENV = 'production';
   browserify(browserifyOpts)
     .plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
-    .transform(envify(envifyOpts))
     .bundle()
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
