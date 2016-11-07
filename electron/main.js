@@ -8,6 +8,9 @@ const startURL = 'https://quicknotes.io/';
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+// https://github.com/sindresorhus/electron-is-dev
+const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
+
 function createWindow() {
     const mainWindowState = windowStateKeeper({
         defaultWidth: 1024,
@@ -44,7 +47,7 @@ app.on('ready', createWindow);
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (true || process.platform !== 'darwin') {
+    if (process.platform !== 'darwin') {
         app.quit();
     }
 });
