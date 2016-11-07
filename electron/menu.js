@@ -15,7 +15,6 @@ const mac = [
       { label: 'Quit', accelerator: 'Command+Q', command: 'application:quit' },
     ]
   },
-
   {
     label: 'Edit',
     submenu: [
@@ -28,7 +27,7 @@ const mac = [
       { label: 'Select All', accelerator: 'Command+A', selector: 'selectAll:' },
     ]
   },
-
+  null,
   {
     label: 'Window',
     submenu: [
@@ -39,6 +38,17 @@ const mac = [
     ]
   },
 ];
+
+if (isDev()) {
+  mac[2] = {
+    label: 'View',
+    submenu: [
+      { label: 'Reload', accelerator: 'Command+R', command: 'window:reload' },
+      { label: 'Toggle Full Screen', accelerator: 'Ctrl+Command+F', command: 'window:toggle-full-screen' },
+      { label: 'Toggle Developer Tools', accelerator: 'Alt+Command+I', command: 'window:toggle-dev-tools' },
+    ]
+  }
+}
 
 function wireUpCommands(appMenu, submenu) {
   submenu.forEach((item) => {
@@ -63,6 +73,7 @@ function wireUpCommands(appMenu, submenu) {
 class AppMenu extends EventEmitter {
   constructor(template) {
     super();
+    template = template.filter(v => v != null);
     wireUpCommands(this, template);
     this.menu = Menu.buildFromTemplate(template);
   }
