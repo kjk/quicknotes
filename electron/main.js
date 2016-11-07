@@ -1,46 +1,25 @@
-'use strict';
-
 const { app, BrowserWindow, Menu } = require('electron');
 const windowStateKeeper = require('electron-window-state');
+const { isDev, isMac } = require('./utils');
+const menu = require('./menu');
 
 // TODO: login page specific to the app
 const startURL = 'https://quicknotes.io/';
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-
-// https://github.com/sindresorhus/electron-is-dev
-const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
 
 const iconPath = __dirname + '/icon.png';
 
-if (isDev) {
+if (isDev()) {
     console.log('iconPath: ', iconPath);
 }
 
-function isMac() { return process.platform == 'darwin' }
-
 function createMainMenu() {
-  if (process.platform == 'darwin') { // To enable shortcuts on OSX
-
-    var template = [{
-          label: "QuickNotes",
-          submenu: [
-              { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-              { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-              { type: "separator" },
-              { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-              { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-              { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-              { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" },
-              { type: "separator" },
-              { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
-          ]}
-      ];
-
-      Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-  }
+    if (isMac()) {
+        const macMenu = menu.mac;
+        macMenu.on('application:quit', app.quit);
+        macMenu.makeDefault();
+    }
 }
 
 function createWindow() {
@@ -65,6 +44,11 @@ function createWindow() {
 
     mainWindow.loadURL(startURL);
 
+    mainWindow.on('application:quit', () => {
+      console.log('application:quit');
+      app.quit()
+    });
+
     mainWindow.on('closed', () => {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
@@ -82,7 +66,7 @@ app.on('ready', createWindow);
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (isDev || !isMac()) {
+    if (isDev() || !isMac()) {
         app.quit();
     }
 });
