@@ -480,6 +480,10 @@ electron-osx-sign-tf@^1.0.1:
     plist "^2.0.1"
     tempfile "^1.1.1"
 
+electron-positioner:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/electron-positioner/-/electron-positioner-3.0.0.tgz#1a3b75c9cc1e29dd37c663b23fd876d4ffab9996"
+
 electron-window-state:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/electron-window-state/-/electron-window-state-3.1.0.tgz#b2175467dce610e0f2dfb7201ed47b190636c3fe"
