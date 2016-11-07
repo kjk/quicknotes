@@ -25,7 +25,7 @@ function createMainMenu() {
   if (process.platform == 'darwin') { // To enable shortcuts on OSX
 
     var template = [{
-          label: "Harmony",
+          label: "QuickNotes",
           submenu: [
               { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
               { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
