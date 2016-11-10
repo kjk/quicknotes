@@ -6,4 +6,5 @@ set -o pipefail
 
 cd ./electron
 rm -rf dist
-node ./tools/build.js
+go run ./tools/build.go
+
