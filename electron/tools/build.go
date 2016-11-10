@@ -176,15 +176,18 @@ func s3UploadDataPublic(s3Path string, data []byte, contentType string) {
 func s3UploadMac(version string) {
 	s3UploadFilePublic(s3PathMacZip, pathMacZip, "")
 	s3UploadFilePublic(s3PathMacDmg, pathMacDmg, "")
-	var urlPrefix = "https://s3.amazonaws.com/kjkpub/"
+	urlPrefix := "https://s3.amazonaws.com/kjkpub/"
+	now := time.Now().Format("2006-01-02")
 	var o = struct {
 		Ver       string `json:"ver"`
 		MacZipURL string `json:"macZipUrl"`
 		MacDmgURL string `json:"macDmgUrl"`
+		BuiltOn   string `json:"builtOn"`
 	}{
 		Ver:       version,
 		MacZipURL: urlPrefix + s3PathMacZip,
 		MacDmgURL: urlPrefix + s3PathMacDmg,
+		BuiltOn:   now,
 	}
 	d, err := json.MarshalIndent(o, "", "  ")
 	panicIfErr(err)
