@@ -1,10 +1,17 @@
-const { app, BrowserWindow, Menu, Tray } = require('electron');
+const { 
+  app,
+  BrowserWindow, 
+  Menu, 
+  Tray
+} = require('electron');
 const windowStateKeeper = require('electron-window-state');
 const { isDev, isMac, isWin } = require('./utils');
 const AppMenu = require('./appmenu');
 const Path = require('path');
-var Positioner = require('electron-positioner');
+const os = require('os');
+const AutoUpdate = require('./auto-update');
 
+var Positioner = require('electron-positioner');
 
 // TODO: login page specific to the app
 const startURL = 'https://quicknotes.io/';
@@ -196,3 +203,6 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+AutoUpdate.init(mainWindow);
+
