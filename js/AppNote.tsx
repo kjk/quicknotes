@@ -383,8 +383,3 @@ export default class AppNote extends Component<any, State> {
     );
   }
 }
-
-window.appNoteStart = function() {
-  const el = document.getElementById('root');
-  ReactDOM.render(<AppNote />, el);
-}

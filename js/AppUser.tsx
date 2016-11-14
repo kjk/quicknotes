@@ -5,7 +5,6 @@ import Editor from './Editor';
 import ImportSimpleNote from './ImportSimpleNote';
 import LeftSidebar from './LeftSidebar';
 import NotesList from './NotesList';
-import Router from './Router';
 import SearchResults from './SearchResults';
 import Settings from './Settings';
 import TemporaryMessage from './TemporaryMessage';
@@ -212,27 +211,4 @@ export default class AppUser extends Component<Props, State> {
       </div>
     );
   }
-}
-
-// s is in format "/t:foo/t:bar", returns ["foo", "bar"]
-function tagsFromRoute(s: string): string[] {
-  const parts = s.split('/t:');
-  const res = parts.filter((s: string) => s !== '');
-  if (res.length === 0) {
-    return ['__all'];
-  }
-  return res;
-}
-
-window.appUserStart = function() {
-  //console.log("gNotesUserHandle: ", gNotesUserHandle);
-  const initialTags = tagsFromRoute(Router.getHash());
-  const initialTag = initialTags[0];
-  //console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
-  //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
-
-  ReactDOM.render(
-    <AppUser initialNotesJSON={gInitialNotesJSON} initialTag={initialTag} />,
-    document.getElementById('root')
-  );
 }
