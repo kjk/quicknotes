@@ -1,14 +1,7 @@
-const { app, autoUpdater, ipcMain } = require('electron');
+const { app, autoUpdater, dialog, ipcMain } = require('electron');
 const os = require('os');
 
-// TODO: the main window must listen for quicknotes:update-ready,
-// ask user if he wants to update, if yes send quicknotes:install-update
-// to main process
-
-ipcMain.on('quicknotes:install-update', autoUpdater.quitAndInstall);
-
-//const updateCheckDelayInMs = 2 * 60 * 1000;
-const updateCheckDelayInMs = 3 * 1000;
+const updateCheckDelayInMs = 2 * 60 * 1000;
 
 function init(mainWindow) {
   console.log('auto-update.js:init() called, mainWindow', mainWindow);
@@ -27,7 +20,20 @@ function init(mainWindow) {
   })
   autoUpdater.on('update-downloaded', () => {
     console.log('Update downloaded');
-    mainWindow.webContents.send('quicknotes:update-ready');
+
+    var index = dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      buttons: ['Restart', 'Later'],
+      title: "QuickNotes",
+      message: 'New version of QuickNotes is available',
+      detail: 'Please restart the application to apply the updates.',
+    });
+
+    if (index === 1) {
+      return;
+    }
+
+    autoUpdater.quitAndInstall();
   });
 
   setTimeout(() => {
