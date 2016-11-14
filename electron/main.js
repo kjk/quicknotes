@@ -1,7 +1,7 @@
-const { 
+const {
   app,
-  BrowserWindow, 
-  Menu, 
+  BrowserWindow,
+  Menu,
   Tray
 } = require('electron');
 const windowStateKeeper = require('electron-window-state');
@@ -76,7 +76,7 @@ function showTrayWindow(trayPos) {
   trayWindow.show()
 }
 
-function hideTrayWindow () {
+function hideTrayWindow() {
   console.log('hideTrayWindow');
   traySetHighlightMode('never');
   if (!trayWindow) {
@@ -104,25 +104,24 @@ function toggleTrayWindow(e, bounds) {
     trayWindow.loadURL(resFilePath('menubar.html'));
   }
 
-    if (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey) {
-      console.log('openTrayWindow: calling hide because meta key');
-      return hideTrayWindow();
-    }
-    if (trayWindow && trayWindow.isVisible()) {
-      console.log('openTrayWindow: calling hide because isVisible');
-      return hideTrayWindow();
-    }
-    showTrayWindow(bounds)
+  if (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey) {
+    console.log('openTrayWindow: calling hide because meta key');
+    return hideTrayWindow();
+  }
+  if (trayWindow && trayWindow.isVisible()) {
+    console.log('openTrayWindow: calling hide because isVisible');
+    return hideTrayWindow();
+  }
+  showTrayWindow(bounds)
 }
 
 function traySetHighlightMode(mode) {
   try {
     tray.setHighlightMode(mode);
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function createTray() {
-  console.log('createTray(): icon:', menubarIconPath);
   tray = new Tray(menubarIconPath);
   tray.on('click', toggleTrayWindow);
   tray.on('right-click', toggleTrayWindow);
@@ -152,7 +151,8 @@ function createWindow() {
     width: mainWindowState.width,
     height: mainWindowState.height,
     webPreferences: {
-        allowDisplayingInsecureContent: true,
+      allowDisplayingInsecureContent: true,
+      preload: resPath('preload.js'),
     },
   });
 
@@ -162,6 +162,8 @@ function createWindow() {
   app.setName('QuickNotes');
 
   mainWindow.loadURL(startURL);
+
+  AutoUpdate.init(mainWindow);
 
   mainWindow.on('application:quit', () => {
     console.log('application:quit');
@@ -204,5 +206,4 @@ app.on('activate', () => {
   }
 });
 
-AutoUpdate.init(mainWindow);
 
