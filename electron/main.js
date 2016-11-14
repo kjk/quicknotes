@@ -10,14 +10,15 @@ const AppMenu = require('./appmenu');
 const Path = require('path');
 const os = require('os');
 const AutoUpdate = require('./auto-update');
-
-var Positioner = require('electron-positioner');
+const Positioner = require('electron-positioner');
 
 // TODO: login page specific to the app
 const startURL = 'https://quicknotes.io/';
 
 // TODO: properly handle multiple window by keeping windows in an array
 let mainWindow;
+
+const showDev = process.argv.includes('-dev');
 
 function resPath(path) {
   return Path.join(__dirname, path);
@@ -122,6 +123,9 @@ function traySetHighlightMode(mode) {
 }
 
 function createTray() {
+  if (tray) {
+    return;
+  }
   tray = new Tray(menubarIconPath);
   tray.on('click', toggleTrayWindow);
   tray.on('right-click', toggleTrayWindow);
@@ -160,10 +164,12 @@ function createWindow() {
   createMainMenu();
   createTray();
   app.setName('QuickNotes');
-
   mainWindow.loadURL(startURL);
-
   AutoUpdate.init(mainWindow);
+
+  if (showDev) {
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on('application:quit', () => {
     console.log('application:quit');
