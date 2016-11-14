@@ -29,6 +29,9 @@ software/quicknotes/
     win/
       QuickNotes-32-${ver}.exe
       QuickNotes-64-${ver}.exe
+
+The full url is:
+https://s3.amazonaws.com/kjkpub/software/quicknotes/rel/mac/QuickNotes-0.2.0.zip
 */
 
 const (
