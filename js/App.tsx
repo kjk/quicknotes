@@ -6,7 +6,7 @@ import page from 'page';
 import * as ReactDOM from 'react-dom';
 import Router from './Router';
 
-import AppUser from './Appuser';
+import AppUser from './AppUser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
 import { Note, toNotes } from './Note';
@@ -24,19 +24,26 @@ function tagsFromRoute(s: string): string[] {
 }
 
 function appUserStart(ctx: PageJS.Context) {
-  console.log('appUserStart');
+  console.log('appUserStart: ctx:', ctx);
 
-  //console.log("gNotesUserHandle: ", gNotesUserHandle);
+  if (!gNotesUser) {
+    // TODO: get user hash from ctx, get user then get his notes
+    console.log('appUserStart: dont have gNotesUser');
+    return
+  }
+
   const initialTags = tagsFromRoute(Router.getHash());
   const initialTag = initialTags[0];
-  //console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
-  //console.log("gInitialNotesJSON.Notes.length: ", gInitialNotesJSON.Notes.length);
+  console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
 
-  const el = document.getElementById('root');
-  ReactDOM.render(
-    <AppUser initialNotesJSON={gInitialNotesJSON} initialTag={initialTag} />,
-    el
-  );
+  api.getNotes(gNotesUser.HashID, (notes: Note[]) => {
+    console.log('appUserStart: got', notes.length, 'notes');
+    const el = document.getElementById('root');
+    ReactDOM.render(
+      <AppUser initialNotes={notes} initialTag={initialTag} />,
+      el
+    );
+  })
 }
 
 function appNoteStart(ctx: PageJS.Context) {
