@@ -61,7 +61,7 @@ function tagsFromNotes(notes: Note[]): TagToCount {
 
 interface Props {
   initialTag?: string;
-  initialNotesJSON?: any;
+  initialNotes?: Note[];
 }
 
 interface State {
@@ -84,8 +84,7 @@ export default class AppUser extends Component<Props, State> {
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.handleReloadNotes = this.handleReloadNotes.bind(this);
 
-    const initialNotesJSON = props.initialNotesJSON;
-    let allNotes: Note[] = [];
+    let allNotes: Note[] = props.initialNotes;
     let selectedNotes: Note[] = [];
     let selectedTags = [props.initialTag];
     let tags: TagToCount = {};
@@ -97,8 +96,7 @@ export default class AppUser extends Component<Props, State> {
       loggedUserHashID = gLoggedUser.HashID;
     }
 
-    if (initialNotesJSON && initialNotesJSON.Notes) {
-      allNotes = toNotes(initialNotesJSON.Notes);
+    if (allNotes.length > 0) {
       sortNotesByUpdatedAt(allNotes);
       selectedNotes = u.filterNotesByTags(allNotes, selectedTags);
       tags = tagsFromNotes(allNotes);
