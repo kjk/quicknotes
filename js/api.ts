@@ -95,6 +95,18 @@ export function getNotes(userHandle: string, cb: any, cbErr?: any) {
   get('/api/getnotes', args, getNotesCb, cbErr);
 }
 
+// calls cb with Note[]
+export function getRecentNotes(cb: any, cbErr?: any) {
+  function getNotesCb(json: GetNotesResp) {
+    if (!json || !json.Notes) {
+      cb([]);
+    }
+    let notes = toNotes(json.Notes);
+    cb(notes);
+  }
+  get('/api/getrecentnotes', null, getNotesCb, cbErr);
+}
+
 // calls cb with Note
 export function getNote(noteId: any, cb: any, cbErr?: any) {
   const args: ArgsDict = {

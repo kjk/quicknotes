@@ -16,15 +16,18 @@ interface State {
   notes: Note[];
 }
 
-export default class AppIndex extends Component<any, State> {
+interface Props {
+  initialNotes: Note[];
+}
+
+export default class AppIndex extends Component<Props, State> {
   constructor(props: any, context: any) {
     super(props, context);
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
 
-    const notes = toNotes(gRecentNotesInitial);
     this.state = {
-      notes: notes
+      notes: props.initialNotes,
     };
   }
 

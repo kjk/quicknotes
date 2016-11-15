@@ -9,6 +9,9 @@ import Router from './Router';
 import AppUser from './Appuser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
+import { Note, toNotes } from './Note';
+
+import * as api from './api';
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s: string): string[] {
@@ -46,8 +49,11 @@ function appNoteStart(ctx: PageJS.Context) {
 function appIndexStart(ctx: PageJS.Context) {
   console.log('appIndexStart');
 
-  const el = document.getElementById('root');
-  ReactDOM.render(<AppIndex />, el);
+  api.getRecentNotes((notes: Note[]) => {
+    console.log('appIndexStart: got', notes.length, 'notes');
+    const el = document.getElementById('root');
+    ReactDOM.render(<AppIndex initialNotes={notes} />, el);
+  });
 }
 
 function notFound(ctx: PageJS.Context) {
