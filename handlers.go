@@ -250,21 +250,50 @@ Big picture:
 
 func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	uri := r.URL.Path
-	if uri != "/" {
-		http.NotFound(w, r)
-		return
-	}
 
 	if ctx.User != nil {
 		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, ctx.User.id, ctx.User.HashID, ctx.User.Handle)
 	} else {
 		log.Verbosef("url: '%s'\n", uri)
 	}
+
 	v := struct {
 		LoggedUser *UserSummary
+		NotesUser  *UserSummary
+		Notes      []*Note
+		Title      string
 	}{
 		LoggedUser: ctx.User,
+		Title:      "QuickNotes",
 	}
+
+	if strings.HasPrefix(uri, "/u/") {
+		// /u/${userId}/${whatever}
+		userHashID := r.URL.Path[len("/u/"):]
+		userHashID = strings.Split(userHashID, "/")[0]
+		userID, err := dehashInt(userHashID)
+		if err != nil {
+			log.Errorf("invalid userID='%s'\n", userHashID)
+			http.NotFound(w, r)
+			return
+		}
+		i, err := getCachedUserInfo(userID)
+		if err != nil || i == nil {
+			log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
+			http.NotFound(w, r)
+			return
+		}
+		notesUser := userSummaryFromDbUser(i.user)
+		log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, userHashID)
+		v.NotesUser = notesUser
+		v.Title = fmt.Sprintf("Notes by %s", notesUser.Handle)
+	} else {
+		if uri != "/" {
+			http.NotFound(w, r)
+			return
+		}
+	}
+
 	execTemplate(w, tmplIndex, v)
 }
 
@@ -289,36 +318,6 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Verbosef("file %q doesn't exist, referer: %q\n", fileName, getReferer(r))
 	http.NotFound(w, r)
-}
-
-// /u/${userId}/${whatever}
-func handleUser(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	userHashID := r.URL.Path[len("/u/"):]
-	userHashID = strings.Split(userHashID, "/")[0]
-	userID, err := dehashInt(userHashID)
-	if err != nil {
-		log.Errorf("invalid userID='%s'\n", userHashID)
-		http.NotFound(w, r)
-		return
-	}
-	i, err := getCachedUserInfo(userID)
-	if err != nil || i == nil {
-		log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
-		http.NotFound(w, r)
-		return
-	}
-	notesUser := userSummaryFromDbUser(i.user)
-	log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, userHashID)
-	model := struct {
-		LoggedUser *UserSummary
-		NotesUser  *UserSummary
-		Notes      []*Note
-	}{
-		LoggedUser: ctx.User,
-		NotesUser:  notesUser,
-		Notes:      i.notes,
-	}
-	execTemplate(w, tmplUser, model)
 }
 
 func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
@@ -557,12 +556,17 @@ func handleAPIGetRecentNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Req
 		httpServerError(w, r)
 		return
 	}
-	var res [][]interface{}
+	var notes [][]interface{}
 	for _, note := range recentNotes {
 		compactNote, _ := noteToCompact(&note, false)
-		res = append(res, compactNote)
+		notes = append(notes, compactNote)
 	}
-	httpOkWithJsonpCompact(w, r, res, jsonp)
+	v := struct {
+		Notes [][]interface{}
+	}{
+		Notes: notes,
+	}
+	httpOkWithJsonpCompact(w, r, v, jsonp)
 }
 
 // NewNoteFromBrowser represents format of the note sent by the browser
@@ -840,7 +844,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
-	http.HandleFunc("/u/", withCtx(handleUser, 0))
+	http.HandleFunc("/u/", withCtx(handleIndex, 0))
 	http.HandleFunc("/n/", withCtx(handleNote, OnlyGet))
 	http.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
