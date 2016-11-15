@@ -236,67 +236,6 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 	serveData(w, r, 200, MimeTypeByExtensionExt(path), data, gzippedData)
 }
 
-/*
-Big picture:
-/ - main page, shows recent public notes, on-boarding for new users
-/latest - show latest public notes
-/s/{path} - static files
-/u/{idHashed} - main page for a given user. Shows read-write UI if
-  it's a logged-in user. Shows only public if user's owner != logged in
-  user
-/n/${noteIdHashed} - show a single note
-/api/* - api calls
-*/
-
-func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	uri := r.URL.Path
-
-	if ctx.User != nil {
-		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, ctx.User.id, ctx.User.HashID, ctx.User.Handle)
-	} else {
-		log.Verbosef("url: '%s'\n", uri)
-	}
-
-	v := struct {
-		LoggedUser *UserSummary
-		NotesUser  *UserSummary
-		Notes      []*Note
-		Title      string
-	}{
-		LoggedUser: ctx.User,
-		Title:      "QuickNotes",
-	}
-
-	if strings.HasPrefix(uri, "/u/") {
-		// /u/${userId}/${whatever}
-		userHashID := r.URL.Path[len("/u/"):]
-		userHashID = strings.Split(userHashID, "/")[0]
-		userID, err := dehashInt(userHashID)
-		if err != nil {
-			log.Errorf("invalid userID='%s'\n", userHashID)
-			http.NotFound(w, r)
-			return
-		}
-		i, err := getCachedUserInfo(userID)
-		if err != nil || i == nil {
-			log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
-			http.NotFound(w, r)
-			return
-		}
-		notesUser := userSummaryFromDbUser(i.user)
-		log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, userHashID)
-		v.NotesUser = notesUser
-		v.Title = fmt.Sprintf("Notes by %s", notesUser.Handle)
-	} else {
-		if uri != "/" {
-			http.NotFound(w, r)
-			return
-		}
-	}
-
-	execTemplate(w, tmplIndex, v)
-}
-
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
@@ -350,45 +289,103 @@ func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
 	return getNoteByID(ctx, noteID)
 }
 
-// /n/{note_id_hash}-rest
-func handleNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	noteIDHashStr := r.URL.Path[len("/n/"):]
-	// remove optional part after -, which is constructed from note title
-	if idx := strings.Index(noteIDHashStr, "-"); idx != -1 {
-		noteIDHashStr = noteIDHashStr[:idx]
+/*
+Big picture:
+/ - main page, shows recent public notes, on-boarding for new users
+/latest - show latest public notes
+/s/{path} - static files
+/u/{idHashed} - main page for a given user. Shows read-write UI if
+  it's a logged-in user. Shows only public if user's owner != logged in
+  user
+/n/${noteIdHashed} - show a single note
+/api/* - api calls
+*/
+
+func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
+	uri := r.URL.Path
+
+	if ctx.User != nil {
+		log.Verbosef("url: '%s', user: %d (%s), handle: '%s'\n", uri, ctx.User.id, ctx.User.HashID, ctx.User.Handle)
+	} else {
+		log.Verbosef("url: '%s'\n", uri)
 	}
 
-	note, err := getNoteByIDHash(ctx, noteIDHashStr)
-	if err != nil || note == nil {
-		log.Error(err)
-		http.NotFound(w, r)
-		return
-	}
-
-	compactNote, err := noteToCompact(note, true)
-	if err != nil {
-		httpErrorf(w, "noteToCompact() failed with %s", err)
-		return
-	}
-	dbNoteUser, err := dbGetUserByID(note.userID)
-	if err != nil {
-		httpErrorf(w, "dbGetUserByID(%d) failed with %s", note.userID, err)
-		return
-	}
-	noteUser := userSummaryFromDbUser(dbNoteUser)
-
-	model := struct {
+	v := struct {
+		// common between /, /u/ and /n/
 		LoggedUser *UserSummary
-		NoteUser   *UserSummary
-		Note       []interface{}
-		NoteTitle  string
+		Title      string
+
+		// for / and /u/
+		Notes     []*Note
+		NotesUser *UserSummary
+
+		// for /n/
+		NoteUser *UserSummary
+		Note     []interface{}
 	}{
 		LoggedUser: ctx.User,
-		Note:       compactNote,
-		NoteUser:   noteUser,
-		NoteTitle:  note.Title,
+		Title:      "QuickNotes",
 	}
-	execTemplate(w, tmplNote, model)
+
+	if strings.HasPrefix(uri, "/u/") {
+		// /u/${userId}/${whatever}
+		userHashID := r.URL.Path[len("/u/"):]
+		userHashID = strings.Split(userHashID, "/")[0]
+		userID, err := dehashInt(userHashID)
+		if err != nil {
+			log.Errorf("invalid userID='%s'\n", userHashID)
+			http.NotFound(w, r)
+			return
+		}
+		i, err := getCachedUserInfo(userID)
+		if err != nil || i == nil {
+			log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
+			http.NotFound(w, r)
+			return
+		}
+		notesUser := userSummaryFromDbUser(i.user)
+		log.Verbosef("%d notes for user %d (%s)\n", len(i.notes), userID, userHashID)
+		v.NotesUser = notesUser
+		v.Title = fmt.Sprintf("Notes by %s", notesUser.Handle)
+	} else if strings.HasPrefix(uri, "/n/") {
+
+		// /n/{note_id_hash}-rest
+		noteIDHashStr := r.URL.Path[len("/n/"):]
+		// remove optional part after -, which is constructed from note title
+		if idx := strings.Index(noteIDHashStr, "-"); idx != -1 {
+			noteIDHashStr = noteIDHashStr[:idx]
+		}
+
+		note, err := getNoteByIDHash(ctx, noteIDHashStr)
+		if err != nil || note == nil {
+			log.Error(err)
+			http.NotFound(w, r)
+			return
+		}
+
+		compactNote, err := noteToCompact(note, true)
+		if err != nil {
+			httpErrorf(w, "noteToCompact() failed with %s", err)
+			return
+		}
+		dbNoteUser, err := dbGetUserByID(note.userID)
+		if err != nil {
+			httpErrorf(w, "dbGetUserByID(%d) failed with %s", note.userID, err)
+			return
+		}
+		noteUser := userSummaryFromDbUser(dbNoteUser)
+
+		v.Note = compactNote
+		v.NoteUser = noteUser
+		v.Title = note.Title
+	} else {
+		if uri != "/" {
+			http.NotFound(w, r)
+			return
+		}
+	}
+
+	execTemplate(w, tmplIndex, v)
 }
 
 // must match Note.js
@@ -845,7 +842,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
 	http.HandleFunc("/u/", withCtx(handleIndex, 0))
-	http.HandleFunc("/n/", withCtx(handleNote, OnlyGet))
+	http.HandleFunc("/n/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)

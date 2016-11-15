@@ -9,7 +9,7 @@ import Router from './Router';
 import AppUser from './AppUser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
-import { Note, toNotes } from './Note';
+import { Note, toNote, toNotes } from './Note';
 
 import * as api from './api';
 
@@ -47,10 +47,16 @@ function appUserStart(ctx: PageJS.Context) {
 }
 
 function appNoteStart(ctx: PageJS.Context) {
-  console.log('appNoteStart');
+  console.log('appNoteStart: ctx:', ctx);
 
+  if (!gInitialNote) {
+    // TODO: fetch the note
+    console.log('appNoteStart: dont have gInitialNote')
+    return;
+  }
+  const note = toNote(gInitialNote);
   const el = document.getElementById('root');
-  ReactDOM.render(<AppNote />, el);
+  ReactDOM.render(<AppNote initialNote={note} />, el);
 }
 
 function appIndexStart(ctx: PageJS.Context) {

@@ -13,7 +13,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import { escapeHtml } from './utils';
-import { Note, toNote, FormatText } from './Note';
+import { Note, FormatText } from './Note';
 import * as api from './api';
 import * as action from './action';
 
@@ -34,7 +34,11 @@ interface State {
   note?: Note;
 }
 
-export default class AppNote extends Component<any, State> {
+interface Props {
+  initialNote?: Note;
+}
+
+export default class AppNote extends Component<Props, State> {
   constructor(props?: any, context?: any) {
     super(props, context);
 
@@ -53,9 +57,8 @@ export default class AppNote extends Component<any, State> {
     this.isMyNote = this.isMyNote.bind(this);
     this.setNote = this.setNote.bind(this);
 
-    const note = toNote(gInitialNote);
     this.state = {
-      note: note
+      note: props.initialNote,
     };
   }
 

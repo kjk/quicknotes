@@ -16,11 +16,9 @@ import (
 
 var (
 	tmplIndex      = "index.html"
-	tmplUser       = "user.html"
 	tmplResult     = "result.html"
-	tmplNote       = "note.html"
 	tmplNotesIndex = "notes_index.html"
-	templateNames  = []string{tmplIndex, tmplUser, tmplResult, tmplNote, tmplNotesIndex}
+	templateNames  = []string{tmplIndex, tmplResult, tmplNotesIndex}
 	templatePaths  []string
 	templates      *template.Template
 
