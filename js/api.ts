@@ -52,7 +52,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -66,7 +66,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -119,51 +119,62 @@ export function getNote(noteId: any, cb: any, cbErr?: any) {
   get('/api/getnote', args, getNoteCb, cbErr);
 }
 
+// calls cb with UserInfo
+export function getUserInfo(userHashID: string, cb: any, cbErr?: any) {
+  function getUserInfoCb(userInfo: any) {
+    cb(userInfo.UserInfo);
+  }
+  const args: ArgsDict = {
+    'userHashID': userHashID,
+  };
+  get('/api/getuserinfo', args, getUserInfoCb, cbErr);
+}
+
 export function undeleteNote(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/undeletenote', args, cb, cbErr);
 }
 
 export function deleteNote(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/deletenote', args, cb, cbErr);
 }
 
 export function permanentDeleteNote(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/permanentdeletenote', args, cb, cbErr);
 }
 
 export function makeNotePrivate(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/makenoteprivate', args, cb, cbErr);
 }
 
 export function makeNotePublic(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/makenotepublic', args, cb, cbErr);
 }
 
 export function starNote(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/starnote', args, cb, cbErr);
 }
 
 export function unstarNote(noteId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteIdHash': noteId
+    'noteHashID': noteId
   };
   post('/api/unstarnote', args, cb, cbErr);
 }

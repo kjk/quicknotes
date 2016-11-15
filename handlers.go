@@ -279,13 +279,13 @@ func getNoteByID(ctx *ReqContext, noteID int) (*Note, error) {
 	return note, nil
 }
 
-func getNoteByIDHash(ctx *ReqContext, noteIDHashStr string) (*Note, error) {
-	noteIDHashStr = strings.TrimSpace(noteIDHashStr)
-	noteID, err := dehashInt(noteIDHashStr)
+func getNoteByIDHash(ctx *ReqContext, noteHashIDStr string) (*Note, error) {
+	noteHashIDStr = strings.TrimSpace(noteHashIDStr)
+	noteID, err := dehashInt(noteHashIDStr)
 	if err != nil {
 		return nil, err
 	}
-	// log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	// log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
 	return getNoteByID(ctx, noteID)
 }
 
@@ -297,7 +297,7 @@ Big picture:
 /u/{idHashed} - main page for a given user. Shows read-write UI if
   it's a logged-in user. Shows only public if user's owner != logged in
   user
-/n/${noteIdHashed} - show a single note
+/n/${noteHashIDed} - show a single note
 /api/* - api calls
 */
 
@@ -350,13 +350,13 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	} else if strings.HasPrefix(uri, "/n/") {
 
 		// /n/{note_id_hash}-rest
-		noteIDHashStr := r.URL.Path[len("/n/"):]
+		noteHashIDStr := r.URL.Path[len("/n/"):]
 		// remove optional part after -, which is constructed from note title
-		if idx := strings.Index(noteIDHashStr, "-"); idx != -1 {
-			noteIDHashStr = noteIDHashStr[:idx]
+		if idx := strings.Index(noteHashIDStr, "-"); idx != -1 {
+			noteHashIDStr = noteHashIDStr[:idx]
 		}
 
-		note, err := getNoteByIDHash(ctx, noteIDHashStr)
+		note, err := getNoteByIDHash(ctx, noteHashIDStr)
 		if err != nil || note == nil {
 			log.Error(err)
 			http.NotFound(w, r)
@@ -459,13 +459,38 @@ func noteToCompact(n *Note, withContent bool) ([]interface{}, error) {
 	return res, nil
 }
 
+// /api/getuserinfo?userHashID=${userHashID}
+func handleAPIGetUserInfo(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
+	userHashID := r.FormValue("userHashID")
+	log.Errorf("handleAPIGetUserInfo: userHashID: %s\n", userHashID)
+	userID, err := dehashInt(userHashID)
+	if err != nil {
+		log.Errorf("invalid userID='%s'\n", userHashID)
+		httpErrorWithJSONf(w, r, "invalid userID='%s'\n", userHashID)
+		return
+	}
+	i, err := getCachedUserInfo(userID)
+	if err != nil || i == nil {
+		log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
+		httpErrorWithJSONf(w, r, "no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
+		return
+	}
+	userInfo := userSummaryFromDbUser(i.user)
+	v := struct {
+		UserInfo *UserSummary
+	}{
+		UserInfo: userInfo,
+	}
+	httpOkWithJSON(w, r, v)
+}
+
 // /api/getnote?id=${noteHashID}
 func handleAPIGetNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	noteIDHashStr := r.FormValue("id")
-	note, err := getNoteByIDHash(ctx, noteIDHashStr)
+	noteHashIDStr := r.FormValue("id")
+	note, err := getNoteByIDHash(ctx, noteHashIDStr)
 	if err != nil || note == nil {
 		log.Error(err)
-		httpErrorWithJSONf(w, r, "/api/getnote.json: missing or invalid id attribute '%s'", noteIDHashStr)
+		httpErrorWithJSONf(w, r, "/api/getnote.json: missing or invalid id attribute '%s'", noteHashIDStr)
 		return
 	}
 	if !userCanAccessNote(ctx.User, note) {
@@ -639,13 +664,13 @@ func handleAPICreateOrUpdateNote(ctx *ReqContext, w http.ResponseWriter, r *http
 }
 
 func getUserNoteFromArgs(ctx *ReqContext, w http.ResponseWriter, r *http.Request) (int, error) {
-	noteIDHashStr := strings.TrimSpace(r.FormValue("noteIdHash"))
-	noteID, err := dehashInt(noteIDHashStr)
+	noteHashIDStr := strings.TrimSpace(r.FormValue("noteHashID"))
+	noteID, err := dehashInt(noteHashIDStr)
 	if err != nil {
 		return -1, err
-		//httpErrorWithJSONf(w, r, "ivalid note id '%s'", noteIDHashStr)
+		//httpErrorWithJSONf(w, r, "ivalid note id '%s'", noteHashIDStr)
 	}
-	log.Verbosef("note id hash: '%s', id: %d\n", noteIDHashStr, noteID)
+	log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
 		return -1, err
@@ -654,7 +679,7 @@ func getUserNoteFromArgs(ctx *ReqContext, w http.ResponseWriter, r *http.Request
 		//return 0, -1
 	}
 	if note.userID != ctx.User.id {
-		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteIDHashStr, ctx.User.id, ctx.User.Handle)
+		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteHashIDStr, ctx.User.id, ctx.User.Handle)
 		return -1, err
 		//httpErrorWithJSONf(w, r, "note doesn't belong to this user")
 		//return 0, -1
@@ -664,7 +689,7 @@ func getUserNoteFromArgs(ctx *ReqContext, w http.ResponseWriter, r *http.Request
 
 // POST /api/permanentdeletenote
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIPermanentDeleteNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -699,7 +724,7 @@ func serveNoteCompact(ctx *ReqContext, w http.ResponseWriter, r *http.Request, n
 
 // GET /api/deletenote
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIDeleteNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -719,7 +744,7 @@ func handleAPIDeleteNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request
 
 // POST /api/undeletenote
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIUndeleteNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -739,7 +764,7 @@ func handleAPIUndeleteNote(ctx *ReqContext, w http.ResponseWriter, r *http.Reque
 
 // GET /api/makenoteprivate
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIMakeNotePrivate(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -759,7 +784,7 @@ func handleAPIMakeNotePrivate(ctx *ReqContext, w http.ResponseWriter, r *http.Re
 
 // GET /api/makenotepublic
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIMakeNotePublic(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -779,7 +804,7 @@ func handleAPIMakeNotePublic(ctx *ReqContext, w http.ResponseWriter, r *http.Req
 
 // GET /api/starnote
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIStarNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -799,7 +824,7 @@ func handleAPIStarNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) 
 
 // GET /api/unstarnote
 // args:
-// - noteIdHash
+// - noteHashID
 func handleAPIUnstarNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	log.Verbosef("url: '%s'\n", r.URL)
 	noteID, err := getUserNoteFromArgs(ctx, w, r)
@@ -856,6 +881,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
 	http.HandleFunc("/api/getnotes", withCtx(handleAPIGetNotes, IsJSON))
 	http.HandleFunc("/api/getnote", withCtx(handleAPIGetNote, IsJSON))
+	http.HandleFunc("/api/getuserinfo", withCtx(handleAPIGetUserInfo, IsJSON))
 	http.HandleFunc("/api/searchusernotes", withCtx(handleSearchUserNotes, IsJSON))
 	http.HandleFunc("/api/createorupdatenote", withCtx(handleAPICreateOrUpdateNote, IsJSON|OnlyLoggedIn))
 	http.HandleFunc("/api/deletenote", withCtx(handleAPIDeleteNote, IsJSON|OnlyLoggedIn))

@@ -24,26 +24,26 @@ function tagsFromRoute(s: string): string[] {
 }
 
 function appUserStart(ctx: PageJS.Context) {
-  console.log('appUserStart: ctx:', ctx);
-
-  if (!gNotesUser) {
-    // TODO: get user hash from ctx, get user then get his notes
-    console.log('appUserStart: dont have gNotesUser');
-    return
-  }
+  const userHashID = ctx.params.userHashID;
+  console.log('appUserStart: ctx:', ctx, 'userHashID:', userHashID);
 
   const initialTags = tagsFromRoute(Router.getHash());
   const initialTag = initialTags[0];
   console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
 
-  api.getNotes(gNotesUser.HashID, (notes: Note[]) => {
-    console.log('appUserStart: got', notes.length, 'notes');
-    const el = document.getElementById('root');
-    ReactDOM.render(
-      <AppUser initialNotes={notes} initialTag={initialTag} />,
-      el
-    );
-  })
+  api.getUserInfo(userHashID, (userInfo: any) => {
+    console.log('appUserStart: got user', userInfo);
+    gNotesUser = userInfo;
+
+    api.getNotes(userHashID, (notes: Note[]) => {
+      console.log('appUserStart: got', notes.length, 'notes');
+      const el = document.getElementById('root');
+      ReactDOM.render(
+        <AppUser initialNotes={notes} initialTag={initialTag} />,
+        el
+      );
+    })
+  });
 }
 
 function appNoteStart(ctx: PageJS.Context) {
@@ -75,10 +75,10 @@ function notFound(ctx: PageJS.Context) {
 
 window.addEventListener('DOMContentLoaded', () => {
   page('/', appIndexStart);
-  page('/u/:userIdHash', appUserStart);
-  page('/u/:userIdHash/*', appUserStart);
-  page('/n/:noteIdHash', appNoteStart);
-  page('/n/:noteIdHash/*', appNoteStart);
+  page('/u/:userHashID', appUserStart);
+  page('/u/:userHashID/*', appUserStart);
+  page('/n/:noteHashID', appNoteStart);
+  page('/n/:noteHashID/*', appNoteStart);
   page('/*', notFound);
   page();
 });
