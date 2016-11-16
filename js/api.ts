@@ -3,8 +3,94 @@ import { Dict } from './utils';
 import { Note, toNote, toNotes } from './Note';
 
 type ArgsDict = Dict<string>;
+type WsCb = (rsp: any) => void;
 
 // TODO: audit for error handling
+
+let wsSock: WebSocket = null;
+
+let wsCurrReqID = 0;
+let requests: WsReq[] = [];
+
+class WsReq {
+  req: any;
+  rspCb: WsCb;
+
+  constructor(req: any, rspCb: WsCb) {
+    this.req = req;
+    this.rspCb = rspCb;
+  }
+}
+
+function wsPopReqForID(id: number): WsReq {
+  for (let i = 0; i < requests.length; i++) {
+    const req = requests[i];
+    if (req.req.id == id) {
+      requests = requests.splice(i, 1);
+      return req;
+    }
+  }
+  return null;
+}
+
+function wsProcessRsp(rsp: any) {
+  const req = wsPopReqForID(rsp.id);
+  if (!req) {
+    console.log('no request for response', rsp);
+    return;
+  }
+  if (rsp.Error) {
+    console.log('error response', rsp, 'for request', req);
+    return;
+  }
+  console.log('got response for request', req);
+  req.rspCb(rsp);
+}
+
+function wsNextReqID(): number {
+  wsCurrReqID++;
+  return wsCurrReqID;
+}
+
+export function openWebSocket() {
+  const host = window.location.hostname;
+  wsSock = new WebSocket('ws://' + host + '/api/ws');
+  //wsSock.binaryType = 'typedarray';
+
+  wsSock.onopen = (ev) => {
+    console.log('ws opened');
+  };
+
+  wsSock.onmessage = (ev) => {
+    console.log('ev:', ev, 'ev.data', ev.data);
+    wsProcessRsp(ev.data);
+  };
+
+  wsSock.onerror = (ev) => {
+    console.log('wsSock.onerror: ev', ev);
+    wsSock = null;
+  }
+}
+
+function wsSendReq(typ: string, args: any, cb: (rsp: any) => void): any {
+  let req = {
+    id: wsNextReqID(),
+    type: typ,
+  }
+  req = Object.assign(req, args);
+  const wsReq = new WsReq(req, cb);
+  requests.push(wsReq);
+  const reqJSON = JSON.stringify(req);
+  wsSock.send(reqJSON);
+  console.log('sent ws req:', req);
+}
+
+export function getUserInfo2(userHashID: string, cb: WsCb) {
+  const args: any = {
+    userHashID,
+  };
+  wsSendReq('getUserInfo', args, cb);
+}
 
 function buildArgs(args?: ArgsDict): string {
   if (!args) {
@@ -52,7 +138,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -66,7 +152,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -208,3 +294,4 @@ export function importSimpleNoteStatus(importId: string, cb: any, cbErr?: any) {
   };
   get('/api/import_simplenote_status', args, cb, cbErr);
 }
+

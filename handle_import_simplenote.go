@@ -8,6 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"encoding/json"
+
+	"github.com/gorilla/websocket"
 	"github.com/kjk/log"
 	"github.com/kjk/simplenote"
 )
@@ -417,4 +420,81 @@ func handleAPIImportSimpleNoteStart(ctx *ReqContext, w http.ResponseWriter, r *h
 		ImportID: id,
 	}
 	httpOkWithJSON(w, r, v)
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+const (
+	pongWait = 60 * time.Second
+)
+
+func wsHandleGetUserInfo(rsp map[string]interface{}) error {
+	return nil
+}
+
+func handlWs(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer conn.Close()
+	conn.SetReadLimit(1024)
+	conn.SetReadDeadline(time.Now().Add(pongWait))
+	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+
+	for {
+		_, req, err := conn.ReadMessage()
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
+				log.Errorf("error: %v", err)
+			}
+			break
+		}
+		log.Infof("ws message: '%s'\n", string(req))
+		var jsReq map[string]interface{}
+		err = json.Unmarshal(req, &jsReq)
+		if err != nil {
+			log.Errorf("failed to decode request as json, req: '%s'\n", string(req))
+			continue
+		}
+		_, ok := jsReq["id"]
+		if !ok {
+			log.Errorf("request doesn't have id, json: '%s'\n", string(req))
+			continue
+		}
+		reqType, ok := jsReq["type"]
+		if !ok {
+			log.Errorf("request does't have 'type', json: '%s'\n", string(req))
+			continue
+		}
+		reqTypeStr, ok := reqType.(string)
+		if !ok {
+			log.Errorf("request has 'type' but it's not a string, json: '%s'\n", string(req))
+			continue
+		}
+
+		rsp := make(map[string]interface{})
+		switch reqTypeStr {
+		case "getUserInfo":
+			err = wsHandleGetUserInfo(rsp)
+		default:
+			log.Errorf("unknown type '%s' in request '%s'\n", reqTypeStr, string(req))
+			continue
+		}
+
+		if err != nil {
+			log.Errorf("handling request '%s' failed with '%s'\n", string(req), err)
+			continue
+		}
+
+		err = conn.WriteJSON(rsp)
+		if err != nil {
+			log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)
+		}
+
+	}
 }
