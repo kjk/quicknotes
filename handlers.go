@@ -877,6 +877,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/logingooglecb", handleOauthGoogleCallback)
 
 	http.HandleFunc("/logout", handleLogout)
+	http.HandleFunc("/api/ws", handlWs)
 	http.HandleFunc("/api/import_simplenote_start", withCtx(handleAPIImportSimpleNoteStart, OnlyLoggedIn|IsJSON))
 	http.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
 	http.HandleFunc("/api/getnotes", withCtx(handleAPIGetNotes, IsJSON))
