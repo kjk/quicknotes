@@ -52,7 +52,8 @@ func jsonMapGetString(m map[string]interface{}, key string) (string, bool) {
 }
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
-	log.Infof("handleWs\n")
+	user := getUserSummaryFromCookie(w, r)
+	log.Infof("handleWs, user: %v\n", user)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Error(err)
