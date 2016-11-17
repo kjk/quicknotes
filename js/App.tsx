@@ -6,11 +6,11 @@ import page from 'page';
 import * as ReactDOM from 'react-dom';
 import Router from './Router';
 
+import { UserInfo } from './types';
 import AppUser from './AppUser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
 import { Note, toNote, toNotes } from './Note';
-
 import * as api from './api';
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
@@ -31,7 +31,7 @@ function appUserStart(ctx: PageJS.Context) {
   const initialTag = initialTags[0];
   console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
 
-  api.getUserInfo(userHashID, (userInfo: any) => {
+  api.getUserInfo(userHashID, (userInfo: UserInfo) => {
     console.log('appUserStart: got user', userInfo);
     gNotesUser = userInfo;
 
@@ -74,6 +74,7 @@ function notFound(ctx: PageJS.Context) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  api.openWebSocket();
   page('/', appIndexStart);
   page('/u/:userHashID', appUserStart);
   page('/u/:userHashID/*', appUserStart);

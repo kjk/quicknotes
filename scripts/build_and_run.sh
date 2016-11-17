@@ -7,8 +7,8 @@ set -o pipefail
 . scripts/fmt.sh
 . scripts/lint.sh
 
-echo "running gulp default"
-./node_modules/.bin/gulp default
+#echo "running gulp default"
+#./node_modules/.bin/gulp default
 
 echo "go build"
 go build -race -o quicknotes
