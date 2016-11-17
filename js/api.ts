@@ -1,6 +1,7 @@
 import { ajax, Params } from './ajax';
 import { Dict } from './utils';
 import { Note, toNote, toNotes } from './Note';
+import { UserInfo } from './types';
 
 type ArgsDict = Dict<string>;
 type WsCb = (rsp: any) => void;
@@ -12,20 +13,21 @@ let wsSock: WebSocket = null;
 let wsCurrReqID = 0;
 let requests: WsReq[] = [];
 
-class WsReq {
-  req: any;
-  rspCb: WsCb;
+interface WsReqMsg {
+  id: number;
+  cmd: string;
+  args: any;
+}
 
-  constructor(req: any, rspCb: WsCb) {
-    this.req = req;
-    this.rspCb = rspCb;
-  }
+interface WsReq {
+  msg: WsReqMsg;
+  cb: WsCb;
 }
 
 function wsPopReqForID(id: number): WsReq {
   for (let i = 0; i < requests.length; i++) {
     const req = requests[i];
-    if (req.req.id == id) {
+    if (req.msg.id == id) {
       requests = requests.splice(i, 1);
       return req;
     }
@@ -39,12 +41,12 @@ function wsProcessRsp(rsp: any) {
     console.log('no request for response', rsp);
     return;
   }
-  if (rsp.Error) {
+  if (rsp.error) {
     console.log('error response', rsp, 'for request', req);
     return;
   }
   console.log('got response for request', req);
-  req.rspCb(rsp);
+  req.cb(rsp.result);
 }
 
 function wsNextReqID(): number {
@@ -52,44 +54,76 @@ function wsNextReqID(): number {
   return wsCurrReqID;
 }
 
+let wsSockReady = false;
+
+let bufferedRequests: WsReq[] = [];
+
 export function openWebSocket() {
-  const host = window.location.hostname;
+  const host = window.location.host;
   wsSock = new WebSocket('ws://' + host + '/api/ws');
-  //wsSock.binaryType = 'typedarray';
+  wsSock.binaryType = "arraybuffer"; // also "blob", instanceof ArrayBuffer
 
   wsSock.onopen = (ev) => {
     console.log('ws opened');
+    wsSockReady = true;
+    for (const wsReq of bufferedRequests) {
+      wsRealSendReq(wsReq);
+    }
+    bufferedRequests = []
   };
 
   wsSock.onmessage = (ev) => {
     console.log('ev:', ev, 'ev.data', ev.data);
-    wsProcessRsp(ev.data);
+    const rsp = JSON.parse(ev.data);
+    wsProcessRsp(rsp);
   };
+
+  wsSock.onclose = (ev) => {
+    console.log('wsSock.onclose: ev', ev);
+    wsSock = null;
+    wsSockReady = false;
+  }
 
   wsSock.onerror = (ev) => {
     console.log('wsSock.onerror: ev', ev);
     wsSock = null;
+    wsSockReady = false;
   }
 }
 
-function wsSendReq(typ: string, args: any, cb: (rsp: any) => void): any {
-  let req = {
-    id: wsNextReqID(),
-    type: typ,
-  }
-  req = Object.assign(req, args);
-  const wsReq = new WsReq(req, cb);
+function wsRealSendReq(wsReq: WsReq) {
   requests.push(wsReq);
-  const reqJSON = JSON.stringify(req);
-  wsSock.send(reqJSON);
-  console.log('sent ws req:', req);
+  const msgJSON = JSON.stringify(wsReq.msg);
+  wsSock.send(msgJSON);
+  console.log('sent ws req:', msgJSON);
 }
 
-export function getUserInfo2(userHashID: string, cb: WsCb) {
+function wsSendReq(cmd: string, args: any, cb: (rsp: any) => void): any {
+  const msg: WsReqMsg = {
+    id: wsNextReqID(),
+    cmd: cmd,
+    args: args,
+  }
+  const wsReq: WsReq = {
+    msg: msg,
+    cb: cb,
+  }
+
+  if (wsSockReady) {
+    wsRealSendReq(wsReq);
+  } else {
+    bufferedRequests.push(wsReq);
+  }
+}
+
+export function getUserInfo(userHashID: string, cb: WsCb) {
   const args: any = {
     userHashID,
   };
-  wsSendReq('getUserInfo', args, cb);
+  function getUserInfoCb(result: any) {
+    cb(result.UserInfo);
+  }
+  wsSendReq('getUserInfo', args, getUserInfoCb);
 }
 
 function buildArgs(args?: ArgsDict): string {
@@ -162,7 +196,7 @@ interface GetNotesResp {
   Notes?: any[];
 }
 
-interface GetNotesCallback {
+export interface GetNotesCallback {
   (note: Note[]): void
 }
 
@@ -206,7 +240,8 @@ export function getNote(noteId: any, cb: any, cbErr?: any) {
 }
 
 // calls cb with UserInfo
-export function getUserInfo(userHashID: string, cb: any, cbErr?: any) {
+export function getUserInfo2(userHashID: string, cb: any, cbErr?: any) {
+
   function getUserInfoCb(userInfo: any) {
     cb(userInfo.UserInfo);
   }

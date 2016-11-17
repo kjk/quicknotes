@@ -462,26 +462,14 @@ func noteToCompact(n *Note, withContent bool) ([]interface{}, error) {
 // /api/getuserinfo?userHashID=${userHashID}
 func handleAPIGetUserInfo(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	userHashID := r.FormValue("userHashID")
-	log.Errorf("handleAPIGetUserInfo: userHashID: %s\n", userHashID)
-	userID, err := dehashInt(userHashID)
+	log.Infof("handleAPIGetUserInfo: userHashID: %s\n", userHashID)
+	rsp, err := getUserInfo(userHashID)
 	if err != nil {
-		log.Errorf("invalid userID='%s'\n", userHashID)
-		httpErrorWithJSONf(w, r, "invalid userID='%s'\n", userHashID)
+		log.Error(err)
+		httpErrorWithJSONf(w, r, err.Error())
 		return
 	}
-	i, err := getCachedUserInfo(userID)
-	if err != nil || i == nil {
-		log.Errorf("no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
-		httpErrorWithJSONf(w, r, "no user '%d', url: '%s', err: %s\n", userID, r.URL, err)
-		return
-	}
-	userInfo := userSummaryFromDbUser(i.user)
-	v := struct {
-		UserInfo *UserSummary
-	}{
-		UserInfo: userInfo,
-	}
-	httpOkWithJSON(w, r, v)
+	httpOkWithJSON(w, r, rsp)
 }
 
 // /api/getnote?id=${noteHashID}
@@ -877,7 +865,7 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/logingooglecb", handleOauthGoogleCallback)
 
 	http.HandleFunc("/logout", handleLogout)
-	http.HandleFunc("/api/ws", handlWs)
+	http.HandleFunc("/api/ws", handleWs)
 	http.HandleFunc("/api/import_simplenote_start", withCtx(handleAPIImportSimpleNoteStart, OnlyLoggedIn|IsJSON))
 	http.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
 	http.HandleFunc("/api/getnotes", withCtx(handleAPIGetNotes, IsJSON))
