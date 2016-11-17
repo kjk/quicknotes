@@ -459,11 +459,30 @@ func noteToCompact(n *Note, withContent bool) ([]interface{}, error) {
 	return res, nil
 }
 
+type getUserInfoRsp struct {
+	UserInfo *UserSummary
+}
+
+func apiGetUserInfo(userHashID string) (*getUserInfoRsp, error) {
+	log.Infof("wsHandleGetUserInfo\n")
+
+	userID, err := dehashInt(userHashID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid userID: '%s'", userHashID)
+	}
+	i, err := getCachedUserInfo(userID)
+	if err != nil || i == nil {
+		return nil, fmt.Errorf("no user '%d', err: '%s'", userID, err)
+	}
+	userInfo := userSummaryFromDbUser(i.user)
+	return &getUserInfoRsp{userInfo}, nil
+}
+
 // /api/getuserinfo?userHashID=${userHashID}
 func handleAPIGetUserInfo(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	userHashID := r.FormValue("userHashID")
 	log.Infof("handleAPIGetUserInfo: userHashID: %s\n", userHashID)
-	rsp, err := getUserInfo(userHashID)
+	rsp, err := apiGetUserInfo(userHashID)
 	if err != nil {
 		log.Error(err)
 		httpErrorWithJSONf(w, r, err.Error())
@@ -472,24 +491,24 @@ func handleAPIGetUserInfo(ctx *ReqContext, w http.ResponseWriter, r *http.Reques
 	httpOkWithJSON(w, r, rsp)
 }
 
-// /api/getnote?id=${noteHashID}
-func handleAPIGetNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	noteHashIDStr := r.FormValue("id")
+func apiGetNote(ctx *ReqContext, noteHashIDStr string) ([]interface{}, error) {
 	note, err := getNoteByIDHash(ctx, noteHashIDStr)
 	if err != nil || note == nil {
-		log.Error(err)
-		httpErrorWithJSONf(w, r, "/api/getnote.json: missing or invalid id attribute '%s'", noteHashIDStr)
-		return
-	}
-	if !userCanAccessNote(ctx.User, note) {
-		httpErrorWithJSONf(w, r, "/api/getnote.json access denied")
-		return
+		return nil, fmt.Errorf("missing or invalid id attribute '%s'", noteHashIDStr)
 	}
 
-	v, err := noteToCompact(note, true)
+	if !userCanAccessNote(ctx.User, note) {
+		return nil, fmt.Errorf("access of user '%s' denied for note '%s'", ctx.User.HashID, noteHashIDStr)
+	}
+	return noteToCompact(note, true)
+}
+
+// /api/getnote?id=${noteHashID}
+func handleAPIGetNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
+	v, err := apiGetNote(ctx, r.FormValue("id"))
 	if err != nil {
-		log.Errorf("noteToCompact() failed with %s\n", err)
-		httpErrorWithJSONf(w, r, "/api/getnote.json: getCachedContent() failed with %s", err)
+		log.Error(err)
+		httpErrorWithJSONf(w, r, "/api/getnote.json: error: '%s'", err)
 		return
 	}
 	httpOkWithJSON(w, r, v)

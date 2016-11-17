@@ -10,25 +10,6 @@ import (
 	"github.com/kjk/log"
 )
 
-type getUserInfoRsp struct {
-	UserInfo *UserSummary
-}
-
-func getUserInfo(userHashID string) (*getUserInfoRsp, error) {
-	log.Infof("wsHandleGetUserInfo\n")
-
-	userID, err := dehashInt(userHashID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid userID: '%s'", userHashID)
-	}
-	i, err := getCachedUserInfo(userID)
-	if err != nil || i == nil {
-		return nil, fmt.Errorf("no user '%d', err: '%s'", userID, err)
-	}
-	userInfo := userSummaryFromDbUser(i.user)
-	return &getUserInfoRsp{userInfo}, nil
-}
-
 type wsGenericReq struct {
 	ID   int                    `json:"id"`
 	Cmd  string                 `json:"cmd"`
@@ -42,13 +23,16 @@ type wsResponse struct {
 	Err    string      `json:"error,omitempty"`
 }
 
-func jsonMapGetString(m map[string]interface{}, key string) (string, bool) {
+func jsonMapGetString(m map[string]interface{}, key string) (string, error) {
 	v, ok := m[key]
-	if ok {
-		s, ok := v.(string)
-		return s, ok
+	if !ok {
+		return "", fmt.Errorf("no '%s' in %v", key, m)
 	}
-	return "", false
+	s, ok := v.(string)
+	if !ok {
+		return "", fmt.Errorf("'%s' is not of type string. Type: %T, value: '%v'", key, v, v)
+	}
+	return s, nil
 }
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +49,9 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
 	for {
+		ctx := ReqContext{
+			User: user,
+		}
 		_, req, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
@@ -84,11 +71,14 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		var res interface{}
 		switch wsReq.Cmd {
 		case "getUserInfo":
-			userHashID, ok := jsonMapGetString(args, "userHashID")
-			if !ok {
-				err = fmt.Errorf("No 'userHashID' in %v", args)
-			} else {
-				res, err = getUserInfo(userHashID)
+			userHashID, err := jsonMapGetString(args, "userHashID")
+			if err == nil {
+				res, err = apiGetUserInfo(userHashID)
+			}
+		case "getNote":
+			noteHashID, err := jsonMapGetString(args, "noteHashID")
+			if err == nil {
+				res, err = apiGetNote(&ctx, noteHashID)
 			}
 		default:
 			log.Errorf("unknown type '%s' in request '%s'\n", wsReq.Cmd, string(req))
