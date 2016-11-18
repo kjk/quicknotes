@@ -36,17 +36,17 @@ type SearchResult struct {
 // TODO: limit number of hits to some reasonable number e.g. 100?
 // TODO: return errors as JSON?
 func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	hashedUserID := strings.TrimSpace(r.FormValue("user"))
-	if hashedUserID == "" {
+	userIDHash := strings.TrimSpace(r.FormValue("userIDHash"))
+	if userIDHash == "" {
 		log.Errorf("missing 'user' arg in '%s'\n", r.URL)
 		http.NotFound(w, r)
 		return
 	}
-	userID, err := dehashInt(hashedUserID)
+	userID, err := dehashInt(userIDHash)
 	if err != nil {
-		log.Errorf("invalid 'user' arg '%s' in '%s', err='%s'\n", hashedUserID, r.URL, err)
+		log.Errorf("invalid 'user' arg '%s' in '%s', err='%s'\n", userIDHash, r.URL, err)
 	}
-	searchTerm := r.FormValue("term")
+	searchTerm := r.FormValue("searchTerm")
 	if searchTerm == "" {
 		log.Errorf("missing search term in '%s'\n", r.URL)
 		httpServerError(w, r)
