@@ -149,11 +149,11 @@ export function onEditNote(cb: any, owner: any) {
 
 /* --------------------- */
 export interface StartSearchDelayedCb {
-  (userHashID: string, searchTerm: string): void
+  (userIDHash: string, searchTerm: string): void
 }
 
-export function startSearchDelayed(userHashID: string, term: string) {
-  broadcast(startSearchDelayedCmd, userHashID, term);
+export function startSearchDelayed(userIDHash: string, term: string) {
+  broadcast(startSearchDelayedCmd, userIDHash, term);
 }
 
 export function onStartSearchDelayed(cb: StartSearchDelayedCb, owner: any) {

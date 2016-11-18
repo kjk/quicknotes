@@ -96,7 +96,7 @@ export default class SearchResults extends React.Component<Props, State> {
     });
   }
 
-  handleStartSearchDelayed(userHashID: string, searchTerm: string) {
+  handleStartSearchDelayed(userIDHash: string, searchTerm: string) {
     this.currSearchTerm = searchTerm;
     // start search query with a delay to not hammer the server too much
     if (this.searchDelayTimerID) {
@@ -104,7 +104,7 @@ export default class SearchResults extends React.Component<Props, State> {
     }
     this.searchDelayTimerID = setTimeout(() => {
       // console.log('starting search for ' + searchTerm);
-      this.startSearch(userHashID, searchTerm);
+      this.startSearch(userIDHash, searchTerm);
     }, 300);
   }
 

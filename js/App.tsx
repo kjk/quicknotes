@@ -24,18 +24,18 @@ function tagsFromRoute(s: string): string[] {
 }
 
 function appUserStart(ctx: PageJS.Context) {
-  const userHashID = ctx.params.userHashID;
-  console.log('appUserStart: ctx:', ctx, 'userHashID:', userHashID);
+  const userIDHash = ctx.params.userIDHash;
+  console.log('appUserStart: ctx:', ctx, 'userIDHash:', userIDHash);
 
   const initialTags = tagsFromRoute(Router.getHash());
   const initialTag = initialTags[0];
   console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
 
-  api.getUserInfo(userHashID, (userInfo: UserInfo) => {
+  api.getUserInfo(userIDHash, (userInfo: UserInfo) => {
     console.log('appUserStart: got user', userInfo);
     gNotesUser = userInfo;
 
-    api.getNotes(userHashID, (notes: Note[]) => {
+    api.getNotes(userIDHash, (notes: Note[]) => {
       console.log('appUserStart: got', notes.length, 'notes');
       const el = document.getElementById('root');
       ReactDOM.render(
@@ -76,8 +76,8 @@ function notFound(ctx: PageJS.Context) {
 window.addEventListener('DOMContentLoaded', () => {
   api.openWebSocket();
   page('/', appIndexStart);
-  page('/u/:userHashID', appUserStart);
-  page('/u/:userHashID/*', appUserStart);
+  page('/u/:userIDHash', appUserStart);
+  page('/u/:userIDHash/*', appUserStart);
   page('/n/:noteHashID', appNoteStart);
   page('/n/:noteHashID/*', appNoteStart);
   page('/*', notFound);

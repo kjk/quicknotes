@@ -69,9 +69,9 @@ interface State {
   selectedNotes?: Note[];
   selectedTags?: string[];
   tags?: TagToCount;
-  notesUserHashID?: string;
+  notesUserIDHash?: string;
   notesUserHandle?: string;
-  loggedUserHashID?: string;
+  loggedUserIDHash?: string;
   loggedUserHandle?: string;
   resetScroll?: boolean;
 }
@@ -90,10 +90,10 @@ export default class AppUser extends Component<Props, State> {
     let tags: TagToCount = {};
 
     let loggedUserHandle = '';
-    let loggedUserHashID = '';
+    let loggedUserIDHash = '';
     if (gLoggedUser) {
       loggedUserHandle = gLoggedUser.Handle;
-      loggedUserHashID = gLoggedUser.HashID;
+      loggedUserIDHash = gLoggedUser.HashID;
     }
 
     if (allNotes.length > 0) {
@@ -107,9 +107,9 @@ export default class AppUser extends Component<Props, State> {
       selectedNotes: selectedNotes,
       selectedTags: selectedTags,
       tags: tags,
-      notesUserHashID: gNotesUser.HashID,
+      notesUserIDHash: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
-      loggedUserHashID: loggedUserHashID,
+      loggedUserIDHash: loggedUserIDHash,
       loggedUserHandle: loggedUserHandle,
       resetScroll: false
     };
@@ -175,7 +175,7 @@ export default class AppUser extends Component<Props, State> {
   }
 
   handleReloadNotes(resetScroll: boolean) {
-    const userID = this.state.notesUserHashID;
+    const userID = this.state.notesUserIDHash;
     // console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
     api.getNotes(userID, (notes: Note[]) => {
       this.setNotes(notes, resetScroll);
@@ -191,7 +191,7 @@ export default class AppUser extends Component<Props, State> {
   }
 
   render() {
-    const showingMyNotes = u.isLoggedIn() && (this.state.notesUserHashID == this.state.loggedUserHashID);
+    const showingMyNotes = u.isLoggedIn() && (this.state.notesUserIDHash == this.state.loggedUserIDHash);
 
     return (
       <div>

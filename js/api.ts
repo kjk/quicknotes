@@ -73,7 +73,7 @@ export function openWebSocket() {
   };
 
   wsSock.onmessage = (ev) => {
-    console.log('ev:', ev, 'ev.data', ev.data);
+    //console.log('ev:', ev, 'ev.data', ev.data);
     const rsp = JSON.parse(ev.data);
     wsProcessRsp(rsp);
   };
@@ -114,16 +114,6 @@ function wsSendReq(cmd: string, args: any, cb: (rsp: any) => void): any {
   } else {
     bufferedRequests.push(wsReq);
   }
-}
-
-export function getUserInfo(userHashID: string, cb: WsCb) {
-  const args: any = {
-    userHashID,
-  };
-  function getUserInfoCb(result: any) {
-    cb(result.UserInfo);
-  }
-  wsSendReq('getUserInfo', args, getUserInfoCb);
 }
 
 function buildArgs(args?: ArgsDict): string {
@@ -172,7 +162,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -186,7 +176,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -200,10 +190,47 @@ export interface GetNotesCallback {
   (note: Note[]): void
 }
 
-// calls cb with Note[]
-export function getNotes(userHandle: string, cb: any, cbErr?: any) {
+export function getUserInfo(userIDHash: string, cb: WsCb) {
+  const args: any = {
+    userIDHash,
+  };
+  function getUserInfoCb(result: any) {
+    cb(result.UserInfo);
+  }
+  wsSendReq('getUserInfo', args, getUserInfoCb);
+}
+
+// calls cb with UserInfo
+export function getUserInfo2(userIDHash: string, cb: any, cbErr?: any) {
+
+  function getUserInfoCb(userInfo: any) {
+    cb(userInfo.UserInfo);
+  }
   const args: ArgsDict = {
-    'user': userHandle
+    'userIDHash': userIDHash,
+  };
+  get('/api/getuserinfo', args, getUserInfoCb, cbErr);
+}
+
+// calls cb with Note[]
+export function getNotes(userIDHash: string, cb: WsCb) {
+  const args: any = {
+    'userIDHash': userIDHash
+  };
+  function getNotesCb(result: GetNotesResp) {
+    if (!result || !result.Notes) {
+      cb([]);
+    }
+    let notes = toNotes(result.Notes);
+    cb(notes);
+  }
+  wsSendReq('getNotes', args, getNotesCb);
+}
+
+// calls cb with Note[]
+export function getNotes2(userIDHash: string, cb: any, cbErr?: any) {
+  const args: ArgsDict = {
+    'userIDHash': userIDHash
   };
   function getNotesCb(json: GetNotesResp) {
     if (!json || !json.Notes) {
@@ -216,7 +243,19 @@ export function getNotes(userHandle: string, cb: any, cbErr?: any) {
 }
 
 // calls cb with Note[]
-export function getRecentNotes(cb: any, cbErr?: any) {
+export function getRecentNotes(cb: WsCb) {
+  function getNotesCb(result: GetNotesResp) {
+    if (!result || !result.Notes) {
+      cb([]);
+    }
+    let notes = toNotes(result.Notes);
+    cb(notes);
+  }
+  wsSendReq('getRecentNotes', {}, getNotesCb);
+}
+
+// calls cb with Note[]
+export function getRecentNotes2(cb: any, cbErr?: any) {
   function getNotesCb(json: GetNotesResp) {
     if (!json || !json.Notes) {
       cb([]);
@@ -228,9 +267,21 @@ export function getRecentNotes(cb: any, cbErr?: any) {
 }
 
 // calls cb with Note
-export function getNote(noteId: any, cb: any, cbErr?: any) {
+export function getNote(noteId: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    noteId,
+  };
+  function getNoteCb(note: any) {
+    note = toNote(note);
+    cb(note);
+  }
+  get('getNote', args, getNoteCb);
+}
+
+// calls cb with Note
+export function getNote2(noteHashID: any, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'id': noteId
+    'noteHashID': noteHashID
   };
   function getNoteCb(note: any) {
     note = toNote(note);
@@ -239,78 +290,130 @@ export function getNote(noteId: any, cb: any, cbErr?: any) {
   get('/api/getnote', args, getNoteCb, cbErr);
 }
 
-// calls cb with UserInfo
-export function getUserInfo2(userHashID: string, cb: any, cbErr?: any) {
-
-  function getUserInfoCb(userInfo: any) {
-    cb(userInfo.UserInfo);
-  }
-  const args: ArgsDict = {
-    'userHashID': userHashID,
+export function undeleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    'noteHashID': noteHashID
   };
-  get('/api/getuserinfo', args, getUserInfoCb, cbErr);
+  wsSendReq('undeleteNote', args, cb, );
 }
 
-export function undeleteNote(noteId: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteId
+export function undeleteNote2(noteHashID: string, cb: any, cbErr?: any) {
+  const args: any = {
+    'noteHashID': noteHashID
   };
   post('/api/undeletenote', args, cb, cbErr);
 }
 
-export function deleteNote(noteId: string, cb: any, cbErr?: any) {
+export function deleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    noteHashID,
+  };
+  wsSendReq('deleteNote', args, cb);
+}
+
+export function deleteNote2(noteHashID: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteHashID': noteId
+    'noteHashID': noteHashID
   };
   post('/api/deletenote', args, cb, cbErr);
 }
 
-export function permanentDeleteNote(noteId: string, cb: any, cbErr?: any) {
+export function permanentDeleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    noteHashID,
+  };
+  wsSendReq('permanentDeleteNote', args, cb);
+}
+
+export function permanentDeleteNote2(noteHashID: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteHashID': noteId
+    'noteHashID': noteHashID
   };
   post('/api/permanentdeletenote', args, cb, cbErr);
 }
 
-export function makeNotePrivate(noteId: string, cb: any, cbErr?: any) {
+export function makeNotePrivate(noteHashID: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    noteHashID,
+  };
+  wsSendReq('makeNotePrivate', args, cb);
+}
+
+export function makeNotePrivate2(noteHashID: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteHashID': noteId
+    'noteHashID': noteHashID
   };
   post('/api/makenoteprivate', args, cb, cbErr);
 }
 
-export function makeNotePublic(noteId: string, cb: any, cbErr?: any) {
+export function makeNotePublic(noteHashID: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    noteHashID,
+  };
+  wsSendReq('makeNotePublic', args, cb);
+}
+
+export function makeNotePublic2(noteHashID: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteHashID': noteId
+    'noteHashID': noteHashID
   };
   post('/api/makenotepublic', args, cb, cbErr);
 }
 
-export function starNote(noteId: string, cb: any, cbErr?: any) {
+export function starNote(noteHashID: string, cb: WsCb, cbErr?: any) {
+  const args: any = {
+    noteHashID,
+  };
+  wsSendReq('starNote', args, cb);
+}
+
+export function starNote2(noteHashID: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteHashID': noteId
+    'noteHashID': noteHashID
   };
   post('/api/starnote', args, cb, cbErr);
 }
 
-export function unstarNote(noteId: string, cb: any, cbErr?: any) {
+export function unstarNote(noteHashID: string, cb: any, cbErr?: any) {
+  const args: any = {
+    noteHashID,
+  };
+  wsSendReq('unstarNote', args, cb);
+}
+
+export function unstarNote2(noteHashID: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'noteHashID': noteId
+    'noteHashID': noteHashID
   };
   post('/api/unstarnote', args, cb, cbErr);
 }
 
 export function createOrUpdateNote(noteJSON: string, cb: any, cbErr?: any) {
+  const args: any = {
+    noteJSON,
+  };
+  wsSendReq('createOrUpdateNote', args, cb);
+}
+
+export function createOrUpdateNote2(noteJSON: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
     'noteJSON': noteJSON
   };
   post('/api/createorupdatenote', args, cb, cbErr);
 }
 
-export function searchUserNotes(userHandle: string, searchTerm: string, cb: any, cbErr?: any) {
+export function searchUserNotes(userIDHash: string, searchTerm: string, cb: any, cbErr?: any) {
+  const args: any = {
+    userIDHash,
+    searchTerm
+  };
+  wsSendReq('searchUserNotes', args, cb);
+}
+
+export function searchUserNotes2(userIDHash: string, searchTerm: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'user': userHandle,
-    'term': searchTerm
+    'userIDHash': userIDHash,
+    'searchTerm': searchTerm
   };
   get('/api/searchusernotes', args, cb, cbErr);
 }
