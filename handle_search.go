@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -29,37 +30,28 @@ type SearchResult struct {
 	Items      []SearchResultItem
 }
 
-// GET /api/searchusernotes
-// args:
-// - user : hashed user id
-// - term : search term
-// TODO: limit number of hits to some reasonable number e.g. 100?
-// TODO: return errors as JSON?
-func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	userIDHash := strings.TrimSpace(r.FormValue("userIDHash"))
+func apiSearchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (interface{}, error) {
 	if userIDHash == "" {
-		log.Errorf("missing 'user' arg in '%s'\n", r.URL)
-		http.NotFound(w, r)
-		return
+		return nil, fmt.Errorf("missing 'userIDHash' arg")
 	}
+	if searchTerm == "" {
+		return nil, fmt.Errorf("missing search term")
+	}
+
 	userID, err := dehashInt(userIDHash)
 	if err != nil {
-		log.Errorf("invalid 'user' arg '%s' in '%s', err='%s'\n", userIDHash, r.URL, err)
-	}
-	searchTerm := r.FormValue("searchTerm")
-	if searchTerm == "" {
-		log.Errorf("missing search term in '%s'\n", r.URL)
-		httpServerError(w, r)
-		return
+		return nil, fmt.Errorf("invalid 'user' arg '%s', err='%s'", userIDHash, err)
 	}
 	searchPrivate := ctx.User != nil && userID == ctx.User.id
 
-	log.Verbosef("userID: '%d', term: '%s', private: %v, url: '%s'\n", userID, searchTerm, searchPrivate, r.URL)
+	log.Verbosef("userID: '%d', term: '%s', private: %v\n", userID, searchTerm, searchPrivate)
 
 	i, err := getCachedUserInfo(userID)
-	if err != nil || i == nil {
-		httpServerError(w, r)
-		return
+	if err != nil {
+		return nil, err
+	}
+	if i == nil {
+		return nil, fmt.Errorf("No user with userIDHash '%s'", userIDHash)
 	}
 	var notes []*Note
 	for _, note := range i.notes {
@@ -94,6 +86,24 @@ func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Reque
 	}{
 		Term:    searchTerm,
 		Results: res,
+	}
+	return v, nil
+}
+
+// GET /api/searchusernotes
+// args:
+// - user : hashed user id
+// - term : search term
+// TODO: limit number of hits to some reasonable number e.g. 100?
+// TODO: return errors as JSON?
+func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
+	userIDHash := strings.TrimSpace(r.FormValue("userIDHash"))
+	searchTerm := r.FormValue("searchTerm")
+	v, err := apiSearchUserNotes(ctx, userIDHash, searchTerm)
+	if err != nil {
+		log.Errorf("'%s': err: '%s'\n", r.URL, err)
+		httpServerError(w, r)
+		return
 	}
 	httpOkWithJSONCompact(w, r, v)
 }

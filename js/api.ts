@@ -7,6 +7,7 @@ type ArgsDict = Dict<string>;
 type WsCb = (rsp: any) => void;
 
 // TODO: audit for error handling
+// TODO: reconnect ws https://github.com/voidabhi/es6-rws/blob/master/rws.js
 
 let wsSock: WebSocket = null;
 
