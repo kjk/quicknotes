@@ -94,7 +94,9 @@ func wsCreateOrUpdateNote(ctx *ReqContext, args map[string]interface{}) (interfa
 }
 
 func wsSearchUserNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
-	return nil, errors.New("NYI")
+	userIDHash, _ := jsonMapGetString(args, "userIDHash")
+	searchTerm, _ := jsonMapGetString(args, "searchTerm")
+	return apiSearchUserNotes(ctx, userIDHash, searchTerm)
 }
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
