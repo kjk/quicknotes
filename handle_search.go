@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
 
 	"github.com/kjk/log"
 )
@@ -88,22 +86,4 @@ func apiSearchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (
 		Results: res,
 	}
 	return v, nil
-}
-
-// GET /api/searchusernotes
-// args:
-// - user : hashed user id
-// - term : search term
-// TODO: limit number of hits to some reasonable number e.g. 100?
-// TODO: return errors as JSON?
-func handleSearchUserNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	userIDHash := strings.TrimSpace(r.FormValue("userIDHash"))
-	searchTerm := r.FormValue("searchTerm")
-	v, err := apiSearchUserNotes(ctx, userIDHash, searchTerm)
-	if err != nil {
-		log.Errorf("'%s': err: '%s'\n", r.URL, err)
-		httpServerError(w, r)
-		return
-	}
-	httpOkWithJSONCompact(w, r, v)
 }
