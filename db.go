@@ -591,15 +591,17 @@ func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote) bool) error {
 
 func dbUpdateNoteTitle(userID, noteID int, newTitle string) error {
 	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) bool {
+		shouldUpdate := newNote.title != newTitle
 		newNote.title = newTitle
-		return newNote.title != newTitle
+		return shouldUpdate
 	})
 }
 
 func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
 	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) bool {
+		shouldUpdate := !strArrEqual(newNote.tags, newTags)
 		newNote.tags = newTags
-		return !strArrEqual(newNote.tags, newTags)
+		return shouldUpdate
 	})
 }
 
