@@ -41,6 +41,7 @@ export default class NoteView extends Component<Props, State> {
   }
 
   handleTagClicked(e: React.MouseEvent<HTMLSpanElement>) {
+    e.preventDefault();
     const target = e.target as Element;
     let tag = target.textContent;
     if (tag.startsWith('#')) {
@@ -138,6 +139,7 @@ export default class NoteView extends Component<Props, State> {
   }
 
   handleStarUnstarNote(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
     const note = this.props.note;
     // console.log('handleStarUnstarNote, note.IsStarred: ', note.IsStarred());
     const noteID = note.HashID();
