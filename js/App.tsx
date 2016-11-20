@@ -80,6 +80,5 @@ window.addEventListener('DOMContentLoaded', () => {
   page('/u/:userIDHash/*', appUserStart);
   page('/n/:noteHashID', appNoteStart);
   page('/n/:noteHashID/*', appNoteStart);
-  page('/*', notFound);
   page();
 });

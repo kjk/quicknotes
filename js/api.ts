@@ -204,7 +204,7 @@ export function getUserInfo(userIDHash: string, cb: WsCb) {
 // calls cb with Note[]
 export function getNotes(userIDHash: string, cb: WsCb) {
   const args: any = {
-    'userIDHash': userIDHash
+    userIDHash,
   };
   function getNotesCb(result: GetNotesResp) {
     if (!result || !result.Notes) {
@@ -229,20 +229,20 @@ export function getRecentNotes(cb: WsCb) {
 }
 
 // calls cb with Note
-export function getNote(noteId: string, cb: WsCb, cbErr?: any) {
+export function getNote(noteHashID: string, cb: WsCb, cbErr?: any) {
   const args: any = {
-    noteId,
+    noteHashID,
   };
   function getNoteCb(note: any) {
     note = toNote(note);
     cb(note);
   }
-  get('getNote', args, getNoteCb);
+  wsSendReq('getNote', args, getNoteCb);
 }
 
 export function undeleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
   const args: any = {
-    'noteHashID': noteHashID
+    noteHashID,
   };
   wsSendReq('undeleteNote', args, cb, );
 }
@@ -296,13 +296,6 @@ export function createOrUpdateNote(noteJSON: string, cb: any, cbErr?: any) {
   wsSendReq('createOrUpdateNote', args, cb);
 }
 
-export function createOrUpdateNote2(noteJSON: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteJSON': noteJSON
-  };
-  post('/api/createorupdatenote', args, cb, cbErr);
-}
-
 export function searchUserNotes(userIDHash: string, searchTerm: string, cb: any, cbErr?: any) {
   const args: any = {
     userIDHash,
@@ -311,10 +304,10 @@ export function searchUserNotes(userIDHash: string, searchTerm: string, cb: any,
   wsSendReq('searchUserNotes', args, cb);
 }
 
-export function importSimpleNoteStart(email: string, pwd: string, cb: any, cbErr?: any) {
+export function importSimpleNoteStart(email: string, password: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'email': email,
-    'password': pwd
+    email,
+    password,
   };
   get('/api/import_simplenote_start', args, cb, cbErr);
 }
