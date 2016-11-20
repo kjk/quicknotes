@@ -59,6 +59,8 @@ let wsSockReady = false;
 
 let bufferedRequests: WsReq[] = [];
 
+let wsSockTimer: number = 0;
+
 export function openWebSocket() {
   const host = window.location.host;
   wsSock = new WebSocket('ws://' + host + '/api/ws');
@@ -83,6 +85,10 @@ export function openWebSocket() {
     console.log('wsSock.onclose: ev', ev);
     wsSock = null;
     wsSockReady = false;
+    if (wsSockTimer) {
+      clearInterval(wsSockTimer);
+      wsSockTimer = 0;
+    }
   }
 
   wsSock.onerror = (ev) => {
@@ -90,6 +96,11 @@ export function openWebSocket() {
     wsSock = null;
     wsSockReady = false;
   }
+
+  // TOOD: it's the server that should send pings, but that's harder
+  wsSockTimer = setInterval(() => {
+    ping();
+  }, 50 * 1000);
 }
 
 function wsRealSendReq(wsReq: WsReq) {
@@ -189,6 +200,13 @@ interface GetNotesResp {
 
 export interface GetNotesCallback {
   (note: Note[]): void
+}
+
+function ping() {
+  function pingCb(result: any) {
+    console.log("ping response:", result);
+  }
+  wsSendReq('ping', {}, pingCb);
 }
 
 export function getUserInfo(userIDHash: string, cb: WsCb) {
@@ -318,4 +336,3 @@ export function importSimpleNoteStatus(importId: string, cb: any, cbErr?: any) {
   };
   get('/api/import_simplenote_status', args, cb, cbErr);
 }
-
