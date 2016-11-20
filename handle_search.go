@@ -28,7 +28,7 @@ type SearchResult struct {
 	Items      []SearchResultItem
 }
 
-func apiSearchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (interface{}, error) {
+func searchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (interface{}, error) {
 	if userIDHash == "" {
 		return nil, fmt.Errorf("missing 'userIDHash' arg")
 	}
@@ -86,4 +86,10 @@ func apiSearchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (
 		Results: res,
 	}
 	return v, nil
+}
+
+func wsSearchUserNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
+	userIDHash, _ := jsonMapGetString(args, "userIDHash")
+	searchTerm, _ := jsonMapGetString(args, "searchTerm")
+	return searchUserNotes(ctx, userIDHash, searchTerm)
 }

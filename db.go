@@ -546,26 +546,6 @@ WHERE id=?`
 	return int(noteID), err
 }
 
-func dbUpdateNote(userID int, note *NewNote) (int, error) {
-	noteID, err := dehashInt(note.hashID)
-	if err != nil {
-		return 0, err
-	}
-	existingNote, err := dbGetNoteByID(noteID)
-	if err != nil {
-		return 0, err
-	}
-	if existingNote.userID != userID {
-		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
-	}
-
-	// don't create new versions if not necessary
-	if !needsNewNoteVersion(note, existingNote) {
-		return noteID, nil
-	}
-	return dbUpdateNote2(noteID, note)
-}
-
 func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote) bool) error {
 	// log.Verbosef("dbUpdateNoteWith: userID=%d, noteID=%d\n", userID, noteID)
 	defer clearCachedUserInfo(userID)
@@ -672,7 +652,24 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 		noteID, err = dbCreateNewNote(userID, note)
 		note.hashID = hashInt(noteID)
 	} else {
-		noteID, err = dbUpdateNote(userID, note)
+		noteID, err := dehashInt(note.hashID)
+		if err != nil {
+			return 0, err
+		}
+		existingNote, err := dbGetNoteByID(noteID)
+		if err != nil {
+			return 0, err
+		}
+		if existingNote.userID != userID {
+			return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
+		}
+		// when editing a note, we don't change starred status
+		note.isStarred = existingNote.IsStarred
+		// don't create new versions if not necessary
+		if !needsNewNoteVersion(note, existingNote) {
+			return noteID, nil
+		}
+		noteID, err = dbUpdateNote2(noteID, note)
 	}
 
 	clearCachedUserInfo(userID)

@@ -286,12 +286,6 @@ func wsCreateOrUpdateNote(ctx *ReqContext, args map[string]interface{}) (interfa
 	return &v, nil
 }
 
-func wsSearchUserNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
-	userIDHash, _ := jsonMapGetString(args, "userIDHash")
-	searchTerm, _ := jsonMapGetString(args, "searchTerm")
-	return apiSearchUserNotes(ctx, userIDHash, searchTerm)
-}
-
 func handleWs(w http.ResponseWriter, r *http.Request) {
 	user := getUserSummaryFromCookie(w, r)
 	log.Infof("user: %v\n", user)
