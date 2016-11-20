@@ -296,7 +296,6 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	conn.SetReadLimit(1024)
 	conn.SetReadDeadline(time.Now().Add(pongWait))
 	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
@@ -304,10 +303,12 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		ctx := ReqContext{
 			User: user,
 		}
-		_, req, err := conn.ReadMessage()
+		typ, req, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
 				log.Errorf("error: %v", err)
+			} else {
+				log.Infof("closing websocket, msg type: '%d', err: '%s', req: '%s'\n", typ, err, string(req))
 			}
 			break
 		}
