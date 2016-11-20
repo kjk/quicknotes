@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/kjk/log"
 	"github.com/kjk/simplenote"
 )
@@ -419,12 +418,3 @@ func handleAPIImportSimpleNoteStart(ctx *ReqContext, w http.ResponseWriter, r *h
 	}
 	httpOkWithJSON(w, r, v)
 }
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-const (
-	pongWait = 60 * time.Second
-)

@@ -11,6 +11,17 @@ import (
 	"github.com/kjk/log"
 )
 
+const (
+	// Time allowed to write a message to the peer.
+	writeWait = 10 * time.Second
+
+	// Time allowed to read the next pong message from the peer.
+	pongWait = 2 * 60 * time.Second
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	pingPeriod = (pongWait * 9) / 10
+)
+
 // NewNoteFromBrowser represents format of the note sent by the browser
 type NewNoteFromBrowser struct {
 	HashID   string
@@ -286,6 +297,11 @@ func wsCreateOrUpdateNote(ctx *ReqContext, args map[string]interface{}) (interfa
 	return &v, nil
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  8 * 1024,
+	WriteBufferSize: 8 * 1024,
+}
+
 func handleWs(w http.ResponseWriter, r *http.Request) {
 	user := getUserSummaryFromCookie(w, r)
 	log.Infof("user: %v\n", user)
@@ -294,14 +310,18 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 		return
 	}
-	defer conn.Close()
-	conn.SetReadDeadline(time.Now().Add(pongWait))
-	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+
+	conn.SetPongHandler(func(string) error {
+		log.Infof("Got ws ping\n")
+		conn.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
 
 	for {
 		ctx := ReqContext{
 			User: user,
 		}
+		conn.SetReadDeadline(time.Now().Add(pongWait))
 		typ, reqBytes, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
@@ -323,6 +343,10 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		args := req.Args
 
 		switch req.Cmd {
+		case "ping":
+			log.Infof("got ping\n")
+			res = "pong"
+
 		case "getUserInfo":
 			res, err = wsGetUserInfo(args)
 
@@ -379,9 +403,14 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("handling request '%s' failed with '%s'\n", string(reqBytes), err)
 		}
 
+		conn.SetWriteDeadline(time.Now().Add(writeWait))
+
 		err = conn.WriteJSON(rsp)
 		if err != nil {
 			log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)
+			break
 		}
 	}
+
+	conn.Close()
 }
