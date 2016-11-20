@@ -93,7 +93,7 @@ func wsGetUserInfo(args map[string]interface{}) (*getUserInfoRsp, error) {
 	return &getUserInfoRsp{userInfo}, nil
 }
 
-func wsGetRecentNotes(limit int) ([][]interface{}, error) {
+func wsGetRecentNotes(limit int) (interface{}, error) {
 	if limit > 300 {
 		limit = 300
 	}
@@ -106,7 +106,12 @@ func wsGetRecentNotes(limit int) ([][]interface{}, error) {
 		compactNote, _ := noteToCompact(&note, false)
 		notes = append(notes, compactNote)
 	}
-	return notes, nil
+	res := struct {
+		Notes [][]interface{}
+	}{
+		Notes: notes,
+	}
+	return &res, nil
 }
 
 func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
@@ -303,27 +308,27 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		ctx := ReqContext{
 			User: user,
 		}
-		typ, req, err := conn.ReadMessage()
+		typ, reqBytes, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
 				log.Errorf("error: %v", err)
 			} else {
-				log.Infof("closing websocket, msg type: '%d', err: '%s', req: '%s'\n", typ, err, string(req))
+				log.Infof("closing websocket, msg type: '%d', err: '%s', req: '%s'\n", typ, err, string(reqBytes))
 			}
 			break
 		}
-		log.Infof("msg: '%s'\n", string(req))
-		var wsReq wsGenericReq
-		err = json.Unmarshal(req, &wsReq)
+		log.Infof("msg: '%s'\n", string(reqBytes))
+		var req wsGenericReq
+		err = json.Unmarshal(reqBytes, &req)
 		if err != nil {
-			log.Errorf("failed to decode request as json, req: '%s'\n", string(req))
+			log.Errorf("failed to decode request as json, req: '%s'\n", string(reqBytes))
 			continue
 		}
 
-		args := wsReq.Args
 		var res interface{}
+		args := req.Args
 
-		switch wsReq.Cmd {
+		switch req.Cmd {
 		case "getUserInfo":
 			res, err = wsGetUserInfo(args)
 
@@ -331,10 +336,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			res, err = wsGetNotes(&ctx, args)
 
 		case "getRecentNotes":
-			v := struct {
-				Notes [][]interface{}
-			}{}
-			v.Notes, err = wsGetRecentNotes(25)
+			res, err = wsGetRecentNotes(25)
 
 		case "getNote":
 			res, err = wsGetNote(&ctx, args)
@@ -367,24 +369,25 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			res, err = wsSearchUserNotes(&ctx, args)
 
 		default:
-			log.Errorf("unknown type '%s' in request '%s'\n", wsReq.Cmd, string(req))
+			log.Errorf("unknown type '%s' in request '%s'\n", req.Cmd, string(reqBytes))
 			continue
 		}
 
-		wsRsp := wsResponse{
-			ID:     wsReq.ID,
-			Cmd:    wsReq.Cmd,
+		rsp := wsResponse{
+			ID:     req.ID,
+			Cmd:    req.Cmd,
 			Result: res,
 		}
 
 		if err != nil {
-			wsRsp.Err = err.Error()
-			log.Errorf("handling request '%s' failed with '%s'\n", string(req), err)
+			rsp.Err = err.Error()
+			rsp.Result = nil
+			log.Errorf("handling request '%s' failed with '%s'\n", string(reqBytes), err)
 		}
 
-		err = conn.WriteJSON(wsRsp)
+		err = conn.WriteJSON(rsp)
 		if err != nil {
-			log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", wsRsp, err)
+			log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)
 		}
 	}
 }
