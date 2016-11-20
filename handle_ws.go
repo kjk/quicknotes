@@ -2,14 +2,24 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/kjk/log"
 )
+
+// NewNoteFromBrowser represents format of the note sent by the browser
+type NewNoteFromBrowser struct {
+	HashID   string
+	Title    string
+	Format   string
+	Content  string
+	Tags     []string
+	IsPublic bool
+}
 
 type wsGenericReq struct {
 	ID   int                    `json:"id"`
@@ -36,6 +46,156 @@ func jsonMapGetString(m map[string]interface{}, key string) (string, error) {
 	return s, nil
 }
 
+func getNoteCompact(ctx *ReqContext, noteID int) ([]interface{}, error) {
+	note, err := getNoteByID(ctx, noteID)
+	if err != nil {
+		return nil, err
+	}
+	return noteToCompact(note, true)
+}
+
+func getUserNoteByHashID(ctx *ReqContext, noteHashIDStr string) (int, error) {
+	noteID, err := dehashInt(noteHashIDStr)
+	if err != nil {
+		return -1, err
+	}
+	log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		return -1, err
+	}
+	if note.userID != ctx.User.id {
+		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteHashIDStr, ctx.User.id, ctx.User.Handle)
+		return -1, err
+	}
+	return noteID, nil
+}
+
+type getUserInfoRsp struct {
+	UserInfo *UserSummary
+}
+
+func wsGetUserInfo(args map[string]interface{}) (*getUserInfoRsp, error) {
+	userIDHash, err := jsonMapGetString(args, "userIDHash")
+	if err != nil {
+		return nil, fmt.Errorf("'userIDHash' argument missing in '%v'", args)
+	}
+
+	userID, err := dehashInt(userIDHash)
+	if err != nil {
+		return nil, fmt.Errorf("invalid userID: '%s'", userIDHash)
+	}
+	i, err := getCachedUserInfo(userID)
+	if err != nil || i == nil {
+		return nil, fmt.Errorf("no user '%d', err: '%s'", userID, err)
+	}
+	userInfo := userSummaryFromDbUser(i.user)
+	return &getUserInfoRsp{userInfo}, nil
+}
+
+func wsGetRecentNotes(limit int) ([][]interface{}, error) {
+	if limit > 300 {
+		limit = 300
+	}
+	recentNotes, err := getRecentPublicNotesCached(limit)
+	if err != nil {
+		return nil, fmt.Errorf("getRecentPublicNotesCached() failed with '%s'", err)
+	}
+	var notes [][]interface{}
+	for _, note := range recentNotes {
+		compactNote, _ := noteToCompact(&note, false)
+		notes = append(notes, compactNote)
+	}
+	return notes, nil
+}
+
+func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
+	userIDHash, err := jsonMapGetString(args, "userIDHash")
+	if err != nil {
+		return nil, err
+	}
+	v := struct {
+		LoggedUser *UserSummary
+		Notes      [][]interface{}
+	}{
+		LoggedUser: ctx.User,
+	}
+	userID, err := dehashInt(userIDHash)
+	if err != nil {
+		return nil, fmt.Errorf("invalid userIDHash='%s'\n", userIDHash)
+	}
+	i, err := getCachedUserInfo(userID)
+	if err != nil || i == nil {
+		return nil, fmt.Errorf("getCachedUserInfo('%d') failed with '%s'\n", userID, err)
+	}
+
+	showPrivate := ctx.User != nil && userID == ctx.User.id
+	var notes [][]interface{}
+	for _, note := range i.notes {
+		if note.IsPublic || showPrivate {
+			compactNote, _ := noteToCompact(note, false)
+			notes = append(notes, compactNote)
+		}
+	}
+
+	loggedUserID := -1
+	loggedUserHandle := ""
+	if ctx.User != nil {
+		loggedUserHandle = ctx.User.Handle
+		loggedUserID = ctx.User.id
+	}
+	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Login, loggedUserID, loggedUserHandle, showPrivate)
+	v.Notes = notes
+	return v, err
+}
+
+func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
+	if note.IsPublic {
+		return true
+	}
+	return loggedUser != nil && loggedUser.id == note.userID
+}
+
+func getNoteByID(ctx *ReqContext, noteID int) (*Note, error) {
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: when we have sharing via secret link we'll have to check
+	// permissions
+	if !userCanAccessNote(ctx.User, note) {
+		return nil, fmt.Errorf("no access to note '%d'", noteID)
+	}
+	return note, nil
+}
+
+func getNoteByIDHash(ctx *ReqContext, noteHashIDStr string) (*Note, error) {
+	noteHashIDStr = strings.TrimSpace(noteHashIDStr)
+	noteID, err := dehashInt(noteHashIDStr)
+	if err != nil {
+		return nil, err
+	}
+	// log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
+	return getNoteByID(ctx, noteID)
+}
+
+func wsGetNote(ctx *ReqContext, args map[string]interface{}) ([]interface{}, error) {
+	noteHashIDStr, err := jsonMapGetString(args, "noteHashID")
+	if err != nil {
+		return nil, fmt.Errorf("'noteHashID' argument missingin '%v'", args)
+	}
+
+	note, err := getNoteByIDHash(ctx, noteHashIDStr)
+	if err != nil || note == nil {
+		return nil, fmt.Errorf("no note with noteHashID '%s'", noteHashIDStr)
+	}
+
+	if !userCanAccessNote(ctx.User, note) {
+		return nil, fmt.Errorf("access of user '%s' denied for note '%s'", ctx.User.HashID, noteHashIDStr)
+	}
+	return noteToCompact(note, true)
+}
+
 func execNoteOp(ctx *ReqContext, args map[string]interface{}, noteOp func(int, int) error) ([]interface{}, error) {
 	var err error
 	noteHashID, err := jsonMapGetString(args, "noteHashID")
@@ -51,21 +211,6 @@ func execNoteOp(ctx *ReqContext, args map[string]interface{}, noteOp func(int, i
 		return nil, err
 	}
 	return getNoteCompact(ctx, noteID)
-}
-
-func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
-	userIDHash, err := jsonMapGetString(args, "userIDHash")
-	if err != nil {
-		return nil, err
-	}
-	v := struct {
-		LoggedUser *UserSummary
-		Notes      [][]interface{}
-	}{
-		LoggedUser: ctx.User,
-	}
-	v.Notes, err = apiGetNotes(ctx, userIDHash)
-	return v, err
 }
 
 func wsPermanentDeleteNote(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
@@ -89,8 +234,51 @@ func wsPermanentDeleteNote(ctx *ReqContext, args map[string]interface{}) (interf
 	return res, nil
 }
 
+func newNoteFromBrowserNote(note *NewNoteFromBrowser) (*NewNote, error) {
+	var newNote NewNote
+	//log.Verbosef("note: %s\n", noteJSON)
+	if !isValidFormat(note.Format) {
+		return nil, fmt.Errorf("invalid format %s", note.Format)
+	}
+	newNote.hashID = note.HashID
+	newNote.title = note.Title
+	newNote.content = []byte(note.Content)
+	newNote.format = note.Format
+	newNote.tags = note.Tags
+	newNote.isPublic = note.IsPublic
+
+	if newNote.title == "" && newNote.format == formatText {
+		newNote.title, newNote.content = noteToTitleContent(newNote.content)
+	}
+	return &newNote, nil
+}
+
 func wsCreateOrUpdateNote(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
-	return nil, errors.New("NYI")
+	noteJSONStr, err := jsonMapGetString(args, "noteJSON")
+	if err != nil {
+		return nil, err
+	}
+	var noteFromBrowser NewNoteFromBrowser
+	err = json.Unmarshal([]byte(noteJSONStr), &noteFromBrowser)
+	if err != nil {
+		return nil, fmt.Errorf("wsCreateOrUpdateNote: failed to decode '%s'", noteJSONStr)
+	}
+
+	note, err := newNoteFromBrowserNote(&noteFromBrowser)
+	if err != nil {
+		return nil, err
+	}
+
+	noteID, err := dbCreateOrUpdateNote(ctx.User.id, note)
+	if err != nil {
+		return nil, fmt.Errorf("dbCreateNewNote() failed with %s", err)
+	}
+	v := struct {
+		HashID string
+	}{
+		HashID: hashInt(noteID),
+	}
+	return &v, nil
 }
 
 func wsSearchUserNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
@@ -101,7 +289,7 @@ func wsSearchUserNotes(ctx *ReqContext, args map[string]interface{}) (interface{
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
 	user := getUserSummaryFromCookie(w, r)
-	log.Infof("handleWs, user: %v\n", user)
+	log.Infof("user: %v\n", user)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Error(err)
@@ -123,7 +311,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			}
 			break
 		}
-		log.Infof("ws message: '%s'\n", string(req))
+		log.Infof("msg: '%s'\n", string(req))
 		var wsReq wsGenericReq
 		err = json.Unmarshal(req, &wsReq)
 		if err != nil {
@@ -133,13 +321,10 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 		args := wsReq.Args
 		var res interface{}
-		switch wsReq.Cmd {
 
+		switch wsReq.Cmd {
 		case "getUserInfo":
-			userIDHash, err := jsonMapGetString(args, "userIDHash")
-			if err == nil {
-				res, err = apiGetUserInfo(userIDHash)
-			}
+			res, err = wsGetUserInfo(args)
 
 		case "getNotes":
 			res, err = wsGetNotes(&ctx, args)
@@ -148,13 +333,10 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			v := struct {
 				Notes [][]interface{}
 			}{}
-			v.Notes, err = apiGetRecentNotes(25)
+			v.Notes, err = wsGetRecentNotes(25)
 
 		case "getNote":
-			noteHashID, err := jsonMapGetString(args, "noteHashID")
-			if err == nil {
-				res, err = apiGetNote(&ctx, noteHashID)
-			}
+			res, err = wsGetNote(&ctx, args)
 
 		case "permanentDeleteNote":
 			res, err = wsPermanentDeleteNote(&ctx, args)

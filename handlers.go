@@ -3,7 +3,6 @@ package main
 import (
 	"archive/zip"
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -259,36 +258,6 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
-func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
-	if note.IsPublic {
-		return true
-	}
-	return loggedUser != nil && loggedUser.id == note.userID
-}
-
-func getNoteByID(ctx *ReqContext, noteID int) (*Note, error) {
-	note, err := dbGetNoteByID(noteID)
-	if err != nil {
-		return nil, err
-	}
-	// TODO: when we have sharing via secret link we'll have to check
-	// permissions
-	if !userCanAccessNote(ctx.User, note) {
-		return nil, fmt.Errorf("no access to note '%d'", noteID)
-	}
-	return note, nil
-}
-
-func getNoteByIDHash(ctx *ReqContext, noteHashIDStr string) (*Note, error) {
-	noteHashIDStr = strings.TrimSpace(noteHashIDStr)
-	noteID, err := dehashInt(noteHashIDStr)
-	if err != nil {
-		return nil, err
-	}
-	// log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
-	return getNoteByID(ctx, noteID)
-}
-
 /*
 Big picture:
 / - main page, shows recent public notes, on-boarding for new users
@@ -459,200 +428,6 @@ func noteToCompact(n *Note, withContent bool) ([]interface{}, error) {
 	return res, nil
 }
 
-type getUserInfoRsp struct {
-	UserInfo *UserSummary
-}
-
-func apiGetUserInfo(userIDHash string) (*getUserInfoRsp, error) {
-	log.Infof("wsHandleGetUserInfo\n")
-
-	userID, err := dehashInt(userIDHash)
-	if err != nil {
-		return nil, fmt.Errorf("invalid userID: '%s'", userIDHash)
-	}
-	i, err := getCachedUserInfo(userID)
-	if err != nil || i == nil {
-		return nil, fmt.Errorf("no user '%d', err: '%s'", userID, err)
-	}
-	userInfo := userSummaryFromDbUser(i.user)
-	return &getUserInfoRsp{userInfo}, nil
-}
-
-func apiGetNote(ctx *ReqContext, noteHashIDStr string) ([]interface{}, error) {
-	note, err := getNoteByIDHash(ctx, noteHashIDStr)
-	if err != nil || note == nil {
-		return nil, fmt.Errorf("missing or invalid id attribute '%s'", noteHashIDStr)
-	}
-
-	if !userCanAccessNote(ctx.User, note) {
-		return nil, fmt.Errorf("access of user '%s' denied for note '%s'", ctx.User.HashID, noteHashIDStr)
-	}
-	return noteToCompact(note, true)
-}
-
-func apiGetNotes(ctx *ReqContext, userIDHash string) ([][]interface{}, error) {
-	userID, err := dehashInt(userIDHash)
-	if err != nil {
-		return nil, fmt.Errorf("invalid userIDHash='%s'\n", userIDHash)
-	}
-	i, err := getCachedUserInfo(userID)
-	if err != nil || i == nil {
-		return nil, fmt.Errorf("getCachedUserInfo('%d') failed with '%s'\n", userID, err)
-	}
-
-	showPrivate := ctx.User != nil && userID == ctx.User.id
-	var notes [][]interface{}
-	for _, note := range i.notes {
-		if note.IsPublic || showPrivate {
-			compactNote, _ := noteToCompact(note, false)
-			notes = append(notes, compactNote)
-		}
-	}
-
-	loggedUserID := -1
-	loggedUserHandle := ""
-	if ctx.User != nil {
-		loggedUserHandle = ctx.User.Handle
-		loggedUserID = ctx.User.id
-	}
-	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Login, loggedUserID, loggedUserHandle, showPrivate)
-	return notes, nil
-}
-
-func apiGetRecentNotes(limit int) ([][]interface{}, error) {
-	if limit > 300 {
-		limit = 300
-	}
-	recentNotes, err := getRecentPublicNotesCached(limit)
-	if err != nil {
-		return nil, fmt.Errorf("getRecentPublicNotesCached() failed with '%s'", err)
-	}
-	var notes [][]interface{}
-	for _, note := range recentNotes {
-		compactNote, _ := noteToCompact(&note, false)
-		notes = append(notes, compactNote)
-	}
-	return notes, nil
-}
-
-// NewNoteFromBrowser represents format of the note sent by the browser
-type NewNoteFromBrowser struct {
-	HashID   string
-	Title    string
-	Format   string
-	Content  string
-	Tags     []string
-	IsPublic bool
-}
-
-func newNoteFromArgs(r *http.Request) *NewNote {
-	var newNote NewNote
-	var note NewNoteFromBrowser
-	var noteJSON = r.FormValue("noteJSON")
-	if noteJSON == "" {
-		log.Errorf("missing noteJSON value\n")
-		return nil
-	}
-	err := json.Unmarshal([]byte(noteJSON), &note)
-	if err != nil {
-		log.Errorf("json.Unmarshal('%s') failed with %s", noteJSON, err)
-		return nil
-	}
-	//log.Verbosef("note: %s\n", noteJSON)
-	if !isValidFormat(note.Format) {
-		log.Errorf("invalid format %s\n", note.Format)
-		return nil
-	}
-	newNote.hashID = note.HashID
-	newNote.title = note.Title
-	newNote.content = []byte(note.Content)
-	newNote.format = note.Format
-	newNote.tags = note.Tags
-	newNote.isPublic = note.IsPublic
-
-	if newNote.title == "" && newNote.format == formatText {
-		newNote.title, newNote.content = noteToTitleContent(newNote.content)
-	}
-	return &newNote
-}
-
-/*
-POST /api/createorupdatenote
-   noteJSON : note serialized as json in array format
-returns:
-  {
-    HashID: $hashID
-  }
-*/
-func handleAPICreateOrUpdateNote(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
-	log.Verbosef("url: '%s'\n", r.URL)
-	note := newNoteFromArgs(r)
-	if note == nil {
-		log.Errorf("newNoteFromArgs() returned nil\n")
-		httpErrorWithJSONf(w, r, "newNoteFromArgs() returned nil")
-		return
-	}
-
-	noteID, err := dbCreateOrUpdateNote(ctx.User.id, note)
-	if err != nil {
-		log.Errorf("dbCreateNewNote() failed with %s\n", err)
-		httpErrorWithJSONf(w, r, "dbCreateNewNot() failed with '%s'", err)
-		return
-	}
-	v := struct {
-		HashID string
-	}{
-		HashID: hashInt(noteID),
-	}
-	httpOkWithJSON(w, r, v)
-}
-
-func getUserNoteByHashID(ctx *ReqContext, noteHashIDStr string) (int, error) {
-	noteID, err := dehashInt(noteHashIDStr)
-	if err != nil {
-		return -1, err
-		//httpErrorWithJSONf(w, r, "ivalid note id '%s'", noteHashIDStr)
-	}
-	log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
-	note, err := dbGetNoteByID(noteID)
-	if err != nil {
-		return -1, err
-		//log.Error(err)
-		//httpErrorWithJSONf(w, r, "note doesn't exist")
-		//return 0, -1
-	}
-	if note.userID != ctx.User.id {
-		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteHashIDStr, ctx.User.id, ctx.User.Handle)
-		return -1, err
-		//httpErrorWithJSONf(w, r, "note doesn't belong to this user")
-		//return 0, -1
-	}
-	return noteID, nil
-}
-
-func getUserNoteFromArgs(ctx *ReqContext, r *http.Request) (int, error) {
-	noteHashIDStr := strings.TrimSpace(r.FormValue("noteHashID"))
-	return getUserNoteByHashID(ctx, noteHashIDStr)
-}
-
-func serveNoteCompact(ctx *ReqContext, w http.ResponseWriter, r *http.Request, noteID int) {
-	note, err := getNoteByID(ctx, noteID)
-	if err != nil {
-		httpErrorWithJSONf(w, r, "getNoteByID() failed with '%s'", err)
-		return
-	}
-	v, err := noteToCompact(note, true)
-	httpOkWithJSON(w, r, v)
-}
-
-func getNoteCompact(ctx *ReqContext, noteID int) ([]interface{}, error) {
-	note, err := getNoteByID(ctx, noteID)
-	if err != nil {
-		return nil, err
-	}
-	return noteToCompact(note, true)
-}
-
 // GET /idx/allnotes
 // args:
 // - page
@@ -677,8 +452,8 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
-	http.HandleFunc("/u/", withCtx(handleIndex, 0))
-	http.HandleFunc("/n/", withCtx(handleIndex, OnlyGet))
+	//http.HandleFunc("/u/", withCtx(handleIndex, 0))
+	//http.HandleFunc("/n/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
@@ -691,7 +466,6 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/api/ws", handleWs)
 	http.HandleFunc("/api/import_simplenote_start", withCtx(handleAPIImportSimpleNoteStart, OnlyLoggedIn|IsJSON))
 	http.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
-	http.HandleFunc("/api/createorupdatenote", withCtx(handleAPICreateOrUpdateNote, IsJSON|OnlyLoggedIn))
 }
 
 func startWebServer() {
