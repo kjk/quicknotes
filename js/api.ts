@@ -163,7 +163,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -177,7 +177,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -201,18 +201,6 @@ export function getUserInfo(userIDHash: string, cb: WsCb) {
   wsSendReq('getUserInfo', args, getUserInfoCb);
 }
 
-// calls cb with UserInfo
-export function getUserInfo2(userIDHash: string, cb: any, cbErr?: any) {
-
-  function getUserInfoCb(userInfo: any) {
-    cb(userInfo.UserInfo);
-  }
-  const args: ArgsDict = {
-    'userIDHash': userIDHash,
-  };
-  get('/api/getuserinfo', args, getUserInfoCb, cbErr);
-}
-
 // calls cb with Note[]
 export function getNotes(userIDHash: string, cb: WsCb) {
   const args: any = {
@@ -229,21 +217,6 @@ export function getNotes(userIDHash: string, cb: WsCb) {
 }
 
 // calls cb with Note[]
-export function getNotes2(userIDHash: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'userIDHash': userIDHash
-  };
-  function getNotesCb(json: GetNotesResp) {
-    if (!json || !json.Notes) {
-      cb([]);
-    }
-    let notes = toNotes(json.Notes);
-    cb(notes);
-  }
-  get('/api/getnotes', args, getNotesCb, cbErr);
-}
-
-// calls cb with Note[]
 export function getRecentNotes(cb: WsCb) {
   function getNotesCb(result: GetNotesResp) {
     if (!result || !result.Notes) {
@@ -253,18 +226,6 @@ export function getRecentNotes(cb: WsCb) {
     cb(notes);
   }
   wsSendReq('getRecentNotes', {}, getNotesCb);
-}
-
-// calls cb with Note[]
-export function getRecentNotes2(cb: any, cbErr?: any) {
-  function getNotesCb(json: GetNotesResp) {
-    if (!json || !json.Notes) {
-      cb([]);
-    }
-    let notes = toNotes(json.Notes);
-    cb(notes);
-  }
-  get('/api/getrecentnotes', null, getNotesCb, cbErr);
 }
 
 // calls cb with Note
@@ -279,30 +240,11 @@ export function getNote(noteId: string, cb: WsCb, cbErr?: any) {
   get('getNote', args, getNoteCb);
 }
 
-// calls cb with Note
-export function getNote2(noteHashID: any, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  function getNoteCb(note: any) {
-    note = toNote(note);
-    cb(note);
-  }
-  get('/api/getnote', args, getNoteCb, cbErr);
-}
-
 export function undeleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
   const args: any = {
     'noteHashID': noteHashID
   };
   wsSendReq('undeleteNote', args, cb, );
-}
-
-export function undeleteNote2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: any = {
-    'noteHashID': noteHashID
-  };
-  post('/api/undeletenote', args, cb, cbErr);
 }
 
 export function deleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
@@ -312,25 +254,11 @@ export function deleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
   wsSendReq('deleteNote', args, cb);
 }
 
-export function deleteNote2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  post('/api/deletenote', args, cb, cbErr);
-}
-
 export function permanentDeleteNote(noteHashID: string, cb: WsCb, cbErr?: any) {
   const args: any = {
     noteHashID,
   };
   wsSendReq('permanentDeleteNote', args, cb);
-}
-
-export function permanentDeleteNote2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  post('/api/permanentdeletenote', args, cb, cbErr);
 }
 
 export function makeNotePrivate(noteHashID: string, cb: WsCb, cbErr?: any) {
@@ -340,25 +268,11 @@ export function makeNotePrivate(noteHashID: string, cb: WsCb, cbErr?: any) {
   wsSendReq('makeNotePrivate', args, cb);
 }
 
-export function makeNotePrivate2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  post('/api/makenoteprivate', args, cb, cbErr);
-}
-
 export function makeNotePublic(noteHashID: string, cb: WsCb, cbErr?: any) {
   const args: any = {
     noteHashID,
   };
   wsSendReq('makeNotePublic', args, cb);
-}
-
-export function makeNotePublic2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  post('/api/makenotepublic', args, cb, cbErr);
 }
 
 export function starNote(noteHashID: string, cb: WsCb, cbErr?: any) {
@@ -368,25 +282,11 @@ export function starNote(noteHashID: string, cb: WsCb, cbErr?: any) {
   wsSendReq('starNote', args, cb);
 }
 
-export function starNote2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  post('/api/starnote', args, cb, cbErr);
-}
-
 export function unstarNote(noteHashID: string, cb: any, cbErr?: any) {
   const args: any = {
     noteHashID,
   };
   wsSendReq('unstarNote', args, cb);
-}
-
-export function unstarNote2(noteHashID: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'noteHashID': noteHashID
-  };
-  post('/api/unstarnote', args, cb, cbErr);
 }
 
 export function createOrUpdateNote(noteJSON: string, cb: any, cbErr?: any) {
@@ -409,14 +309,6 @@ export function searchUserNotes(userIDHash: string, searchTerm: string, cb: any,
     searchTerm
   };
   wsSendReq('searchUserNotes', args, cb);
-}
-
-export function searchUserNotes2(userIDHash: string, searchTerm: string, cb: any, cbErr?: any) {
-  const args: ArgsDict = {
-    'userIDHash': userIDHash,
-    'searchTerm': searchTerm
-  };
-  get('/api/searchusernotes', args, cb, cbErr);
 }
 
 export function importSimpleNoteStart(email: string, pwd: string, cb: any, cbErr?: any) {
