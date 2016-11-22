@@ -262,19 +262,19 @@ export function getUserInfo(userIDHash: string, cb: WsCb2) {
   wsSendReq2('getUserInfo', args, cb, getUserInfoConvertResult);
 }
 
+function getNotesConvertResult(result: GetNotesResp) {
+  if (!result || !result.Notes) {
+    return [];
+  }
+  return toNotes(result.Notes);
+}
+
 // calls cb with Note[]
-export function getNotes(userIDHash: string, cb: WsCb) {
+export function getNotes(userIDHash: string, cb: WsCb2) {
   const args: any = {
     userIDHash,
   };
-  function getNotesCb(result: GetNotesResp) {
-    if (!result || !result.Notes) {
-      cb([]);
-    }
-    let notes = toNotes(result.Notes);
-    cb(notes);
-  }
-  wsSendReq('getNotes', args, getNotesCb);
+  wsSendReq2('getNotes', args, cb, getNotesConvertResult);
 }
 
 // calls cb with Note[]
