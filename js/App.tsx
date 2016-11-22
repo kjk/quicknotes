@@ -44,7 +44,7 @@ function appUserStart(ctx: PageJS.Context) {
   function getNotes() {
     api.getNotes(userIDHash, (err: Error, notes: Note[]) => {
       if (err) {
-        console.log("api.getNotes failed with err:", err);
+        console.log("api.getNotes failed with:", err);
         return;
       }
       console.log('appUserStart: got', notes.length, 'notes');
@@ -73,7 +73,11 @@ function appNoteStart(ctx: PageJS.Context) {
 function appIndexStart(ctx: PageJS.Context) {
   console.log('appIndexStart');
 
-  api.getRecentNotes((notes: Note[]) => {
+  api.getRecentNotes((err: Error, notes: Note[]) => {
+    if (err) {
+      console.log("api.getRecentNotes failed with:", err);
+      return;
+    }
     console.log('appIndexStart: got', notes.length, 'notes');
     const el = document.getElementById('root');
     ReactDOM.render(<AppIndex initialNotes={notes} />, el);
