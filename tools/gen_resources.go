@@ -118,21 +118,24 @@ func getCmdOut(cmd *exec.Cmd) []byte {
 	}
 	err = cmd.Wait()
 	if err != nil {
+		fmt.Printf("cmd '%s' failed with '%s'", cmdToStr(cmd), err)
 		return nil
 	}
-	resErr := cmd.Stdout.(*bytes.Buffer).Bytes()
+	resErr := cmd.Stderr.(*bytes.Buffer).Bytes()
 	if len(resErr) != 0 {
 		return nil
 	}
 	return cmd.Stdout.(*bytes.Buffer).Bytes()
 }
 
-func compressFileMust(path string) []byte {
+func gzipFileMust(path string) []byte {
 	cmd := exec.Command("zopfli", "-c", path)
 	d := getCmdOut(cmd)
 	if len(d) > 0 {
 		return d
 	}
+
+	// fallback
 	out := &bytes.Buffer{}
 	content, err := ioutil.ReadFile(path)
 	fataliferr(err)
@@ -145,10 +148,24 @@ func compressFileMust(path string) []byte {
 	return out.Bytes()
 }
 
+func brotliFileMust(path string) []byte {
+	cmd := exec.Command("bro", "--quality", "11", "--input", path)
+	d := getCmdOut(cmd)
+	fatalif(len(d) == 0, "bro returned 0 bytes")
+	return d
+}
+
 func checkZopfliInstalled() {
 	_, err := exec.LookPath("zopfli")
 	if err != nil {
 		fmt.Printf("'zopfli' doesn't seem to be installed. Use 'brew install zopfli' on mac\n")
+	}
+}
+
+func checkBrotliInstalled() {
+	_, err := exec.LookPath("bro")
+	if err != nil {
+		fmt.Printf("'bro' doesn't seem to be installed. Use 'brew install brotli' on mac\n")
 	}
 }
 
@@ -213,9 +230,10 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 			}
 			addZipFileMust(zw, path, zipName)
 			if shouldAddCompressed(path) {
-				zipName = zipName + ".gz"
-				d := compressFileMust(path)
-				addZipDataMust(zw, path, d, zipName)
+				d := gzipFileMust(path)
+				addZipDataMust(zw, path, d, zipName+".gz")
+				d = brotliFileMust(path)
+				addZipDataMust(zw, path, d, zipName+".bro")
 			}
 		}
 	}
@@ -281,5 +299,6 @@ func genResources() {
 
 func main() {
 	checkZopfliInstalled()
+	checkBrotliInstalled()
 	genResources()
 }
