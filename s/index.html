@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ .Title }}</title>
 
-  <link rel="stylesheet" href="/s/dist/main.css">
+  <link rel="stylesheet" href="{{.MainCSSPath}}">
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
 
   <script>
@@ -17,7 +17,7 @@
     var gInitialNote = {{.Note}};
     var gNoteUser = {{.NoteUser}};
   </script>
-  <script src="/s/dist/bundle.js"></script>
+  <script src="{{.BundleJSPath}}"></script>
 </head>
 
 <body class="theme-light" data-spacing="default">

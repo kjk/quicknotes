@@ -16,6 +16,13 @@ import (
 	"github.com/kjk/u"
 )
 
+var (
+	bundleJSPath       = "s/dist/bundle.js"
+	bundleJSPathIsSha1 = false
+	mainCSSPath        = "s/dist/main.css"
+	mainCSSPathIsSha1  = false
+)
+
 // HandlerWithCtxFunc is like http.HandlerFunc but with additional ReqContext argument
 type HandlerWithCtxFunc func(*ReqContext, http.ResponseWriter, *http.Request)
 
@@ -189,6 +196,33 @@ func loadResourcesFromZip(path string) error {
 	return loadResourcesFromZipReader(&zrc.Reader)
 }
 
+func sha1ifyPath(path string, sha1Hex string) string {
+	ext := filepath.Ext(path)
+	base := path[:len(path)-len(ext)]
+	return base + "-" + sha1Hex + ext
+}
+
+func sha1ifyZipResource(path string) (string, bool) {
+	d, ok := resourcesFromZip[path]
+	if !ok {
+		log.Verbosef("no resource '%s'\n", path)
+		return path, false
+	}
+	sha1 := u.Sha1HexOfBytes(d)
+	newPath := sha1ifyPath(path, sha1)
+	log.Verbosef("%s => %s\n", path, newPath)
+	resourcesFromZip[newPath] = d
+	if d, ok = resourcesFromZip[path+".gz"]; ok {
+		log.Verbosef("%s => %s\n", path+".gz", newPath+".gz")
+		resourcesFromZip[newPath+".gz"] = d
+	}
+	if d, ok = resourcesFromZip[path+".br"]; ok {
+		log.Verbosef("%s => %s\n", path+".br", newPath+".br")
+		resourcesFromZip[newPath+".br"] = d
+	}
+	return newPath, true
+}
+
 func loadResourcesFromEmbeddedZip() error {
 	timeStart := time.Now()
 	defer func() {
@@ -203,9 +237,28 @@ func loadResourcesFromEmbeddedZip() error {
 	r := bytes.NewReader(resourcesZipData)
 	zrc, err := zip.NewReader(r, int64(n))
 	if err != nil {
+		log.Errorf("zip.NewReader() failed with '%s'\n", err)
 		return err
 	}
-	return loadResourcesFromZipReader(zrc)
+	err = loadResourcesFromZipReader(zrc)
+	if err != nil {
+		log.Errorf("loadResourcesFromZipReader() failed with '%s'\n", err)
+		return err
+	}
+
+	bundleJSPath, bundleJSPathIsSha1 = sha1ifyZipResource(bundleJSPath)
+	mainCSSPath, mainCSSPathIsSha1 = sha1ifyZipResource(mainCSSPath)
+	return nil
+}
+
+func shouldCacheResource(path string) bool {
+	if bundleJSPathIsSha1 && path == bundleJSPath {
+		return true
+	}
+	if mainCSSPathIsSha1 && path == mainCSSPath {
+		return true
+	}
+	return false
 }
 
 func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
@@ -213,7 +266,7 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 
 	data := resourcesFromZip[path]
 	gzippedData := resourcesFromZip[path+".gz"]
-	brotliData := resourcesFromZip[path+".bro"]
+	brotliData := resourcesFromZip[path+".br"]
 
 	log.Verbosef("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
 
@@ -228,7 +281,8 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 		return
 	}
 
-	serveData(w, r, 200, MimeTypeByExtensionExt(path), data, gzippedData, brotliData)
+	shouldCache := shouldCacheResource(path)
+	serveData(w, r, 200, MimeTypeByExtensionExt(path), data, gzippedData, brotliData, shouldCache)
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
@@ -277,8 +331,10 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 
 	v := struct {
 		// common between /, /u/ and /n/
-		LoggedUser *UserSummary
-		Title      string
+		LoggedUser   *UserSummary
+		Title        string
+		BundleJSPath string
+		MainCSSPath  string
 
 		// for / and /u/
 		Notes     []*Note
@@ -288,8 +344,10 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		NoteUser *UserSummary
 		Note     []interface{}
 	}{
-		LoggedUser: ctx.User,
-		Title:      "QuickNotes",
+		LoggedUser:   ctx.User,
+		Title:        "QuickNotes",
+		BundleJSPath: "/" + bundleJSPath,
+		MainCSSPath:  "/" + mainCSSPath,
 	}
 
 	if strings.HasPrefix(uri, "/u/") {
