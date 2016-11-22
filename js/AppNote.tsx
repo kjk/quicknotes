@@ -197,8 +197,11 @@ export default class AppNote extends Component<Props, State> {
       });
     } else {
       action.showTemporaryMessage('Making note public...', 500);
-      api.makeNotePublic(noteID, (note: any) => {
-        // TODO: handle error
+      api.makeNotePublic(noteID, (err: Error, note: any) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> public.`);
+          return;
+        }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> public.`);
         this.setNote(note);
       });
@@ -212,15 +215,21 @@ export default class AppNote extends Component<Props, State> {
     const noteID = note.HashID();
     if (note.IsStarred()) {
       action.showTemporaryMessage('Un-starring the note...', 500);
-      api.unstarNote(noteID, (note: any) => {
-        // TODO: handle error
+      api.unstarNote(noteID, (err: Error, note: any) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to unstar <a href="/n/${noteID}" target="_blank">note</a>.`);
+          return;
+        }
         action.showTemporaryMessage(`Unstarred <a href="/n/${noteID}" target="_blank">note</a>.`);
         this.setNote(note);
       });
     } else {
       action.showTemporaryMessage('Starring the note...', 500);
-      api.starNote(noteID, (note: any) => {
-        // TODO: handle error
+      api.starNote(noteID, (err: Error, note: any) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to star <a href="/n/${noteID}" target="_blank">note</a>.`);
+          return;
+        }
         action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
         this.setNote(note);
       });

@@ -322,25 +322,25 @@ export function makeNotePrivate(noteHashID: string, cb: WsCb2) {
   wsSendReq2('makeNotePrivate', args, cb);
 }
 
-export function makeNotePublic(noteHashID: string, cb: WsCb, cbErr?: any) {
+export function makeNotePublic(noteHashID: string, cb: WsCb2) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('makeNotePublic', args, cb);
+  wsSendReq2('makeNotePublic', args, cb, null);
 }
 
-export function starNote(noteHashID: string, cb: WsCb, cbErr?: any) {
+export function starNote(noteHashID: string, cb: WsCb2) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('starNote', args, cb);
+  wsSendReq2('starNote', args, cb, null);
 }
 
-export function unstarNote(noteHashID: string, cb: any, cbErr?: any) {
+export function unstarNote(noteHashID: string, cb: WsCb2) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('unstarNote', args, cb);
+  wsSendReq2('unstarNote', args, cb, null);
 }
 
 export function createOrUpdateNote(noteJSON: string, cb: any, cbErr?: any) {
