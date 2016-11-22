@@ -22,7 +22,7 @@ interface WsReqMsg {
 
 interface WsReq {
   msg: WsReqMsg;
-  cb?: WsCb;
+  cb: WsCb;
   convertResult?: (result: any) => any;
 }
 
@@ -58,6 +58,13 @@ function wsProcessRsp(rsp: any) {
   }
   req.cb(null, result);
   return;
+}
+
+function wsFailAllRequests() {
+  for (const req of requests) {
+    req.cb(new Error("connection failed"), null);
+  }
+  requests = [];
 }
 
 function wsNextReqID(): number {
@@ -103,7 +110,7 @@ export function openWebSocket() {
 
   wsSock.onerror = (ev) => {
     console.log('wsSock.onerror: ev', ev);
-    // TODO: fail all requests
+    wsFailAllRequests();
     wsSock = null;
     wsSockReady = false;
   }
