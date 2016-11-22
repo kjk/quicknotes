@@ -6,13 +6,14 @@ import { UserInfo } from './types';
 type ArgsDict = Dict<string>;
 type WsCb = (rsp: any) => void;
 
+type WsCb2 = (err: Error, rsp: any) => void;
+
 // TODO: audit for error handling
 // TODO: reconnect ws https://github.com/voidabhi/es6-rws/blob/master/rws.js
 
 let wsSock: WebSocket = null;
 
 let wsCurrReqID = 0;
-let requests: WsReq[] = [];
 
 interface WsReqMsg {
   id: number;
@@ -22,8 +23,12 @@ interface WsReqMsg {
 
 interface WsReq {
   msg: WsReqMsg;
-  cb: WsCb;
+  cb?: WsCb;
+  cb2?: WsCb2;
+  convertResult?: (result: any) => any;
 }
+
+let requests: WsReq[] = [];
 
 function wsPopReqForID(id: number): WsReq {
   for (let i = 0; i < requests.length; i++) {
@@ -44,9 +49,21 @@ function wsProcessRsp(rsp: any) {
   }
   if (rsp.error) {
     console.log('error response', rsp, 'for request', req);
+    if (req.cb2) {
+      const err = new Error(rsp.error);
+      req.cb2(err, null);
+    }
     return;
   }
   console.log('got response for request', req);
+  if (req.cb2) {
+    let result = rsp.result;
+    if (req.convertResult) {
+      result = req.convertResult(result);
+    }
+    req.cb2(null, result);
+    return;
+  }
   req.cb(rsp.result);
 }
 
@@ -93,6 +110,7 @@ export function openWebSocket() {
 
   wsSock.onerror = (ev) => {
     console.log('wsSock.onerror: ev', ev);
+    // TODO: fail all requests
     wsSock = null;
     wsSockReady = false;
   }
@@ -110,15 +128,35 @@ function wsRealSendReq(wsReq: WsReq) {
   console.log('sent ws req:', msgJSON);
 }
 
-function wsSendReq(cmd: string, args: any, cb: (rsp: any) => void): any {
+function wsSendReq(cmd: string, args: any, cb: WsCb): any {
   const msg: WsReqMsg = {
     id: wsNextReqID(),
-    cmd: cmd,
-    args: args,
+    cmd,
+    args,
   }
   const wsReq: WsReq = {
-    msg: msg,
-    cb: cb,
+    msg,
+    cb,
+  }
+
+  if (wsSockReady) {
+    wsRealSendReq(wsReq);
+  } else {
+    bufferedRequests.push(wsReq);
+  }
+}
+
+function wsSendReq2(cmd: string, args: any, cb2: WsCb2, convertResult?: (result: any) => any): any {
+  const msg: WsReqMsg = {
+    id: wsNextReqID(),
+    cmd,
+    args,
+  }
+
+  const wsReq: WsReq = {
+    msg,
+    cb2,
+    convertResult,
   }
 
   if (wsSockReady) {
@@ -174,7 +212,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -188,7 +226,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -203,20 +241,25 @@ export interface GetNotesCallback {
 }
 
 function ping() {
-  function pingCb(result: any) {
-    console.log("ping response:", result);
+  function pingCb(err: Error, result: any) {
+    if (err) {
+      console.log("ping response error:", err);
+    } else {
+      console.log("ping response:", result);
+    }
   }
-  wsSendReq('ping', {}, pingCb);
+  wsSendReq2('ping', {}, pingCb);
 }
 
-export function getUserInfo(userIDHash: string, cb: WsCb) {
+function getUserInfoConvertResult(result: any) {
+  return result.UserInfo;
+}
+
+export function getUserInfo(userIDHash: string, cb: WsCb2) {
   const args: any = {
     userIDHash,
   };
-  function getUserInfoCb(result: any) {
-    cb(result.UserInfo);
-  }
-  wsSendReq('getUserInfo', args, getUserInfoCb);
+  wsSendReq2('getUserInfo', args, cb, getUserInfoConvertResult);
 }
 
 // calls cb with Note[]
