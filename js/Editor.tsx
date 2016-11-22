@@ -267,7 +267,7 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function (i: any) {
+    (function(i: any) {
       var text = cm.getLine(i);
       var currHeadingLevel = text.search(/[^#]/);
 
@@ -344,7 +344,7 @@ function _toggleLine(cm: any, name: any) {
     'ordered-list': '1. '
   };
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function (i: any) {
+    (function(i: any) {
       var text = cm.getLine(i);
       if (stat[name]) {
         text = text.replace(repl[name], '$1');
@@ -691,7 +691,7 @@ export default class Editor extends Component<any, State> {
     });
 
     // Syncs scroll  preview -> editor
-    preview.onscroll = function () {
+    preview.onscroll = function() {
       if (pScroll) {
         pScroll = false;
         return;
