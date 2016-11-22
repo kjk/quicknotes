@@ -278,15 +278,8 @@ export function getNotes(userIDHash: string, cb: WsCb2) {
 }
 
 // calls cb with Note[]
-export function getRecentNotes(cb: WsCb) {
-  function getNotesCb(result: GetNotesResp) {
-    if (!result || !result.Notes) {
-      cb([]);
-    }
-    let notes = toNotes(result.Notes);
-    cb(notes);
-  }
-  wsSendReq('getRecentNotes', {}, getNotesCb);
+export function getRecentNotes(cb: WsCb2) {
+  wsSendReq2('getRecentNotes', {}, cb, getNotesConvertResult);
 }
 
 // calls cb with Note
