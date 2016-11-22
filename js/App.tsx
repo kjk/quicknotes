@@ -31,10 +31,17 @@ function appUserStart(ctx: PageJS.Context) {
   const initialTag = initialTags[0];
   console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
 
-  api.getUserInfo(userIDHash, (userInfo: UserInfo) => {
+  api.getUserInfo(userIDHash, (err: Error, userInfo: UserInfo) => {
+    if (err) {
+      console.log("Error: ", err);
+      return;
+    }
     console.log('appUserStart: got user', userInfo);
     gNotesUser = userInfo;
+    getNotes();
+  })
 
+  function getNotes() {
     api.getNotes(userIDHash, (notes: Note[]) => {
       console.log('appUserStart: got', notes.length, 'notes');
       const el = document.getElementById('root');
@@ -43,7 +50,7 @@ function appUserStart(ctx: PageJS.Context) {
         el
       );
     })
-  });
+  };
 }
 
 function appNoteStart(ctx: PageJS.Context) {
