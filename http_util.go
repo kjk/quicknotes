@@ -212,7 +212,7 @@ func servePlainText(w http.ResponseWriter, r *http.Request, code int, format str
 	}
 }
 
-func serveData(w http.ResponseWriter, r *http.Request, code int, contentType string, data, gzippedData []byte, brotliData []byte) {
+func serveData(w http.ResponseWriter, r *http.Request, code int, contentType string, data, gzippedData []byte, brotliData []byte, shouldCache bool) {
 	d := data
 	if len(contentType) > 0 {
 		w.Header().Set("Content-Type", contentType)
@@ -229,6 +229,10 @@ func serveData(w http.ResponseWriter, r *http.Request, code int, contentType str
 		w.Header().Set("Content-Encoding", "gzip")
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(len(d)))
+	if shouldCache {
+		// 31536000 is 365 days in seconds
+		w.Header().Set("Cache-Control", "public, max-age=31536000")
+	}
 	w.WriteHeader(code)
 	w.Write(d)
 }

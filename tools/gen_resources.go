@@ -233,7 +233,7 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 				d := gzipFileMust(path)
 				addZipDataMust(zw, path, d, zipName+".gz")
 				d = brotliFileMust(path)
-				addZipDataMust(zw, path, d, zipName+".bro")
+				addZipDataMust(zw, path, d, zipName+".br")
 			}
 		}
 	}
