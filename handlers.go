@@ -155,11 +155,6 @@ func loadResourcesFromZipReader(zr *zip.Reader) error {
 		if err != nil {
 			return err
 		}
-		// for simplicity of the build, the file that we embedded in zip
-		// is bundle.min.js but the html refers to it as bundle.js
-		if name == "s/dist/bundle.min.js" {
-			name = "s/dist/bundle.js"
-		}
 		//log.Verbosef("Loaded '%s' of size %d bytes\n", name, len(d))
 		resourcesFromZip[name] = d
 	}
@@ -218,6 +213,7 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 
 	data := resourcesFromZip[path]
 	gzippedData := resourcesFromZip[path+".gz"]
+	brotliData := resourcesFromZip[path+".bro"]
 
 	log.Verbosef("serving '%s' from zip, hasGzippedVersion: %v\n", path, len(gzippedData) > 0)
 
@@ -232,7 +228,7 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 		return
 	}
 
-	serveData(w, r, 200, MimeTypeByExtensionExt(path), data, gzippedData)
+	serveData(w, r, 200, MimeTypeByExtensionExt(path), data, gzippedData, brotliData)
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {

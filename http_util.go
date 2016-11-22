@@ -56,7 +56,13 @@ func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
 }
 
 func acceptsGzip(r *http.Request) bool {
+	// TODO: would be safer to split by ", "
 	return r != nil && strings.Contains(r.Header.Get("Accept-Encoding"), "gzip")
+}
+
+func acceptsBrotli(r *http.Request) bool {
+	// TODO: would be safer to split by ", "
+	return r != nil && strings.Contains(r.Header.Get("Accept-Encoding"), "br")
 }
 
 func httpOkBytesWithContentType(w http.ResponseWriter, r *http.Request, contentType string, content []byte) {
@@ -206,7 +212,7 @@ func servePlainText(w http.ResponseWriter, r *http.Request, code int, format str
 	}
 }
 
-func serveData(w http.ResponseWriter, r *http.Request, code int, contentType string, data, gzippedData []byte) {
+func serveData(w http.ResponseWriter, r *http.Request, code int, contentType string, data, gzippedData []byte, brotliData []byte) {
 	d := data
 	if len(contentType) > 0 {
 		w.Header().Set("Content-Type", contentType)
@@ -215,7 +221,10 @@ func serveData(w http.ResponseWriter, r *http.Request, code int, contentType str
 	// prevent caching non-gzipped version
 	w.Header().Add("Vary", "Accept-Encoding")
 
-	if acceptsGzip(r) && len(gzippedData) > 0 {
+	if acceptsBrotli(r) && len(brotliData) > 0 {
+		d = brotliData
+		w.Header().Set("Content-Encoding", "br")
+	} else if acceptsGzip(r) && len(gzippedData) > 0 {
 		d = gzippedData
 		w.Header().Set("Content-Encoding", "gzip")
 	}
