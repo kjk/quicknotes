@@ -194,7 +194,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -208,7 +208,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }

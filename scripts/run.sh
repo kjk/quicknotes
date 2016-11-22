@@ -10,8 +10,11 @@ g_dbDir = os.path.expanduser("~/data/quicknotes/db")
 kStatusRunning = "running"
 kStatusExited = "exited"
 
+def eprint(*args, **kwargs):
+  print(*args, file=sys.stderr, **kwargs)
+
 def print_cmd(cmd):
-  print("cmd:" + " ".join(cmd))
+  eprint("cmd:" + " ".join(cmd))
 
 def run_cmd(cmd):
   print_cmd(cmd)
@@ -23,7 +26,7 @@ def run_cmd_out(cmd):
   return s.decode("utf-8")
 
 def run_cmd_show_progress(cmd):
-  print("Running '%s'" % cmd)
+  eprint("Running '%s'" % cmd)
   p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
           stderr = subprocess.STDOUT, shell = True)
   while True:
@@ -32,13 +35,13 @@ def run_cmd_show_progress(cmd):
       break
     sys.stdout.buffer.write(line)
     sys.stdout.flush()
-  #print("Finished runnign '%s'" % " ".join(cmd))
+  #eprint("Finished runnign '%s'" % " ".join(cmd))
 
 def verify_docker_running():
   try:
     run_cmd(["docker", "ps"])
   except:
-    print("docker is not running! must run docker")
+    eprint("docker is not running! must run docker")
     sys.exit(10)
 
 # not sure if this covers all cases
@@ -84,7 +87,7 @@ def docker_container_info(containerName):
 def start_container_if_needed(imageName, containerName, portMapping):
   (containerId, status, ip_port) = docker_container_info(containerName)
   if status == kStatusRunning:
-    print("container %s is already running" % containerName)
+    eprint("container %s is already running" % containerName)
     return
   if status == kStatusExited:
     cmd = ["docker", "start", containerId]
@@ -97,12 +100,12 @@ def start_container_if_needed(imageName, containerName, portMapping):
 def wait_for_container(containerName):
   # 8 secs is a heuristic
   timeOut = 8
-  print("waiting %s secs for container to start" % timeOut, end="", flush=True)
+  eprint("waiting %s secs for container to start" % timeOut, end="", flush=True)
   while timeOut > 0:
-    print(".", end="", flush=True)
+    eprint(".", end="", flush=True)
     time.sleep(1)
     timeOut -= 1
-  print("")
+  eprint("")
 
 def create_db_dir():
   try:
@@ -120,6 +123,7 @@ def main():
   ip, port = ip_port
   cmd = "./scripts/build_and_run.sh -verbose -db-host %s -db-port %s" % (ip, port)
   run_cmd_show_progress(cmd)
+  #print("%s;%s" % (ip, port))
 
 if __name__ == "__main__":
   main()
