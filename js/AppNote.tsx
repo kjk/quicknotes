@@ -88,8 +88,11 @@ export default class AppNote extends Component<Props, State> {
     const note = this.state.note;
     const id = note.HashID();
     // console.log('editCurrentNote id: ', id);
-    api.getNote(id, (note: Note) => {
-      // TODO: handle error
+    api.getNote(id, (err: Error, note: Note) => {
+      if (err) {
+        // TODO: more error handling?
+        return;
+      }
       action.editNote(note);
     });
   }
@@ -105,7 +108,10 @@ export default class AppNote extends Component<Props, State> {
   handleReloadNotes(resetScroll: boolean) {
     const note = this.state.note;
     const noteID = note.HashID();
-    api.getNote(noteID, (note: Note) => {
+    api.getNote(noteID, (err: Error, note: Note) => {
+      if (err) {
+        return;
+      }
       this.setNote(note);
     });
   }
@@ -137,15 +143,21 @@ export default class AppNote extends Component<Props, State> {
     const noteID = note.HashID();
     if (note.IsDeleted()) {
       action.showTemporaryMessage('Undeleting note...', 500);
-      api.undeleteNote(noteID, (note: any) => {
-        // TODO: handle error
+      api.undeleteNote(noteID, (err: Error, note: any) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to undelete <a href="/n/${noteID}" target="_blank">note</a>.`);
+          return;
+        }
         action.showTemporaryMessage(`Undeleted <a href="/n/${noteID}" target="_blank">note</a>.`);
         this.setNote(note);
       });
     } else {
       action.showTemporaryMessage('Moving note to trash...', 500);
-      api.deleteNote(noteID, (note: any) => {
-        // TODO: handle error
+      api.deleteNote(noteID, (err: Error, note: any) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to move <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
+          return;
+        }
         action.showTemporaryMessage(`Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
         this.setNote(note);
       });
@@ -157,8 +169,11 @@ export default class AppNote extends Component<Props, State> {
     const note = this.state.note;
     const noteID = note.HashID();
     action.showTemporaryMessage('Permanently deleting note...', 500);
-    api.permanentDeleteNote(noteID, () => {
-      // TODO: handle error
+    api.permanentDeleteNote(noteID, (err: Error) => {
+      if (err) {
+        action.showTemporaryMessage(`Failed to permanently delete note.`);
+        return;
+      }
       // TODO: allow undoe
       action.showTemporaryMessage(`Permanently deleted note.`);
       this.setNote(null);
@@ -172,8 +187,11 @@ export default class AppNote extends Component<Props, State> {
     const noteID = note.HashID();
     if (note.IsPublic()) {
       action.showTemporaryMessage('Making note private...', 500);
-      api.makeNotePrivate(noteID, (note: any) => {
-        // TODO: handle error
+      api.makeNotePrivate(noteID, (err: Error, note: any) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> private.`);
+          return;
+        }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> private.`);
         this.setNote(note);
       });

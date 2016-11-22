@@ -338,7 +338,10 @@ export function FetchLatestContent(noteOrig: Note, cb: FetchLatestContentCallbac
     return;
   }
   // console.log('FetchLatestContent: starting to fetch content for note', noteID);
-  api.getNote(noteID, (note: Note) => {
+  api.getNote(noteID, (err: Error, note: Note) => {
+    if (err) {
+      return;
+    }
     // console.log('FetchLatestContent: json=', note);
     // version might be newer than in noteOrig
     const content = setCachedVersion(note);
@@ -367,19 +370,19 @@ function cmpAscByField(n1: Note, n2: Note, idx: any): number {
 }
 
 export function sortNotesByUpdatedAt(notes: Note[]): Note[] {
-  return notes.sort(function(n1: any, n2: any) {
+  return notes.sort(function (n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteUpdatedAtIdx);
   });
 }
 
 export function sortNotesByCreatedAt(notes: Note[]): Note[] {
-  return notes.sort(function(n1: any, n2: any) {
+  return notes.sort(function (n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteCreatedAtIdx);
   });
 }
 
 export function sortNotesBySize(notes: Note[]): Note[] {
-  return notes.sort(function(n1: any, n2: any) {
+  return notes.sort(function (n1: any, n2: any) {
     return cmpDescByField(n1, n2, noteSizeIdx);
   });
 }

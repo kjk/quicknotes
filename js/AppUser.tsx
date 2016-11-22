@@ -179,7 +179,6 @@ export default class AppUser extends Component<Props, State> {
     // console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
     api.getNotes(userID, (err: Error, notes: Note[]) => {
       if (err) {
-        console.log("api.getNotes() failed with:", err);
         return;
       }
       this.setNotes(notes, resetScroll);

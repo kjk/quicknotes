@@ -71,8 +71,10 @@ export default class NoteView extends Component<Props, State> {
     const note = this.props.note;
     const id = note.HashID();
     // console.log('editCurrentNote id: ', id);
-    api.getNote(id, (note: Note) => {
-      // TODO: handle error
+    api.getNote(id, (err: Error, note: Note) => {
+      if (err) {
+        return;
+      }
       action.editNote(note);
     });
   }
@@ -88,15 +90,21 @@ export default class NoteView extends Component<Props, State> {
     const noteID = note.HashID();
     if (note.IsDeleted()) {
       action.showTemporaryMessage('Undeleting note...', 500);
-      api.undeleteNote(noteID, () => {
-        // TODO: handle error
+      api.undeleteNote(noteID, (err: Error) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to delete <a href="/n/${noteID}" target="_blank">note</a>.`);
+          return;
+        }
         action.showTemporaryMessage(`Undeleted <a href="/n/${noteID}" target="_blank">note</a>.`);
         action.reloadNotes(false);
       });
     } else {
       action.showTemporaryMessage('Moving note to trash...', 500);
-      api.deleteNote(noteID, () => {
-        // TODO: handle error
+      api.deleteNote(noteID, (err: Error) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to move <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
+          return;
+        }
         action.showTemporaryMessage(`Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
         action.reloadNotes(false);
       });
@@ -108,8 +116,11 @@ export default class NoteView extends Component<Props, State> {
     const note = this.props.note;
     const noteID = note.HashID();
     action.showTemporaryMessage('Permanently deleting note...', 500);
-    api.permanentDeleteNote(noteID, () => {
-      // TODO: handle error
+    api.permanentDeleteNote(noteID, (err: Error) => {
+      if (err) {
+        action.showTemporaryMessage(`Failed to permanently delete note.`);
+        return;
+      }
       // TODO: allow undoe
       action.showTemporaryMessage(`Permanently deleted note.`);
       action.reloadNotes(false);
@@ -123,8 +134,11 @@ export default class NoteView extends Component<Props, State> {
     const noteID = note.HashID();
     if (note.IsPublic()) {
       action.showTemporaryMessage('Making note private...', 500);
-      api.makeNotePrivate(noteID, () => {
-        // TODO: handle error
+      api.makeNotePrivate(noteID, (err: Error) => {
+        if (err) {
+          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> private.`);
+          return;
+        }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> private.`);
         action.reloadNotes(false);
       });
