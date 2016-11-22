@@ -267,7 +267,7 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function(i: any) {
+    (function (i: any) {
       var text = cm.getLine(i);
       var currHeadingLevel = text.search(/[^#]/);
 
@@ -344,7 +344,7 @@ function _toggleLine(cm: any, name: any) {
     'ordered-list': '1. '
   };
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function(i: any) {
+    (function (i: any) {
       var text = cm.getLine(i);
       if (stat[name]) {
         text = text.replace(repl[name], '$1');
@@ -691,7 +691,7 @@ export default class Editor extends Component<any, State> {
     });
 
     // Syncs scroll  preview -> editor
-    preview.onscroll = function() {
+    preview.onscroll = function () {
       if (pScroll) {
         pScroll = false;
         return;
@@ -808,12 +808,12 @@ export default class Editor extends Component<any, State> {
     });
     action.showTemporaryMessage('Saving note...', 500);
     const isNewNote = note.id;
-    api.createOrUpdateNote(noteJSON, (res: any) => {
-      // TODO: handle error
-      let hashID = '';
-      if (res) {
-        hashID = res.HashID;
+    api.createOrUpdateNote(noteJSON, (err: Error, note: any) => {
+      if (err) {
+        action.showTemporaryMessage('Failed to create a note');
+        return;
       }
+      const hashID = note.HashID;
       let msg = isNewNote ? `Updated <a href="/n/${hashID}" target="_blank">the note</a>.` : `Created <a href="/n/${hashID}" target="_blank">the note</a>.`;
       action.showTemporaryMessage(msg);
       action.reloadNotes(false);

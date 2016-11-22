@@ -4,9 +4,8 @@ import { Note, toNote, toNotes } from './Note';
 import { UserInfo } from './types';
 
 type ArgsDict = Dict<string>;
-type WsCb = (rsp: any) => void;
 
-type WsCb2 = (err: Error, rsp: any) => void;
+type WsCb = (err: Error, rsp: any) => void;
 
 // TODO: audit for error handling
 // TODO: reconnect ws https://github.com/voidabhi/es6-rws/blob/master/rws.js
@@ -24,7 +23,6 @@ interface WsReqMsg {
 interface WsReq {
   msg: WsReqMsg;
   cb?: WsCb;
-  cb2?: WsCb2;
   convertResult?: (result: any) => any;
 }
 
@@ -49,22 +47,17 @@ function wsProcessRsp(rsp: any) {
   }
   if (rsp.error) {
     console.log('error response', rsp, 'for request', req);
-    if (req.cb2) {
-      const err = new Error(rsp.error);
-      req.cb2(err, null);
-    }
+    const err = new Error(rsp.error);
+    req.cb(err, null);
     return;
   }
   console.log('got response for request', req);
-  if (req.cb2) {
-    let result = rsp.result;
-    if (req.convertResult) {
-      result = req.convertResult(result);
-    }
-    req.cb2(null, result);
-    return;
+  let result = rsp.result;
+  if (req.convertResult) {
+    result = req.convertResult(result);
   }
-  req.cb(rsp.result);
+  req.cb(null, result);
+  return;
 }
 
 function wsNextReqID(): number {
@@ -128,34 +121,16 @@ function wsRealSendReq(wsReq: WsReq) {
   console.log('sent ws req:', msgJSON);
 }
 
-function wsSendReq(cmd: string, args: any, cb: WsCb): any {
+function wsSendReq(cmd: string, args: any, cb: WsCb, convertResult?: (result: any) => any): any {
   const msg: WsReqMsg = {
     id: wsNextReqID(),
     cmd,
     args,
   }
+
   const wsReq: WsReq = {
     msg,
     cb,
-  }
-
-  if (wsSockReady) {
-    wsRealSendReq(wsReq);
-  } else {
-    bufferedRequests.push(wsReq);
-  }
-}
-
-function wsSendReq2(cmd: string, args: any, cb2: WsCb2, convertResult?: (result: any) => any): any {
-  const msg: WsReqMsg = {
-    id: wsNextReqID(),
-    cmd,
-    args,
-  }
-
-  const wsReq: WsReq = {
-    msg,
-    cb2,
     convertResult,
   }
 
@@ -248,18 +223,18 @@ function ping() {
       console.log("ping response:", result);
     }
   }
-  wsSendReq2('ping', {}, pingCb);
+  wsSendReq('ping', {}, pingCb);
 }
 
 function getUserInfoConvertResult(result: any) {
   return result.UserInfo;
 }
 
-export function getUserInfo(userIDHash: string, cb: WsCb2) {
+export function getUserInfo(userIDHash: string, cb: WsCb) {
   const args: any = {
     userIDHash,
   };
-  wsSendReq2('getUserInfo', args, cb, getUserInfoConvertResult);
+  wsSendReq('getUserInfo', args, cb, getUserInfoConvertResult);
 }
 
 function getNotesConvertResult(result: GetNotesResp) {
@@ -270,16 +245,16 @@ function getNotesConvertResult(result: GetNotesResp) {
 }
 
 // calls cb with Note[]
-export function getNotes(userIDHash: string, cb: WsCb2) {
+export function getNotes(userIDHash: string, cb: WsCb) {
   const args: any = {
     userIDHash,
   };
-  wsSendReq2('getNotes', args, cb, getNotesConvertResult);
+  wsSendReq('getNotes', args, cb, getNotesConvertResult);
 }
 
 // calls cb with Note[]
-export function getRecentNotes(cb: WsCb2) {
-  wsSendReq2('getRecentNotes', {}, cb, getNotesConvertResult);
+export function getRecentNotes(cb: WsCb) {
+  wsSendReq('getRecentNotes', {}, cb, getNotesConvertResult);
 }
 
 function getNoteConvertResult(note: any) {
@@ -287,75 +262,75 @@ function getNoteConvertResult(note: any) {
 }
 
 // calls cb with Note
-export function getNote(noteHashID: string, cb: WsCb2) {
+export function getNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('getNote', args, cb, getNoteConvertResult);
+  wsSendReq('getNote', args, cb, getNoteConvertResult);
 }
 
-export function undeleteNote(noteHashID: string, cb: WsCb2) {
+export function undeleteNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('undeleteNote', args, cb, null);
+  wsSendReq('undeleteNote', args, cb, null);
 }
 
-export function deleteNote(noteHashID: string, cb: WsCb2) {
+export function deleteNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('deleteNote', args, cb, null);
+  wsSendReq('deleteNote', args, cb, null);
 }
 
-export function permanentDeleteNote(noteHashID: string, cb: WsCb2) {
+export function permanentDeleteNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('permanentDeleteNote', args, cb, null);
+  wsSendReq('permanentDeleteNote', args, cb, null);
 }
 
-export function makeNotePrivate(noteHashID: string, cb: WsCb2) {
+export function makeNotePrivate(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('makeNotePrivate', args, cb);
+  wsSendReq('makeNotePrivate', args, cb);
 }
 
-export function makeNotePublic(noteHashID: string, cb: WsCb2) {
+export function makeNotePublic(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('makeNotePublic', args, cb, null);
+  wsSendReq('makeNotePublic', args, cb, null);
 }
 
-export function starNote(noteHashID: string, cb: WsCb2) {
+export function starNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('starNote', args, cb, null);
+  wsSendReq('starNote', args, cb, null);
 }
 
-export function unstarNote(noteHashID: string, cb: WsCb2) {
+export function unstarNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq2('unstarNote', args, cb, null);
+  wsSendReq('unstarNote', args, cb, null);
 }
 
-export function createOrUpdateNote(noteJSON: string, cb: any, cbErr?: any) {
+export function createOrUpdateNote(noteJSON: string, cb: WsCb) {
   const args: any = {
     noteJSON,
   };
-  wsSendReq('createOrUpdateNote', args, cb);
+  wsSendReq('createOrUpdateNote', args, cb, null);
 }
 
-export function searchUserNotes(userIDHash: string, searchTerm: string, cb: any, cbErr?: any) {
+export function searchUserNotes(userIDHash: string, searchTerm: string, cb: WsCb) {
   const args: any = {
     userIDHash,
     searchTerm
   };
-  wsSendReq('searchUserNotes', args, cb);
+  wsSendReq('searchUserNotes', args, cb, null);
 }
 
 export function importSimpleNoteStart(email: string, password: string, cb: any, cbErr?: any) {

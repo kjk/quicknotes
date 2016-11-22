@@ -75,7 +75,10 @@ export default class SearchResults extends React.Component<Props, State> {
     if (searchTerm === '') {
       return;
     }
-    api.searchUserNotes(userID, searchTerm, (json: any) => {
+    api.searchUserNotes(userID, searchTerm, (err: Error, json: any) => {
+      if (err) {
+        return;
+      }
       // console.log('finished search for ' + json.Term);
       if (json.Term != this.currSearchTerm) {
         console.log('discarding search results because not for ' + this.currSearchTerm);
