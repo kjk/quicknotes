@@ -83,13 +83,22 @@ function appIndexStart(ctx: PageJS.Context) {
   });
 }
 
-function notFound(ctx: PageJS.Context) {
-  console.log('notFound');
+function appDesktopLandingStart(ctx: PageJS.Context) {
+  console.log('appDesktopLandingStart');
+  if (gLoggedUser) {
+    const uri = `/u/${gLoggedUser.HashID}/${gLoggedUser.Handle}`;
+    page(uri);
+    return;
+  }
+  // TODO: go to login page
+  page('/');
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   api.openWebSocket();
+
   page('/', appIndexStart);
+  page('/dskstart', appDesktopLandingStart)
   page('/u/:userIDHash', appUserStart);
   page('/u/:userIDHash/*', appUserStart);
   page('/n/:noteHashID', appNoteStart);
