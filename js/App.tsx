@@ -10,6 +10,8 @@ import { UserInfo } from './types';
 import AppUser from './AppUser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
+import AppDesktopIndex from './AppDesktopIndex';
+
 import { Note, toNote, toNotes } from './Note';
 import * as api from './api';
 
@@ -46,14 +48,18 @@ function appUserStart(ctx: PageJS.Context) {
       if (err) {
         return;
       }
-      console.log('appUserStart: got', notes.length, 'notes');
-      const el = document.getElementById('root');
-      ReactDOM.render(
-        <AppUser initialNotes={notes} initialTag={initialTag} />,
-        el
-      );
+      renderNotes(notes);
     })
   };
+
+  function renderNotes(notes: Note[]) {
+    console.log('appUserStart: got', notes.length, 'notes');
+    const el = document.getElementById('root');
+    ReactDOM.render(
+      <AppUser initialNotes={notes} initialTag={initialTag} />,
+      el
+    );
+  }
 }
 
 function appNoteStart(ctx: PageJS.Context) {
@@ -90,8 +96,8 @@ function appDesktopLandingStart(ctx: PageJS.Context) {
     page(uri);
     return;
   }
-  // TODO: go to login page
-  page('/');
+  const el = document.getElementById('root');
+  ReactDOM.render(<AppDesktopIndex />, el);
 }
 
 window.addEventListener('DOMContentLoaded', () => {

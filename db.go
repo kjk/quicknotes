@@ -961,14 +961,11 @@ WHERE is_public=true
 ORDER BY updated_at DESC
 LIMIT %d`
 
-	log.Infof("before db.Query()\n")
 	rows, err := db.Query(fmt.Sprintf(q, limit))
-	log.Infof("after db.Query()\n")
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		log.Infof("after rows.Next()\n")
 		var n Note
 		var tagsSerialized string
 		err = rows.Scan(

@@ -108,9 +108,7 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	if limit > 300 {
 		limit = 300
 	}
-	log.Infof("before getRecentPublicNotesCached(%d)\n", limit)
 	recentNotes, err := getRecentPublicNotesCached(limit)
-	log.Infof("getRecentPublicNotesCached() returned %d notes\n", len(recentNotes))
 	if err != nil {
 		return nil, fmt.Errorf("getRecentPublicNotesCached() failed with '%s'", err)
 	}
@@ -124,7 +122,6 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	}{
 		Notes: notes,
 	}
-	log.Infof("has %d notes\n", len(notes))
 	return &res, nil
 }
 

@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import LogInLink from './LogInLink';
+import { LogInLink } from './LogInLink';
 import keymaster from 'keymaster';
 import * as action from './action';
 import { focusSearch, isLoggedIn } from './utils';
@@ -19,15 +19,19 @@ function keyFilter(event: any) {
   return !(tag == 'INPUT' || tag == 'SELECT' || tag == 'TEXTAREA');
 }
 
+interface Props {
+  hideLogin?: boolean,
+}
+
 interface State {
   searchTerm: any,
 }
 
-export default class Top extends Component<any, State> {
+export default class Top extends Component<Props, State> {
 
   searchNotesUser: any;
 
-  constructor(props?: any, context?: any) {
+  constructor(props?: Props, context?: any) {
     super(props, context);
 
     this.handleClearSearchTerm = this.handleClearSearchTerm.bind(this);
@@ -135,7 +139,7 @@ export default class Top extends Component<any, State> {
         <div className='flex-push-right'></div>
         {userUrl ?
           <a href={userUrl} className='header-link'>My Notes</a> : null}
-        <LogInLink />
+        {this.props.hideLogin ? null : <LogInLink />}
       </div>
     );
   }

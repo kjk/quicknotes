@@ -14,16 +14,13 @@ function showSettings(e: React.MouseEvent<HTMLAnchorElement>) {
   action.showSettings();
 }
 
-export default class LogInLink extends Component<any, any> {
+export class LogOut extends Component<any, any> {
 
   constructor(props?: any, context?: any) {
     super(props, context);
-
-    this.renderLoggedIn = this.renderLoggedIn.bind(this);
-    this.renderLoggedOut = this.renderLoggedOut.bind(this);
   }
 
-  renderLoggedIn() {
+  render() {
     const url = encodeURI('/logout?redir=' + window.location);
     const u = gLoggedUser;
     const userUrl = '/u/' + u.HashID + '/' + u.Handle;
@@ -46,8 +43,15 @@ export default class LogInLink extends Component<any, any> {
       </div>
     );
   }
+}
 
-  renderLoggedOut() {
+export class LogIn extends Component<any, any> {
+
+  constructor(props?: any, context?: any) {
+    super(props, context);
+  }
+
+  render() {
     const redir = encodeURIComponent(window.location.pathname);
     const twitterUrl = '/logintwitter?redir=' + redir;
     const googleUrl = '/logingoogle?redir=' + redir;
@@ -71,12 +75,19 @@ export default class LogInLink extends Component<any, any> {
       </div>
     );
   }
+}
+
+export class LogInLink extends Component<any, any> {
+
+  constructor(props?: any, context?: any) {
+    super(props, context);
+  }
 
   render() {
     if (isLoggedIn()) {
-      return this.renderLoggedIn();
+      return <LogOut />;
     } else {
-      return this.renderLoggedOut();
+      return <LogIn />;
     }
   }
 }
