@@ -13,7 +13,7 @@ const AutoUpdate = require('./auto-update');
 const Positioner = require('electron-positioner');
 
 // TODO: login page specific to the app
-const startURL = 'https://quicknotes.io/';
+const startURL = 'https://quicknotes.io/dskstart';
 
 // TODO: properly handle multiple window by keeping windows in an array
 let mainWindow;
