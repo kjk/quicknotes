@@ -928,6 +928,7 @@ func getRecentPublicNotesCached(limit int) ([]Note, error) {
 
 	mu.Lock()
 	defer mu.Unlock()
+
 	needsRefreshFromDB := limit > len(recentPublicNotesCached) || timeExpired(recentPublicNotesLastUpdate, time.Minute*5)
 	if !needsRefreshFromDB {
 		res = make([]Note, limit, limit)
@@ -959,11 +960,15 @@ FROM notes
 WHERE is_public=true
 ORDER BY updated_at DESC
 LIMIT %d`
+
+	log.Infof("before db.Query()\n")
 	rows, err := db.Query(fmt.Sprintf(q, limit))
+	log.Infof("after db.Query()\n")
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
+		log.Infof("after rows.Next()\n")
 		var n Note
 		var tagsSerialized string
 		err = rows.Scan(
@@ -1194,11 +1199,11 @@ func getQuickNotesDb() (*sql.DB, error) {
 		return nil, err
 	}
 	err = db.Ping()
-	if err == nil {
-		return db, nil
+	if err != nil {
+		db.Close()
+		return nil, err
 	}
-	db.Close()
-	return db, err
+	return db, nil
 }
 
 // note: no locking. the presumption is that this is called at startup and

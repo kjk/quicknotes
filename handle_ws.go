@@ -108,7 +108,9 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	if limit > 300 {
 		limit = 300
 	}
+	log.Infof("before getRecentPublicNotesCached(%d)\n", limit)
 	recentNotes, err := getRecentPublicNotesCached(limit)
+	log.Infof("getRecentPublicNotesCached() returned %d notes\n", len(recentNotes))
 	if err != nil {
 		return nil, fmt.Errorf("getRecentPublicNotesCached() failed with '%s'", err)
 	}
@@ -122,6 +124,7 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	}{
 		Notes: notes,
 	}
+	log.Infof("has %d notes\n", len(notes))
 	return &res, nil
 }
 
@@ -344,7 +347,6 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 		switch req.Cmd {
 		case "ping":
-			log.Infof("got ping\n")
 			res = "pong"
 
 		case "getUserInfo":
@@ -403,8 +405,8 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("handling request '%s' failed with '%s'\n", string(reqBytes), err)
 		}
 
+		log.Infof("writing a response\n")
 		conn.SetWriteDeadline(time.Now().Add(writeWait))
-
 		err = conn.WriteJSON(rsp)
 		if err != nil {
 			log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)

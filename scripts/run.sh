@@ -20,6 +20,6 @@ go build -race -o quicknotes
 #go build -o quicknotes
 #go build -race -o quicknotes
 
-echo "starting quicknotes"
+echo "starting quicknotes, using mysql from docker"
 ./quicknotes -local -verbose -db-host ${ip} -db-port ${port} $@ || true
-rm quicknotes
+rm ./quicknotes

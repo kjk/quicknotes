@@ -308,6 +308,14 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	http.NotFound(w, r)
 }
 
+func isAllowedURL(uri string) bool {
+	switch uri {
+	case "/", "/dskstart":
+		return true
+	}
+	return false
+}
+
 /*
 Big picture:
 / - main page, shows recent public notes, on-boarding for new users
@@ -330,7 +338,7 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := struct {
-		// common between /, /u/ and /n/
+		// common for all pages
 		LoggedUser   *UserSummary
 		Title        string
 		BundleJSPath string
@@ -402,7 +410,7 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		v.NoteUser = noteUser
 		v.Title = note.Title
 	} else {
-		if uri != "/" {
+		if !isAllowedURL(uri) {
 			http.NotFound(w, r)
 			return
 		}
@@ -506,8 +514,6 @@ func registerHTTPHandlers() {
 	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/s/", handleStatic)
-	//http.HandleFunc("/u/", withCtx(handleIndex, 0))
-	//http.HandleFunc("/n/", withCtx(handleIndex, OnlyGet))
 	http.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
 	http.HandleFunc("/logintwitter", handleLoginTwitter)
 	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
