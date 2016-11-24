@@ -86,7 +86,6 @@ import { Note } from './Note';
 
 // keys for registeredActions
 const tagSelectedCmd = 'tagSelectedCmd';
-const reloadNotesCmd = 'reloadNotesCmd';
 const showHideImportSimpleNoteCmd = 'showHideImportSimpleNoteCmd';
 const showHideSettingsCmd = 'showHideSettingsCmd';
 const editNewNoteCmd = 'editNewNoteCmd';
@@ -95,6 +94,7 @@ const startSearchDelayedCmd = 'startSearchDelayedCmd';
 const clearSearchTermCmd = 'clearSearchTermCmd';
 const showTemporaryMessageCmd = 'showTemporaryMessageCmd';
 const showConnectionStatusCmd = 'showConnectionStatusCmd';
+const updateNotesCmd = 'updateNotesCmd';
 
 /* --------------------- */
 export function tagSelected(tag: string, op: string) {
@@ -125,15 +125,6 @@ export function hideSettings() {
 
 export function onShowHideSettings(cb: any, owner: any) {
   return on(showHideSettingsCmd, cb, owner);
-}
-
-/* --------------------- */
-export function reloadNotes(resetScroll: boolean) {
-  broadcast(reloadNotesCmd, resetScroll);
-}
-
-export function onReloadNotes(cb: any, owner: any) {
-  return on(reloadNotesCmd, cb, owner);
 }
 
 /* --------------------- */
@@ -211,4 +202,17 @@ export function showConnectionStatus(msgHTML?: string) {
 
 export function onShowConnectionStatus(cb: ShowConnectionStatusCb, owner: any) {
   return on(showConnectionStatusCmd, cb, owner);
+}
+
+/* --------------------- */
+interface UpdateNotesCb {
+  (notes: Note[]): void
+}
+
+export function updateNotes(notes: Note[]) {
+  broadcast(updateNotesCmd, notes);
+}
+
+export function onUpdateNotes(cb: UpdateNotesCb, owner: any) {
+  return on(updateNotesCmd, cb, owner);
 }

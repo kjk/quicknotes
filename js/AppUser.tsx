@@ -83,7 +83,7 @@ export default class AppUser extends Component<Props, State> {
 
     this.handleSearchResultSelected = this.handleSearchResultSelected.bind(this);
     this.handleTagSelected = this.handleTagSelected.bind(this);
-    this.handleReloadNotes = this.handleReloadNotes.bind(this);
+    this.handleUpdateNotes = this.handleUpdateNotes.bind(this);
 
     let allNotes: Note[] = props.initialNotes;
     let selectedNotes: Note[] = [];
@@ -118,7 +118,7 @@ export default class AppUser extends Component<Props, State> {
 
   componentDidMount() {
     action.onTagSelected(this.handleTagSelected, this);
-    action.onReloadNotes(this.handleReloadNotes, this);
+    action.onUpdateNotes(this.handleUpdateNotes, this);
   }
 
   componentWillUnmount() {
@@ -157,7 +157,7 @@ export default class AppUser extends Component<Props, State> {
     });
   }
 
-  setNotes(allNotes: Note[], resetScroll: boolean) {
+  setNotes(allNotes: Note[]) {
     sortNotesByUpdatedAt(allNotes);
     const tags = tagsFromNotes(allNotes);
     let selectedTags = this.state.selectedTags.filter((tag: any) => tag in tags);
@@ -171,19 +171,12 @@ export default class AppUser extends Component<Props, State> {
       selectedNotes: selectedNotes,
       tags: tags,
       selectedTags: selectedTags,
-      resetScroll: resetScroll
+      resetScroll: false,
     });
   }
 
-  handleReloadNotes(resetScroll: boolean) {
-    const userID = this.state.notesUserIDHash;
-    // console.log('reloadNotes: userID=', userID, ' resetScroll=', resetScroll);
-    api.getNotes(userID, (err: Error, notes: Note[]) => {
-      if (err) {
-        return;
-      }
-      this.setNotes(notes, resetScroll);
-    });
+  handleUpdateNotes(notes: Note[]) {
+    this.setNotes(notes);
   }
 
   handleSearchResultSelected(noteHashID: string) {

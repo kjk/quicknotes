@@ -112,7 +112,8 @@ export default class ImportSimpleNote extends React.Component<any, State> {
         isImporting: false,
         errorMessage: res.Error
       });
-      action.reloadNotes(false);
+      // TODO: move into go
+      //action.reloadNotes(false);
       return;
     }
     const importedCount = res.ImportedCount;
@@ -130,7 +131,8 @@ export default class ImportSimpleNote extends React.Component<any, State> {
       statusMessage: msg
     });
     if (res.IsFinished) {
-      action.reloadNotes(false);
+      // TODO: move into go
+      //action.reloadNotes(false);
       return;
     }
     this.scheduleCheckStatus(this.state.importId);

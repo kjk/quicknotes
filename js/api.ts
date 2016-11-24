@@ -21,6 +21,13 @@ interface WsReqMsg {
   args: any;
 }
 
+interface wsResponse {
+  id: number;
+  cmd: string;
+  result: any;
+  error?: string;
+}
+
 interface WsReq {
   msg: WsReqMsg;
   cb: WsCb;
@@ -28,6 +35,7 @@ interface WsReq {
 }
 
 let requests: WsReq[] = [];
+let broadcastMessageWatchers: WsReq[] = [];
 
 function wsPopReqForID(id: number): WsReq {
   for (let i = 0; i < requests.length; i++) {
@@ -40,7 +48,29 @@ function wsPopReqForID(id: number): WsReq {
   return null;
 }
 
-function wsProcessRsp(rsp: any) {
+function wsGetBroadcastReqs(cmd: string): WsReq[] {
+  const res: WsReq[] = [];
+  for (let req of broadcastMessageWatchers) {
+    if (req.msg.cmd === cmd) {
+      res.push(req);
+    }
+  }
+  return res;
+}
+
+function wsProcessBroadcastRsp(rsp: wsResponse) {
+  for (let req of broadcastMessageWatchers) {
+    if (req.msg.cmd === rsp.cmd) {
+      let result = rsp.result;
+      if (req.convertResult) {
+        result = req.convertResult(result);
+      }
+      req.cb(null, result);
+    }
+  }
+}
+
+function wsProcessRsp(rsp: wsResponse) {
   const req = wsPopReqForID(rsp.id);
   if (!req) {
     console.log('no request for response', rsp);
@@ -138,13 +168,18 @@ export function openWebSocket() {
       wsRealSendReq(wsReq);
     }
     bufferedRequests = []
+
     //action.showConnectionStatus('Connection status: connected.');
   };
 
   wsSock.onmessage = (ev) => {
     //console.log('ev:', ev, 'ev.data', ev.data);
-    const rsp = JSON.parse(ev.data);
-    wsProcessRsp(rsp);
+    const rsp: wsResponse = JSON.parse(ev.data);
+    if (rsp.id === -1) {
+      wsProcessBroadcastRsp(rsp);
+    } else {
+      wsProcessRsp(rsp);
+    }
   };
 
   wsSock.onclose = (ev) => {
@@ -199,6 +234,22 @@ function wsSendReq(cmd: string, args: any, cb: WsCb, convertResult?: (result: an
   } else {
     bufferedRequests.push(wsReq);
   }
+}
+
+export function wsRegisterForBroadcastedMessage(cmd: string, cb: WsCb, convertResult?: (result: any) => any): any {
+
+  const msg: WsReqMsg = {
+    id: -1,
+    cmd,
+    args: {},
+  }
+
+  const req: WsReq = {
+    msg,
+    cb,
+    convertResult,
+  }
+  broadcastMessageWatchers.push(req);
 }
 
 function buildArgs(args?: ArgsDict): string {
@@ -297,7 +348,7 @@ export function getUserInfo(userIDHash: string, cb: WsCb) {
   wsSendReq('getUserInfo', args, cb, getUserInfoConvertResult);
 }
 
-function getNotesConvertResult(result: GetNotesResp) {
+export function getNotesConvertResult(result: GetNotesResp) {
   if (!result || !result.Notes) {
     return [];
   }
