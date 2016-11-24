@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -12,14 +13,8 @@ import (
 )
 
 const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 2 * 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
+	writeTimeout = 30 * time.Second
+	readTimeout  = time.Minute
 )
 
 // NewNoteFromBrowser represents format of the note sent by the browser
@@ -43,6 +38,48 @@ type wsResponse struct {
 	Cmd    string      `json:"cmd"`
 	Result interface{} `json:"result"`
 	Err    string      `json:"error,omitempty"`
+}
+
+var (
+	muWsConnections sync.Mutex
+	wsConnections   map[int][]chan interface{}
+)
+
+func wsRememberConnection(userID int, c chan interface{}) {
+	muWsConnections.Lock()
+	defer muWsConnections.Unlock()
+	if wsConnections == nil {
+		wsConnections = make(map[int][]chan interface{})
+	}
+	a := wsConnections[userID]
+	a = append(a, c)
+	wsConnections[userID] = a
+}
+
+func wsRemoveConnection(userID int, cToRemove chan interface{}) {
+	muWsConnections.Lock()
+	defer muWsConnections.Unlock()
+	a := wsConnections[userID]
+	for i, c := range a {
+		if c == cToRemove {
+			a[i], a = a[len(a)-1], a[:len(a)-1]
+			break
+		}
+	}
+	if len(a) == 0 {
+		delete(wsConnections, userID)
+	} else {
+		wsConnections[userID] = a
+	}
+}
+
+func wsBroadcastToUser(userID int, v interface{}) {
+	muWsConnections.Lock()
+	defer muWsConnections.Unlock()
+	arr := wsConnections[userID]
+	for _, c := range arr {
+		c <- v
+	}
 }
 
 func jsonMapGetString(m map[string]interface{}, key string) (string, error) {
@@ -311,17 +348,41 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn.SetPongHandler(func(string) error {
-		log.Infof("Got ws ping\n")
-		conn.SetReadDeadline(time.Now().Add(pongWait))
-		return nil
-	})
+	c := make(chan interface{})
+	if user != nil {
+		wsRememberConnection(user.id, c)
+	}
+
+	var writeError error
+	var muWriteError sync.Mutex
+
+	getWriteError := func() error {
+		muWriteError.Lock()
+		defer muWriteError.Unlock()
+		return writeError
+	}
+
+	go func() {
+		for rsp := range c {
+			log.Infof("writing a response\n")
+			conn.SetWriteDeadline(time.Now().Add(writeTimeout))
+			err := conn.WriteJSON(rsp)
+			if err != nil {
+				log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)
+				muWriteError.Lock()
+				writeError = err
+				muWriteError.Unlock()
+			}
+		}
+	}()
 
 	for {
 		ctx := ReqContext{
 			User: user,
 		}
-		conn.SetReadDeadline(time.Now().Add(pongWait))
+		// we rely on the client send us periodic pings so we don't
+		// want to wait forever for the next message
+		conn.SetReadDeadline(time.Now().Add(readTimeout))
 		typ, reqBytes, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
@@ -402,11 +463,9 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("handling request '%s' failed with '%s'\n", string(reqBytes), err)
 		}
 
-		log.Infof("writing a response\n")
-		conn.SetWriteDeadline(time.Now().Add(writeWait))
-		err = conn.WriteJSON(rsp)
+		c <- rsp
+		err = getWriteError()
 		if err != nil {
-			log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)
 			break
 		}
 	}

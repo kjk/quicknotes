@@ -52,7 +52,9 @@ function wsProcessRsp(rsp: any) {
     req.cb(err, null);
     return;
   }
-  console.log('got response for request', req);
+  if (req.msg.cmd !== 'ping') {
+    console.log('got response for request', req);
+  }
   let result = rsp.result;
   if (req.convertResult) {
     result = req.convertResult(result);
@@ -174,7 +176,9 @@ function wsRealSendReq(wsReq: WsReq) {
   requests.push(wsReq);
   const msgJSON = JSON.stringify(wsReq.msg);
   wsSock.send(msgJSON);
-  console.log('sent ws req:', msgJSON);
+  if (wsReq.msg.cmd !== 'ping') {
+    console.log('sent ws req:', msgJSON);
+  }
 }
 
 function wsSendReq(cmd: string, args: any, cb: WsCb, convertResult?: (result: any) => any): any {
