@@ -5,6 +5,7 @@ import keymaster from 'keymaster';
 import { toHtml } from './md';
 import { linkify } from './linkify';
 
+import ConnectionStatus from './ConnectionStatus';
 import Editor from './Editor';
 import ImportSimpleNote from './ImportSimpleNote';
 import SearchResults from './SearchResults';
@@ -356,6 +357,7 @@ export default class AppNote extends Component<Props, State> {
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />
+        <ConnectionStatus />
       </div>
     );
   }
@@ -409,6 +411,7 @@ export default class AppNote extends Component<Props, State> {
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />
+        <ConnectionStatus />
       </div>
     );
   }

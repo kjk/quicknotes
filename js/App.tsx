@@ -101,8 +101,6 @@ function appDesktopLandingStart(ctx: PageJS.Context) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  api.openWebSocket();
-
   page('/', appIndexStart);
   page('/dskstart', appDesktopLandingStart)
   page('/u/:userIDHash', appUserStart);
@@ -110,4 +108,6 @@ window.addEventListener('DOMContentLoaded', () => {
   page('/n/:noteHashID', appNoteStart);
   page('/n/:noteHashID/*', appNoteStart);
   page();
+
+  api.openWebSocket();
 });

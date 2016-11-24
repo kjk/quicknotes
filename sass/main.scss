@@ -1062,8 +1062,13 @@ button.close {
 }
 
 .temporary-message {
-  position: absolute;
   display: inline;
+
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 30;
 
   background-color: #FFE500;
   color: #361E00;
@@ -1072,14 +1077,22 @@ button.close {
   border: 2px solid orange;
   border-top: none;
   border: none;
-  top: 0px;
   border-radius: 8px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
 
-  left: 50%;
-  transform: translate(-50%);
-  z-index: 30;
+.connection-status {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  max-width: 50%;
+  background-color: white;
+  background-color: #FFE500;
+  border: 2px solid darkgray;
+  border: 2px solid orange;
+  font-style: bold;
+  padding: 4px 8px;
 }
 
 @import 'editor';

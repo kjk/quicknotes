@@ -2,6 +2,7 @@ import { ajax, Params } from './ajax';
 import { Dict } from './utils';
 import { Note, toNote, toNotes } from './Note';
 import { UserInfo } from './types';
+import * as action from './action';
 
 type ArgsDict = Dict<string>;
 
@@ -78,18 +79,64 @@ let bufferedRequests: WsReq[] = [];
 
 let wsSockTimer: number = 0;
 
+// how long to wait between reconnects
+let reconnectIntervalMs = 1000;
+const reconnectDecay = 1.5;
+const maxReconnectIntervalMs = 30000;
+// how long to wait before deciding a connection attempt timed out
+const connectionTimeoutMs = 5000;
+let reconnectAttempts = 0;
+
+window.tryWsReconnect = (e: MouseEvent) => {
+  console.log('tryWsReconnect');
+  openWebSocket();
+  return false;
+}
+
+function scheduleReconnect() {
+  const timeoutMs = reconnectIntervalMs * Math.pow(reconnectDecay, reconnectAttempts);
+
+  if (timeoutMs > maxReconnectIntervalMs) {
+    action.showConnectionStatus('Disconnected from server. <a href="#" onclick="tryWsReconnect()">Reconnect</a>.');
+    reconnectAttempts = 0;
+    return;
+  }
+
+  reconnectAttempts++;
+  console.log(`Scheduling ${reconnectAttempts} reconnect in ${timeoutMs} ms`);
+  const reconnectTimeSec = (timeoutMs / 1000).toFixed(0);
+  action.showConnectionStatus(`Disconnected from server. Reconnect attempt in ${reconnectTimeSec} sec.`);
+  setTimeout(() => {
+    openWebSocket();
+  }, timeoutMs);
+}
+
+let wsConnTimeout: number = 0;
+
 export function openWebSocket() {
   const host = window.location.host;
+  action.showConnectionStatus('Connecting to the server...');
+
   wsSock = new WebSocket('ws://' + host + '/api/ws');
   wsSock.binaryType = "arraybuffer"; // also "blob", instanceof ArrayBuffer
 
+  wsConnTimeout = setTimeout(() => {
+    // onclose() can be called before timeout happens
+    if (wsSock) {
+      wsSock.close();
+    }
+  }, connectionTimeoutMs);
+
   wsSock.onopen = (ev) => {
     console.log('ws opened');
+    action.showConnectionStatus(null);
+    clearTimeout(wsConnTimeout);
     wsSockReady = true;
     for (const wsReq of bufferedRequests) {
       wsRealSendReq(wsReq);
     }
     bufferedRequests = []
+    //action.showConnectionStatus('Connection status: connected.');
   };
 
   wsSock.onmessage = (ev) => {
@@ -106,18 +153,20 @@ export function openWebSocket() {
       clearInterval(wsSockTimer);
       wsSockTimer = 0;
     }
+    wsFailAllRequests();
+    scheduleReconnect();
   }
 
+  // onerror will be followed by onclose
   wsSock.onerror = (ev) => {
     console.log('wsSock.onerror: ev', ev);
-    wsFailAllRequests();
-    wsSock = null;
-    wsSockReady = false;
   }
 
   // TOOD: it's the server that should send pings, but that's harder
   wsSockTimer = setInterval(() => {
-    ping();
+    if (wsSock) {
+      ping();
+    }
   }, 50 * 1000);
 }
 
@@ -171,7 +220,7 @@ function handleResponse(code: number, respTxt: string, cb: any, cbErr: any) {
     js = JSON.parse(respTxt);
   } else {
     respTxt = respTxt || '';
-    console.log(`handleResponse: code=${code}, respTxt='${respTxt}'`);
+    console.log(`handleResponse: code = ${code}, respTxt = '${respTxt}'`);
     js['Error'] = `request returned code ${code}, text: '${respTxt}'`;
   }
   const errMsg = js['Error'];
@@ -218,7 +267,7 @@ interface GetNotesResp {
   Notes?: any[];
 }
 
-export interface GetNotesCallback {
+interface GetNotesCallback {
   (note: Note[]): void
 }
 
@@ -227,7 +276,7 @@ function ping() {
     if (err) {
       console.log("ping response error:", err);
     } else {
-      console.log("ping response:", result);
+      //console.log("ping response:", result);
     }
   }
   wsSendReq('ping', {}, pingCb);

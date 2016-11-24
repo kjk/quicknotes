@@ -15,8 +15,9 @@ function keyFilter(event: any) {
     return true;
   }
   // standard key filter, disable if inside those elements
-  const tag = (event.target || event.srcElement).tagName;
-  return !(tag == 'INPUT' || tag == 'SELECT' || tag == 'TEXTAREA');
+  let tag: string = (event.target || event.srcElement).tagName;
+  tag = tag.toLowerCase();
+  return !(tag === 'input' || tag === 'select' || tag === 'textarea');
 }
 
 interface Props {
