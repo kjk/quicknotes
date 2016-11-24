@@ -816,7 +816,6 @@ export default class Editor extends Component<any, State> {
       const hashID = note.HashID;
       let msg = isNewNote ? `Updated <a href="/n/${hashID}" target="_blank">the note</a>.` : `Created <a href="/n/${hashID}" target="_blank">the note</a>.`;
       action.showTemporaryMessage(msg);
-      action.reloadNotes(false);
     });
   }
 

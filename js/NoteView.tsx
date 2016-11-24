@@ -96,7 +96,6 @@ export default class NoteView extends Component<Props, State> {
           return;
         }
         action.showTemporaryMessage(`Undeleted <a href="/n/${noteID}" target="_blank">note</a>.`);
-        action.reloadNotes(false);
       });
     } else {
       action.showTemporaryMessage('Moving note to trash...', 500);
@@ -106,7 +105,6 @@ export default class NoteView extends Component<Props, State> {
           return;
         }
         action.showTemporaryMessage(`Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
-        action.reloadNotes(false);
       });
     }
   }
@@ -123,7 +121,6 @@ export default class NoteView extends Component<Props, State> {
       }
       // TODO: allow undoe
       action.showTemporaryMessage(`Permanently deleted note.`);
-      action.reloadNotes(false);
     });
   }
 
@@ -140,7 +137,6 @@ export default class NoteView extends Component<Props, State> {
           return;
         }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> private.`);
-        action.reloadNotes(false);
       });
     } else {
       action.showTemporaryMessage('Making note public...', 500);
@@ -150,7 +146,6 @@ export default class NoteView extends Component<Props, State> {
           return;
         }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> public.`);
-        action.reloadNotes(false);
       });
     }
   }
@@ -168,7 +163,6 @@ export default class NoteView extends Component<Props, State> {
           return;
         }
         action.showTemporaryMessage(`Unstarred <a href="/n/${noteID}" target="_blank">note</a>.`);
-        action.reloadNotes(false);
       });
     } else {
       action.showTemporaryMessage('Starring a note...', 500);
@@ -178,7 +172,6 @@ export default class NoteView extends Component<Props, State> {
           return;
         }
         action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
-        action.reloadNotes(false);
       });
     }
   }

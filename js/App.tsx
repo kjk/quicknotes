@@ -1,19 +1,18 @@
 import 'babel-polyfill';
 
 import React from 'react';
-import page from 'page';
-
 import * as ReactDOM from 'react-dom';
 import Router from './Router';
+import page from 'page';
 
+import * as action from './action';
+import * as api from './api';
 import { UserInfo } from './types';
 import AppUser from './AppUser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
 import AppDesktopIndex from './AppDesktopIndex';
-
 import { Note, toNote, toNotes } from './Note';
-import * as api from './api';
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s: string): string[] {
@@ -100,6 +99,14 @@ function appDesktopLandingStart(ctx: PageJS.Context) {
   ReactDOM.render(<AppDesktopIndex />, el);
 }
 
+function gotBroadcastedNotes(err: Error, notes: Note[]) {
+  if (err) {
+    return;
+  }
+  console.log('got notes');
+  action.updateNotes(notes);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   page('/', appIndexStart);
   page('/dskstart', appDesktopLandingStart)
@@ -109,5 +116,6 @@ window.addEventListener('DOMContentLoaded', () => {
   page('/n/:noteHashID/*', appNoteStart);
   page();
 
+  api.wsRegisterForBroadcastedMessage('broadcastUserNotes', gotBroadcastedNotes, api.getNotesConvertResult);
   api.openWebSocket();
 });

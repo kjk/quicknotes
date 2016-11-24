@@ -42,21 +42,21 @@ type wsResponse struct {
 
 var (
 	muWsConnections sync.Mutex
-	wsConnections   map[int][]chan interface{}
+	wsConnections   map[int][]chan *wsResponse
 )
 
-func wsRememberConnection(userID int, c chan interface{}) {
+func wsRememberConnection(userID int, c chan *wsResponse) {
 	muWsConnections.Lock()
 	defer muWsConnections.Unlock()
 	if wsConnections == nil {
-		wsConnections = make(map[int][]chan interface{})
+		wsConnections = make(map[int][]chan *wsResponse)
 	}
 	a := wsConnections[userID]
 	a = append(a, c)
 	wsConnections[userID] = a
 }
 
-func wsRemoveConnection(userID int, cToRemove chan interface{}) {
+func wsRemoveConnection(userID int, cToRemove chan *wsResponse) {
 	muWsConnections.Lock()
 	defer muWsConnections.Unlock()
 	a := wsConnections[userID]
@@ -73,7 +73,7 @@ func wsRemoveConnection(userID int, cToRemove chan interface{}) {
 	}
 }
 
-func wsBroadcastToUser(userID int, v interface{}) {
+func wsBroadcastToUser(userID int, v *wsResponse) {
 	muWsConnections.Lock()
 	defer muWsConnections.Unlock()
 	arr := wsConnections[userID]
@@ -162,20 +162,12 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	return &res, nil
 }
 
-func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
-	userIDHash, err := jsonMapGetString(args, "userIDHash")
-	if err != nil {
-		return nil, err
-	}
+func getNotesForUser(ctx *ReqContext, userID int) (interface{}, error) {
 	v := struct {
 		LoggedUser *UserSummary
 		Notes      [][]interface{}
 	}{
 		LoggedUser: ctx.User,
-	}
-	userID, err := dehashInt(userIDHash)
-	if err != nil {
-		return nil, fmt.Errorf("invalid userIDHash='%s'\n", userIDHash)
 	}
 	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
@@ -199,7 +191,20 @@ func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, erro
 	}
 	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Login, loggedUserID, loggedUserHandle, showPrivate)
 	v.Notes = notes
-	return v, err
+	return v, nil
+}
+
+func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, error) {
+	userIDHash, err := jsonMapGetString(args, "userIDHash")
+	if err != nil {
+		return nil, err
+	}
+	userID, err := dehashInt(userIDHash)
+	if err != nil {
+		return nil, fmt.Errorf("invalid userIDHash='%s'\n", userIDHash)
+	}
+
+	return getNotesForUser(ctx, userID)
 }
 
 func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
@@ -348,7 +353,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := make(chan interface{})
+	c := make(chan *wsResponse)
 	if user != nil {
 		wsRememberConnection(user.id, c)
 	}
@@ -364,11 +369,13 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		for rsp := range c {
-			log.Infof("writing a response\n")
+			if rsp.Cmd != "ping" {
+				log.Infof("writing a response for %s %d\n", rsp.Cmd, rsp.ID)
+			}
 			conn.SetWriteDeadline(time.Now().Add(writeTimeout))
 			err := conn.WriteJSON(rsp)
 			if err != nil {
-				log.Errorf("conn.WriteJSON('%v') failed with '%s'\n", rsp, err)
+				log.Errorf("conn.WriteJSON('%s') failed with '%s'\n", rsp.Cmd, err)
 				muWriteError.Lock()
 				writeError = err
 				muWriteError.Unlock()
@@ -392,7 +399,6 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			}
 			break
 		}
-		log.Infof("msg: '%s'\n", string(reqBytes))
 		var req wsGenericReq
 		err = json.Unmarshal(reqBytes, &req)
 		if err != nil {
@@ -400,8 +406,14 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
+		if req.Cmd != "ping" {
+			log.Infof("msg: '%s'\n", string(reqBytes))
+		}
+
 		var res interface{}
 		args := req.Args
+
+		broadcastGetNotes := false
 
 		switch req.Cmd {
 		case "ping":
@@ -421,27 +433,35 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 		case "permanentDeleteNote":
 			res, err = wsPermanentDeleteNote(&ctx, args)
+			broadcastGetNotes = true
 
 		case "undeleteNote":
 			res, err = execNoteOp(&ctx, args, dbUndeleteNote)
+			broadcastGetNotes = true
 
 		case "deleteNote":
 			res, err = execNoteOp(&ctx, args, dbDeleteNote)
+			broadcastGetNotes = true
 
 		case "makeNotePrivate":
 			res, err = execNoteOp(&ctx, args, dbMakeNotePrivate)
+			broadcastGetNotes = true
 
 		case "makeNotePublic":
 			res, err = execNoteOp(&ctx, args, dbMakeNotePublic)
+			broadcastGetNotes = true
 
 		case "starNote":
 			res, err = execNoteOp(&ctx, args, dbStarNote)
+			broadcastGetNotes = true
 
 		case "unstarNote":
 			res, err = execNoteOp(&ctx, args, dbUnstarNote)
+			broadcastGetNotes = true
 
 		case "createOrUpdateNote":
 			res, err = wsCreateOrUpdateNote(&ctx, args)
+			broadcastGetNotes = true
 
 		case "searchUserNotes":
 			res, err = wsSearchUserNotes(&ctx, args)
@@ -463,10 +483,28 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("handling request '%s' failed with '%s'\n", string(reqBytes), err)
 		}
 
-		c <- rsp
+		c <- &rsp
 		err = getWriteError()
 		if err != nil {
 			break
+		}
+
+		if broadcastGetNotes {
+			log.Infof("broadcastGetNotes because handled '%s'\n", req.Cmd)
+			res, err = getNotesForUser(&ctx, ctx.User.id)
+			rsp := wsResponse{
+				ID:     -1,
+				Cmd:    "broadcastUserNotes",
+				Result: res,
+			}
+
+			if err != nil {
+				rsp.Err = err.Error()
+				rsp.Result = nil
+				log.Errorf("handling request '%s' failed with '%s'\n", string(reqBytes), err)
+			}
+
+			wsBroadcastToUser(ctx.User.id, &rsp)
 		}
 	}
 

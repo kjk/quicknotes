@@ -49,7 +49,7 @@ export default class AppNote extends Component<Props, State> {
     this.handleDoubleClick = this.handleDoubleClick.bind(this);
     this.handleEditNote = this.handleEditNote.bind(this);
     this.handleMakePublicPrivate = this.handleMakePublicPrivate.bind(this);
-    this.handleReloadNotes = this.handleReloadNotes.bind(this);
+    this.handleUpdateNotes = this.handleUpdateNotes.bind(this);
     this.handlePermanentDelete = this.handlePermanentDelete.bind(this);
     this.handleStarUnstarNote = this.handleStarUnstarNote.bind(this);
     this.handleVersions = this.handleVersions.bind(this);
@@ -68,7 +68,7 @@ export default class AppNote extends Component<Props, State> {
       //keymaster('ctrl+e', this.editCurrentNote);
       keymaster('ctrl+n', () => action.editNewNote());
     }
-    action.onReloadNotes(this.handleReloadNotes, this);
+    action.onUpdateNotes(this.handleUpdateNotes, this);
   }
 
   componentWillUnmount() {
@@ -99,18 +99,18 @@ export default class AppNote extends Component<Props, State> {
   }
 
   setNote(note: Note) {
-    // TODO: handle the error
     this.setState({
       note: note
     });
   }
 
-  // sent when editor saved a note, so reload it
-  handleReloadNotes(resetScroll: boolean) {
-    const note = this.state.note;
-    const noteID = note.HashID();
+  // sent when notes changed, which could be the note we show
+  handleUpdateNotes(notes: Note[]) {
+    const myNote = this.state.note;
+    const noteID = myNote.HashID();
     api.getNote(noteID, (err: Error, note: Note) => {
       if (err) {
+        console.log('AppNote.handleUpdateNotes:', err)
         return;
       }
       this.setNote(note);
