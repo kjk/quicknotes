@@ -15,8 +15,14 @@ interface RegisteredActions {
   [idx: string]: CallbackInfo[]
 }
 
+interface Store {
+  [idx: string]: any
+}
+
+const store: Store = {};
+
 // value at a given index is [[cbFunc, cbId], ...]
-let registeredActions: RegisteredActions = {};
+const registeredActions: RegisteredActions = {};
 
 // current global callback id to hand out in on()
 // we don't bother recycling them after off()
@@ -88,6 +94,7 @@ const editNoteCmd = 'editNoteCmd';
 const startSearchDelayedCmd = 'startSearchDelayedCmd';
 const clearSearchTermCmd = 'clearSearchTermCmd';
 const showTemporaryMessageCmd = 'showTemporaryMessageCmd';
+const showConnectionStatusCmd = 'showConnectionStatusCmd';
 
 /* --------------------- */
 export function tagSelected(tag: string, op: string) {
@@ -185,4 +192,23 @@ export function showTemporaryMessage(msg: string, delayMs?: number) {
 
 export function onShowTemporaryMessage(cb: ShowTemporaryMessageCb, owner: any) {
   return on(showTemporaryMessageCmd, cb, owner);
+}
+
+/* --------------------- */
+
+interface ShowConnectionStatusCb {
+  (msg?: string): void
+}
+
+export function getConnectionStatus(): string {
+  return store[showConnectionStatusCmd];
+}
+
+export function showConnectionStatus(msgHTML?: string) {
+  store[showConnectionStatusCmd] = msgHTML;
+  broadcast(showConnectionStatusCmd, msgHTML);
+}
+
+export function onShowConnectionStatus(cb: ShowConnectionStatusCb, owner: any) {
+  return on(showConnectionStatusCmd, cb, owner);
 }

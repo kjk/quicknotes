@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import * as ReactDOM from 'react-dom';
 
+import ConnectionStatus from './ConnectionStatus';
 import Editor from './Editor';
 import ImportSimpleNote from './ImportSimpleNote';
 import LeftSidebar from './LeftSidebar';
@@ -209,6 +210,7 @@ export default class AppUser extends Component<Props, State> {
         <ImportSimpleNote />
         <Editor />
         <TemporaryMessage />
+        <ConnectionStatus />
       </div>
     );
   }
