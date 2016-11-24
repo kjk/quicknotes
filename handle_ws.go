@@ -346,7 +346,11 @@ var upgrader = websocket.Upgrader{
 
 func handleWs(w http.ResponseWriter, r *http.Request) {
 	user := getUserSummaryFromCookie(w, r)
-	log.Infof("user: %v\n", user)
+	userID := -1
+	if user != nil {
+		userID = user.id
+	}
+	log.Infof("user: %d\n", userID)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Error(err)
@@ -370,12 +374,12 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		for rsp := range c {
 			if rsp.Cmd != "ping" {
-				log.Infof("writing a response for %s %d\n", rsp.Cmd, rsp.ID)
+				log.Infof("writing a response for cmd: %s id: %d, user: %d\n", rsp.Cmd, rsp.ID, userID)
 			}
 			conn.SetWriteDeadline(time.Now().Add(writeTimeout))
 			err := conn.WriteJSON(rsp)
 			if err != nil {
-				log.Errorf("conn.WriteJSON('%s') failed with '%s'\n", rsp.Cmd, err)
+				log.Errorf("conn.WriteJSON('%s') for user %d failed with '%s'\n", rsp.Cmd, userID, err)
 				muWriteError.Lock()
 				writeError = err
 				muWriteError.Unlock()
@@ -484,10 +488,6 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		c <- &rsp
-		err = getWriteError()
-		if err != nil {
-			break
-		}
 
 		if broadcastGetNotes {
 			log.Infof("broadcastGetNotes because handled '%s'\n", req.Cmd)
@@ -506,7 +506,13 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 			wsBroadcastToUser(ctx.User.id, &rsp)
 		}
+		err = getWriteError()
+		if err != nil {
+			break
+		}
 	}
 
+	log.Infof("closed connection for user %d\n", userID)
 	conn.Close()
+	wsRemoveConnection(userID, c)
 }
