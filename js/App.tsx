@@ -13,6 +13,7 @@ import AppNote from './AppNote';
 import AppIndex from './AppIndex';
 import AppDesktopIndex from './AppDesktopIndex';
 import { Note, toNote, toNotes } from './Note';
+import { initElectron } from './electron';
 
 // s is in format "/t:foo/t:bar", returns ["foo", "bar"]
 function tagsFromRoute(s: string): string[] {
@@ -115,6 +116,8 @@ window.addEventListener('DOMContentLoaded', () => {
   page('/n/:noteHashID', appNoteStart);
   page('/n/:noteHashID/*', appNoteStart);
   page();
+
+  initElectron();
 
   api.wsRegisterForBroadcastedMessage('broadcastUserNotes', gotBroadcastedNotes, api.getNotesConvertResult);
   api.openWebSocket();

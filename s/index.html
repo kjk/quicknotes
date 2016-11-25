@@ -11,6 +11,15 @@
   <link href="//fonts.googleapis.com/css?family=Open+Sans:600,400" rel="stylesheet" type="text/css">
 
   <script>
+    console.log(typeof global)
+    try{
+        var _electron = require("electron");
+        global.electron = _electron;
+        console.log('installed global.electron');
+    } catch(e) {
+        console.warn("ERROR", e)
+    }
+
     var gLoggedUser = {{.LoggedUser}};
     var gNotesUser = {{.NotesUser}};
 

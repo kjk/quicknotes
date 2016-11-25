@@ -40,7 +40,7 @@ export default class TemporaryMessage extends Component<any, State> {
       this.currTimerID = setTimeout(() => this.showMessage(msg, delay));
       return;
     }
-    this.currTimerID = setTimeout(() => {
+    this.currTimerID = window.setTimeout(() => {
       this.setState({
         message: null
       });
