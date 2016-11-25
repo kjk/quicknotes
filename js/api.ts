@@ -138,7 +138,7 @@ function scheduleReconnect() {
   console.log(`Scheduling ${reconnectAttempts} reconnect in ${timeoutMs} ms`);
   const reconnectTimeSec = (timeoutMs / 1000).toFixed(0);
   action.showConnectionStatus(`Disconnected from server. Reconnect attempt in ${reconnectTimeSec} sec.`);
-  setTimeout(() => {
+  window.setTimeout(() => {
     openWebSocket();
   }, timeoutMs);
 }
@@ -152,7 +152,7 @@ export function openWebSocket() {
   wsSock = new WebSocket('ws://' + host + '/api/ws');
   wsSock.binaryType = "arraybuffer"; // also "blob", instanceof ArrayBuffer
 
-  wsConnTimeout = setTimeout(() => {
+  wsConnTimeout = window.setTimeout(() => {
     // onclose() can be called before timeout happens
     if (wsSock) {
       wsSock.close();
@@ -200,7 +200,7 @@ export function openWebSocket() {
   }
 
   // TOOD: it's the server that should send pings, but that's harder
-  wsSockTimer = setInterval(() => {
+  wsSockTimer = window.setInterval(() => {
     if (wsSock) {
       ping();
     }

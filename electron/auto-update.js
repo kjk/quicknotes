@@ -4,7 +4,7 @@ const os = require('os');
 const updateCheckDelayInMs = 2 * 60 * 1000;
 
 function init(mainWindow) {
-  console.log('auto-update.js:init() called, mainWindow', mainWindow);
+  //console.log('auto-update.js:init() called, mainWindow', mainWindow);
 
   autoUpdater.on('error', (err) => {
     console.log('autoUpdater: error happened', err);
