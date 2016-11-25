@@ -268,6 +268,7 @@ export default class NoteView extends Component<Props, State> {
       <a className='note-action'
         href={url}
         target='_blank'
+        data-internal='yes'
         title='View note'>view</a>
     );
   }
