@@ -4,20 +4,24 @@ function isElectron() {
   return typeof global.electron === 'object';
 }
 
+function isInternal(el) {
+  return el.dataset && el.dataset.internal === 'yes';
+}
+
 function isExternalLink(el) {
-  // TODO: a better way to recognize a link I should open in native
-  // browser
-  return el.tagName === 'A' && el.target === '_blank' && el.title != 'View note';
+  return el.target === '_blank' && !isInternal(el);
 }
 
 function isInExternalLink(el) {
-  let parent = el.parentNode;
-  while (parent && parent !== document.body) {
-    if (isExternalLink(parent)) {
-      return true;
+  el = el.parentNode;
+  while (el && el !== document.body) {
+    if (el.tagName === 'A') {
+      if (isExternalLink(el)) {
+        return true;
+      }
+      return false;
     }
-    // TODO: stop at first a
-    parent = parent.parentNode;
+    el = el.parentNode;
   }
   return false;
 }
