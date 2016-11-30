@@ -229,18 +229,10 @@ $col-btn-hover-border: #1862b5;
   }
 }
 
-#root,
-#header,
-#left-sidebar,
-#notes-list,
-#page-content,
-#full-note {
-  position: absolute;
-}
-
 #root {
+ position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 #index-root {
@@ -273,6 +265,7 @@ a {
 
 /**/
 #header {
+  position: absolute;
   top: 0; left: 0; right: 0;
   height: 45px;
   z-index: 2;
@@ -330,6 +323,7 @@ a {
 #login-link {
   cursor: pointer;
   white-space: nowrap;
+  position: relative;
 
   &:hover .dropdown-content {
     display: block;
@@ -407,6 +401,7 @@ a {
 
 /**/
 #page-content {
+  position: absolute;
   left: 0; top: 0; right: 0; bottom: 0;
   text-align: center;
   background: rgba(0,0,0,.03);
@@ -554,10 +549,11 @@ ul.log-in {
 
 /**/
 #left-sidebar {
-  width: $sidebar-width;
-  font-size: $font-size-sidebar;
+  position: absolute;
   left: 0; top: 46px; bottom: 0;
   overflow-y: auto;
+  width: $sidebar-width;
+  font-size: $font-size-sidebar;
   user-select: none;
 
   .tags-list + .tags-list {
@@ -609,9 +605,11 @@ pre.note-body {
 }
 
 #notes-list {
-  left: $sidebar-width+1;
+  position: absolute;
   top: 46px;
-  bottom: 0; right: 0;
+  bottom: 0;
+  left: $sidebar-width+1;
+  right: 0;
   overflow-y: auto;
 
   .note {
@@ -769,7 +767,7 @@ hr.light2 {
 
 #tagline {
   text-align: center;
-  margin-top: 56px;
+  /* margin-top: 56px; */
 }
 
 /**/
@@ -784,6 +782,7 @@ hr.light2 {
 
 /**/
 #full-note {
+  position: absolute;
   top: 46px; left: 0; right: 0; bottom: 0;
   overflow: auto;
 
