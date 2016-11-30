@@ -77,16 +77,8 @@ function appNoteStart(ctx: PageJS.Context) {
 
 function appIndexStart(ctx: PageJS.Context) {
   console.log('appIndexStart');
-
-  api.getRecentNotes((err: Error, notes: Note[]) => {
-    if (err) {
-      console.log("api.getRecentNotes failed with:", err);
-      return;
-    }
-    console.log('appIndexStart: got', notes.length, 'notes');
-    const el = document.getElementById('root');
-    ReactDOM.render(<AppIndex initialNotes={notes} />, el);
-  });
+  const el = document.getElementById('root');
+  ReactDOM.render(<AppIndex />, el);
 }
 
 function appDesktopLandingStart(ctx: PageJS.Context) {
