@@ -10,10 +10,45 @@ import NotesList from './NotesList';
 import SearchResults from './SearchResults';
 import Settings from './Settings';
 import TemporaryMessage from './TemporaryMessage';
-import Top from './Top';
 
 import { Note, toNotes } from './Note';
 import * as action from './action';
+
+const stHeader: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  justifyContent: 'space-between',
+}
+
+const stHeaderLinks: React.CSSProperties = {
+  marginRight: 16,
+}
+
+// like Top but only for index page
+export class TopIndex extends Component<any, any> {
+
+  constructor(props?: any, context?: any) {
+    super(props, context);
+  }
+
+  render() {
+    let userUrl: string = null;
+    if (gLoggedUser) {
+      userUrl = '/u/' + gLoggedUser.HashID + '/' + gLoggedUser.Handle;
+    }
+
+    return (
+      <div id='header' style={stHeader}>
+        <a id='logo' className='logo colored' href='/'>QuickNotes</a>
+        {userUrl ?
+          <a href={userUrl} className='header-link' style={stHeaderLinks}>Your Notes</a> : <LogInLink />
+        }
+      </div>
+    );
+  }
+}
+
 
 const stWrapper: React.CSSProperties = {
   position: 'absolute',
@@ -65,6 +100,11 @@ const stScreenshot: React.CSSProperties = {
 const stRight: React.CSSProperties = {
   flexBasis: 40,
   //backgroundColor: 'lightcyan',
+}
+
+const stTagline: React.CSSProperties = {
+  textAlign: 'center',
+  marginTop: 56,
 }
 
 const stLinkContainer: React.CSSProperties = {
@@ -130,14 +170,10 @@ export default class AppIndex extends Component<any, State> {
 
     return (
       <div style={stWrapper}>
-        <div id='tagline'>
+        <TopIndex />
+        <div style={stTagline}>
           <h1>QuickNotes is the fastest way to take notes</h1>
         </div>
-        {gLoggedUser ?
-          <div style={stLinkContainer}>
-            <a className='header-link' href='#' onClick={this.goToYourNotes}>You're logged in as {gLoggedUser.Handle}, go to your notes</a>
-          </div> : <div style={stLinkContainer}>
-            <LogInLink /> </div>}
         <div style={stContainer}>
           <div style={stLeft}></div>
           <div style={stScreenshotContainer}>
