@@ -33,7 +33,7 @@ export interface Params {
 //    + otherwise if request completed, this is the string text of the response
 
 export interface AjaxCallback {
-  (statusCode: number, response: any, request: XMLHttpRequest): void
+  (statusCode: number, response: any, request: XMLHttpRequest): void;
 }
 
 function setXHRParams(req: XMLHttpRequest, params: Params) {
@@ -76,13 +76,13 @@ export function ajax(params: Params, callback: AjaxCallback) {
   var cbSuccess = () => innerCb(200);
   req.onload = (ev: Event) => {
     cbSuccess();
-  }
+  };
 
   req.onreadystatechange = (ev: ProgressEvent) => {
     if (req.readyState === 4) {
       cbSuccess();
     }
-  }
+  };
 
   req.onerror = (ev: Event) => innerCb(AjaxError.Error, "Error");
   req.ontimeout = (ev: ProgressEvent) => innerCb(AjaxError.Timeout, "Timeout");

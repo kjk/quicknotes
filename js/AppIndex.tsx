@@ -19,11 +19,11 @@ const stHeader: React.CSSProperties = {
   flexDirection: 'row',
   flexWrap: 'nowrap',
   justifyContent: 'space-between',
-}
+};
 
 const stHeaderLinks: React.CSSProperties = {
   marginRight: 16,
-}
+};
 
 // like Top but only for index page
 export class TopIndex extends Component<any, any> {
@@ -57,7 +57,7 @@ const stWrapper: React.CSSProperties = {
   right: 0,
   bottom: 0,
   overflow: 'auto',
-}
+};
 
 const stContainer: React.CSSProperties = {
   position: 'absolute',
@@ -68,12 +68,12 @@ const stContainer: React.CSSProperties = {
   flexWrap: 'nowrap',
   backgroundColor: '#fdfdfd',
   width: '100%',
-}
+};
 
 const stLeft: React.CSSProperties = {
   flexBasis: 40,
   //backgroundColor: 'lightcyan',
-}
+};
 
 const stScreenshotContainer: React.CSSProperties = {
   display: 'flex',
@@ -85,7 +85,7 @@ const stScreenshotContainer: React.CSSProperties = {
   alignItems: 'center',
   fontSize: '2em',
   //backgroundColor: 'lightblue',
-}
+};
 
 const stScreenshot: React.CSSProperties = {
   // note: this doesn't work despite internet advice
@@ -95,17 +95,17 @@ const stScreenshot: React.CSSProperties = {
   height: 'auto',
   */
   maxHeight: 600,
-}
+};
 
 const stRight: React.CSSProperties = {
   flexBasis: 40,
   //backgroundColor: 'lightcyan',
-}
+};
 
 const stTagline: React.CSSProperties = {
   textAlign: 'center',
   marginTop: 56,
-}
+};
 
 const stLinkContainer: React.CSSProperties = {
   display: 'flex',
@@ -115,7 +115,7 @@ const stLinkContainer: React.CSSProperties = {
   marginBottom: 8,
   marginTop: -12,
   fontSize: '1.3em',
-}
+};
 
 const images: string[] = [
   '/s/img/shot-index.png',
@@ -125,7 +125,7 @@ const images: string[] = [
 ];
 
 interface State {
-  imgNo: number,
+  imgNo: number;
 }
 
 export default class AppIndex extends Component<any, State> {
@@ -138,7 +138,7 @@ export default class AppIndex extends Component<any, State> {
 
     this.state = {
       imgNo: 0,
-    }
+    };
   }
 
   goToYourNotes(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -153,7 +153,7 @@ export default class AppIndex extends Component<any, State> {
     const newImgNo = (this.state.imgNo + 1) % images.length;
     this.setState({
       imgNo: newImgNo,
-    })
+    });
   }
 
   prevImage(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -161,7 +161,7 @@ export default class AppIndex extends Component<any, State> {
     const newImgNo = (this.state.imgNo - 1 + images.length) % images.length;
     this.setState({
       imgNo: newImgNo,
-    })
+    });
   }
 
   render() {

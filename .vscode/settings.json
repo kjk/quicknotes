@@ -4,9 +4,9 @@
     "**/node_modules": true,
     "**/s/dist": true,
     "**/s/js/lib": true,
-    "**/Godeps": true,
+    "**/vendor": true,
     "**/tsbuild": true,
     "**/typings": true
   },
-"typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

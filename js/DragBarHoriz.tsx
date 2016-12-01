@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 interface OnPosChangedCallback {
-  (y: number): void
+  (y: number): void;
 }
 
 interface Props {
