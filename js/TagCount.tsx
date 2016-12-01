@@ -11,10 +11,10 @@ interface Props {
 export default class TagCount extends Component<Props, any> {
   constructor(props?: Props, context?: any) {
     super(props, context);
-    this.handleClick = this.handleClick.bind(this);
+    this.onTagClicked = this.onTagClicked.bind(this);
   }
 
-  handleClick(e: React.MouseEvent<HTMLDivElement>) {
+  onTagClicked(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     const op = e.altKey ? 'toggle' : 'set';
     action.tagSelected(this.props.tagName, op);
@@ -23,7 +23,7 @@ export default class TagCount extends Component<Props, any> {
   render() {
     const cls = this.props.isSelected ? 'tag selected' : 'tag';
     return (
-      <div className={cls} onClick={this.handleClick}>
+      <div className={cls} onClick={this.onTagClicked}>
         <span className='tag-name'>{this.props.displayName}</span>
         <span className='tag-count'>{this.props.count}</span>
       </div>

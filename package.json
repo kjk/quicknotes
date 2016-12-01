@@ -22,6 +22,7 @@
     "@types/filesize": "3.2.15",
     "@types/highlight.js": "9.1.8",
     "@types/keymaster": "1.6.28",
+    "@types/localforage": "0.0.33",
     "@types/marked": "0.0.28",
     "@types/page": "1.5.31",
     "@types/react": "0.14.47",

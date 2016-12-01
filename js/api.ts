@@ -3,13 +3,13 @@ import { Dict } from './utils';
 import { Note, toNote, toNotes } from './Note';
 import { UserInfo } from './types';
 import * as action from './action';
+import localforage from 'localforage';
 
 type ArgsDict = Dict<string>;
 
 type WsCb = (err: Error, rsp: any) => void;
 
 // TODO: audit for error handling
-// TODO: reconnect ws https://github.com/voidabhi/es6-rws/blob/master/rws.js
 
 let wsSock: WebSocket = null;
 
@@ -298,7 +298,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -312,13 +312,13 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
 
 interface GetNotesResp {
-  LoggedUser?: any;
+  LoggedUser?: UserInfo;
   Notes?: any[];
 }
 
@@ -355,12 +355,52 @@ export function getNotesConvertResult(result: GetNotesResp) {
   return toNotes(result.Notes);
 }
 
+function keyUserNotes(userIDHash: string) {
+  return `notes:${userIDHash}`;
+}
+
 // calls cb with Note[]
-export function getNotes(userIDHash: string, cb: WsCb) {
+function getNotes(userIDHash: string, cb: WsCb) {
   const args: any = {
     userIDHash,
   };
+  function getNotesConvertResult(result: GetNotesResp) {
+    if (!result || !result.Notes) {
+      return [];
+    }
+    const key = keyUserNotes(userIDHash);
+    if (result.LoggedUser && result.LoggedUser.HashID == userIDHash) {
+      localforage.setItem(key, result.Notes, function (err: any) {
+        if (err) {
+          console.log(`caching notes for key '${key}' failed with ${err}`);
+        } else {
+          console.log(`cached notes for key '${key}'`);
+        }
+      });
+    }
+    return toNotes(result.Notes);
+  }
   wsSendReq('getNotes', args, cb, getNotesConvertResult);
+}
+
+// calls cb with Note[]
+export function getNotesCached(userIDHash: string, cb: WsCb) {
+  const key = keyUserNotes(userIDHash);
+  function gotItem(err: any, cachedNotes: any) {
+    if (err || !cachedNotes) {
+      console.log(`no cached notes for key '${key}'`);
+      getNotes(userIDHash, cb);
+      return;
+    }
+    console.log(`got notes for key '${key}' from cache`);
+    // note: we use LoggedUser but I don't think it's used
+    const res = {
+      Notes: cachedNotes,
+    }
+    const notes = getNotesConvertResult(res);
+    cb(null, notes);
+  }
+  localforage.getItem(key, gotItem);
 }
 
 // calls cb with Note[]
