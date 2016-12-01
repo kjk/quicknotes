@@ -44,7 +44,7 @@ function appUserStart(ctx: PageJS.Context) {
   })
 
   function getNotes() {
-    api.getNotes(userIDHash, (err: Error, notes: Note[]) => {
+    api.getNotesCached(userIDHash, (err: Error, notes: Note[]) => {
       if (err) {
         return;
       }

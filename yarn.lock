@@ -6,12 +6,6 @@
   version "0.0.35"
   resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.35.tgz#74c431247d1908acb86bc9642b569c5136f4c69e"
 
-"@types/electron@1.4.27":
-  version "1.4.27"
-  resolved "https://registry.yarnpkg.com/@types/electron/-/electron-1.4.27.tgz#64345642085026306b000a963e50cd71b60b6f82"
-  dependencies:
-    "@types/node" "*"
-
 "@types/filesize@3.2.15":
   version "3.2.15"
   resolved "https://registry.yarnpkg.com/@types/filesize/-/filesize-3.2.15.tgz#a97325f27a5ff7974c7cbd7afa244b8a7affe668"
@@ -24,13 +18,13 @@
   version "1.6.28"
   resolved "https://registry.yarnpkg.com/@types/keymaster/-/keymaster-1.6.28.tgz#093fc6fe49deff4ee17d36935a49230edb1c935f"
 
+"@types/localforage@^0.0.33":
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@types/localforage/-/localforage-0.0.33.tgz#dac2f28cdce54c3095bc4d5555b4e89cb7c5063c"
+
 "@types/marked@0.0.28":
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.0.28.tgz#44ba754e9fa51432583e8eb30a7c4dd249b52faa"
-
-"@types/node@*":
-  version "6.0.51"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.51.tgz#84cbf25111516ec9304d0b61469dc0fa9d12ba32"
 
 "@types/page@1.5.31":
   version "1.5.31"
@@ -2793,7 +2787,7 @@ load-json-file@^1.0.0:
     pinkie-promise "^2.0.0"
     strip-bom "^2.0.0"
 
-localforage@1.4.3:
+localforage@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.4.3.tgz#a212543c39c7c76424edd12bf474c489aaca494c"
   dependencies:
