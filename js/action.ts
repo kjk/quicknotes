@@ -12,11 +12,11 @@ type CallbackFunctionVariadic = (...args: any[]) => void;
 type CallbackInfo = [CallbackFunctionVariadic, number, any];
 
 interface RegisteredActions {
-  [idx: string]: CallbackInfo[]
+  [idx: string]: CallbackInfo[];
 }
 
 interface Store {
-  [idx: string]: any
+  [idx: string]: any;
 }
 
 const store: Store = {};
@@ -147,7 +147,7 @@ export function onEditNote(cb: any, owner: any) {
 
 /* --------------------- */
 export interface StartSearchDelayedCb {
-  (userIDHash: string, searchTerm: string): void
+  (userIDHash: string, searchTerm: string): void;
 }
 
 export function startSearchDelayed(userIDHash: string, term: string) {
@@ -160,7 +160,7 @@ export function onStartSearchDelayed(cb: StartSearchDelayedCb, owner: any) {
 
 /* --------------------- */
 export interface ClearSearchTermCb {
-  (): void
+  (): void;
 }
 
 export function clearSearchTerm() {
@@ -174,7 +174,7 @@ export function onClearSearchTerm(cb: ClearSearchTermCb, owner: any) {
 /* --------------------- */
 
 export interface ShowTemporaryMessageCb {
-  (msg: string, delay?: number): void
+  (msg: string, delay?: number): void;
 }
 
 export function showTemporaryMessage(msg: string, delayMs?: number) {
@@ -188,7 +188,7 @@ export function onShowTemporaryMessage(cb: ShowTemporaryMessageCb, owner: any) {
 /* --------------------- */
 
 interface ShowConnectionStatusCb {
-  (msg?: string): void
+  (msg?: string): void;
 }
 
 export function getConnectionStatus(): string {
@@ -206,7 +206,7 @@ export function onShowConnectionStatus(cb: ShowConnectionStatusCb, owner: any) {
 
 /* --------------------- */
 interface UpdateNotesCb {
-  (notes: Note[]): void
+  (notes: Note[]): void;
 }
 
 export function updateNotes(notes: Note[]) {

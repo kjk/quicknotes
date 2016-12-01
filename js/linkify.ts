@@ -92,7 +92,7 @@ export function linkify(txt: any, options?: any) {
   }
 
   // Find links.
-  while (arr = URI_RE.exec(txt)) {
+  while (arr = URI_RE.exec(txt)) {   // tslint:disable-line
 
     link = arr[0];
     idx_last = URI_RE.lastIndex;

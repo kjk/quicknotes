@@ -151,7 +151,7 @@ function toNewNoteJSON(note: NoteInEditor) {
     Content: note.body.trim() + '\n',
     Tags: textToTags(note.tags),
     IsPublic: note.isPublic,
-  }
+  };
   return JSON.stringify(n);
 }
 

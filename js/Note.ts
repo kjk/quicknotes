@@ -169,7 +169,7 @@ export class Note extends Array {
 }
 
 export function toNote(note: any): Note {
-  Object.setPrototypeOf(note, Note.prototype)
+  Object.setPrototypeOf(note, Note.prototype);
   return note as Note;
 }
 
@@ -285,7 +285,7 @@ function clearFlagBit(note: Note, nBit: number) {
 type VerContent = [string, string];
 
 interface ContentCache {
-  [idx: string]: VerContent
+  [idx: string]: VerContent;
 }
 
 // the key is id, the value is [idVer, content]
@@ -323,7 +323,7 @@ export function Content(note: Note): string {
 }
 
 interface FetchLatestContentCallback {
-  (note: Note, body: string): void
+  (note: Note, body: string): void;
 }
 
 // gets the latest version of content of a given note.

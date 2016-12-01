@@ -110,7 +110,7 @@ export default class AppNote extends Component<Props, State> {
     const noteID = myNote.HashID();
     api.getNote(noteID, (err: Error, note: Note) => {
       if (err) {
-        console.log('AppNote.handleUpdateNotes:', err)
+        console.log('AppNote.handleUpdateNotes:', err);
         return;
       }
       this.setNote(note);

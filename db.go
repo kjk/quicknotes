@@ -465,7 +465,9 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 	return int(noteID), err
 }
 
-func dbUpdateNote2(noteID int, note *NewNote) (int, error) {
+// most operations mark a note as updated except for starring, which is why
+// we need markUpdated
+func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -477,8 +479,9 @@ func dbUpdateNote2(noteID int, note *NewNote) (int, error) {
 		}
 	}()
 
+	now := time.Now()
 	if note.createdAt.IsZero() {
-		note.createdAt = time.Now()
+		note.createdAt = now
 	}
 
 	noteSize := len(note.content)
@@ -488,7 +491,7 @@ func dbUpdateNote2(noteID int, note *NewNote) (int, error) {
 	vals := NewDbVals("versions", 11)
 	vals.Add("note_id", noteID)
 	vals.Add("size", noteSize)
-	vals.Add("created_at", note.createdAt)
+	vals.Add("created_at", now)
 	vals.Add("content_sha1", note.contentSha1)
 	vals.Add("format", note.format)
 	vals.Add("title", note.title)
@@ -498,6 +501,10 @@ func dbUpdateNote2(noteID int, note *NewNote) (int, error) {
 	vals.Add("is_starred", note.isStarred)
 	vals.Add("is_encrypted", false)
 
+	noteUpdatedAt := note.createdAt
+	if markUpdated {
+		noteUpdatedAt = now
+	}
 	res, err := vals.TxInsert(tx)
 	if err != nil {
 		log.Errorf("tx.Exec('%s') failed with %s\n", vals.Query, err)
@@ -525,7 +532,7 @@ UPDATE notes SET
   versions_count = versions_count + 1
 WHERE id=?`
 	_, err = tx.Exec(q,
-		note.createdAt,
+		noteUpdatedAt,
 		note.contentSha1,
 		noteSize,
 		note.format,
@@ -546,7 +553,7 @@ WHERE id=?`
 	return int(noteID), err
 }
 
-func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote) bool) error {
+func dbUpdateNoteWith(userID, noteID int, markUpdated bool, updateFn func(*NewNote) bool) error {
 	// log.Verbosef("dbUpdateNoteWith: userID=%d, noteID=%d\n", userID, noteID)
 	defer clearCachedUserInfo(userID)
 
@@ -565,12 +572,12 @@ func dbUpdateNoteWith(userID, noteID int, updateFn func(*NewNote) bool) error {
 	if !shouldUpdate {
 		return nil
 	}
-	_, err = dbUpdateNote2(noteID, newNote)
+	_, err = dbUpdateNote2(noteID, newNote, markUpdated)
 	return err
 }
 
 func dbUpdateNoteTitle(userID, noteID int, newTitle string) error {
-	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, true, func(newNote *NewNote) bool {
 		shouldUpdate := newNote.title != newTitle
 		newNote.title = newTitle
 		return shouldUpdate
@@ -578,7 +585,7 @@ func dbUpdateNoteTitle(userID, noteID int, newTitle string) error {
 }
 
 func dbUpdateNoteTags(userID, noteID int, newTags []string) error {
-	return dbUpdateNoteWith(userID, noteID, func(newNote *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, true, func(newNote *NewNote) bool {
 		shouldUpdate := !strArrEqual(newNote.tags, newTags)
 		newNote.tags = newTags
 		return shouldUpdate
@@ -630,7 +637,7 @@ func dbGetVersionsCount() (int, error) {
 }
 
 // create a new note. if note.createdAt is non-zero value, this is an import
-// of from somewhere else, so we want to preserve that
+// of note from somewhere else, so we want to preserve createdAt value
 func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	var err error
 	if len(note.content) == 0 {
@@ -669,7 +676,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 		if !needsNewNoteVersion(note, existingNote) {
 			return noteID, nil
 		}
-		noteID, err = dbUpdateNote2(noteID, note)
+		noteID, err = dbUpdateNote2(noteID, note, true)
 	}
 
 	clearCachedUserInfo(userID)
@@ -710,7 +717,7 @@ WHERE note_id=?`
 }
 
 func dbDeleteNote(userID, noteID int) error {
-	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, true, func(note *NewNote) bool {
 		shouldUpdate := !note.isDeleted
 		note.isDeleted = true
 		return shouldUpdate
@@ -718,7 +725,7 @@ func dbDeleteNote(userID, noteID int) error {
 }
 
 func dbUndeleteNote(userID, noteID int) error {
-	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, true, func(note *NewNote) bool {
 		shouldUpdate := note.isDeleted
 		note.isDeleted = false
 		return shouldUpdate
@@ -727,7 +734,7 @@ func dbUndeleteNote(userID, noteID int) error {
 
 func dbMakeNotePublic(userID, noteID int) error {
 	// log.Verbosef("dbMakeNotePublic: userID=%d, noteID=%d", userID, noteID)
-	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, true, func(note *NewNote) bool {
 		shouldUpdate := !note.isPublic
 		note.isPublic = true
 		// log.Verbosef(" shouldUpdate=%v\n", shouldUpdate)
@@ -737,7 +744,7 @@ func dbMakeNotePublic(userID, noteID int) error {
 
 func dbMakeNotePrivate(userID, noteID int) error {
 	// log.Verbosef("dbMakeNotePrivate: userID: %d, noteID: %d\n", userID, noteID)
-	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, true, func(note *NewNote) bool {
 		shouldUpdate := note.isPublic
 		note.isPublic = false
 		return shouldUpdate
@@ -746,7 +753,7 @@ func dbMakeNotePrivate(userID, noteID int) error {
 
 func dbStarNote(userID, noteID int) error {
 	// log.Verbosef("dbStarNote: userID: %d, noteID: %d\n", userID, noteID)
-	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := !note.isStarred
 		note.isStarred = true
 		return shouldUpdate
@@ -754,7 +761,7 @@ func dbStarNote(userID, noteID int) error {
 }
 
 func dbUnstarNote(userID, noteID int) error {
-	return dbUpdateNoteWith(userID, noteID, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := note.isStarred
 		note.isStarred = false
 		return shouldUpdate

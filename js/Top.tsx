@@ -21,11 +21,11 @@ function keyFilter(event: any) {
 }
 
 interface Props {
-  hideLogin?: boolean,
+  hideLogin?: boolean;
 }
 
 interface State {
-  searchTerm: any,
+  searchTerm: any;
 }
 
 export default class Top extends Component<Props, State> {

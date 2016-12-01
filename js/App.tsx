@@ -41,7 +41,7 @@ function appUserStart(ctx: PageJS.Context) {
     console.log('appUserStart: got user', userInfo);
     gNotesUser = userInfo;
     getNotes();
-  })
+  });
 
   function getNotes() {
     api.getNotesCached(userIDHash, (err: Error, notes: Note[]) => {
@@ -49,7 +49,7 @@ function appUserStart(ctx: PageJS.Context) {
         return;
       }
       renderNotes(notes);
-    })
+    });
   };
 
   function renderNotes(notes: Note[]) {
@@ -67,7 +67,7 @@ function appNoteStart(ctx: PageJS.Context) {
 
   if (!gInitialNote) {
     // TODO: fetch the note
-    console.log('appNoteStart: dont have gInitialNote')
+    console.log('appNoteStart: dont have gInitialNote');
     return;
   }
   const note = toNote(gInitialNote);
@@ -102,7 +102,7 @@ function gotBroadcastedNotes(err: Error, notes: Note[]) {
 
 window.addEventListener('DOMContentLoaded', () => {
   page('/', appIndexStart);
-  page('/dskstart', appDesktopLandingStart)
+  page('/dskstart', appDesktopLandingStart);
   page('/u/:userIDHash', appUserStart);
   page('/u/:userIDHash/*', appUserStart);
   page('/n/:noteHashID', appNoteStart);

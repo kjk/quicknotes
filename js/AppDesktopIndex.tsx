@@ -12,7 +12,7 @@ class LogIn extends Component<any, any> {
   render() {
     const style: React.CSSProperties = {
       maxWidth: 320,
-    }
+    };
     const redir = encodeURIComponent(window.location.pathname);
     const twitterUrl = '/logintwitter?redir=' + redir;
     const googleUrl = '/logingoogle?redir=' + redir;
@@ -43,7 +43,7 @@ export default class AppDesktopIndex extends Component<any, any> {
   render() {
     const style: React.CSSProperties = {
       justifyContent: 'center',
-    }
+    };
 
     return (
       <div>

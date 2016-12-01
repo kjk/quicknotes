@@ -123,7 +123,7 @@ window.tryWsReconnect = (e: MouseEvent) => {
   console.log('tryWsReconnect');
   openWebSocket();
   return false;
-}
+};
 
 function scheduleReconnect() {
   const timeoutMs = reconnectIntervalMs * Math.pow(reconnectDecay, reconnectAttempts);
@@ -167,7 +167,7 @@ export function openWebSocket() {
     for (const wsReq of bufferedRequests) {
       wsRealSendReq(wsReq);
     }
-    bufferedRequests = []
+    bufferedRequests = [];
 
     //action.showConnectionStatus('Connection status: connected.');
   };
@@ -192,12 +192,12 @@ export function openWebSocket() {
     }
     wsFailAllRequests();
     scheduleReconnect();
-  }
+  };
 
   // onerror will be followed by onclose
   wsSock.onerror = (ev) => {
     console.log('wsSock.onerror: ev', ev);
-  }
+  };
 
   // TOOD: it's the server that should send pings, but that's harder
   wsSockTimer = window.setInterval(() => {
@@ -221,13 +221,13 @@ function wsSendReq(cmd: string, args: any, cb: WsCb, convertResult?: (result: an
     id: wsNextReqID(),
     cmd,
     args,
-  }
+  };
 
   const wsReq: WsReq = {
     msg,
     cb,
     convertResult,
-  }
+  };
 
   if (wsSockReady) {
     wsRealSendReq(wsReq);
@@ -242,13 +242,13 @@ export function wsRegisterForBroadcastedMessage(cmd: string, cb: WsCb, convertRe
     id: -1,
     cmd,
     args: {},
-  }
+  };
 
   const req: WsReq = {
     msg,
     cb,
     convertResult,
-  }
+  };
   broadcastMessageWatchers.push(req);
 }
 
@@ -298,7 +298,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -312,7 +312,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -323,7 +323,7 @@ interface GetNotesResp {
 }
 
 interface GetNotesCallback {
-  (note: Note[]): void
+  (note: Note[]): void;
 }
 
 function ping() {
@@ -370,7 +370,7 @@ function getNotes(userIDHash: string, cb: WsCb) {
     }
     const key = keyUserNotes(userIDHash);
     if (result.LoggedUser && result.LoggedUser.HashID == userIDHash) {
-      localforage.setItem(key, result.Notes, function (err: any) {
+      localforage.setItem(key, result.Notes, function(err: any) {
         if (err) {
           console.log(`caching notes for key '${key}' failed with ${err}`);
         } else {
@@ -396,7 +396,7 @@ export function getNotesCached(userIDHash: string, cb: WsCb) {
     // note: we use LoggedUser but I don't think it's used
     const res = {
       Notes: cachedNotes,
-    }
+    };
     const notes = getNotesConvertResult(res);
     cb(null, notes);
   }

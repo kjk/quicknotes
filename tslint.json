@@ -1,7 +1,22 @@
 {
-  "linebreak-style": "lf",
-  "no-trailing-whitespace": true,
-  "no-consecutive-blank-lines": true,
-  "quotemark": ["single", "jsx-single"],
-  "semicolon": "always"
+  "rules": {
+    "linebreak-style": [
+      true,
+      "LF"
+    ],
+    "no-trailing-whitespace": true,
+    "no-consecutive-blank-lines": [
+      true,
+      2
+    ],
+    "no-conditional-assignment": true,
+    "quotemark": [
+      "single",
+      "jsx-single"
+    ],
+    "semicolon": [
+      true,
+      "always"
+    ]
+  }
 }
