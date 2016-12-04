@@ -346,6 +346,7 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		Title        string
 		BundleJSPath string
 		MainCSSPath  string
+		IsLocal      bool
 
 		// for / and /u/
 		Notes     []*Note
@@ -359,6 +360,7 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		Title:        "QuickNotes",
 		BundleJSPath: "/" + bundleJSPath,
 		MainCSSPath:  "/" + mainCSSPath,
+		IsLocal:      flgIsLocal,
 	}
 
 	if strings.HasPrefix(uri, "/u/") {

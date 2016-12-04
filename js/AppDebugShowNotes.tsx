@@ -46,6 +46,9 @@ export default class AppDebugShowNotes extends Component<any, any> {
     const styleTitle = {
       maxWidth: 120,
       color: 'gray',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
     };
 
     const createdAt = fmtDate(note.CreatedAt());
@@ -66,7 +69,7 @@ export default class AppDebugShowNotes extends Component<any, any> {
     return (<tr key={note.IDVer()}>
       <td>{note.IDVer()}</td>
       <td style={styleTitle}>{note.Title()}</td>
-      <td>{note.Size()}</td>
+      <td style={styleRightAlign}>{note.Size()}</td>
       <td>{createdAt}</td>
       <td>{updatedAt}</td>
       <td>{tagsStr}</td>
@@ -77,11 +80,11 @@ export default class AppDebugShowNotes extends Component<any, any> {
 
   render() {
     const styleTb: React.CSSProperties = {
-      fontSize: 13,
-      fontFamily: 'mono',
+      fontSize: 12,
+      fontFamily: 'monospace',
       width: '100%',
       borderCollapse: 'separate',
-      borderSpacing: '5px 0px',
+      borderSpacing: '8px 0px',
     };
     let totalSize = 0;
     for (const n of this.state.notes) {
