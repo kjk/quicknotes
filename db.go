@@ -755,7 +755,7 @@ func dbUndeleteNote(userID, noteID int) error {
 
 func dbMakeNotePublic(userID, noteID int) error {
 	// log.Verbosef("dbMakeNotePublic: userID=%d, noteID=%d", userID, noteID)
-	// note: doesn't update lastUpdate 
+	// note: doesn't update lastUpdate for stability of display
 	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := !note.isPublic
 		note.isPublic = true
@@ -766,6 +766,7 @@ func dbMakeNotePublic(userID, noteID int) error {
 
 func dbMakeNotePrivate(userID, noteID int) error {
 	// log.Verbosef("dbMakeNotePrivate: userID: %d, noteID: %d\n", userID, noteID)
+	// note: doesn't update lastUpdate for stability of display
 	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := note.isPublic
 		note.isPublic = false
@@ -774,6 +775,7 @@ func dbMakeNotePrivate(userID, noteID int) error {
 }
 
 func dbStarNote(userID, noteID int) error {
+	// note: doesn't update lastUpdate for stability of display
 	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		log.Verbosef("dbStarNote: userID: %s, noteID: %s, isStarred: %v\n", hashInt(userID), hashInt(noteID), note.isStarred)
 		shouldUpdate := !note.isStarred
@@ -784,6 +786,7 @@ func dbStarNote(userID, noteID int) error {
 
 func dbUnstarNote(userID, noteID int) error {
 	log.Verbosef("dbUnstarNote: userID: %d, noteID: %d\n", userID, noteID)
+	// note: doesn't update lastUpdate for stability of display
 	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := note.isStarred
 		note.isStarred = false
