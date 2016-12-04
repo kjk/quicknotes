@@ -319,6 +319,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
 interface GetNotesResp {
   LoggedUser?: UserInfo;
   Notes?: any[];
+  LatestVersion?: number;
 }
 
 interface GetNotesCallback {
@@ -359,17 +360,24 @@ function keyUserNotes(userIDHash: string) {
 }
 
 // calls cb with Note[]
-function getNotes(userIDHash: string, cb: WsCb) {
+function getNotes(userIDHash: string, myLatestVersion: number, cb: WsCb) {
   const args: any = {
     userIDHash,
+    latestVersion: myLatestVersion,
   };
-  function getNotesConvertResult(result: GetNotesResp) {
+  function getNotesConvertResult(result: GetNotesResp): Note[] {
     if (!result || !result.Notes) {
       return [];
     }
+
+    // cache the notes if the result is for logged in user
     const key = keyUserNotes(userIDHash);
     if (result.LoggedUser && result.LoggedUser.HashID == userIDHash) {
-      localforage.setItem(key, result.Notes, function(err: any) {
+      const val: any = {
+        Notes: result.Notes,
+        LatestVersion: result.LatestVersion || 0,
+      };
+      localforage.setItem(key, val, function(err: any) {
         if (err) {
           console.log(`caching notes for key '${key}' failed with ${err}`);
         } else {
@@ -379,27 +387,39 @@ function getNotes(userIDHash: string, cb: WsCb) {
     }
     return toNotes(result.Notes);
   }
-  wsSendReq('getNotes', args, cb, getNotesConvertResult);
+
+  function getNotesCb(err: Error, result: GetNotesResp) {
+    if (err) {
+      cb(err, result);
+      return;
+    }
+    // if the server doesn't have newer versions of notes,
+    // don't call the callback
+    if (result.LatestVersion == myLatestVersion) {
+      return;
+    }
+    cb(null, getNotesConvertResult(result));
+  }
+
+  wsSendReq('getNotes', args, getNotesCb);
 }
 
 // calls cb with Note[]
 export function getNotesCached(userIDHash: string, cb: WsCb) {
   const key = keyUserNotes(userIDHash);
-  function gotItem(err: any, cachedNotes: any) {
+  localforage.getItem(key, gotItem);
+  function gotItem(err: any, cachedNotes: GetNotesResp) {
     if (err || !cachedNotes) {
       console.log(`no cached notes for key '${key}'`);
-      getNotes(userIDHash, cb);
+      getNotes(userIDHash, 0, cb);
       return;
     }
     console.log(`got notes for key '${key}' from cache`);
     // note: we use LoggedUser but I don't think it's used
-    const res = {
-      Notes: cachedNotes,
-    };
-    const notes = getNotesConvertResult(res);
+    const notes = getNotesConvertResult(cachedNotes);
     cb(null, notes);
+    getNotes(userIDHash, cachedNotes.LatestVersion, cb);
   }
-  localforage.getItem(key, gotItem);
 }
 
 // calls cb with Note[]

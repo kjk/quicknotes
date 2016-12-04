@@ -182,8 +182,9 @@ func newNoteFromNote(n *Note) (*NewNote, error) {
 
 // CachedUserInfo has cached user info
 type CachedUserInfo struct {
-	user  *DbUser
-	notes []*Note
+	user          *DbUser
+	notes         []*Note
+	latestVersion int
 }
 
 type notesByCreatedAt []*Note
@@ -267,6 +268,19 @@ func clearCachedUserInfo(userID int) {
 	mu.Unlock()
 }
 
+// TODO: a probably more robust way would be
+// q := `select id from versions where user_id=$1 order by id desc limit 1;`
+// but we would need user_id on versions table
+func findLatestVersion(notes []*Note) int {
+	id := 0
+	for _, note := range notes {
+		if note.CurrVersionID > id {
+			id = note.CurrVersionID
+		}
+	}
+	return id
+}
+
 func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	mu.Lock()
 	i := userIDToCachedInfo[userID]
@@ -286,8 +300,9 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	}
 	sort.Sort(notesByCreatedAt(notes))
 	res := &CachedUserInfo{
-		user:  user,
-		notes: notes,
+		user:          user,
+		notes:         notes,
+		latestVersion: findLatestVersion(notes),
 	}
 
 	mu.Lock()
@@ -740,7 +755,8 @@ func dbUndeleteNote(userID, noteID int) error {
 
 func dbMakeNotePublic(userID, noteID int) error {
 	// log.Verbosef("dbMakeNotePublic: userID=%d, noteID=%d", userID, noteID)
-	return dbUpdateNoteWith(userID, noteID, true, func(note *NewNote) bool {
+	// note: doesn't update lastUpdate 
+	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := !note.isPublic
 		note.isPublic = true
 		// log.Verbosef(" shouldUpdate=%v\n", shouldUpdate)
@@ -750,7 +766,7 @@ func dbMakeNotePublic(userID, noteID int) error {
 
 func dbMakeNotePrivate(userID, noteID int) error {
 	// log.Verbosef("dbMakeNotePrivate: userID: %d, noteID: %d\n", userID, noteID)
-	return dbUpdateNoteWith(userID, noteID, true, func(note *NewNote) bool {
+	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := note.isPublic
 		note.isPublic = false
 		return shouldUpdate

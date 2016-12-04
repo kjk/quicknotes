@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -94,6 +95,22 @@ func jsonMapGetString(m map[string]interface{}, key string) (string, error) {
 	return s, nil
 }
 
+func jsonMapGetInt(m map[string]interface{}, key string) (int, error) {
+	v, ok := m[key]
+	if !ok {
+		return 0, fmt.Errorf("no '%s' in %v", key, m)
+	}
+	f, ok := v.(float64)
+	if ok {
+		return int(f), nil
+	}
+	s, ok := v.(string)
+	if !ok {
+		return 0, fmt.Errorf("key '%s' is not of type string or float64. Type: %T, value: '%v'", key, v, v)
+	}
+	return strconv.Atoi(s)
+}
+
 func getNoteCompact(ctx *ReqContext, noteID int) ([]interface{}, error) {
 	note, err := getNoteByID(ctx, noteID)
 	if err != nil {
@@ -162,13 +179,7 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	return &res, nil
 }
 
-func getNotesForUser(ctx *ReqContext, userID int) (interface{}, error) {
-	v := struct {
-		LoggedUser *UserSummary
-		Notes      [][]interface{}
-	}{
-		LoggedUser: ctx.User,
-	}
+func getNotesForUser(ctx *ReqContext, userID int, latestVersion int) (interface{}, error) {
 	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
 		return nil, fmt.Errorf("getCachedUserInfo('%d') failed with '%s'\n", userID, err)
@@ -190,7 +201,22 @@ func getNotesForUser(ctx *ReqContext, userID int) (interface{}, error) {
 		loggedUserID = ctx.User.id
 	}
 	log.Verbosef("%d notes of user '%d' ('%s'), logged in user: %d ('%s'), showPrivate: %v\n", len(notes), userID, i.user.Login, loggedUserID, loggedUserHandle, showPrivate)
-	v.Notes = notes
+
+	// optimization: if our latest version is the same as the
+	// version on the client, we don't return notes
+	if latestVersion == i.latestVersion {
+		notes = nil
+	}
+
+	v := struct {
+		LoggedUser    *UserSummary
+		Notes         [][]interface{}
+		LatestVersion int
+	}{
+		LoggedUser:    ctx.User,
+		Notes:         notes,
+		LatestVersion: i.latestVersion,
+	}
 	return v, nil
 }
 
@@ -203,8 +229,12 @@ func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, erro
 	if err != nil {
 		return nil, fmt.Errorf("invalid userIDHash='%s'\n", userIDHash)
 	}
+	latestVersion, err := jsonMapGetInt(args, "latestVersion")
+	if err != nil {
+		return nil, err
+	}
 
-	return getNotesForUser(ctx, userID)
+	return getNotesForUser(ctx, userID, latestVersion)
 }
 
 func userCanAccessNote(loggedUser *UserSummary, note *Note) bool {
@@ -411,7 +441,12 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if req.Cmd != "ping" {
-			log.Infof("msg: '%s'\n", string(reqBytes))
+			if req.Cmd == "createOrUpdateNote" {
+				// too much data to fully log
+				log.Verbosef("msg: '%s'\n", req.Cmd)
+			} else {
+				log.Verbosef("msg: '%s'\n", string(reqBytes))
+			}
 		}
 
 		var res interface{}
@@ -491,7 +526,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 		if broadcastGetNotes {
 			log.Infof("broadcastGetNotes because handled '%s'\n", req.Cmd)
-			res, err = getNotesForUser(&ctx, ctx.User.id)
+			res, err = getNotesForUser(&ctx, ctx.User.id, 0)
 			rsp := wsResponse{
 				ID:     -1,
 				Cmd:    "broadcastUserNotes",
