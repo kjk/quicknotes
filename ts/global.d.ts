@@ -4,7 +4,6 @@ interface UserInfo {
   Handle: string;
 }
 
-declare var gRecentNotesInitial: any;
 declare var gNotesUser: UserInfo;
 declare var gLoggedUser: UserInfo;
 declare var gInitialNote: any;
