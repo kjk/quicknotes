@@ -10,6 +10,14 @@ function fmtDate(date: Date) {
   return m.format('YY-MM-DD hh:mm:ss');
 }
 
+function dec2bin(n: number): string {
+  return n.toString(2);
+}
+
+const styleRightAlign = {
+  textAlign: 'right',
+};
+
 export default class AppDebugShowNotes extends Component<any, any> {
   constructor(props?: any, context?: any) {
     super(props, context);
@@ -54,6 +62,7 @@ export default class AppDebugShowNotes extends Component<any, any> {
       state.push('deleted');
     }
     const stateStr = state.join(', ');
+    const flagsStr = dec2bin(note.getFlags());
     return (<tr key={note.IDVer()}>
       <td>{note.IDVer()}</td>
       <td style={styleTitle}>{note.Title()}</td>
@@ -62,6 +71,7 @@ export default class AppDebugShowNotes extends Component<any, any> {
       <td>{updatedAt}</td>
       <td>{tagsStr}</td>
       <td>{stateStr}</td>
+      <td style={styleRightAlign}>{flagsStr}</td>
     </tr>);
   }
 
@@ -94,6 +104,7 @@ export default class AppDebugShowNotes extends Component<any, any> {
               <th>UpdatedAt</th>
               <th>Tags</th>
               <th>State</th>
+              <th>Flags</th>
             </tr>
           </thead>
           <tbody>
