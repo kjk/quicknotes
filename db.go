@@ -468,6 +468,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 // most operations mark a note as updated except for starring, which is why
 // we need markUpdated
 func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
+	log.Verbosef("dbUpdateNote2: noteID: %d, markUpdated: %v\n", noteID, markUpdated)
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -475,6 +476,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	}
 	defer func() {
 		if tx != nil {
+			log.Verbosef("dbUpdateNote2: noteID: %d, rolled back\n", noteID)
 			tx.Rollback()
 		}
 	}()
@@ -486,7 +488,6 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 
 	noteSize := len(note.content)
 
-	// log.Verbosef("inserting new version of note %d\n", noteID)
 	serializedTags := serializeTags(note.tags)
 	vals := NewDbVals("versions", 11)
 	vals.Add("note_id", noteID)
@@ -515,6 +516,8 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 		log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
 		return 0, err
 	}
+	log.Verbosef("inserting new version of note %d, new version id: %d\n", noteID, versionID)
+
 	//Maybe: could get versions_count as:
 	//q := `SELECT count(*) FROM versions WHERE note_id=?`
 	q := `
@@ -554,7 +557,7 @@ WHERE id=?`
 }
 
 func dbUpdateNoteWith(userID, noteID int, markUpdated bool, updateFn func(*NewNote) bool) error {
-	// log.Verbosef("dbUpdateNoteWith: userID=%d, noteID=%d\n", userID, noteID)
+	log.Verbosef("dbUpdateNoteWith: userID=%s, noteID=%s, markUpdated: %v\n", hashInt(userID), hashInt(noteID), markUpdated)
 	defer clearCachedUserInfo(userID)
 
 	note, err := dbGetNoteByID(noteID)
@@ -568,8 +571,11 @@ func dbUpdateNoteWith(userID, noteID int, markUpdated bool, updateFn func(*NewNo
 	if err != nil {
 		return err
 	}
+	log.Verbosef("dbUpdateNoteWith: note.IsStarred: %v, newNote.isStarred: %v\n", note.IsStarred, newNote.isStarred)
+
 	shouldUpdate := updateFn(newNote)
 	if !shouldUpdate {
+		log.Verbosef("dbUpdateNoteWith: skipping update of noteID=%s because shouldUpdate=%v\n", hashInt(noteID), shouldUpdate)
 		return nil
 	}
 	_, err = dbUpdateNote2(noteID, newNote, markUpdated)
@@ -752,8 +758,8 @@ func dbMakeNotePrivate(userID, noteID int) error {
 }
 
 func dbStarNote(userID, noteID int) error {
-	// log.Verbosef("dbStarNote: userID: %d, noteID: %d\n", userID, noteID)
 	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
+		log.Verbosef("dbStarNote: userID: %s, noteID: %s, isStarred: %v\n", hashInt(userID), hashInt(noteID), note.isStarred)
 		shouldUpdate := !note.isStarred
 		note.isStarred = true
 		return shouldUpdate
@@ -761,15 +767,18 @@ func dbStarNote(userID, noteID int) error {
 }
 
 func dbUnstarNote(userID, noteID int) error {
+	log.Verbosef("dbUnstarNote: userID: %d, noteID: %d\n", userID, noteID)
 	return dbUpdateNoteWith(userID, noteID, false, func(note *NewNote) bool {
 		shouldUpdate := note.isStarred
 		note.isStarred = false
+		log.Verbosef("dbUnstarNote: shouldUpdate: %v\n", shouldUpdate)
 		return shouldUpdate
 	})
 }
 
 // note: only use locally for testing search, not in production
 func dbGetAllNotes() ([]*Note, error) {
+	log.Verbosef("dbGetAllNotes\n")
 	var notes []*Note
 	db := getDbMust()
 	q := `
