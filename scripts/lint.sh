@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./node_modules/.bin/tslint js/*.ts*
+./node_modules/.bin/tslint ts/*.ts*
 
 go vet github.com/kjk/quicknotes
 

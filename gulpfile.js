@@ -26,7 +26,7 @@ var tsifyOpts = {
 };
 
 var browserifyOpts = {
-  entries: ['js/App.tsx'],
+  entries: ['ts/App.tsx'],
   debug: true
 };
 
@@ -37,7 +37,7 @@ function js() {
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('s/dist'));  
+    .pipe(gulp.dest('s/dist'));
 }
 gulp.task('js', js);
 
@@ -69,7 +69,7 @@ function jsprod2() {
     .bundle()
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('s/dist'));  
+    .pipe(gulp.dest('s/dist'));
 }
 gulp.task('jsprod2', jsprod2);
 
@@ -93,7 +93,7 @@ function cssprod() {
 gulp.task('cssprod', cssprod);
 
 function watch() {
-  gulp.watch('js/*', ['js']);
+  gulp.watch('ts/*', ['js']);
   gulp.watch('./sass/**/*', ['css']);
 }
 gulp.task('watch', watch);
