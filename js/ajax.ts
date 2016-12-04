@@ -14,7 +14,7 @@ export enum AjaxError {
 }
 
 export interface Params {
-  method?: "GET" | "PUT" | "POST";
+  method?: 'GET' | 'PUT' | 'POST';
   url: string;
   headers?: Dict<string>;
   body?: string | FormData;
@@ -61,7 +61,7 @@ export function ajax(params: Params, callback: AjaxCallback) {
       return;
     }
     const code = req.status === undefined ? statusCode : req.status;
-    let rsp: any = "Error";
+    let rsp: any = 'Error';
     if (req.status !== 0) {
       rsp = req.response || req.responseText || responseText;
     }
@@ -84,9 +84,9 @@ export function ajax(params: Params, callback: AjaxCallback) {
     }
   };
 
-  req.onerror = (ev: Event) => innerCb(AjaxError.Error, "Error");
-  req.ontimeout = (ev: ProgressEvent) => innerCb(AjaxError.Timeout, "Timeout");
-  req.onabort = (ev: Event) => innerCb(AjaxError.Abort, "Abort");
+  req.onerror = (ev: Event) => innerCb(AjaxError.Error, 'Error');
+  req.ontimeout = (ev: ProgressEvent) => innerCb(AjaxError.Timeout, 'Timeout');
+  req.onabort = (ev: Event) => innerCb(AjaxError.Abort, 'Abort');
 
   const headers = params.headers || {};
   if (body) {
