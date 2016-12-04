@@ -11,8 +11,10 @@
     ],
     "no-conditional-assignment": true,
     "quotemark": [
+      true,
       "single",
-      "jsx-single"
+      "jsx-single",
+      "avoid-escape"
     ],
     "semicolon": [
       true,
