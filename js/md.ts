@@ -7,7 +7,7 @@ const renderer = new marked.Renderer();
 // copied from marked.js
 function unescape(html: string) {
   // explicitly match decimal, hex, and named HTML entities
-  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function (_, n) {
+  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
     n = n.toLowerCase();
     if (n === 'colon') return ':';
     if (n.charAt(0) === '#') {
@@ -21,7 +21,7 @@ function unescape(html: string) {
 
 // like https://github.com/chjj/marked/blob/master/lib/marked.js#L869
 // but adds target="_blank"
-renderer.link = function (href: string, title: string, text: string) {
+renderer.link = function(href: string, title: string, text: string) {
   if (this.options.sanitize) {
     try {
       var prot = decodeURIComponent(unescape(href))
@@ -62,7 +62,7 @@ const markdownItOpts: MarkdownIt.Options = {
   typographer: false
 };
 
-markdownItOpts.highlight = function (str, lang) {
+markdownItOpts.highlight = function(str, lang) {
   // TODO: doesn't seem to work
   hljs.configure({
     tabReplace: '  '
@@ -88,7 +88,7 @@ function myRenderer(tokens: MarkdownIt.Token[], idx: number, options: any, env: 
 
 const defaultRender = markdownIt.renderer.rules['link_open'] || myRenderer;
 
-markdownIt.renderer.rules['link_open'] = function (tokens: MarkdownIt.Token[], idx: number, options: any, env: any, self: any) {
+markdownIt.renderer.rules['link_open'] = function(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, self: any) {
   // If you are sure other plugins can't add `target` - drop check below
   const i = tokens[idx].attrIndex('target');
 

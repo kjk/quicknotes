@@ -15,24 +15,18 @@ function showSettings(e: React.MouseEvent<HTMLAnchorElement>) {
   action.showSettings();
 }
 
-function debugShowNotes(e: React.MouseEvent<HTMLAnchorElement>) {
-  e.preventDefault();
-  console.log('debugShowNotes');
-  page('/dbg/shownotes');
-}
-
 export class LogOut extends Component<any, any> {
 
   constructor(props?: any, context?: any) {
     super(props, context);
   }
 
-
   render() {
     const url = encodeURI('/logout?redir=' + window.location);
     const u = gLoggedUser;
     const userUrl = '/u/' + u.HashID + '/' + u.Handle;
-    const isDebug = true;
+    // TODO: enable when running locally
+    const isDebug = false;
 
     return (
       <div id='login-link'>
@@ -41,7 +35,7 @@ export class LogOut extends Component<any, any> {
         <div className='dropdown-content'>
           <a href={userUrl}>My notes</a>
           {isDebug ?
-            <a href='#' onClick={debugShowNotes} > Show Notes</a>
+            <a href='/dbg/shownotes' target='_blank'> Show Notes</a>
             : null}
           {false ?
             <a href='#' onClick={showSettings}>Settings</a>
