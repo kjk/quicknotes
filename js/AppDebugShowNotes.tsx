@@ -42,12 +42,26 @@ export default class AppDebugShowNotes extends Component<any, any> {
 
     const createdAt = fmtDate(note.CreatedAt());
     const updatedAt = fmtDate(note.UpdatedAt());
+    const tagsStr = note.Tags().join(', ');
+    const state: string[] = [];
+    if (note.IsPublic()) {
+      state.push('pub');
+    }
+    if (note.IsStarred()) {
+      state.push('starred');
+    }
+    if (note.IsDeleted()) {
+      state.push('deleted');
+    }
+    const stateStr = state.join(', ');
     return (<tr key={note.IDVer()}>
       <td>{note.IDVer()}</td>
       <td style={styleTitle}>{note.Title()}</td>
       <td>{note.Size()}</td>
       <td>{createdAt}</td>
       <td>{updatedAt}</td>
+      <td>{tagsStr}</td>
+      <td>{stateStr}</td>
     </tr>);
   }
 
@@ -79,6 +93,7 @@ export default class AppDebugShowNotes extends Component<any, any> {
               <th>CreatedAt</th>
               <th>UpdatedAt</th>
               <th>Tags</th>
+              <th>State</th>
             </tr>
           </thead>
           <tbody>
