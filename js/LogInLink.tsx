@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import * as ReactDOM from 'react-dom';
 import * as action from './action';
 import { isLoggedIn } from './utils';
+import page from 'page';
 
 function showImportSimpleNote(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
@@ -14,22 +15,34 @@ function showSettings(e: React.MouseEvent<HTMLAnchorElement>) {
   action.showSettings();
 }
 
+function debugShowNotes(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault();
+  console.log('debugShowNotes');
+  page('/dbg/shownotes');
+}
+
 export class LogOut extends Component<any, any> {
 
   constructor(props?: any, context?: any) {
     super(props, context);
   }
 
+
   render() {
     const url = encodeURI('/logout?redir=' + window.location);
     const u = gLoggedUser;
     const userUrl = '/u/' + u.HashID + '/' + u.Handle;
+    const isDebug = true;
+
     return (
       <div id='login-link'>
         <a href={userUrl} className='header-link'>
           {u.Handle} <i className='fa fa-chevron-down login-chevron'></i></a>
         <div className='dropdown-content'>
           <a href={userUrl}>My notes</a>
+          {isDebug ?
+            <a href='#' onClick={debugShowNotes} > Show Notes</a>
+            : null}
           {false ?
             <a href='#' onClick={showSettings}>Settings</a>
             : null}

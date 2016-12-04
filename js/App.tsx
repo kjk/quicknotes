@@ -7,11 +7,11 @@ import page from 'page';
 
 import * as action from './action';
 import * as api from './api';
-import { UserInfo } from './types';
 import AppUser from './AppUser';
 import AppNote from './AppNote';
 import AppIndex from './AppIndex';
 import AppDesktopIndex from './AppDesktopIndex';
+import AppDebugShowNotes from './AppDebugShowNotes';
 import { Note, toNote, toNotes } from './Note';
 import { initElectron } from './electron';
 
@@ -92,6 +92,12 @@ function appDesktopLandingStart(ctx: PageJS.Context) {
   ReactDOM.render(<AppDesktopIndex />, el);
 }
 
+export function appDebugShowNotes() {
+  console.log('appDebugShowNotes');
+  const el = document.getElementById('root');
+  ReactDOM.render(<AppDebugShowNotes />, el);
+}
+
 function gotBroadcastedNotes(err: Error, notes: Note[]) {
   if (err) {
     return;
@@ -107,6 +113,7 @@ window.addEventListener('DOMContentLoaded', () => {
   page('/u/:userIDHash/*', appUserStart);
   page('/n/:noteHashID', appNoteStart);
   page('/n/:noteHashID/*', appNoteStart);
+  page('/dbg/shownotes', appDebugShowNotes);
   page();
 
   initElectron();
