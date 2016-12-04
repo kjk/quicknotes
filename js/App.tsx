@@ -31,11 +31,11 @@ function appUserStart(ctx: PageJS.Context) {
 
   const initialTags = tagsFromRoute(Router.getHash());
   const initialTag = initialTags[0];
-  console.log("initialTags: " + initialTags + " initialTag: " + initialTag);
+  console.log('initialTags: ' + initialTags + ' initialTag: ' + initialTag);
 
   api.getUserInfo(userIDHash, (err: Error, userInfo: UserInfo) => {
     if (err) {
-      console.log("Error: ", err);
+      console.log('Error: ', err);
       return;
     }
     console.log('appUserStart: got user', userInfo);

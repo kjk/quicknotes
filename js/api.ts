@@ -297,7 +297,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -311,7 +311,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function (code, respTxt) {
+  ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -377,7 +377,7 @@ function getNotes(userIDHash: string, myLatestVersion: number, cb: WsCb) {
         Notes: result.Notes,
         LatestVersion: result.LatestVersion || 0,
       };
-      localforage.setItem(key, val, function (err: any) {
+      localforage.setItem(key, val, function(err: any) {
         if (err) {
           console.log(`caching notes for key '${key}' failed with ${err}`);
         } else {

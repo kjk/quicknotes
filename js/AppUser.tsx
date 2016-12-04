@@ -37,19 +37,19 @@ function tagsFromNotes(notes: Note[]): TagToCount {
   for (let note of notes) {
     // a deleted note won't show up under other tags or under "all" or "public"
     if (note.IsDeleted()) {
-      tags["__deleted"] += 1;
+      tags['__deleted'] += 1;
       continue;
     }
 
-    tags["__all"] += 1;
+    tags['__all'] += 1;
     if (note.IsStarred()) {
-      tags["__starred"] += 1;
+      tags['__starred'] += 1;
     }
 
     if (note.IsPublic()) {
-      tags["__public"] += 1;
+      tags['__public'] += 1;
     } else {
-      tags["__private"] += 1;
+      tags['__private'] += 1;
     }
 
     for (let tag of note.Tags()) {

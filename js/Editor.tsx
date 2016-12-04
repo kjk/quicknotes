@@ -267,7 +267,7 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function(i: any) {
+    (function (i: any) {
       var text = cm.getLine(i);
       var currHeadingLevel = text.search(/[^#]/);
 
@@ -344,7 +344,7 @@ function _toggleLine(cm: any, name: any) {
     'ordered-list': '1. '
   };
   for (var i = startPoint.line; i <= endPoint.line; i++) {
-    (function(i: any) {
+    (function (i: any) {
       var text = cm.getLine(i);
       if (stat[name]) {
         text = text.replace(repl[name], '$1');
@@ -636,7 +636,7 @@ export default class Editor extends Component<any, State> {
     this.firstRender = false;
     // for new (empty) notes, focus in title
     if (this.state.note.isEmpty()) {
-      const node = ReactDOM.findDOMNode(this.refs["title"]) as HTMLElement;
+      const node = ReactDOM.findDOMNode(this.refs['title']) as HTMLElement;
       node.focus();
       return;
     }
@@ -669,7 +669,7 @@ export default class Editor extends Component<any, State> {
     if (!this.isShowingPreview()) {
       return;
     }
-    const preview = ReactDOM.findDOMNode(this.refs["preview"]) as HTMLElement;
+    const preview = ReactDOM.findDOMNode(this.refs['preview']) as HTMLElement;
 
     // Syncs scroll  editor -> preview
     var cScroll = false;
@@ -691,7 +691,7 @@ export default class Editor extends Component<any, State> {
     });
 
     // Syncs scroll  preview -> editor
-    preview.onscroll = function() {
+    preview.onscroll = function () {
       if (pScroll) {
         pScroll = false;
         return;
@@ -763,7 +763,7 @@ export default class Editor extends Component<any, State> {
   handleDragBarMoved(y: number) {
     // console.log('Editor.handleDragBarMoved: y=', y);
     this.top = y;
-    const node = ReactDOM.findDOMNode(this.refs["editorWrapper"]) as HTMLElement;
+    const node = ReactDOM.findDOMNode(this.refs['editorWrapper']) as HTMLElement;
     if (node) {
       // console.log('this.refs.editorWrapper=', node);
       node.style.height = editorHeight(y) + 'px';
@@ -925,7 +925,7 @@ export default class Editor extends Component<any, State> {
       this.scheduleTimer();
       return;
     }
-    const node = ReactDOM.findDOMNode(this.refs["editorTextAreaWrapper"]);
+    const node = ReactDOM.findDOMNode(this.refs['editorTextAreaWrapper']);
     // if the node we monitor for size changes doesn't exist yet,
     // skip dependent updates but check back later
     if (!node) {

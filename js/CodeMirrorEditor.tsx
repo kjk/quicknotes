@@ -52,7 +52,7 @@ export default class CodeMirrorEditor extends Component<Props, any> {
 
   componentDidMount() {
     const refs = this.refs;
-    const editorNode = refs["editorNode"];
+    const editorNode = refs['editorNode'];
     const node = ReactDOM.findDOMNode(editorNode) as HTMLTextAreaElement;
     this.cm = CodeMirror.fromTextArea(node, this.props.cmOptions);
     this.cm.on('change', this.handleChange);
