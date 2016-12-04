@@ -122,7 +122,7 @@ export default class Top extends Component<Props, State> {
 
     return (
       <div id='header' className='flex-row'>
-        <a id='logo' className='logo colored' href='/'>QuickNotes</a>
+        <a id='logo' className='logo colored' href='/welcome'>QuickNotes</a>
         {userUrl ?
           <button className='btn btn-new-note hint--bottom' data-hint='shortcut: n' onClick={this.handleEditNewNote}>
             New note

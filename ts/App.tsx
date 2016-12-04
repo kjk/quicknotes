@@ -108,7 +108,7 @@ function gotBroadcastedNotes(err: Error, notes: Note[]) {
 
 window.addEventListener('DOMContentLoaded', () => {
   page('/', appIndexStart);
-  page('/dskstart', appDesktopLandingStart);
+  page('/welcome', appIndexStart);
   page('/u/:userIDHash', appUserStart);
   page('/u/:userIDHash/*', appUserStart);
   page('/n/:noteHashID', appNoteStart);

@@ -19,9 +19,9 @@ let mainWindow;
 const showDev = process.argv.includes('-dev');
 const localServer = process.argv.includes('-local');
 
-let startURL = 'https://quicknotes.io/dskstart';
+let startURL = 'https://quicknotes.io/';
 if (localServer) {
-  startURL = 'http://localhost:5111/dskstart';
+  startURL = 'http://localhost:5111/';
 }
 
 function resPath(path) {
