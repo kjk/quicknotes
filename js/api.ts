@@ -94,7 +94,7 @@ function wsProcessRsp(rsp: wsResponse) {
 
 function wsFailAllRequests() {
   for (const req of requests) {
-    req.cb(new Error("connection failed"), null);
+    req.cb(new Error('connection failed'), null);
   }
   requests = [];
 }
@@ -147,9 +147,9 @@ let wsConnTimeout: number = 0;
 export function openWebSocket() {
   const host = window.location.host;
   action.showConnectionStatus('Connecting to the server...');
-
-  wsSock = new WebSocket('ws://' + host + '/api/ws');
-  wsSock.binaryType = "arraybuffer"; // also "blob", instanceof ArrayBuffer
+  const proto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  wsSock = new WebSocket(proto + host + '/api/ws');
+  wsSock.binaryType = 'arraybuffer'; // also "blob", instanceof ArrayBuffer
 
   wsConnTimeout = window.setTimeout(() => {
     // onclose() can be called before timeout happens
@@ -297,7 +297,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -311,7 +311,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -329,7 +329,7 @@ interface GetNotesCallback {
 function ping() {
   function pingCb(err: Error, result: any) {
     if (err) {
-      console.log("ping response error:", err);
+      console.log('ping response error:', err);
     } else {
       //console.log("ping response:", result);
     }
@@ -377,7 +377,7 @@ function getNotes(userIDHash: string, myLatestVersion: number, cb: WsCb) {
         Notes: result.Notes,
         LatestVersion: result.LatestVersion || 0,
       };
-      localforage.setItem(key, val, function(err: any) {
+      localforage.setItem(key, val, function (err: any) {
         if (err) {
           console.log(`caching notes for key '${key}' failed with ${err}`);
         } else {
