@@ -26,7 +26,7 @@ export class LogOut extends Component<any, any> {
     const u = gLoggedUser;
     const userUrl = '/u/' + u.HashID + '/' + u.Handle;
     // TODO: enable when running locally
-    const isDebug = false;
+    const isDebug = gIsDebug;
 
     return (
       <div id='login-link'>
