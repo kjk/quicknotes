@@ -13,7 +13,7 @@
         "target": "es6"
     },
     "include": [
-      "js/**/*",
+      "ts/**/*",
       "typings/index.d.ts"
     ],
     "exclude": [
