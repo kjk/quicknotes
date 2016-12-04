@@ -30,15 +30,15 @@
   version "1.5.31"
   resolved "https://registry.yarnpkg.com/@types/page/-/page-1.5.31.tgz#800a62044ba80db7fcf31f035c3b2a73c3b241dc"
 
-"@types/react-dom@0.14.18":
-  version "0.14.18"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-0.14.18.tgz#af4fb4092f433667f5f094e762b32c294e0010dc"
+"@types/react-dom@0.14.19":
+  version "0.14.19"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-0.14.19.tgz#698a14335e32fb1bc61db65f5647c9668a7fc2eb"
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@0.14.47":
-  version "0.14.47"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-0.14.47.tgz#a4c7555b0ffa8da837f3c4f7f14b9f1a58b2ca95"
+"@types/react@*", "@types/react@0.14.52":
+  version "0.14.52"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-0.14.52.tgz#3bdfe5c9fe7aca2c6600ee1b0363f4b7acc69c93"
 
 JSONStream@^1.0.3:
   version "1.2.1"
@@ -2986,9 +2986,9 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
-markdown-it@8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-8.2.0.tgz#089e924bc2efd3886a2eb8ab869109c5ceb73958"
+markdown-it@8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-8.2.1.tgz#ac2852f8221b9406a93d41cde2d355348560ed4c"
   dependencies:
     argparse "^1.0.7"
     entities "~1.1.1"
