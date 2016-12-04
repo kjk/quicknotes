@@ -1,7 +1,6 @@
 import { ajax, Params } from './ajax';
 import { Dict } from './utils';
 import { Note, toNote, toNotes } from './Note';
-import { UserInfo } from './types';
 import * as action from './action';
 import localforage from 'localforage';
 
@@ -298,7 +297,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
   const params = {
     url: url
   };
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -312,7 +311,7 @@ function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   if (urlArgs) {
     params['body'] = urlArgs;
   }
-  ajax(params, function(code, respTxt) {
+  ajax(params, function (code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
   });
 }
@@ -370,7 +369,7 @@ function getNotes(userIDHash: string, cb: WsCb) {
     }
     const key = keyUserNotes(userIDHash);
     if (result.LoggedUser && result.LoggedUser.HashID == userIDHash) {
-      localforage.setItem(key, result.Notes, function(err: any) {
+      localforage.setItem(key, result.Notes, function (err: any) {
         if (err) {
           console.log(`caching notes for key '${key}' failed with ${err}`);
         } else {

@@ -313,6 +313,9 @@ func isAllowedURL(uri string) bool {
 	case "/", "/dskstart":
 		return true
 	}
+	if strings.HasPrefix(uri, "/dbg/") {
+		return true
+	}
 	return false
 }
 

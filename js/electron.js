@@ -1,4 +1,4 @@
-console.log('electron:', global.electron);
+// console.log('electron:', global.electron);
 
 function isElectron() {
   return typeof global.electron === 'object';
