@@ -121,8 +121,8 @@ func withCtx(f HandlerWithCtxFunc, opts ReqOpts) http.HandlerFunc {
 			return
 		}
 
-		firstRequestInSession := !getSetSessionCookie(w, r)
-		if ctx.User != nil && firstRequestInSession && r.URL.String() == "/" {
+		// if user is logged in, redirect / to their notes
+		if ctx.User != nil && r.URL.String() == "/" {
 			url := "/u/" + ctx.User.HashID + "/" + ctx.User.Handle
 			http.Redirect(w, r, url, http.StatusFound)
 			return
@@ -310,7 +310,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 
 func isAllowedURL(uri string) bool {
 	switch uri {
-	case "/", "/dskstart":
+	case "/", "/welcome":
 		return true
 	}
 	if strings.HasPrefix(uri, "/dbg/") {
@@ -322,7 +322,7 @@ func isAllowedURL(uri string) bool {
 /*
 Big picture:
 / - main page, shows recent public notes, on-boarding for new users
-/latest - show latest public notes
+/idx/allnotes - show latest public notes
 /s/{path} - static files
 /u/{idHashed} - main page for a given user. Shows read-write UI if
   it's a logged-in user. Shows only public if user's owner != logged in
