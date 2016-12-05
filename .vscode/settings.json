@@ -8,5 +8,7 @@
     "**/tsbuild": true,
     "**/typings": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.autoFixOnSave": false,
+  "tslint.autoFixOnSave": false
 }

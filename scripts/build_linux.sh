@@ -7,6 +7,8 @@ set -o verbose
 
 . scripts/lint.sh
 
+. scripts/update-deps.sh
+
 rm -rf s/dist/*.map s/dist/*.js s/dist/*.css resources.go
 
 ./node_modules/.bin/gulp prod
