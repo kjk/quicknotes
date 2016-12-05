@@ -14,7 +14,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import { escapeHtml } from './utils';
-import { Note, FormatText } from './Note';
+import { toNote, Note, FormatText } from './Note';
 import * as api from './api';
 import * as action from './action';
 
@@ -58,8 +58,10 @@ export default class AppNote extends Component<Props, State> {
     this.isMyNote = this.isMyNote.bind(this);
     this.setNote = this.setNote.bind(this);
 
+    const initialNote = props.initialNote ? toNote(props.initialNote) : null;
+
     this.state = {
-      note: props.initialNote,
+      note: initialNote,
     };
   }
 
