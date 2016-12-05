@@ -3,6 +3,13 @@
 @import 'font-awesome/font-awesome';
 @import 'colors';
 
+$col-btn-bg: #2780e3;
+$col-btn-border: #2780e3;
+$col-btn-text: #fff;
+$col-btn-hover-bg: #1967be;
+$col-btn-hover-border: #1862b5;
+
+
 html,
 body {
   height: 100%;
@@ -152,12 +159,6 @@ pre > code {
   }
 
 }
-
-$col-btn-bg: #2780e3;
-$col-btn-border: #2780e3;
-$col-btn-text: #fff;
-$col-btn-hover-bg: #1967be;
-$col-btn-hover-border: #1862b5;
 
 .btn2-primary {
   background-color: $col-btn-bg;
@@ -595,10 +596,12 @@ pre.note-body {
   margin: 0;
 }
 
+/*
 .note-private {
-  /* border-top: 1px solid lightblue; */
-  /* border-top: 1px solid lightskyblue; */
+  border-top: 1px solid lightblue;
+  border-top: 1px solid lightskyblue;
 }
+*/
 
 .center {
   text-align: center;
@@ -740,7 +743,7 @@ hr.light2 {
     display: inline-block;
     color: rgba(0,0,0,.4);
     &:hover {
-      color: rgba(0,0,0,.8);
+      color: $col-blue;
     }
   }
 
