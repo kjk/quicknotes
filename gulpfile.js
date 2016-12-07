@@ -27,7 +27,7 @@ var tsifyOpts = {
 
 var browserifyOpts = {
   entries: ['ts/App.tsx'],
-  debug: true
+  debug: true,
 };
 
 function js() {
@@ -48,11 +48,21 @@ function jsprod() {
     .plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
+    .pipe(exorcist('s/dist/bundle.min.js.map'))
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
     .pipe(uglify())
     .pipe(gulp.dest('s/dist'));
 }
+
+/*
+.pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(gulpif(app.minify, uglify()))
+    .pipe(gulpif(app.minify, concat(compileTarget.helioscope)))
+    .pipe(gulpif(app.minify, rev()))
+.pipe(sourcemaps.write('maps'))
+*/
+
 gulp.task('jsprod', jsprod);
 
 // TODO: could save 122.452 bytes from the bundle if minifying
