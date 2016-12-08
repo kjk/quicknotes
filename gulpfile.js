@@ -1,3 +1,4 @@
+var argv = require('yargs').argv;
 var babelify = require('babelify');
 var browserify = require('browserify');
 var buffer = require('vinyl-buffer');
@@ -9,9 +10,12 @@ var prefix = require('gulp-autoprefixer');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var source = require('vinyl-source-stream');
+var through = require('through2');
 var tsify = require('tsify');
 var uglify = require('gulp-uglify');
 var debug = require('gulp-debug');
+
+var showDeps = (argv.show_deps || argv['show-deps']) !== undefined;
 
 require('babel-register');
 
@@ -30,22 +34,46 @@ var browserifyOpts = {
   debug: true,
 };
 
+function printDeps(b) {
+  if (!showDeps) {
+    return;
+  }
+  // for debugging dump (flattened and inverted) dependency tree
+  // b is browserify instance
+  // TODO: should also write to a file for more post-processing
+  b.pipeline.get('deps').push(through.obj(
+    function(row, enc, next) {
+      // format of row is { id, file, source, entry, deps }
+      // deps is {} where key is module name and value is file it comes from
+      console.log(row.file || row.id);
+      for (let k in row.deps) {
+        const v = row.deps[k];
+        console.log('  ', k, ':', v);
+      }
+      next();
+    })
+  );
+}
+
 function js() {
-  browserify(browserifyOpts)
-    .plugin(tsify, tsifyOpts)
+  var b = browserify(browserifyOpts);
+  printDeps(b);
+  b.plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
     .pipe(gulp.dest('s/dist'));
+  printDeps(b);
 }
 gulp.task('js', js);
 
 function jsprod() {
   // strip react debug code
   process.env.NODE_ENV = 'production';
-  browserify(browserifyOpts)
-    .plugin(tsify, tsifyOpts)
+  var b = browserify(browserifyOpts);
+  printDeps(b);
+  b.plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
     .pipe(exorcist('s/dist/bundle.min.js.map'))
@@ -73,8 +101,9 @@ gulp.task('jsprod', jsprod);
 function jsprod2() {
   // strip react debug code
   process.env.NODE_ENV = 'production';
-  browserify(browserifyOpts)
-    .plugin(tsify, tsifyOpts)
+  var b = browserify(browserifyOpts);
+  printDeps(b);
+  b.plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
     .pipe(source('bundle.js'))
