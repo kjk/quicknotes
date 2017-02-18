@@ -1149,7 +1149,7 @@ export default class Editor extends Component<any, State> {
         onChange={this.handleTitleChanged}
         ref='title'
         tabIndex={1}
-        />
+      />
     );
 
     const input2 = (
