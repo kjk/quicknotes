@@ -44,12 +44,12 @@ function appUserStart(ctx: PageJS.Context) {
   });
 
   function getNotes() {
-    api.getNotesCached(userIDHash, (err: Error, notes: Note[]) => {
-      if (err) {
-        return;
+    api.getNotesCached(userIDHash, gotNotes);
+    function gotNotes(err: Error, notes: Note[]) {
+      if (!err) {
+        renderNotes(notes);
       }
-      renderNotes(notes);
-    });
+    }
   };
 
   function renderNotes(notes: Note[]) {
