@@ -3,6 +3,8 @@ package main
 import (
 	"archive/zip"
 	"bytes"
+	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/kjk/log"
 	"github.com/kjk/u"
@@ -515,29 +519,63 @@ func handleIndexAllNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request
 	serveMaybeGzippedFile(w, r, path)
 }
 
-func registerHTTPHandlers() {
-	http.HandleFunc("/", withCtx(handleIndex, OnlyGet))
-	http.HandleFunc("/favicon.ico", handleFavicon)
-	http.HandleFunc("/s/", handleStatic)
-	http.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
-	http.HandleFunc("/logintwitter", handleLoginTwitter)
-	http.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
-	http.HandleFunc("/logingithub", handleLoginGitHub)
-	http.HandleFunc("/logingithubcb", handleOauthGitHubCallback)
-	http.HandleFunc("/logingoogle", handleLoginGoogle)
-	http.HandleFunc("/logingooglecb", handleOauthGoogleCallback)
+// https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
+func makeHTTPServer() *http.Server {
+	mux := &http.ServeMux{}
 
-	http.HandleFunc("/logout", handleLogout)
-	http.HandleFunc("/api/ws", handleWs)
-	http.HandleFunc("/api/import_simplenote_start", withCtx(handleAPIImportSimpleNoteStart, OnlyLoggedIn|IsJSON))
-	http.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
+	mux.HandleFunc("/", withCtx(handleIndex, OnlyGet))
+	mux.HandleFunc("/favicon.ico", handleFavicon)
+	mux.HandleFunc("/s/", handleStatic)
+	mux.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
+	mux.HandleFunc("/logintwitter", handleLoginTwitter)
+	mux.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
+	mux.HandleFunc("/logingithub", handleLoginGitHub)
+	mux.HandleFunc("/logingithubcb", handleOauthGitHubCallback)
+	mux.HandleFunc("/logingoogle", handleLoginGoogle)
+	mux.HandleFunc("/logingooglecb", handleOauthGoogleCallback)
+
+	mux.HandleFunc("/logout", handleLogout)
+	mux.HandleFunc("/api/ws", handleWs)
+	mux.HandleFunc("/api/import_simplenote_start", withCtx(handleAPIImportSimpleNoteStart, OnlyLoggedIn|IsJSON))
+	mux.HandleFunc("/api/import_simplenote_status", withCtx(handleAPIImportSimpleNotesStatus, OnlyLoggedIn|IsJSON))
+
+	srv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		// TODO: 1.8 only
+		// IdleTimeout:  120 * time.Second,
+		Handler: mux,
+	}
+	// TODO: track connections and their state
+	return srv
+}
+
+func hostPolicy(ctx context.Context, host string) error {
+	if strings.HasSuffix(host, "quicknotes.io") {
+		return nil
+	}
+	return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
 }
 
 func startWebServer() {
-	registerHTTPHandlers()
-	fmt.Printf("Started runing on %s\n", httpAddr)
-	if err := http.ListenAndServe(httpAddr, nil); err != nil {
-		fmt.Printf("http.ListendAndServer() failed with %s\n", err)
+	if !flgIsLocal {
+		srv := makeHTTPServer()
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: hostPolicy,
+		}
+		srv.Addr = ":443"
+		srv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
+		log.Infof("Started runing HTTPS on %s\n", srv.Addr)
+		go func() {
+			srv.ListenAndServeTLS("", "")
+		}()
 	}
-	fmt.Printf("Exited\n")
+
+	srv := makeHTTPServer()
+	srv.Addr = httpAddr
+	log.Infof("Started runing on %s\n", httpAddr)
+	if err := srv.ListenAndServe(); err != nil {
+		log.Errorf("srv.ListendAndServer() failed with %s\n", err)
+	}
 }
