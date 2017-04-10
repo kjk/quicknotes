@@ -163,4 +163,4 @@ export function linkify(txt: any, options?: any) {
 
   // In case of catastrophic failure, return the original text;
   return html || txt;
-};
+}

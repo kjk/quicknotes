@@ -94,7 +94,7 @@ def start_container_if_needed(imageName, containerName, portMapping):
     cmd = ["docker", "start", containerId]
   else:
     volumeMapping = "%s:/var/lib/mysql" % g_dbDir
-    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, "-v", volumeMapping, "-e", "MYSQL_ALLOW_EMPTY_PASSWORD=yes", imageName]
+    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, "-v", volumeMapping, "-e", "MYSQL_ROOT_PASSWORD=7UgJnRvp39vW", "-e", "MYSQL_INITDB_SKIP_TZINFO=yes", imageName]
   run_cmd(cmd)
   wait_for_container(containerName)
 

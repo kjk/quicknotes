@@ -50,7 +50,7 @@ function appUserStart(ctx: PageJS.Context) {
         renderNotes(notes);
       }
     }
-  };
+  }
 
   function renderNotes(notes: Note[]) {
     console.log('appUserStart: got', notes.length, 'notes');
