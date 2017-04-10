@@ -59,11 +59,12 @@ func init() {
 }
 
 func getSQLConnectionRoot() string {
-	if isLocal() && !flgProdDb {
+	// TODO: always pass flgDbHost && flgDbPort
+	if flgProduction || !flgProdDb {
+		return "root:7UgJnRvp39vW@tcp(138.68.248.213:3306)/"
 		//return "root@tcp(localhost:3306)/"
-		return fmt.Sprintf("root:7UgJnRvp39vW@tcp(%s:%s)/", flgDbHost, flgDbPort)
 	}
-	return "root:7UgJnRvp39vW@tcp(138.68.248.213:3306)/"
+	return fmt.Sprintf("root:7UgJnRvp39vW@tcp(%s:%s)/", flgDbHost, flgDbPort)
 }
 
 func getSQLConnection() string {
