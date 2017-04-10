@@ -30,7 +30,7 @@ export default class TextSelect extends Component<Props, any> {
   }
 
   render() {
-    const {values, selectedIdx, className} = this.props;
+    const { values, selectedIdx, className } = this.props;
 
     let classes = 'text-select';
     if (className) {

@@ -1,11 +1,8 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 go tool vet .
 go build -o quicknotes
 #go build -race -o quicknotes
-./quicknotes -local -import-stack-overflow || true
+./quicknotes -import-stack-overflow || true
 rm quicknotes

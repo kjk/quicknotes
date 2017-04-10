@@ -1,7 +1,5 @@
 #!/bin/bash
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 cd cmd/blogtojson
 go tool vet -printfuncs=LogInfof,LogErrorf,LogVerbosef .

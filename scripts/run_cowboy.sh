@@ -1,8 +1,5 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 . scripts/fmt.sh
 . scripts/lint.sh
@@ -17,5 +14,5 @@ go build -race -o quicknotes
 #go build -race -o quicknotes
 
 echo "starting quicknotes"
-./quicknotes -local -proddb || true
+./quicknotes -proddb || true
 rm quicknotes

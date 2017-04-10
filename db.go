@@ -60,11 +60,11 @@ func init() {
 }
 
 func getSQLConnectionRoot() string {
-	if flgIsLocal && !flgProdDb {
+	if isLocal() && !flgProdDb {
 		//return "root@tcp(localhost:3306)/"
 		return fmt.Sprintf("root:7UgJnRvp39vW@tcp(%s:%s)/", flgDbHost, flgDbPort)
 	}
-	return "root:7UgJnRvp39vW@tcp(127.0.0.1:3306)/"
+	return "root:7UgJnRvp39vW@tcp(138.68.248.213:3306)/"
 }
 
 func getSQLConnection() string {

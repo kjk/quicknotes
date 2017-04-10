@@ -1,9 +1,5 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
-set -o verbose
+set -u -e -o pipefail -o verbose
 
 . scripts/lint.sh
 

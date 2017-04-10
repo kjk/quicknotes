@@ -364,7 +364,7 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		Title:        "QuickNotes",
 		BundleJSPath: "/" + bundleJSPath,
 		MainCSSPath:  "/" + mainCSSPath,
-		IsLocal:      flgIsLocal,
+		IsLocal:      isLocal(),
 	}
 
 	if strings.HasPrefix(uri, "/u/") {
@@ -558,7 +558,7 @@ func hostPolicy(ctx context.Context, host string) error {
 }
 
 func startWebServer() {
-	if !flgIsLocal {
+	if !isLocal() {
 		srv := makeHTTPServer()
 		m := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,

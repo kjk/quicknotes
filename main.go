@@ -25,7 +25,6 @@ const (
 var (
 	httpAddr = "127.0.0.1:5111"
 
-	flgIsLocal             bool // local means using local mysql database, production means google's cloud
 	flgVerbose             bool
 	flgProdDb              bool // if true, use gce db when running localy
 	flgDbHost              string
@@ -68,8 +67,13 @@ func verifyDirs() {
 	}
 }
 
+// return true when running locally
+func isLocal() bool {
+	return isMac()
+}
+
 func getDataDir() string {
-	if flgIsLocal {
+	if isLocal() {
 		return u.ExpandTildeInPath("~/data/quicknotes")
 	}
 	//  on the server it's in /home/quicknotes/www/data
@@ -93,7 +97,6 @@ func pathForFileInCache(path string) string {
 }
 
 func parseFlags() {
-	flag.BoolVar(&flgIsLocal, "local", false, "running locally?")
 	flag.BoolVar(&flgProdDb, "proddb", false, "use production database when running locally")
 	flag.BoolVar(&flgImportStackOverflow, "import-stack-overflow", false, "import stack overflow data")
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
@@ -106,7 +109,7 @@ func parseFlags() {
 	flag.BoolVar(&flgVerbose, "verbose", false, "enable verbose logging")
 	flag.StringVar(&flgShowNote, "show-note", "", "show a note with a given hashed id")
 	flag.Parse()
-	if flgIsLocal {
+	if isLocal() {
 		onlyLocalStorage = true
 	}
 }
@@ -179,7 +182,7 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 
 func dailyTasksLoop() {
 	// things we do at application start
-	if !flgIsLocal {
+	if !isLocal() {
 		sendBootMail()
 	}
 	buildPublicNotesIndex()
@@ -235,7 +238,7 @@ func main() {
 	verifyDirs()
 	openLogFilesMust()
 
-	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgIsLocal, flgProdDb, getSQLConnectionRoot(), getDataDir())
+	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", isLocal(), flgProdDb, getSQLConnectionRoot(), getDataDir())
 	initAppMust()
 
 	if flgSearchLocalTerm != "" {
@@ -292,7 +295,7 @@ func main() {
 		return
 	}
 
-	if flgIsLocal && !hasZipResources() {
+	if isLocal() && !hasZipResources() {
 		runGulpAsync()
 	}
 
