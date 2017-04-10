@@ -58,3 +58,36 @@
 [submodule "vendor/github.com/kjk/u"]
 	path = vendor/github.com/kjk/u
 	url = https://github.com/kjk/u
+[submodule "vendor/cloud.google.com/go"]
+	path = vendor/cloud.google.com/go
+	url = https://code.googlesource.com/gocloud
+[submodule "vendor/github.com/aws/aws-sdk-go"]
+	path = vendor/github.com/aws/aws-sdk-go
+	url = https://github.com/aws/aws-sdk-go
+[submodule "vendor/github.com/go-ini/ini"]
+	path = vendor/github.com/go-ini/ini
+	url = https://github.com/go-ini/ini
+[submodule "vendor/github.com/google/go-genproto"]
+	path = vendor/github.com/google/go-genproto
+	url = https://github.com/google/go-genproto
+[submodule "vendor/github.com/gorilla/websocket"]
+	path = vendor/github.com/gorilla/websocket
+	url = https://github.com/gorilla/websocket
+[submodule "vendor/github.com/pkg/errors"]
+	path = vendor/github.com/pkg/errors
+	url = https://github.com/pkg/errors
+[submodule "vendor/golang.org/x/crypto"]
+	path = vendor/golang.org/x/crypto
+	url = https://go.googlesource.com/crypto
+[submodule "vendor/golang.org/x/oauth2"]
+	path = vendor/golang.org/x/oauth2
+	url = https://go.googlesource.com/oauth2
+[submodule "vendor/golang.org/x/text"]
+	path = vendor/golang.org/x/text
+	url = https://go.googlesource.com/text
+[submodule "vendor/google.golang.org/api"]
+	path = vendor/google.golang.org/api
+	url = https://code.googlesource.com/google-api-go-client
+[submodule "vendor/github.com/jmespath/go-jmespath"]
+	path = vendor/github.com/jmespath/go-jmespath
+	url = https://github.com/jmespath/go-jmespath
