@@ -1162,11 +1162,7 @@ func dbGetAllUsers() ([]*DbUser, error) {
 }
 
 func getWelcomeMD() []byte {
-	if hasZipResources() {
-		return resourcesFromZip["welcome.md"]
-	}
-	path := filepath.Join("data", "welcome.md")
-	d, err := ioutil.ReadFile(path)
+	d, err := loadResourceFile(filepath.Join("data", "welcome.md"))
 	fatalIfErr(err, "getWelcomeMD()")
 	return d
 }

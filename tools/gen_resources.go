@@ -242,8 +242,8 @@ func createResourcesZip(path string) {
 	dir := filepath.Join(currDir, "s")
 	addZipDirMust(zw, dir, currDir)
 	addZipFileMust(zw, "createdb.sql", "createdb.sql")
-	path = filepath.Join(currDir, "data", "welcome.md")
-	addZipFileMust(zw, path, "welcome.md")
+	path = filepath.Join("data", "welcome.md")
+	addZipFileMust(zw, path, path)
 	err = zw.Close()
 	fataliferr(err)
 }
