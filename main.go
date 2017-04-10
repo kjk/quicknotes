@@ -22,8 +22,7 @@ const (
 )
 
 var (
-	httpAddr = "127.0.0.1:5111"
-
+	flgHttpAddr            string
 	flgProduction          bool
 	flgUseResourcesZip     bool
 	flgVerbose             bool
@@ -118,6 +117,7 @@ func parseFlags() {
 	flag.StringVar(&flgShowNote, "show-note", "", "show a note with a given hashed id")
 	flag.BoolVar(&flgProduction, "production", false, "running in production")
 	flag.BoolVar(&flgUseResourcesZip, "use-resources-zip", false, "use quicknotes_resources.zip for static resources")
+	flag.StringVar(&flgHttpAddr, "http-addr", "127.0.0.1:5111", "address on which to listen")
 
 	flag.Parse()
 	if !flgProduction {
@@ -252,7 +252,11 @@ func main() {
 	verifyDirs()
 	openLogFilesMust()
 
-	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir(), flgVerbose)
+	if flgProduction {
+		flgHttpAddr = ":80"
+	}
+
+	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir(), flgHttpAddr, flgVerbose)
 
 	if flgSearchLocalTerm != "" {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)
@@ -274,6 +278,8 @@ func main() {
 		}
 		fatalIf(!hasZipResources(), "should have zip resources")
 	}
+	// don't reload if we're reading from .zip resources
+	reloadTemplates = !hasZipResources()
 
 	getDbMust()
 

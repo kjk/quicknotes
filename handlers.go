@@ -175,21 +175,11 @@ func loadResourcesFromZipReader(zr *zip.Reader) error {
 	return nil
 }
 
-func userSummaryFromDbUser(dbUser *DbUser) *UserSummary {
-	if dbUser == nil {
-		return nil
+func loadResourceFile(name string) ([]byte, error) {
+	if d, ok := resourcesFromZip[name]; ok {
+		return d, nil
 	}
-	return &UserSummary{
-		id:     dbUser.ID,
-		HashID: hashInt(dbUser.ID),
-		Handle: dbUser.GetHandle(),
-		login:  dbUser.Login,
-	}
-}
-
-func getUserSummaryFromCookie(w http.ResponseWriter, r *http.Request) *UserSummary {
-	dbUser := getDbUserFromCookie(w, r)
-	return userSummaryFromDbUser(dbUser)
+	return ioutil.ReadFile(name)
 }
 
 // call this only once at startup
@@ -237,6 +227,23 @@ func shouldCacheResource(path string) bool {
 		return true
 	}
 	return false
+}
+
+func userSummaryFromDbUser(dbUser *DbUser) *UserSummary {
+	if dbUser == nil {
+		return nil
+	}
+	return &UserSummary{
+		id:     dbUser.ID,
+		HashID: hashInt(dbUser.ID),
+		Handle: dbUser.GetHandle(),
+		login:  dbUser.Login,
+	}
+}
+
+func getUserSummaryFromCookie(w http.ResponseWriter, r *http.Request) *UserSummary {
+	dbUser := getDbUserFromCookie(w, r)
+	return userSummaryFromDbUser(dbUser)
 }
 
 func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
@@ -547,8 +554,8 @@ func startWebServer() {
 	}
 
 	srv := makeHTTPServer()
-	srv.Addr = httpAddr
-	log.Infof("Started runing on %s\n", httpAddr)
+	srv.Addr = flgHttpAddr
+	log.Infof("Started runing on %s\n", flgHttpAddr)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Errorf("srv.ListendAndServer() failed with %s\n", err)
 	}

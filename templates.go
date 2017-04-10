@@ -26,12 +26,26 @@ var (
 
 func getTemplates() *template.Template {
 	if reloadTemplates || (nil == templates) {
-		if 0 == len(templatePaths) {
-			for _, name := range templateNames {
-				templatePaths = append(templatePaths, filepath.Join("s", name))
+		var t *template.Template
+		for _, name := range templateNames {
+			filename := filepath.Join("s", name)
+			b, err := loadResourceFile(filename)
+			fatalIfErr(err, "loadResourceFile() failed")
+			s := string(b)
+			name := filepath.Base(filename)
+			var tmpl *template.Template
+			if t == nil {
+				t = template.New(name)
 			}
+			if name == t.Name() {
+				tmpl = t
+			} else {
+				tmpl = t.New(name)
+			}
+			_, err = tmpl.Parse(s)
+			fatalIfErr(err, "tmpl.Parse() failed")
 		}
-		templates = template.Must(template.ParseFiles(templatePaths...))
+		templates = t
 	}
 	return templates
 }
