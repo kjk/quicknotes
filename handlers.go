@@ -17,7 +17,6 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/kjk/log"
-	"github.com/kjk/u"
 )
 
 var (
@@ -212,7 +211,7 @@ func sha1ifyZipResource(path string) (string, bool) {
 		log.Verbosef("no resource '%s'\n", path)
 		return path, false
 	}
-	sha1 := u.Sha1HexOfBytes(d)
+	sha1 := Sha1HexOfBytes(d)
 	newPath := sha1ifyPath(path, sha1)
 	log.Verbosef("%s => %s\n", path, newPath)
 	resourcesFromZip[newPath] = d
@@ -304,7 +303,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Path[len("/s/"):]
 	path := filepath.Join("s", fileName)
 
-	if u.PathExists(path) {
+	if PathExists(path) {
 		http.ServeFile(w, r, path)
 		return
 	}

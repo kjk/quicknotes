@@ -14,7 +14,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kjk/log"
-	"github.com/kjk/u"
 )
 
 // TODO: use prepared statements where possible
@@ -401,7 +400,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		}
 	}()
 
-	fatalif(note.contentSha1 == nil, "note.contentSha1 is nil")
+	fatalIf(note.contentSha1 == nil, "note.contentSha1 is nil")
 	serializedTags := serializeTags(note.tags)
 
 	// for non-imported notes use current time as note creation time
@@ -1175,7 +1174,7 @@ func getWelcomeMD() []byte {
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
 	if user != nil {
-		u.PanicIfErr(err)
+		PanicIfErr(err)
 		return user, nil
 	}
 
