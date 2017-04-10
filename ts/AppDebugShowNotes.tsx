@@ -43,7 +43,7 @@ export default class AppDebugShowNotes extends Component<any, any> {
   }
 
   renderNote(note: Note) {
-    const styleTitle = {
+    const styleTitle: React.CSSProperties = {
       maxWidth: 120,
       color: 'gray',
       textOverflow: 'ellipsis',

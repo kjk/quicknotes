@@ -84,7 +84,7 @@ const markdownIt = new MarkdownIt(preset, markdownItOpts);
 // Remember old renderer, if already over-written, or proxy to default renderer
 function myRenderer(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, md: MarkdownIt.MarkdownIt): string {
   return md.renderer.renderToken(tokens, idx, options);
-};
+}
 
 const defaultRender = markdownIt.renderer.rules['link_open'] || myRenderer;
 

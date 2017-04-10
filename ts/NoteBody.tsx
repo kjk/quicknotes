@@ -4,12 +4,12 @@ import { Note, FetchLatestContent } from './Note';
 interface Props {
   note?: Note;
   compact?: boolean;
-};
+}
 
 interface State {
   note?: Note;
   body?: string;
-};
+}
 
 export default class NoteBody extends Component<Props, State> {
   constructor(props?: Props, context?: any) {
