@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"bytes"
 	"context"
 	"crypto/tls"
 	"errors"
@@ -146,7 +145,7 @@ var (
 )
 
 func hasZipResources() bool {
-	return len(resourcesZipData) > 0
+	return len(resourcesFromZip) > 0
 }
 
 func normalizePath(s string) string {
@@ -154,6 +153,7 @@ func normalizePath(s string) string {
 }
 
 func loadResourcesFromZipReader(zr *zip.Reader) error {
+	resourcesFromZip = make(map[string][]byte)
 	for _, f := range zr.File {
 		name := normalizePath(f.Name)
 		rc, err := f.Open()
@@ -168,6 +168,10 @@ func loadResourcesFromZipReader(zr *zip.Reader) error {
 		//log.Verbosef("Loaded '%s' of size %d bytes\n", name, len(d))
 		resourcesFromZip[name] = d
 	}
+
+	bundleJSPath, bundleJSPathIsSha1 = sha1ifyZipResource(bundleJSPath)
+	mainCSSPath, mainCSSPathIsSha1 = sha1ifyZipResource(mainCSSPath)
+
 	return nil
 }
 
@@ -190,7 +194,6 @@ func getUserSummaryFromCookie(w http.ResponseWriter, r *http.Request) *UserSumma
 
 // call this only once at startup
 func loadResourcesFromZip(path string) error {
-	resourcesFromZip = make(map[string][]byte)
 	zrc, err := zip.OpenReader(path)
 	if err != nil {
 		return err
@@ -224,34 +227,6 @@ func sha1ifyZipResource(path string) (string, bool) {
 		resourcesFromZip[newPath+".br"] = d
 	}
 	return newPath, true
-}
-
-func loadResourcesFromEmbeddedZip() error {
-	timeStart := time.Now()
-	defer func() {
-		log.Verbosef(" in %s\n", time.Since(timeStart))
-	}()
-
-	n := len(resourcesZipData)
-	if n == 0 {
-		return errors.New("len(resourcesZipData) == 0")
-	}
-	resourcesFromZip = make(map[string][]byte)
-	r := bytes.NewReader(resourcesZipData)
-	zrc, err := zip.NewReader(r, int64(n))
-	if err != nil {
-		log.Errorf("zip.NewReader() failed with '%s'\n", err)
-		return err
-	}
-	err = loadResourcesFromZipReader(zrc)
-	if err != nil {
-		log.Errorf("loadResourcesFromZipReader() failed with '%s'\n", err)
-		return err
-	}
-
-	bundleJSPath, bundleJSPathIsSha1 = sha1ifyZipResource(bundleJSPath)
-	mainCSSPath, mainCSSPathIsSha1 = sha1ifyZipResource(mainCSSPath)
-	return nil
 }
 
 func shouldCacheResource(path string) bool {
