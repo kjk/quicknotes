@@ -50,11 +50,6 @@ var (
 	}
 )
 
-func initAppMust() {
-	initCookieMust()
-	initHashID()
-}
-
 func verifyDirs() {
 	if !PathExists(getLogDir()) {
 		log.Fatalf("directory '%s' doesn't exist\n", getLogDir())
@@ -251,11 +246,13 @@ func main() {
 		log.IncVerbosity()
 	}
 
+	initCookieMust()
+	initHashID()
+
 	verifyDirs()
 	openLogFilesMust()
 
-	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir())
-	initAppMust()
+	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir(), flgVerbose)
 
 	if flgSearchLocalTerm != "" {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)
@@ -275,6 +272,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("loadResourcesFromZip() failed with '%s'\n", err)
 		}
+		fatalIf(!hasZipResources(), "should have zip resources")
 	}
 
 	getDbMust()

@@ -6,7 +6,7 @@ s/dist
 quicknotes_resources.zip
 quicknotes
 quicknotes_prod
-quicknotes_prod_linux
+quicknotes_linux
 typings/
 tsbuild/
 .vscode/
