@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
-
+set -u -e -o pipefail
 # uses source-map-explorer (https://www.npmjs.com/package/source-map-explorer)
 # to visualize what modules end up in final javascript bundle.
-
-set -o nounset
-set -o errexit
-set -o pipefail
 
 install_sme() {
 	if [ ! -f ./node_modules/.bin/source-map-explorer ]; then

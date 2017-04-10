@@ -1,8 +1,5 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 rm -f resources.go
 wc -l s/*.html sass/*.sass sass/*.scss

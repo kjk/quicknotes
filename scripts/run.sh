@@ -1,8 +1,5 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 IFS=\; read -a ip_port <<<"`./scripts/start_docker.py`"
 ip="${ip_port[0]}"
@@ -21,5 +18,5 @@ go build -race -o quicknotes
 #go build -race -o quicknotes
 
 echo "starting quicknotes, using mysql from docker"
-./quicknotes -local -verbose -db-host ${ip} -db-port ${port} $@ || true
+./quicknotes -verbose -db-host ${ip} -db-port ${port} $@ || true
 rm ./quicknotes

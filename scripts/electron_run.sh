@@ -1,8 +1,5 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 cd ./electron
 ./node_modules/.bin/electron . $@

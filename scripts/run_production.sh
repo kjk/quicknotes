@@ -1,8 +1,5 @@
 #!/bin/bash
-
-set -o nounset
-set -o errexit
-set -o pipefail
+set -u -e -o pipefail
 
 . scripts/lint.sh
 
@@ -19,5 +16,5 @@ ip="${ip_port[0]}"
 port="${ip_port[1]}"
 
 echo "starting quicknotes, using mysql from docker"
-./quicknotes_prod -local -verbose -db-host ${ip} -db-port ${port} $@ || true
+./quicknotes_prod -verbose -db-host ${ip} -db-port ${port} $@ || true
 rm ./quicknotes_prod
