@@ -213,19 +213,16 @@ func dbKeyForContentSha1(sha1 []byte) []byte {
 
 // PutContent returns sha1 of d
 func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
-	sha1 := u.Sha1OfBytes(d)
+	var err error
 	var val []byte
-	size := len(d)
+	sha1 := u.Sha1OfBytes(d)
 
 	key := dbKeyForContentSha1(sha1)
-	has, err := store.db.Has(key, nil)
-	if err == nil && has {
-		return sha1, nil
-	}
+
 	store.mu.Lock()
 	defer store.mu.Unlock()
 
-	if size > store.FileSizeSegmentThreshold {
+	if len(d) > store.FileSizeSegmentThreshold {
 		err := saveToFile(store.pathForSha1(sha1), d)
 		if err != nil {
 			return nil, err
@@ -292,7 +289,7 @@ func (store *LocalStore) readFromSegmentFileLimited(fileName string, limit int) 
 	return readFromFilePath(path, offset, size)
 }
 
-func (store *LocalStore) getContentBySha1Limited(sha1 []byte, limit int) ([]byte, error) {
+func (store *LocalStore) getContentBySha1LimitedRaw(sha1 []byte, limit int) ([]byte, error) {
 	key := dbKeyForContentSha1(sha1)
 	name, err := store.db.Get(key, nil)
 	if err != nil {
@@ -307,6 +304,30 @@ func (store *LocalStore) getContentBySha1Limited(sha1 []byte, limit int) ([]byte
 		return ioutil.ReadFile(path)
 	}
 	return readFileLimited(path, limit)
+}
+
+func (store *LocalStore) getContentBySha1Limited(sha1 []byte, limit int) ([]byte, error) {
+	d, err := store.getContentBySha1LimitedRaw(sha1, limit)
+	if err != nil {
+		log.Errorf("LocalStore.getContentBySha1LimitedRaw(%x) failed with %s\n", sha1, err)
+		d, err = readNoteFromGoogleStorage(sha1)
+		if err != nil {
+			log.Errorf("LocalStore.getContentBySha1Limited: readNoteFromGoogleStorage() failed with %s\n", err)
+			return nil, err
+		}
+		// cache locally
+		_, err = localStore.PutContent(d)
+		if err != nil {
+			log.Errorf("LocalStore.getContentBySha1Limited: localStore.PutContent() failed with %s\n", err)
+		}
+	}
+	if len(d) == 0 {
+		log.Errorf("LocalStore.getContentBySha1Limited: len(d) for %x is 0!\n", sha1)
+	}
+	if limit > 0 && len(d) > limit {
+		d = d[:limit]
+	}
+	return d, nil
 }
 
 // GetContentBySha1 reads the content by sha1
