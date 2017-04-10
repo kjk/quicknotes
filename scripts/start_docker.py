@@ -3,7 +3,7 @@
 import sys, os, os.path, time, subprocess
 
 g_imageName = "mysql:5.6"
-g_containerName = "mysql-56-for-quicknotes"
+g_containerName = "mysql-for-quicknotes"
 # this is where mysql database files are stored, so that
 # they persist even if container goes away
 g_dbDir = os.path.expanduser("~/data/quicknotes/db")
@@ -71,7 +71,7 @@ def decode_ip_port(mappings):
 def docker_container_info(containerName):
   s = run_cmd_out(["docker", "ps", "-a", "--format", "{{.ID}}|{{.Status}}|{{.Ports}}|{{.Names}}"])
   # this returns a line like:
-  # 6c5a934e00fb|Exited (0) 3 months ago|0.0.0.0:7200->3306/tcp|mysql-56-for-quicknotes
+  # 6c5a934e00fb|Exited (0) 3 months ago|0.0.0.0:7200->3306/tcp|mysql-for-quicknotes
   lines = s.split("\n")
   for l in lines:
     if len(l) == 0:
