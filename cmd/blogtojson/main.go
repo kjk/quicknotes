@@ -12,8 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/kjk/u"
 )
 
 // this programs converts my blog posts into .json format that can be
@@ -75,7 +73,7 @@ func parseDate(s string) (time.Time, error) {
 
 func readNote(path string) *Note {
 	f, err := os.Open(path)
-	u.PanicIfErr(err)
+	PanicIfErr(err)
 	defer f.Close()
 
 	n := &Note{}
@@ -87,7 +85,7 @@ func readNote(path string) *Note {
 	r := bufio.NewReader(f)
 	for {
 		l, err := r.ReadString('\n')
-		u.PanicIfErr(err)
+		PanicIfErr(err)
 		l = strings.TrimSpace(l)
 		if isSepLine(l) {
 			break
@@ -112,7 +110,7 @@ func readNote(path string) *Note {
 			n.Format = parseFormat(v)
 		case "date":
 			d, err := parseDate(v)
-			u.PanicIfErr(err)
+			PanicIfErr(err)
 			n.CreatedAt = d
 		default:
 			log.Fatalf("Unexpected key: %q\n", k)
@@ -120,19 +118,19 @@ func readNote(path string) *Note {
 		}
 	}
 	d, err := ioutil.ReadAll(r)
-	u.PanicIfErr(err)
+	PanicIfErr(err)
 	n.Content = d
 	return n
 }
 
 func writeNotes(path string, notes []*Note) {
 	f, err := os.Create(path)
-	u.PanicIfErr(err)
+	PanicIfErr(err)
 	defer f.Close()
 	enc := json.NewEncoder(f)
 	for _, n := range notes {
 		err := enc.Encode(n)
-		u.PanicIfErr(err)
+		PanicIfErr(err)
 	}
 	fmt.Printf("wrote notes as json to '%s'\n", path)
 }
@@ -158,7 +156,7 @@ func main() {
 		dir := dirsToVisit[0]
 		dirsToVisit = dirsToVisit[1:]
 		entries, err := ioutil.ReadDir(dir)
-		u.PanicIfErr(err)
+		PanicIfErr(err)
 		for _, fi := range entries {
 			name := fi.Name()
 			if fi.IsDir() {

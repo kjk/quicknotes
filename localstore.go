@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/kjk/log"
-	"github.com/kjk/u"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -69,7 +68,10 @@ func closeFilePtr(filePtr **os.File) (err error) {
 // NewLocalStore creates a new store in a given directory
 func NewLocalStore(dir string) (*LocalStore, error) {
 	filesDir := filepath.Join(dir, "files")
-	err := u.CreateDirIfNotExists(filesDir)
+	err := os.MkdirAll(filesDir, 0755)
+	if err != nil {
+		return nil, err
+	}
 	dbDir := filepath.Join(dir, "db")
 	db, err := leveldb.OpenFile(dbDir, nil)
 	if err != nil {
@@ -86,12 +88,12 @@ func NewLocalStore(dir string) (*LocalStore, error) {
 }
 
 func saveToFile(path string, d []byte) error {
-	if u.PathExists(path) {
+	if PathExists(path) {
 		return nil
 	}
-	err := u.CreateDirForFile(path)
+	err := os.MkdirAll(path, 0755)
 	if err != nil {
-		log.Errorf("u.CrewateDirForFile('%s') failed with %s\n", path, err)
+		log.Errorf("os.MkdirAll('%s') failed with %s\n", path, err)
 		return err
 	}
 	return ioutil.WriteFile(path, d, 0644)
@@ -148,7 +150,7 @@ func (store *LocalStore) saveToSegmentFile(d []byte) ([]byte, error) {
 			return nil, err
 		}
 		path := filepath.Join(store.filesDir, segmentFileName)
-		if u.PathExists(path) {
+		if PathExists(path) {
 			log.Verbosef("opening existing segment file %s\n", path)
 			fi, err := os.Stat(path)
 			if err != nil {
@@ -215,7 +217,7 @@ func dbKeyForContentSha1(sha1 []byte) []byte {
 func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 	var err error
 	var val []byte
-	sha1 := u.Sha1OfBytes(d)
+	sha1 := Sha1OfBytes(d)
 
 	key := dbKeyForContentSha1(sha1)
 

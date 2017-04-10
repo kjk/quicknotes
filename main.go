@@ -15,7 +15,6 @@ import (
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/kjk/log"
-	"github.com/kjk/u"
 )
 
 const (
@@ -55,10 +54,10 @@ func initAppMust() {
 }
 
 func verifyDirs() {
-	if !u.PathExists(getLogDir()) {
+	if !PathExists(getLogDir()) {
 		log.Fatalf("directory '%s' doesn't exist\n", getLogDir())
 	}
-	if !u.PathExists(getDataDir()) {
+	if !PathExists(getDataDir()) {
 		log.Fatalf("directory '%s' doesn't exist\n", getDataDir())
 	}
 	err := os.MkdirAll(getCacheDir(), 0755)
@@ -74,10 +73,18 @@ func isLocal() bool {
 
 func getDataDir() string {
 	if isLocal() {
-		return u.ExpandTildeInPath("~/data/quicknotes")
+		return ExpandTildeInPath("~/data/quicknotes")
 	}
 	//  on the server it's in /home/quicknotes/www/data
-	return u.ExpandTildeInPath("~/www/data")
+	dirs := []string{"/data/quicknotes", "~/www/data"}
+	for _, dir := range dirs {
+		dir = ExpandTildeInPath(dir)
+		if PathExists(dir) {
+			return dir
+		}
+	}
+	fatalIf(true, "data dir doesn't exist. Tried: %v", dirs)
+	return ""
 }
 
 func getLogDir() string {
@@ -209,9 +216,9 @@ func dailyTasksLoop() {
 
 func debugShowNote(hashedNoteID string) {
 	noteID, err := dehashInt(hashedNoteID)
-	u.PanicIfErr(err)
+	PanicIfErr(err)
 	note, err := dbGetNoteByID(noteID)
-	u.PanicIfErr(err)
+	PanicIfErr(err)
 	body := note.Content()
 	snippet := note.Snippet
 	fmt.Printf(`Note id: %d (%s), partial: %v, truncated: %v

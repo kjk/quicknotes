@@ -182,7 +182,7 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 func getNotesForUser(ctx *ReqContext, userID int, latestVersion int) (interface{}, error) {
 	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
-		return nil, fmt.Errorf("getCachedUserInfo('%d') failed with '%s'\n", userID, err)
+		return nil, fmt.Errorf("getCachedUserInfo('%d') failed with '%s'", userID, err)
 	}
 
 	showPrivate := ctx.User != nil && userID == ctx.User.id

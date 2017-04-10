@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/kjk/log"
-	"github.com/kjk/u"
 )
 
 // RecordingResponseWriter records return code and number of bytes written
@@ -239,14 +238,14 @@ func serveData(w http.ResponseWriter, r *http.Request, code int, contentType str
 
 func serveMaybeGzippedFile(w http.ResponseWriter, r *http.Request, path string) {
 	log.Verbosef("path: '%s'\n", path)
-	if !u.PathExists(path) {
+	if !PathExists(path) {
 		http.NotFound(w, r)
 		return
 	}
 	contentType := MimeTypeByExtensionExt(path)
 	usesGzip := acceptsGzip(r)
 	if usesGzip {
-		if u.PathExists(path + ".gz") {
+		if PathExists(path + ".gz") {
 			path = path + ".gz"
 		} else {
 			usesGzip = false

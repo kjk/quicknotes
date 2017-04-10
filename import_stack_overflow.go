@@ -12,7 +12,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/kjk/lzmadec"
 	"github.com/kjk/stackoverflow"
-	"github.com/kjk/u"
 )
 
 var (
@@ -22,12 +21,14 @@ var (
 	userIDToInfo      map[int]*UserInfo
 )
 
+// UserInfo is info about a user
 type UserInfo struct {
 	userID   int
 	dbUserID int
 	name     string
 }
 
+// PostChange records a change of a post
 type PostChange struct {
 	postID    int
 	userID    int
@@ -39,7 +40,7 @@ type PostChange struct {
 }
 
 func init() {
-	importDataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
+	importDataDir = ExpandTildeInPath("~/data/import_stack_overflow")
 	posts = make(map[int]*PostChange)
 	historyTypeCounts = make(map[int]int)
 	userIDToInfo = make(map[int]*UserInfo)

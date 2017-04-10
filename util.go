@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"crypto/sha1"
 	"fmt"
 	"mime"
+	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -13,7 +16,6 @@ import (
 	"unicode"
 
 	"github.com/kjk/log"
-	"github.com/kjk/u"
 	"github.com/speps/go-hashids"
 )
 
@@ -23,13 +25,20 @@ var (
 	hashID   *hashids.HashID
 )
 
+// PanicIfErr panics if err is not nil
+func PanicIfErr(err error) {
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func fatalIfErr(err error, what string) {
 	if err != nil {
 		log.Fatalf("%s failed with %s\n", what, err)
 	}
 }
 
-func fatalif(cond bool, format string, args ...interface{}) {
+func fatalIf(cond bool, format string, args ...interface{}) {
 	if cond {
 		log.Fatalf(format, args...)
 	}
@@ -125,7 +134,7 @@ func hashInt(n int) string {
 	hashIDMu.Lock()
 	res, err := hashID.Encode(nums)
 	hashIDMu.Unlock()
-	u.PanicIfErr(err)
+	PanicIfErr(err)
 	return res
 }
 
@@ -273,4 +282,51 @@ func getFirstLine(d []byte) []byte {
 		}
 		d = d[advance:]
 	}
+}
+
+// PathExists returns true if a filesystem path exists
+// Treats any error (e.g. lack of access due to permissions) as non-existence
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+// Sha1HexOfBytes returns 40-byte hex sha1 of bytes
+func Sha1HexOfBytes(data []byte) string {
+	return fmt.Sprintf("%x", Sha1OfBytes(data))
+}
+
+// Sha1OfBytes returns 20-byte sha1 of bytes
+func Sha1OfBytes(data []byte) []byte {
+	h := sha1.New()
+	h.Write(data)
+	return h.Sum(nil)
+}
+
+// UserHomeDir returns $HOME diretory of the user
+func UserHomeDir() string {
+	// user.Current() returns nil if cross-compiled e.g. on mac for linux
+	if usr, _ := user.Current(); usr != nil {
+		return usr.HomeDir
+	}
+	return os.Getenv("HOME")
+}
+
+// ExpandTildeInPath converts ~ to $HOME
+func ExpandTildeInPath(s string) string {
+	if strings.HasPrefix(s, "~") {
+		return UserHomeDir() + s[1:]
+	}
+	return s
+}
+
+// CreateDirIfNotExists creates a directory if it doesn't exist
+func CreateDirIfNotExists(dir string) error {
+	return os.MkdirAll(dir, 0755)
+}
+
+// CreateDirMust creates a directory. Panics on error
+func CreateDirMust(path string) {
+	err := os.MkdirAll(path, 0755)
+	PanicIfErr(err)
 }
