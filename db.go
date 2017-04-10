@@ -244,7 +244,7 @@ func getCachedContent(sha1 []byte) ([]byte, error) {
 	if i != nil {
 		return i.d, nil
 	}
-	d, err := loadContent(sha1)
+	d, err := localStore.GetContentBySha1(sha1)
 	if err != nil {
 		return nil, err
 	}
@@ -387,19 +387,6 @@ func saveContent(d []byte) ([]byte, error) {
 	}
 	err = saveNoteToGoogleStorage(sha1, d)
 	return sha1, err
-}
-
-func loadContent(sha1 []byte) ([]byte, error) {
-	d, err := localStore.GetContentBySha1(sha1)
-	if err != nil {
-		d, err = readNoteFromGoogleStorage(sha1)
-		if err != nil {
-			return nil, err
-		}
-		// cache locally
-		localStore.PutContent(d)
-	}
-	return d, nil
 }
 
 func dbCreateNewNote(userID int, note *NewNote) (int, error) {
@@ -1000,6 +987,8 @@ LIMIT %d`
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
 	for rows.Next() {
 		var n Note
 		var tagsSerialized string

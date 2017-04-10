@@ -126,6 +126,7 @@ ORDER BY created_at DESC`
 		log.Errorf("db.Query('%s') failed with '%s'\n", q, err)
 		return err
 	}
+	defer rows.Close()
 	var notes []NoteIndex
 	for rows.Next() {
 		var noteID int
