@@ -314,7 +314,7 @@ func UserHomeDir() string {
 
 // ExpandTildeInPath converts ~ to $HOME
 func ExpandTildeInPath(s string) string {
-	if strings.HasPrefix(s, "~") {
+	if strings.HasPrefix(s, "~/") {
 		return UserHomeDir() + s[1:]
 	}
 	return s

@@ -68,21 +68,25 @@ func verifyDirs() {
 	}
 }
 
-// return true when running locally
-func isLocal() bool {
-	return isMac()
-}
+var (
+	dataDir string
+)
 
 func getDataDir() string {
-	if isLocal() {
-		return ExpandTildeInPath("~/data/quicknotes")
+	if dataDir != "" {
+		return dataDir
 	}
-	//  on the server it's in /home/quicknotes/www/data
-	dirs := []string{"/data/quicknotes", "~/www/data"}
+
+	// /data/quicknotes : on the server or when running locally on mac
+	// ~/data/quicknotes : locally on mac
+	// TODO: ~/www/data is legacy
+	dirs := []string{"/data/quicknotes", "~/data/quicknotes", "~/www/data"}
 	for _, dir := range dirs {
 		dir = ExpandTildeInPath(dir)
 		if PathExists(dir) {
-			return dir
+			dataDir = dir
+			log.Verbosef("dataDir: '%s'\n", dataDir)
+			return dataDir
 		}
 	}
 	fatalIf(true, "data dir doesn't exist. Tried: %v", dirs)
@@ -121,7 +125,7 @@ func parseFlags() {
 	flag.BoolVar(&flgUseResourcesZip, "use-resources-zip", false, "use quicknotes_resources.zip for static resources")
 
 	flag.Parse()
-	if isLocal() {
+	if !flgProduction {
 		onlyLocalStorage = true
 	}
 }
@@ -194,7 +198,7 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 
 func dailyTasksLoop() {
 	// things we do at application start
-	if !isLocal() {
+	if flgProduction {
 		sendBootMail()
 	}
 	buildPublicNotesIndex()
@@ -250,7 +254,7 @@ func main() {
 	verifyDirs()
 	openLogFilesMust()
 
-	log.Infof("local: %v, proddb: %v, sql connection: %s, data dir: %s\n", isLocal(), flgProdDb, getSQLConnectionRoot(), getDataDir())
+	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir())
 	initAppMust()
 
 	if flgSearchLocalTerm != "" {
@@ -305,7 +309,7 @@ func main() {
 		return
 	}
 
-	if isLocal() && !hasZipResources() {
+	if !hasZipResources() {
 		runGulpAsync()
 	}
 
