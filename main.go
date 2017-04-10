@@ -24,6 +24,8 @@ const (
 var (
 	httpAddr = "127.0.0.1:5111"
 
+	flgProduction          bool
+	flgUseResourcesZip     bool
 	flgVerbose             bool
 	flgProdDb              bool // if true, use gce db when running localy
 	flgDbHost              string
@@ -115,6 +117,9 @@ func parseFlags() {
 	flag.StringVar(&flgDbPort, "db-port", "3306", "database port")
 	flag.BoolVar(&flgVerbose, "verbose", false, "enable verbose logging")
 	flag.StringVar(&flgShowNote, "show-note", "", "show a note with a given hashed id")
+	flag.BoolVar(&flgProduction, "production", false, "running in production")
+	flag.BoolVar(&flgUseResourcesZip, "use-resources-zip", false, "use quicknotes_resources.zip for static resources")
+
 	flag.Parse()
 	if isLocal() {
 		onlyLocalStorage = true
@@ -260,14 +265,12 @@ func main() {
 		return
 	}
 
-	if hasZipResources() {
+	if flgProduction || flgUseResourcesZip {
 		log.Verbosef("using resources from embedded .zip\n")
-		err = loadResourcesFromEmbeddedZip()
+		err = loadResourcesFromZip("quicknotes_resources.zip")
 		if err != nil {
-			log.Fatalf("loadResourcesFromEmbeddedZip() failed with '%s'\n", err)
+			log.Fatalf("loadResourcesFromZip() failed with '%s'\n", err)
 		}
-	} else {
-		log.Verbosef("not using resources from embedded .zip\n")
 	}
 
 	getDbMust()

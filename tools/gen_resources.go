@@ -13,13 +13,6 @@ import (
 	"strings"
 )
 
-const hdr = `// +build embeded_resources
-
-package main
-
-var resourcesZipData = []byte{
-`
-
 func printStack() {
 	buf := make([]byte, 1024*164)
 	n := runtime.Stack(buf, false)
@@ -270,35 +263,8 @@ func genHexLine(f *os.File, d []byte, off, n int) {
 	fataliferr(err)
 }
 
-func genResourcesGo(goPath, dataPath string) {
-	d, err := ioutil.ReadFile(dataPath)
-	fataliferr(err)
-	f, err := os.Create(goPath)
-	fataliferr(err)
-	defer f.Close()
-	f.WriteString(hdr)
-
-	nPerLine := 16
-	nFullLines := len(d) / nPerLine
-	nLastLine := len(d) % nPerLine
-	n := 0
-	for i := 0; i < nFullLines; i++ {
-		genHexLine(f, d, n, nPerLine)
-		n += nPerLine
-	}
-	genHexLine(f, d, n, nLastLine)
-	f.WriteString("}\n")
-}
-
-func genResources() {
-	zipPath := "quicknotes_resources.zip"
-	createResourcesZip(zipPath)
-	goPath := "resources.go"
-	genResourcesGo(goPath, zipPath)
-}
-
 func main() {
 	checkZopfliInstalled()
 	checkBrotliInstalled()
-	genResources()
+	createResourcesZip("quicknotes_resources.zip")
 }
