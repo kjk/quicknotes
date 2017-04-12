@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u -e -o pipefail
+set -u -e -o pipefail -o verbose
 
 IFS=\; read -a ip_port <<<"`./scripts/start_docker.py`"
 ip="${ip_port[0]}"
