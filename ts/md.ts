@@ -1,6 +1,7 @@
 import * as marked from 'marked';
 import MarkdownIt from 'markdown-it';
 import * as hljs from 'highlight.js';
+import * as showdown from 'showdown';
 
 const renderer = new marked.Renderer();
 
@@ -109,7 +110,36 @@ function toHtmlMarkdownIt(s: string) {
   return html;
 }
 
+// https://github.com/cybercase/showdown-target-blank/blob/master/src/target_blank.js
+const showdownTargetBlank: showdown.RegexReplaceExtension = {
+  type: 'output',
+  regex: '<a(.*?)>',
+  replace: function(match: any, content: string) {
+    return content.indexOf('mailto:') !== -1 ? '<a' + content + '>' : '<a target="_blank"' + content + '>';
+  }
+};
+
+showdown.extension('targetblank', () => {
+  return showdownTargetBlank;
+});
+
+function toHtmlShowdown(s: string): string {
+  const opts: showdown.ConverterOptions = {
+    tables: true,
+    strikethrough: true,
+    ghCodeBlocks: true,
+    tasklists: true,
+    smoothLivePreview: true,
+    extensions: ['targetblank'],
+  };
+  const converter = new showdown.Converter();
+  converter.setFlavor('github');
+  const html = converter.makeHtml(s);
+  return html;
+}
+
 export function toHtml(s: string) {
-  return toHtmlMarkdownIt(s);
+  //return toHtmlMarkdownIt(s);
+  return toHtmlShowdown(s);
   // return toHtmlMarked(s);
 }
