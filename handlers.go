@@ -554,8 +554,8 @@ func startWebServer() {
 	}
 
 	srv := makeHTTPServer()
-	srv.Addr = flgHttpAddr
-	log.Infof("Started runing on %s\n", flgHttpAddr)
+	srv.Addr = flgHTTPAddr
+	log.Infof("Started runing on %s\n", flgHTTPAddr)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Errorf("srv.ListendAndServer() failed with %s\n", err)
 	}

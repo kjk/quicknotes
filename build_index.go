@@ -100,8 +100,7 @@ SELECT count(*)
 FROM notes
 WHERE is_public = true AND is_deleted = false AND is_encrypted = false`
 
-	row := db.QueryRow(q)
-	err := row.Scan(&nNotes)
+	err := db.QueryRow(q).Scan(&nNotes)
 	if err != nil {
 		log.Errorf("row.Scan() for '%s' failed with '%s'\n", q, err)
 		return err

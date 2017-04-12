@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	flgHttpAddr            string
+	flgHTTPAddr            string
 	flgProduction          bool
 	flgUseResourcesZip     bool
 	flgVerbose             bool
@@ -117,7 +117,7 @@ func parseFlags() {
 	flag.StringVar(&flgShowNote, "show-note", "", "show a note with a given hashed id")
 	flag.BoolVar(&flgProduction, "production", false, "running in production")
 	flag.BoolVar(&flgUseResourcesZip, "use-resources-zip", false, "use quicknotes_resources.zip for static resources")
-	flag.StringVar(&flgHttpAddr, "http-addr", "127.0.0.1:5111", "address on which to listen")
+	flag.StringVar(&flgHTTPAddr, "http-addr", "127.0.0.1:5111", "address on which to listen")
 
 	flag.Parse()
 	if !flgProduction {
@@ -253,10 +253,10 @@ func main() {
 	openLogFilesMust()
 
 	if flgProduction {
-		flgHttpAddr = ":80"
+		flgHTTPAddr = ":80"
 	}
 
-	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir(), flgHttpAddr, flgVerbose)
+	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir(), flgHTTPAddr, flgVerbose)
 
 	if flgSearchLocalTerm != "" {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)

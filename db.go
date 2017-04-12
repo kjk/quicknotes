@@ -925,7 +925,6 @@ WHERE user_id = ?`
 		}
 		n.userID = user.ID
 		n.Tags = deserializeTags(tagsSerialized)
-		n.SetCalculatedProperties()
 		notes = append(notes, &n)
 	}
 	err = rows.Err()
@@ -933,6 +932,25 @@ WHERE user_id = ?`
 		log.Errorf("rows.Err() for '%s' failed with %s\n", q, err)
 		return nil, err
 	}
+
+	// if note bodies are not cached locally, download them from google storage
+	// in parallel.
+	nWorkers := 64
+	sem := make(chan bool, nWorkers)
+	var wg sync.WaitGroup
+	for _, note := range notes {
+		sem <- true
+		wg.Add(1)
+		go func(note *Note) {
+			defer func() {
+				<-sem
+				wg.Done()
+			}()
+			// force downloading of note content if not cached locally
+			note.SetCalculatedProperties()
+		}(note)
+	}
+	wg.Wait()
 	return notes, nil
 }
 
