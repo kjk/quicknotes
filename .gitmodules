@@ -22,9 +22,6 @@
 [submodule "vendor/github.com/gorilla/securecookie"]
 	path = vendor/github.com/gorilla/securecookie
 	url = https://github.com/gorilla/securecookie
-[submodule "vendor/github.com/kjk/log"]
-	path = vendor/github.com/kjk/log
-	url = https://github.com/kjk/log
 [submodule "vendor/github.com/kjk/lzmadec"]
 	path = vendor/github.com/kjk/lzmadec
 	url = https://github.com/kjk/lzmadec

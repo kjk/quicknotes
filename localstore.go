@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

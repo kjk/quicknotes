@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/garyburd/go-oauth/oauth"
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 const (

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 // DayStat record number of events in a given day

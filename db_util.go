@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"strings"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 var (

@@ -13,7 +13,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 // TODO: use prepared statements where possible

@@ -15,7 +15,7 @@ import (
 
 	"golang.org/x/crypto/acme/autocert"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 var (

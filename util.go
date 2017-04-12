@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 	"github.com/speps/go-hashids"
 )
 

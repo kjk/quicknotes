@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 const (

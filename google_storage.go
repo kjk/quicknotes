@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/oauth2/google"
