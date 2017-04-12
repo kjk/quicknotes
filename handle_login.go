@@ -13,7 +13,7 @@ import (
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/google/go-github/github"
 	"github.com/gorilla/securecookie"
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 	"golang.org/x/oauth2"
 	goauth2 "google.golang.org/api/oauth2/v2"
 )

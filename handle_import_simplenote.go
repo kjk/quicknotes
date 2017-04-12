@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 	"github.com/kjk/simplenote"
 )
 

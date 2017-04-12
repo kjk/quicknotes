@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kjk/log"
+	"github.com/kjk/quicknotes/pkg/log"
 )
 
 type ContentId struct {
