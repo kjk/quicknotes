@@ -85,10 +85,7 @@ export default class AppUser extends Component<Props, State> {
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.handleUpdateNotes = this.handleUpdateNotes.bind(this);
 
-    let allNotes: Note[] = props.initialNotes;
-    let selectedNotes: Note[] = [];
     let selectedTags = [props.initialTag];
-    let tags: TagToCount = {};
 
     let loggedUserHandle = '';
     let loggedUserIDHash = '';
@@ -97,23 +94,17 @@ export default class AppUser extends Component<Props, State> {
       loggedUserIDHash = gLoggedUser.HashID;
     }
 
-    if (allNotes.length > 0) {
-      sortNotesByUpdatedAt(allNotes);
-      selectedNotes = u.filterNotesByTags(allNotes, selectedTags);
-      tags = tagsFromNotes(allNotes);
-    }
-
     this.state = {
-      allNotes: allNotes,
-      selectedNotes: selectedNotes,
       selectedTags: selectedTags,
-      tags: tags,
       notesUserIDHash: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
       loggedUserIDHash: loggedUserIDHash,
       loggedUserHandle: loggedUserHandle,
       resetScroll: false
     };
+
+    let allNotes: Note[] = props.initialNotes;
+    this.setNotes(allNotes);
   }
 
   componentDidMount() {

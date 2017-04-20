@@ -59,7 +59,7 @@
   version "15.0.21"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.21.tgz#29d849427237c1463abfb7b370755ee3e5b5b375"
 
-"@types/showdown@^1.4.32":
+"@types/showdown@1.4.32":
   version "1.4.32"
   resolved "https://registry.yarnpkg.com/@types/showdown/-/showdown-1.4.32.tgz#bb0b32dbafee23ae9575df30b227e4fc2f0cd45b"
 
@@ -4290,7 +4290,7 @@ shell-quote@^1.6.1:
     array-reduce "~0.0.0"
     jsonify "~0.0.0"
 
-showdown@^1.6.4:
+showdown@1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/showdown/-/showdown-1.6.4.tgz#056bbb654ecdb8d8643ae12d6d597893ccaf46c6"
   dependencies:
