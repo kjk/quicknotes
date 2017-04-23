@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
 
-/*
-Overlay.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  onClick: PropTypes.func
-};
-*/
-
 interface Props {
-  children?: any;
-  onClick?: any;
+  children?: any[];
+  onClick?: (e: any) => void;
 }
 
 export default class Overlay extends Component<Props, any> {

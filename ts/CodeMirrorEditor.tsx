@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import * as ReactDOM from 'react-dom';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/markdown/markdown';
@@ -12,27 +11,12 @@ import 'codemirror/mode/markdown/markdown';
 // https://github.com/JedWatson/react-md-editor
 // https://github.com/ForbesLindesay/react-code-mirror/blob/master/standalone.js
 
-/*
-CodeMirrorEditor.propTypes = {
-  defaultValue: PropTypes.string,
-  style: PropTypes.object,
-  className: PropTypes.string,
-  onChange: PropTypes.func,
-  onEditorCreated: PropTypes.func,
-  readOnly: PropTypes.bool,
-  value: PropTypes.string,
-  textAreaStyle: PropTypes.object,
-  textAreaClassName: PropTypes.string,
-  cmOptions: PropTypes.object
-};
-*/
-
 interface Props {
   defaultValue?: string;
   style?: any;
   className?: string;
-  onChange?: any;
-  onEditorCreated?: any;
+  onChange?: (cm: any) => void;
+  onEditorCreated?: (cm: any) => void;
   readOnly?: boolean;
   value?: string;
   textAreaStyle?: any;
