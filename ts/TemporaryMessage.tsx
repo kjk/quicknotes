@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import * as action from './action';
 
 const hideTimeOut = 5 * 1000; // 5 secs

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as ReactDOM from 'react-dom';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/markdown/markdown';
