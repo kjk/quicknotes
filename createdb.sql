@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id                  INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   # in the form of twitter:kjk, github:kjk, google:kowalczyk@gmail.com etc.
   login               VARCHAR(255) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE users (
   INDEX (email)
 );
 
-CREATE TABLE notes (
+CREATE TABLE IF NOT EXISTS notes (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   user_id           INT NOT NULL,
   curr_version_id   INT NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE notes (
     ON DELETE CASCADE
 );
 
-CREATE TABLE versions (
+CREATE TABLE IF NOT EXISTS versions (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   note_id           INT NOT NULL,
   created_at        TIMESTAMP NOT NULL,
@@ -64,6 +64,6 @@ CREATE TABLE versions (
     ON DELETE CASCADE
 );
 
-CREATE TABLE db_migrations (
+CREATE TABLE IF NOT EXISTS db_migrations (
 	version int NOT NULL
 );

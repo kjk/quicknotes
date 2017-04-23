@@ -32,16 +32,28 @@ func PanicIfErr(err error) {
 	}
 }
 
-func fatalIfErr(err error, what string) {
-	if err != nil {
-		log.Fatalf("%s failed with %s\n", what, err)
+func fatalIfErr(err error, args ...interface{}) {
+	if err == nil {
+		return
 	}
+	msg := err.Error()
+	if len(args) > 0 {
+		s, ok := args[0].(string)
+		if ok {
+			msg = s
+			if len(s) > 1 {
+				msg = fmt.Sprintf(msg, args[1:]...)
+			}
+		}
+	}
+	log.Fatalf("%s\n", msg)
 }
 
 func fatalIf(cond bool, format string, args ...interface{}) {
-	if cond {
-		log.Fatalf(format, args...)
+	if !cond {
+		return
 	}
+	log.Fatalf(format, args...)
 }
 
 func isWin() bool {

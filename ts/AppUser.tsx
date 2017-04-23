@@ -85,8 +85,6 @@ export default class AppUser extends Component<Props, State> {
     this.handleTagSelected = this.handleTagSelected.bind(this);
     this.handleUpdateNotes = this.handleUpdateNotes.bind(this);
 
-    let selectedTags = [props.initialTag];
-
     let loggedUserHandle = '';
     let loggedUserIDHash = '';
     if (gLoggedUser) {
@@ -95,15 +93,17 @@ export default class AppUser extends Component<Props, State> {
     }
 
     this.state = {
-      selectedTags: selectedTags,
+      selectedTags: [this.props.initialTag],
       notesUserIDHash: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
       loggedUserIDHash: loggedUserIDHash,
       loggedUserHandle: loggedUserHandle,
       resetScroll: false
     };
+  }
 
-    let allNotes: Note[] = props.initialNotes;
+  componentWillUpdate() {
+    let allNotes: Note[] = this.props.initialNotes;
     this.setNotes(allNotes);
   }
 
