@@ -60,11 +60,13 @@ func init() {
 
 func getSQLConnectionRoot() string {
 	// TODO: always pass flgDbHost && flgDbPort
-	if flgProduction || flgProdDb {
-		return "root:7UgJnRvp39vW@tcp(138.68.248.213:3306)/"
-		//return "root@tcp(localhost:3306)/"
+	if flgProduction {
+		return "quicknotes:R4ISoyZ2Vj8i@tcp(10.138.224.27:3306)/"
 	}
-	return fmt.Sprintf("root:7UgJnRvp39vW@tcp(%s:%s)/", flgDbHost, flgDbPort)
+	if flgProdDb {
+		return "quicknotes:R4ISoyZ2Vj8i@tcp(138.68.237.61:3306)/"
+	}
+	return fmt.Sprintf("quicknotes:R4ISoyZ2Vj8i@tcp(%s:%s)/", flgDbHost, flgDbPort)
 }
 
 func getSQLConnection() string {
@@ -343,14 +345,8 @@ func dumpCreateDbStatements() {
 
 func createDatabaseMust() {
 	log.Verbosef("trying to create the database\n")
-	db, err := sql.Open("mysql", getSQLConnectionRoot())
-	fatalIfErr(err, "sql.Open()")
-	err = db.Ping()
-	fatalIfErr(err, "db.Ping()")
-	execMust(db, `CREATE DATABASE quicknotes CHARACTER SET utf8 COLLATE utf8_general_ci`)
-	db.Close()
 
-	db, err = getQuickNotesDb()
+	db, err := getQuickNotesDb()
 	fatalIfErr(err, "getQuickNotesDb()")
 	stmts := getCreateDbStatementsMust()
 	for _, stm := range stmts {
@@ -1252,14 +1248,8 @@ func getDbMust() *sql.DB {
 	}
 
 	db, err := getQuickNotesDb()
-	if err != nil {
-		if strings.Contains(err.Error(), "Error 1049") {
-			log.Verbosef("db.Ping() failed because no database exists\n")
-			createDatabaseMust()
-		} else {
-			fatalIfErr(err, "getQuickNotesDb")
-		}
-	}
+	fatalIfErr(err)
+	createDatabaseMust()
 
 	db, err = getQuickNotesDb()
 	fatalIfErr(err, "getQuickNotesDb")
