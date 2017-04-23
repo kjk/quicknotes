@@ -92,19 +92,29 @@ export default class AppUser extends Component<Props, State> {
       loggedUserIDHash = gLoggedUser.HashID;
     }
 
+    // TODO: duplicated with setNotes()
+    let allNotes: Note[] = this.props.initialNotes;
+    sortNotesByUpdatedAt(allNotes);
+    const tags = tagsFromNotes(allNotes);
+
+    let selectedTags = [this.props.initialTag];
+    if (selectedTags.length === 0) {
+      selectedTags = ['__all'];
+    }
+
+    const selectedNotes = u.filterNotesByTags(allNotes, selectedTags);
+
     this.state = {
-      selectedTags: [this.props.initialTag],
+      allNotes: allNotes,
+      tags: tags,
+      selectedTags: selectedTags,
       notesUserIDHash: gNotesUser.HashID,
       notesUserHandle: gNotesUser.Handle,
       loggedUserIDHash: loggedUserIDHash,
       loggedUserHandle: loggedUserHandle,
-      resetScroll: false
+      resetScroll: false,
+      selectedNotes: selectedNotes,
     };
-  }
-
-  componentWillUpdate() {
-    let allNotes: Note[] = this.props.initialNotes;
-    this.setNotes(allNotes);
   }
 
   componentDidMount() {

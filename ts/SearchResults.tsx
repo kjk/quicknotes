@@ -32,13 +32,8 @@ interface State {
   searchResults: any;
 }
 
-/*
-SearchResults.propTypes = {
-  onSearchResultSelected: React.PropTypes.func,
-};
-*/
 interface Props {
-  onSearchResultSelected: any;
+  onSearchResultSelected: (noteHashID: any) => void;
 }
 
 export default class SearchResults extends React.Component<Props, State> {
