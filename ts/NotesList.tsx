@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import NoteView from './NoteView';
 import { Note } from './Note';
@@ -8,6 +8,9 @@ import { Note } from './Note';
 const maxInitialNotes = 50;
 
 function truncateNotes(notes: Note[], max: number): Note[] {
+  if (!notes || notes.length == 0) {
+    return [];
+  }
   if (max != -1 && notes && notes.length >= max) {
     return notes.slice(0, max);
   }
@@ -36,7 +39,7 @@ export default class NotesList extends Component<Props, State> {
     this.maxLoadedNotes = maxInitialNotes;
 
     this.state = {
-      notes: truncateNotes(props.notes, this.maxLoadedNotes) || []
+      notes: truncateNotes(props.notes, this.maxLoadedNotes)
     };
   }
 

@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 
 import ConnectionStatus from './ConnectionStatus';

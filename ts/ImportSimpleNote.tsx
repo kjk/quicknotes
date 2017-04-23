@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import * as action from './action';
 import * as api from './api';
 

@@ -1,19 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 
 // based on https://github.com/javierbyte/react-textselect
 
-/*
-TextSelect.propTypes = {
-  values: PropTypes.array.isRequired,
-  selectedIdx: PropTypes.number.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-*/
-
 interface Props {
-  values?: any;
-  selectedIdx?: any;
-  onChange?: any;
+  values?: string[];
+  selectedIdx?: number;
+  onChange?: (e: any, valIdx: any, v: any) => void;
   className?: string;
 }
 

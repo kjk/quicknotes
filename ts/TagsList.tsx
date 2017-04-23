@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import TagCount from './TagCount';
 import * as u from './utils';
 import { TagToCount } from './Note';

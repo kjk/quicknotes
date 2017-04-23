@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { LogInLink } from './LogInLink';
 import keymaster from 'keymaster';
 import * as action from './action';
