@@ -13,8 +13,14 @@ const (
 )
 
 func sendMail(subject, body, from string) {
+	cfg := &sp.Config{
+		BaseUrl:    "https://api.sparkpost.com",
+		ApiKey:     sparkpostKey,
+		ApiVersion: 1,
+	}
+
 	var sparky sp.Client
-	err := sparky.Init(&sp.Config{ApiKey: sparkpostKey})
+	err := sparky.Init(cfg)
 	if err != nil {
 		log.Errorf("sparky.Init() failed with: '%s'\n", err)
 		return
