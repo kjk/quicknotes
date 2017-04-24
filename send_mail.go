@@ -56,7 +56,7 @@ func sendStatsMail() {
 func sendBootMail() {
 	subject := utcNow().Format("QuickNotes started on 2006-01-02 15:04:05")
 	body := "Just letting you know that I've started\n"
-	body += fmt.Sprintf("production: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir())
+	body += fmt.Sprintf("production: %v, proddb: %v, sql connection: %s, data dir: %s\n", flgProduction, flgProdDb, getSQLConnection(), getDataDir())
 	sendMail(subject, body, "QuickNotes <info@quicknotes.io>")
 }
 

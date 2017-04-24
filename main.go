@@ -256,7 +256,7 @@ func main() {
 		flgHTTPAddr = ":80"
 	}
 
-	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionRoot(), getDataDir(), flgHTTPAddr, flgVerbose)
+	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnection(), getDataDir(), flgHTTPAddr, flgVerbose)
 
 	if flgSearchLocalTerm != "" {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)
