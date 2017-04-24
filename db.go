@@ -58,19 +58,16 @@ func init() {
 	userIDToDbUserCache = make(map[int]*DbUser)
 }
 
-func getSQLConnectionRoot() string {
+func getSQLConnection() string {
+	conn := fmt.Sprintf("quicknotes:R4ISoyZ2Vj8i@tcp(%s:%s)", flgDbHost, flgDbPort)
 	// TODO: always pass flgDbHost && flgDbPort
 	if flgProduction {
-		return "quicknotes:R4ISoyZ2Vj8i@tcp(10.138.224.27:3306)/"
+		conn = "quicknotes:R4ISoyZ2Vj8i@tcp(10.138.224.27:3306)"
 	}
 	if flgProdDb {
-		return "quicknotes:R4ISoyZ2Vj8i@tcp(138.68.237.61:3306)/"
+		conn = "quicknotes:R4ISoyZ2Vj8i@tcp(138.68.237.61:3306)"
 	}
-	return fmt.Sprintf("quicknotes:R4ISoyZ2Vj8i@tcp(%s:%s)/", flgDbHost, flgDbPort)
-}
-
-func getSQLConnection() string {
-	return getSQLConnectionRoot() + "quicknotes?parseTime=true"
+	return conn + "/quicknotes?parseTime=true"
 }
 
 func isValidFormat(s string) bool {
