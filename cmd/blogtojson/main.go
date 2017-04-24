@@ -28,6 +28,13 @@ type Note struct {
 	CreatedAt time.Time
 }
 
+// PanicIfErr panics if err is not nil
+func PanicIfErr(err error) {
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func isSepLine(s string) bool {
 	return strings.HasPrefix(s, "-----")
 }
