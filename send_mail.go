@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"net/http"
+
 	sp "github.com/SparkPost/gosparkpost"
 	"github.com/kjk/quicknotes/pkg/log"
 )
@@ -25,6 +27,7 @@ func sendMail(subject, body, from string) {
 		log.Errorf("sparky.Init() failed with: '%s'\n", err)
 		return
 	}
+	sparky.Client = http.DefaultClient
 
 	tx := &sp.Transmission{
 		Recipients: []string{"kkowalczyk@gmail.com"},
