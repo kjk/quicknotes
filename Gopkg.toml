@@ -1,0 +1,68 @@
+
+[[dependencies]]
+  branch = "master"
+  name = "cloud.google.com/go"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/SparkPost/gosparkpost"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/aws/aws-sdk-go"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/dustin/go-humanize"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/garyburd/go-oauth"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/go-sql-driver/mysql"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/google/go-github"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/gorilla/securecookie"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/gorilla/websocket"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/kjk/lzmadec"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/kjk/simplenote"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/kjk/stackoverflow"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/speps/go-hashids"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/syndtr/goleveldb"
+
+[[dependencies]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+
+[[dependencies]]
+  branch = "master"
+  name = "golang.org/x/oauth2"
+
+[[dependencies]]
+  branch = "master"
+  name = "google.golang.org/api"
