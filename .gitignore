@@ -10,3 +10,4 @@ quicknotes_linux
 typings/
 tsbuild/
 .vscode/
+vendor/
