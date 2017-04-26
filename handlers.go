@@ -523,9 +523,8 @@ func makeHTTPServer() *http.Server {
 	srv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
-		// TODO: 1.8 only
-		// IdleTimeout:  120 * time.Second,
-		Handler: mux,
+		IdleTimeout:  120 * time.Second, // introduced in Go 1.8
+		Handler:      mux,
 	}
 	// TODO: track connections and their state
 	return srv
