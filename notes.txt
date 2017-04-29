@@ -1,3 +1,13 @@
+# To create database locally:
+mysqlsh --sql --port=7200 -u root --password=""
+
+Then execute:
+CREATE DATABASE IF NOT EXISTS quicknotes CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE USER 'quicknotes'@'%' IDENTIFIED BY 'R4ISoyZ2Vj8i';
+GRANT ALL PRIVILEGES ON quicknotes.* TO 'quicknotes'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+
 Editor icons from Font Awesome:
 
 * <i class="fa fa-bold"></i>, bold

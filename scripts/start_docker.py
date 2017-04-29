@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3
 
+from __future__ import print_function
 import sys, os, os.path, time, subprocess
 
 g_imageName = "mysql:5.6"
@@ -11,7 +12,7 @@ kStatusRunning = "running"
 kStatusExited = "exited"
 
 def eprint(*args, **kwargs):
-  print(*args, file=sys.stderr, **kwargs)
+  print(file=sys.stderr, *args, **kwargs)
 
 def print_cmd(cmd):
   eprint("cmd:" + " ".join(cmd))
@@ -85,6 +86,19 @@ def docker_container_info(containerName):
       return (id, status, ip_port)
   return (None, None, None)
 
+def wait_for_container(containerName):
+  # 8 secs is a heuristic
+  timeOut = 8
+  eprint("waiting %s secs for container to start" % timeOut, end="", flush=True)
+  while timeOut > 0:
+    (containerId, status, ip_port) = docker_container_info(containerName)
+    if status == kStatusRunning:
+      return
+    eprint(".", end="", flush=True)
+    time.sleep(1)
+    timeOut -= 1
+  eprint("")
+
 def start_container_if_needed(imageName, containerName, portMapping):
   (containerId, status, ip_port) = docker_container_info(containerName)
   if status == kStatusRunning:
@@ -94,19 +108,9 @@ def start_container_if_needed(imageName, containerName, portMapping):
     cmd = ["docker", "start", containerId]
   else:
     volumeMapping = "%s:/var/lib/mysql" % g_dbDir
-    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, "-v", volumeMapping, "-e", "MYSQL_ROOT_PASSWORD=7UgJnRvp39vW", "-e", "MYSQL_INITDB_SKIP_TZINFO=yes", imageName]
+    cmd = ["docker", "run", "-d", "--name=" + containerName, "-p", portMapping, "-v", volumeMapping, "-e", "MYSQL_ALLOW_EMPTY_PASSWORD=yes", "-e", "MYSQL_INITDB_SKIP_TZINFO=yes", imageName]
   run_cmd(cmd)
   wait_for_container(containerName)
-
-def wait_for_container(containerName):
-  # 8 secs is a heuristic
-  timeOut = 8
-  eprint("waiting %s secs for container to start" % timeOut, end="", flush=True)
-  while timeOut > 0:
-    eprint(".", end="", flush=True)
-    time.sleep(1)
-    timeOut -= 1
-  eprint("")
 
 def create_db_dir():
   try:
