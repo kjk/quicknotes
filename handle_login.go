@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -357,7 +358,8 @@ func handleOauthGitHubCallback(w http.ResponseWriter, r *http.Request) {
 
 	oauthClient := oauthGitHubConf.Client(oauth2.NoContext, token)
 	client := github.NewClient(oauthClient)
-	user, _, err := client.Users.Get("")
+	ctx := context.Background()
+	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {
 		log.Errorf("client.Users.Get() faled with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)

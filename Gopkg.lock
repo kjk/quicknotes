@@ -4,19 +4,19 @@ memo = "ac0e749d32a9b0953530a28f2c38c42a0271962a80d4aff6f86b0ee2a005ae5e"
   branch = "master"
   name = "cloud.google.com/go"
   packages = ["compute/metadata","iam","internal","internal/optional","internal/version","storage"]
-  revision = "3536fc15a6517d90ba50b7ca76ddcb404e8ff1f3"
+  revision = "60d3e34c84892316c824b36bff753d5ea1e6cbb0"
 
 [[projects]]
   branch = "master"
   name = "github.com/SparkPost/gosparkpost"
   packages = [".","events"]
-  revision = "3cc3a4e8670af34eb4cf104ba322e70389141c3a"
+  revision = "c041325a607bb2faf3a138e48a17074172ac4da7"
 
 [[projects]]
   branch = "master"
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","private/protocol","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restxml","private/protocol/xml/xmlutil","service/s3","service/sts"]
-  revision = "0e1d7f7c9ff58350ce8f53866ba45487e7153d46"
+  revision = "6aa67d06fc66e12f16a40db6825e762b7d8ae8e5"
 
 [[projects]]
   branch = "master"
@@ -40,13 +40,13 @@ memo = "ac0e749d32a9b0953530a28f2c38c42a0271962a80d4aff6f86b0ee2a005ae5e"
   branch = "master"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
-  revision = "9dee4ca50b83acdf57a35fb9e6fb4be640afa2f3"
+  revision = "147bd02c2c516cf9a8878cb75898ee8a9eea0228"
 
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","protoc-gen-go/descriptor"]
-  revision = "2bba0603135d7d7f5cb73b2125beeda19c09f4ef"
+  packages = ["proto","protoc-gen-go/descriptor","ptypes/any"]
+  revision = "18c9bb3261723cd5401db4d0c9fbc5c3b6c70fe8"
 
 [[projects]]
   branch = "master"
@@ -58,7 +58,7 @@ memo = "ac0e749d32a9b0953530a28f2c38c42a0271962a80d4aff6f86b0ee2a005ae5e"
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "2966f2579cd93bc62410f55ba6830b3925e7629d"
+  revision = "e8d46665e050742f457a58088b1e6b794b2ae966"
 
 [[projects]]
   branch = "master"
@@ -130,7 +130,7 @@ memo = "ac0e749d32a9b0953530a28f2c38c42a0271962a80d4aff6f86b0ee2a005ae5e"
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "3543873453996aaab2fc6b3928a35fc5ca2b5afb"
+  revision = "c7af5bf2638a1164f2eb5467c39c6cffbd13a02e"
 
 [[projects]]
   branch = "master"
@@ -148,7 +148,7 @@ memo = "ac0e749d32a9b0953530a28f2c38c42a0271962a80d4aff6f86b0ee2a005ae5e"
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "a9a820217f98f7c8a207ec1e45a874e1fe12c478"
+  revision = "470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4"
 
 [[projects]]
   branch = "master"
@@ -165,11 +165,11 @@ memo = "ac0e749d32a9b0953530a28f2c38c42a0271962a80d4aff6f86b0ee2a005ae5e"
 [[projects]]
   branch = "master"
   name = "google.golang.org/genproto"
-  packages = ["googleapis/api/annotations","googleapis/iam/v1"]
+  packages = ["googleapis/api/annotations","googleapis/iam/v1","googleapis/rpc/status"]
   revision = "411e09b969b1170a9f0c467558eb4c4c110d9c77"
 
 [[projects]]
   name = "google.golang.org/grpc"
-  packages = [".","codes","credentials","credentials/oauth","grpclog","internal","keepalive","metadata","naming","peer","stats","tap","transport"]
-  revision = "8050b9cbc271307e5a716a9d782803d09b0d6f2d"
-  version = "v1.2.1"
+  packages = [".","codes","credentials","credentials/oauth","grpclb/grpc_lb_v1","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
+  revision = "d2e1b51f33ff8c5e4a15560ff049d200e83726c5"
+  version = "v1.3.0"
