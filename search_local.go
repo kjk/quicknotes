@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"sort"
 	"time"
 )
 
@@ -172,7 +171,7 @@ func searchSimpleNotes(term string, maxResults int) []*MatchWithSimpleNote {
 			break
 		}
 	}
-	sort.Sort(BySimpleMatchScore(matches))
+	sortBySimpleMatchScore(matches)
 	return matches
 }
 

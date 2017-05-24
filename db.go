@@ -190,18 +190,6 @@ type CachedUserInfo struct {
 	latestVersion int
 }
 
-type notesByCreatedAt []*Note
-
-func (s notesByCreatedAt) Len() int {
-	return len(s)
-}
-func (s notesByCreatedAt) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-func (s notesByCreatedAt) Less(i, j int) bool {
-	return s[i].CreatedAt.After(s[j].CreatedAt)
-}
-
 // SetSnippet sets a short version of note (if is big)
 func (n *Note) SetSnippet() {
 	var snippetBytes []byte
@@ -301,7 +289,9 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	sort.Sort(notesByCreatedAt(notes))
+	sort.Slice(notes, func(i, j int) bool {
+		return notes[i].CreatedAt.After(notes[j].CreatedAt)
+	})
 	res := &CachedUserInfo{
 		user:          user,
 		notes:         notes,
