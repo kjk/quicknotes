@@ -392,13 +392,12 @@ func limitLineLength(parts []StringPart, maxLen int) []StringPart {
 		}
 		sp := parts[idx]
 		toKeepLen := maxLen - (totalLen - len(sp.s))
-		toKeepStr := ""
 		if toKeepLen > 9 {
 			s := sp.s
 			toKeepLen -= 3
 			half := toKeepLen / 2
 			n := len(s)
-			toKeepStr = s[:half] + "..." + s[n-half:]
+			toKeepStr := s[:half] + "..." + s[n-half:]
 			parts[idx].s = toKeepStr
 			return parts
 		}

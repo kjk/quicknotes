@@ -132,7 +132,7 @@ ORDER BY created_at DESC`
 		var userID int
 		var createdAt time.Time
 		var title string
-		err := rows.Scan(
+		err = rows.Scan(
 			&noteID,
 			&userID,
 			&createdAt,

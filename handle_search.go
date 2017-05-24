@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	TypeTitle   = 1
-	TypeLine    = 2
-	TypeContext = 3
+	// TypeTitle is note title
+	TypeTitle = 1
+	// TypeLine is note line
+	TypeLine = 2
 
 	maxSearchResults = 48
 	maxHitsPerNote   = 32

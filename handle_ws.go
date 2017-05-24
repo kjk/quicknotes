@@ -16,6 +16,7 @@ import (
 const (
 	writeTimeout = 30 * time.Second
 	readTimeout  = time.Minute
+	cmdPing      = "ping"
 )
 
 // NewNoteFromBrowser represents format of the note sent by the browser
@@ -130,7 +131,7 @@ func getUserNoteByHashID(ctx *ReqContext, noteHashIDStr string) (int, error) {
 		return -1, err
 	}
 	if note.userID != ctx.User.id {
-		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')\n", noteHashIDStr, ctx.User.id, ctx.User.Handle)
+		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')", noteHashIDStr, ctx.User.id, ctx.User.Handle)
 		return -1, err
 	}
 	return noteID, nil
@@ -227,7 +228,7 @@ func wsGetNotes(ctx *ReqContext, args map[string]interface{}) (interface{}, erro
 	}
 	userID, err := dehashInt(userIDHash)
 	if err != nil {
-		return nil, fmt.Errorf("invalid userIDHash='%s'\n", userIDHash)
+		return nil, fmt.Errorf("invalid userIDHash='%s'", userIDHash)
 	}
 	latestVersion, err := jsonMapGetInt(args, "latestVersion")
 	if err != nil {
@@ -403,7 +404,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		for rsp := range c {
-			if rsp.Cmd != "ping" {
+			if rsp.Cmd != cmdPing {
 				log.Infof("writing a response for cmd: %s id: %d, user: %d\n", rsp.Cmd, rsp.ID, userID)
 			}
 			conn.SetWriteDeadline(time.Now().Add(writeTimeout))
@@ -440,7 +441,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		if req.Cmd != "ping" {
+		if req.Cmd != cmdPing {
 			if req.Cmd == "createOrUpdateNote" {
 				// too much data to fully log
 				log.Verbosef("msg: '%s'\n", req.Cmd)
@@ -455,7 +456,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		broadcastGetNotes := false
 
 		switch req.Cmd {
-		case "ping":
+		case cmdPing:
 			res = "pong"
 
 		case "getUserInfo":
