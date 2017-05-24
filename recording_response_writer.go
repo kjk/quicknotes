@@ -12,7 +12,8 @@ type RecordingResponseWriter struct {
 // NewRecordingResponseWriter creates RecordingResponseWriter
 func NewRecordingResponseWriter(w http.ResponseWriter) *RecordingResponseWriter {
 	return &RecordingResponseWriter{
-		w: w,
+		w:    w,
+		Code: 200,
 	}
 }
 
