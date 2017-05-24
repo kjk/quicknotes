@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -9,7 +10,8 @@ import (
 	"github.com/kjk/quicknotes/pkg/log"
 )
 
-type ContentId struct {
+// ContentID describes content path and its sha1
+type ContentID struct {
 	sha1 []byte
 	path string
 }
@@ -27,7 +29,7 @@ func TestLocalStore(t *testing.T) {
 	PanicIfErr(err)
 	store.MaxSegmentSize = 8192           // for testing
 	store.FileSizeSegmentThreshold = 7000 // localstore.go is bigger than that
-	var contentIds []*ContentId
+	var contentIds []*ContentID
 	files, err := ioutil.ReadDir(".")
 	PanicIfErr(err)
 	for _, fi := range files {
@@ -35,12 +37,12 @@ func TestLocalStore(t *testing.T) {
 		if !fi.Mode().IsRegular() {
 			continue
 		}
-		//fmt.Printf("file: %s, size: %d\n", path, fi.Size())
+		fmt.Printf("file: %s, size: %d\n", path, fi.Size())
 		d, err := ioutil.ReadFile(path)
 		PanicIfErr(err)
 		sha1, err := store.PutContent(d)
 		PanicIfErr(err)
-		cid := &ContentId{sha1: sha1, path: path}
+		cid := &ContentID{sha1: sha1, path: path}
 		contentIds = append(contentIds, cid)
 	}
 

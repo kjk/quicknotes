@@ -301,10 +301,7 @@ func handleLoginTwitter(w http.ResponseWriter, r *http.Request) {
 	q := url.Values{
 		"redir": {redir},
 	}.Encode()
-	scheme := r.URL.Scheme
-	if scheme == "" {
-		scheme = "http"
-	}
+
 	cb := getMyHost(r) + "/logintwittercb?" + q
 	tempCred, err := oauthTwitterClient.RequestTemporaryCredentials(nil, cb, nil)
 	if err != nil {

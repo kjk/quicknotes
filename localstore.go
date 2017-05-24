@@ -91,9 +91,10 @@ func saveToFile(path string, d []byte) error {
 	if PathExists(path) {
 		return nil
 	}
-	err := os.MkdirAll(path, 0755)
+	dir := filepath.Dir(path)
+	err := os.MkdirAll(dir, 0755)
 	if err != nil {
-		log.Errorf("os.MkdirAll('%s') failed with %s\n", path, err)
+		log.Errorf("os.MkdirAll('%s') failed with %s\n", dir, err)
 		return err
 	}
 	return ioutil.WriteFile(path, d, 0644)
@@ -225,7 +226,7 @@ func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 	defer store.mu.Unlock()
 
 	if len(d) > store.FileSizeSegmentThreshold {
-		err := saveToFile(store.pathForSha1(sha1), d)
+		err = saveToFile(store.pathForSha1(sha1), d)
 		if err != nil {
 			return nil, err
 		}
@@ -355,7 +356,8 @@ func readFileLimited(path string, limit int) ([]byte, error) {
 
 	n := int64(limit)
 
-	if fi, err := f.Stat(); err == nil {
+	fi, err := f.Stat()
+	if err == nil {
 		// Don't preallocate a huge buffer, just in case.
 		if size := fi.Size(); size < n {
 			n = size

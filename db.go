@@ -294,7 +294,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 	}
 	timeStart := time.Now()
 	user, err := dbGetUserByIDCached(userID)
-	if user == nil {
+	if user == nil || err != nil {
 		return nil, err
 	}
 	notes, err := dbGetNotesForUser(user)
@@ -660,15 +660,16 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	}
 
 	var noteID int
+	var existingNote *Note
 	if note.hashID == "" {
 		noteID, err = dbCreateNewNote(userID, note)
 		note.hashID = hashInt(noteID)
 	} else {
-		noteID, err := dehashInt(note.hashID)
+		noteID, err = dehashInt(note.hashID)
 		if err != nil {
 			return 0, err
 		}
-		existingNote, err := dbGetNoteByID(noteID)
+		existingNote, err = dbGetNoteByID(noteID)
 		if err != nil {
 			return 0, err
 		}
@@ -1248,11 +1249,11 @@ func getDbMust() *sql.DB {
 		return sqlDb
 	}
 
-	db, err := getQuickNotesDb()
+	_, err := getQuickNotesDb()
 	fatalIfErr(err)
 	createDatabaseMust()
 
-	db, err = getQuickNotesDb()
+	db, err := getQuickNotesDb()
 	fatalIfErr(err, "getQuickNotesDb")
 	err = upgradeDb(db)
 	if err != nil {

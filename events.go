@@ -42,8 +42,9 @@ type EventNoteModified struct {
 }
 
 func initEventsLogMust() {
+	var err error
 	pathFormat := filepath.Join(getLogDir(), "2006-01-02-events.json")
-	eventsLog, err := log.NewDailyRotateFile(pathFormat)
+	eventsLog, err = log.NewDailyRotateFile(pathFormat)
 	fatalIfErr(err, "initEventsLogMust")
 	eventsLogEnc = json.NewEncoder(eventsLog)
 }

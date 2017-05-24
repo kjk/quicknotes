@@ -324,12 +324,13 @@ func detectFormat(note *NewNote) {
 func importPosts() (int, int) {
 	n := 0
 	nVersions := 0
+	var note *NewNote
 	for _, currPost := range posts {
 		userInfo := userIDToInfo[currPost.userID]
 		userID := userInfo.dbUserID
 		currPost = reversePostChange(currPost)
 		//dumpHistory(currPost)
-		currPost, note := getInitialNote(currPost)
+		currPost, note = getInitialNote(currPost)
 		if note == nil {
 			continue
 		}
