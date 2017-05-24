@@ -30,17 +30,6 @@ type Match struct {
 	bodyMatchPos  []PosLen
 }
 
-// ByMatchScore is for sorting search results by score
-type ByMatchScore []*Match
-
-func (m ByMatchScore) Len() int {
-	return len(m)
-}
-
-func (m ByMatchScore) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-
 func matchLess2(m1, m2 *Match) bool {
 	n1 := len(m1.titleMatchPos) + len(m1.bodyMatchPos)
 	n2 := len(m2.titleMatchPos) + len(m2.bodyMatchPos)
@@ -70,41 +59,24 @@ func matchLess(m1, m2 *Match) bool {
 	return true
 }
 
-func (m ByMatchScore) Less(i, j int) bool {
-	m1, m2 := m[i], m[j]
-	return matchLess(m1, m2)
+func sortByMatchScore(m []*Match) {
+	sort.Slice(m, func(i, j int) bool {
+		m1, m2 := m[i], m[j]
+		return matchLess(m1, m2)
+	})
+}
+func sortBySimpleMatchScore(m []*MatchWithSimpleNote) {
+	sort.Slice(m, func(i, j int) bool {
+		m1, m2 := m[i].match, m[j].match
+		return matchLess(m1, m2)
+	})
 }
 
-// BySimpleMatchScore is for sorting by match score
-type BySimpleMatchScore []*MatchWithSimpleNote
-
-func (m BySimpleMatchScore) Len() int {
-	return len(m)
-}
-
-func (m BySimpleMatchScore) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-
-func (m BySimpleMatchScore) Less(i, j int) bool {
-	m1, m2 := m[i].match, m[j].match
-	return matchLess(m1, m2)
-}
-
-// PosLenByPos is for sorting PosLen by position
-type PosLenByPos []PosLen
-
-func (a PosLenByPos) Len() int {
-	return len(a)
-}
-
-func (a PosLenByPos) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func (a PosLenByPos) Less(i, j int) bool {
-	pl1, pl2 := a[i], a[j]
-	return pl1.Pos < pl2.Pos
+func sortByPosLenByPos(a []PosLen) {
+	sort.Slice(a, func(i, j int) bool {
+		pl1, pl2 := a[i], a[j]
+		return pl1.Pos < pl2.Pos
+	})
 }
 
 func decorate(s string, matchPositions []PosLen) string {
@@ -190,8 +162,8 @@ func sortMatchPositions(m *Match) {
 	if m == nil {
 		return
 	}
-	sort.Sort(PosLenByPos(m.titleMatchPos))
-	sort.Sort(PosLenByPos(m.bodyMatchPos))
+	sortByPosLenByPos(m.titleMatchPos)
+	sortByPosLenByPos(m.bodyMatchPos)
 }
 
 // search a note for list of terms. This is AND search i.e. all terms
@@ -292,7 +264,7 @@ func searchNotes(term string, notes []*Note, maxResults int) []*Match {
 			}
 		}
 	}
-	sort.Sort(ByMatchScore(matches))
+	sortByMatchScore(matches)
 	return matches
 }
 
