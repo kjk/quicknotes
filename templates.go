@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 )
 
 var (
@@ -30,7 +31,7 @@ func getTemplates() *template.Template {
 		for _, name := range templateNames {
 			filename := filepath.Join("s", name)
 			b, err := loadResourceFile(filename)
-			fatalIfErr(err, "loadResourceFile() failed")
+			u.PanicIfErr(err, "loadResourceFile() failed")
 			s := string(b)
 			name := filepath.Base(filename)
 			var tmpl *template.Template
@@ -43,7 +44,7 @@ func getTemplates() *template.Template {
 				tmpl = t.New(name)
 			}
 			_, err = tmpl.Parse(s)
-			fatalIfErr(err, "tmpl.Parse() failed")
+			u.PanicIfErr(err, "tmpl.Parse() failed")
 		}
 		templates = t
 	}

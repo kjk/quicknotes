@@ -40,7 +40,7 @@ func fatalif(cond bool, format string, args ...interface{}) {
 		os.Exit(1)
 	}
 }
-func fataliferr(err error) {
+func u.PanicIfErr(err error) {
 	if err != nil {
 		fatalf("%s\n", err.Error())
 	}
@@ -131,13 +131,13 @@ func gzipFileMust(path string) []byte {
 	// fallback
 	out := &bytes.Buffer{}
 	content, err := ioutil.ReadFile(path)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	w, err := gzip.NewWriterLevel(out, gzip.BestCompression)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	_, err = w.Write(content)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	err = w.Close()
-	fataliferr(err)
+	u.PanicIfErr(err)
 	return out.Bytes()
 }
 
@@ -164,18 +164,18 @@ func checkBrotliInstalled() {
 
 func addZipFileMust(zw *zip.Writer, path, zipName string) {
 	fi, err := os.Stat(path)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	fmt.Printf("adding '%s' (%d bytes) as '%s'\n", path, fi.Size(), zipName)
 	fih, err := zip.FileInfoHeader(fi)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	fih.Name = zipName
 	fih.Method = zip.Deflate
 	d, err := ioutil.ReadFile(path)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	fw, err := zw.CreateHeader(fih)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	_, err = fw.Write(d)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	// fw is just a io.Writer so we can't Close() it. It's not necessary as
 	// it's implicitly closed by the next Create(), CreateHeader()
 	// or Close() call on zip.Writer
@@ -184,15 +184,15 @@ func addZipFileMust(zw *zip.Writer, path, zipName string) {
 func addZipDataMust(zw *zip.Writer, path string, d []byte, zipName string) {
 	fmt.Printf("adding data (%d bytes) as '%s'\n", len(d), zipName)
 	fi, err := os.Stat(path)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	fih, err := zip.FileInfoHeader(fi)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	fih.Name = zipName
 	fih.Method = zip.Store
 	fw, err := zw.CreateHeader(fih)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	_, err = fw.Write(d)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	// fw is just a io.Writer so we can't Close() it. It's not necessary as
 	// it's implicitly closed by the next Create(), CreateHeader()
 	// or Close() call on zip.Writer
@@ -204,7 +204,7 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 		dir = dirsToVisit[0]
 		dirsToVisit = dirsToVisit[1:]
 		files, err := ioutil.ReadDir(dir)
-		fataliferr(err)
+		u.PanicIfErr(err)
 		for _, fi := range files {
 			name := fi.Name()
 			path := filepath.Join(dir, name)
@@ -234,18 +234,18 @@ func addZipDirMust(zw *zip.Writer, dir, baseDir string) {
 
 func createResourcesZip(path string) {
 	f, err := os.Create(path)
-	fataliferr(err)
+	u.PanicIfErr(err)
 	defer f.Close()
 	zw := zip.NewWriter(f)
 	currDir, err := os.Getwd()
-	fataliferr(err)
+	u.PanicIfErr(err)
 	dir := filepath.Join(currDir, "s")
 	addZipDirMust(zw, dir, currDir)
 	addZipFileMust(zw, "createdb.sql", "createdb.sql")
 	path = filepath.Join("data", "welcome.md")
 	addZipFileMust(zw, path, path)
 	err = zw.Close()
-	fataliferr(err)
+	u.PanicIfErr(err)
 }
 
 func genHexLine(f *os.File, d []byte, off, n int) {
@@ -253,14 +253,14 @@ func genHexLine(f *os.File, d []byte, off, n int) {
 		return
 	}
 	_, err := f.WriteString("\t")
-	fataliferr(err)
+	u.PanicIfErr(err)
 	for i := 0; i < n; i++ {
 		b := d[off+i]
 		_, err = fmt.Fprintf(f, "0x%02x,", b)
-		fataliferr(err)
+		u.PanicIfErr(err)
 	}
 	_, err = f.WriteString("\n")
-	fataliferr(err)
+	u.PanicIfErr(err)
 }
 
 func main() {

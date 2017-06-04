@@ -15,6 +15,7 @@ import (
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 )
 
 const (
@@ -50,10 +51,10 @@ var (
 )
 
 func verifyDirs() {
-	if !PathExists(getLogDir()) {
+	if !u.DirExists(getLogDir()) {
 		log.Fatalf("directory '%s' doesn't exist\n", getLogDir())
 	}
-	if !PathExists(getDataDir()) {
+	if !u.DirExists(getDataDir()) {
 		log.Fatalf("directory '%s' doesn't exist\n", getDataDir())
 	}
 	err := os.MkdirAll(getCacheDir(), 0755)
@@ -76,14 +77,14 @@ func getDataDir() string {
 	// TODO: ~/www/data is legacy
 	dirs := []string{"/data/quicknotes", "~/data/quicknotes", "~/www/data"}
 	for _, dir := range dirs {
-		dir = ExpandTildeInPath(dir)
-		if PathExists(dir) {
+		dir = u.ExpandTildeInPath(dir)
+		if u.DirExists(dir) {
 			dataDir = dir
 			log.Verbosef("dataDir: '%s'\n", dataDir)
 			return dataDir
 		}
 	}
-	fatalIf(true, "data dir doesn't exist. Tried: %v", dirs)
+	u.PanicIf(true, "data dir doesn't exist. Tried: %v", dirs)
 	return ""
 }
 
@@ -162,11 +163,11 @@ func listDbUsers() {
 func openLogFilesMust() {
 	pathFormat := filepath.Join(getLogDir(), "2006-01-02.txt")
 	err := log.Open(pathFormat)
-	fatalIfErr(err, "openLogFileMust")
+	u.PanicIfErr(err, "openLogFileMust")
 
 	pathFormat = filepath.Join(getLogDir(), "2006-01-02-http.txt")
 	httpLogs, err = log.NewDailyRotateFile(pathFormat)
-	fatalIfErr(err, "openLogFileMust")
+	u.PanicIfErr(err, "openLogFileMust")
 	httpLogsCsv = csv.NewWriter(httpLogs)
 }
 
@@ -220,9 +221,9 @@ func dailyTasksLoop() {
 
 func debugShowNote(hashedNoteID string) {
 	noteID, err := dehashInt(hashedNoteID)
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 	note, err := dbGetNoteByID(noteID)
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 	body := note.Content()
 	snippet := note.Snippet
 	fmt.Printf(`Note id: %d (%s), partial: %v, truncated: %v
@@ -265,7 +266,7 @@ func main() {
 
 	if flgImportStackOverflow {
 		localStore, err = NewLocalStore(getLocalStoreDir())
-		fatalIfErr(err, "NewLocalStore()")
+		u.PanicIfErr(err, "NewLocalStore()")
 		importStackOverflow()
 		return
 	}
@@ -276,7 +277,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("loadResourcesFromZip() failed with '%s'\n", err)
 		}
-		fatalIf(!hasZipResources(), "should have zip resources")
+		u.PanicIf(!hasZipResources(), "should have zip resources")
 	}
 	// don't reload if we're reading from .zip resources
 	reloadTemplates = !hasZipResources()
@@ -320,7 +321,7 @@ func main() {
 	initGoogleStorageMust()
 
 	_, err = dbGetOrCreateUser("email:quicknotes@quicknotes.io", "QuickNotes")
-	fatalIfErr(err, "dbGetOrCreateUser")
+	u.PanicIfErr(err, "dbGetOrCreateUser")
 
 	go dailyTasksLoop()
 

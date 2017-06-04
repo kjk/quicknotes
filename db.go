@@ -14,6 +14,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 )
 
 // TODO: use prepared statements where possible
@@ -308,7 +309,7 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 func execMust(db *sql.DB, q string, args ...interface{}) {
 	log.Verbosef("db.Exec(): %s\n", q)
 	_, err := db.Exec(q, args...)
-	fatalIfErr(err, fmt.Sprintf("db.Exec('%s')", q))
+	u.PanicIfErr(err, fmt.Sprintf("db.Exec('%s')", q))
 }
 
 func getCreateDbSQLMust() []byte {
@@ -318,7 +319,7 @@ func getCreateDbSQLMust() []byte {
 		return d
 	}
 	d, err := ioutil.ReadFile(path)
-	fatalIfErr(err, "getCreateDbSqlMust")
+	u.PanicIfErr(err, "getCreateDbSqlMust")
 	return d
 }
 
@@ -338,7 +339,7 @@ func createDatabaseMust() {
 	log.Verbosef("trying to create the database\n")
 
 	db, err := getQuickNotesDb()
-	fatalIfErr(err, "getQuickNotesDb()")
+	u.PanicIfErr(err, "getQuickNotesDb()")
 	stmts := getCreateDbStatementsMust()
 	for _, stm := range stmts {
 		execMust(db, stm)
@@ -388,7 +389,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 		}
 	}()
 
-	fatalIf(note.contentSha1 == nil, "note.contentSha1 is nil")
+	u.PanicIf(note.contentSha1 == nil, "note.contentSha1 is nil")
 	serializedTags := serializeTags(note.tags)
 
 	// for non-imported notes use current time as note creation time
@@ -1169,7 +1170,7 @@ func dbGetAllUsers() ([]*DbUser, error) {
 
 func getWelcomeMD() []byte {
 	d, err := loadResourceFile(filepath.Join("data", "welcome.md"))
-	fatalIfErr(err, "getWelcomeMD()")
+	u.PanicIfErr(err, "getWelcomeMD()")
 	return d
 }
 
@@ -1177,7 +1178,7 @@ func getWelcomeMD() []byte {
 func dbGetOrCreateUser(userLogin string, fullName string) (*DbUser, error) {
 	user, err := dbGetUserByLogin(userLogin)
 	if user != nil {
-		PanicIfErr(err)
+		u.PanicIfErr(err)
 		return user, nil
 	}
 
@@ -1240,11 +1241,11 @@ func getDbMust() *sql.DB {
 	}
 
 	_, err := getQuickNotesDb()
-	fatalIfErr(err)
+	u.PanicIfErr(err)
 	createDatabaseMust()
 
 	db, err := getQuickNotesDb()
-	fatalIfErr(err, "getQuickNotesDb")
+	u.PanicIfErr(err, "getQuickNotesDb")
 	err = upgradeDb(db)
 	if err != nil {
 		log.Fatalf("upgradeDb() failed with '%s'\n", err)

@@ -15,6 +15,7 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/gorilla/securecookie"
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 	"golang.org/x/oauth2"
 	goauth2 "google.golang.org/api/oauth2/v2"
 )
@@ -82,16 +83,16 @@ type SecureCookieValue struct {
 func initCookieMust() {
 	var err error
 	cookieAuthKey, err = hex.DecodeString(cookieAuthKeyHex)
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 	cookieEncrKey, err = hex.DecodeString(cookieEncrKeyHex)
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 	secureCookie = securecookie.New(cookieAuthKey, cookieEncrKey)
 	// verify auth/encr keys are correct
 	val := map[string]string{
 		"foo": "bar",
 	}
 	_, err = secureCookie.Encode(cookieName, val)
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 }
 
 func setSecureCookie(w http.ResponseWriter, cookieVal *SecureCookieValue) {

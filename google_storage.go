@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/oauth2/google"
@@ -43,11 +44,11 @@ func initGoogleStorageMust() {
 		[]byte(credentialsJSON),
 		storage.ScopeReadWrite,
 	)
-	fatalIfErr(err, "google.JWTConfigFromJSON")
+	u.PanicIfErr(err, "google.JWTConfigFromJSON")
 	ctx := context.Background()
 	opt := option.WithTokenSource(conf.TokenSource(ctx))
 	googleStorageClient, err = storage.NewClient(ctx, opt)
-	fatalIfErr(err, "storage.NewClient")
+	u.PanicIfErr(err, "storage.NewClient")
 }
 
 func testListObjects() {
