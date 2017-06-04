@@ -16,7 +16,6 @@ function showSettings(e: React.MouseEvent<HTMLAnchorElement>) {
 }
 
 export class LogOut extends Component<any, any> {
-
   constructor(props?: any, context?: any) {
     super(props, context);
   }
@@ -29,22 +28,19 @@ export class LogOut extends Component<any, any> {
     const isDebug = gIsDebug;
 
     return (
-      <div id='login-link'>
-        <a href={userUrl} className='header-link'>
-          {u.Handle} <i className='fa fa-chevron-down login-chevron'></i></a>
-        <div className='dropdown-content'>
+      <div id="login-link">
+        <a href={userUrl} className="header-link">
+          {u.Handle} <i className="fa fa-chevron-down login-chevron" />
+        </a>
+        <div className="dropdown-content">
           <a href={userUrl}>My notes</a>
-          {isDebug ?
-            <a href='/dbg/shownotes' target='_blank'> Show Notes</a>
-            : null}
-          {false ?
-            <a href='#' onClick={showSettings}>Settings</a>
-            : null}
-          {false ?
-            <span className='divider'></span>
-            : null}
-          <a href='/import' onClick={showImportSimpleNote}>Import from Simplenote</a>
-          <span className='divider'></span>
+          {isDebug ? <a href="/dbg/shownotes" target="_blank"> Show Notes</a> : null}
+          {false ? <a href="#" onClick={showSettings}>Settings</a> : null}
+          {false ? <span className="divider" /> : null}
+          <a href="/import" onClick={showImportSimpleNote}>
+            Import from Simplenote
+          </a>
+          <span className="divider" />
           <a href={url}>Sign Out</a>
         </div>
       </div>
@@ -53,7 +49,6 @@ export class LogOut extends Component<any, any> {
 }
 
 export class LogIn extends Component<any, any> {
-
   constructor(props?: any, context?: any) {
     super(props, context);
   }
@@ -64,18 +59,20 @@ export class LogIn extends Component<any, any> {
     const googleUrl = '/logingoogle?redir=' + redir;
     const githubUrl = '/logingithub?redir=' + redir;
     return (
-      <div id='login-link'>
-        <span className='header-link'>Sign in / Sign up <i className='fa fa-chevron-down login-chevron'></i></span>
-        <div className='log-in-dropdown-content'>
-          <ul className='log-in'>
+      <div id="login-link">
+        <span className="header-link">
+          Sign in / Sign up <i className="fa fa-chevron-down login-chevron" />
+        </span>
+        <div className="log-in-dropdown-content">
+          <ul className="log-in">
             <li>
-              <a className='twitter' href={twitterUrl}>Sign in with Twitter</a>
+              <a className="twitter" href={twitterUrl}>Sign in with Twitter</a>
             </li>
             <li>
-              <a className='google' href={googleUrl}>Sign in with Google</a>
+              <a className="google" href={googleUrl}>Sign in with Google</a>
             </li>
             <li>
-              <a className='github' href={githubUrl}>Sign in with GitHub</a>
+              <a className="github" href={githubUrl}>Sign in with GitHub</a>
             </li>
           </ul>
         </div>
@@ -85,7 +82,6 @@ export class LogIn extends Component<any, any> {
 }
 
 export class LogInLink extends Component<any, any> {
-
   constructor(props?: any, context?: any) {
     super(props, context);
   }

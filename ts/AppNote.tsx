@@ -27,7 +27,7 @@ function linkifyCb(s: any, href: any) {
 
 function linkify2(s: any) {
   return linkify(s, {
-    callback: linkifyCb
+    callback: linkifyCb,
   });
 }
 
@@ -102,7 +102,7 @@ export default class AppNote extends Component<Props, State> {
 
   setNote(note: Note) {
     this.setState({
-      note: note
+      note: note,
     });
   }
 
@@ -148,7 +148,9 @@ export default class AppNote extends Component<Props, State> {
       action.showTemporaryMessage('Undeleting note...', 500);
       api.undeleteNote(noteID, (err: Error, note: any) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to undelete <a href="/n/${noteID}" target="_blank">note</a>.`);
+          action.showTemporaryMessage(
+            `Failed to undelete <a href="/n/${noteID}" target="_blank">note</a>.`
+          );
           return;
         }
         action.showTemporaryMessage(`Undeleted <a href="/n/${noteID}" target="_blank">note</a>.`);
@@ -158,10 +160,14 @@ export default class AppNote extends Component<Props, State> {
       action.showTemporaryMessage('Moving note to trash...', 500);
       api.deleteNote(noteID, (err: Error, note: any) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to move <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
+          action.showTemporaryMessage(
+            `Failed to move <a href="/n/${noteID}" target="_blank">note</a> to trash.`
+          );
           return;
         }
-        action.showTemporaryMessage(`Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
+        action.showTemporaryMessage(
+          `Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`
+        );
         this.setNote(note);
       });
     }
@@ -192,17 +198,23 @@ export default class AppNote extends Component<Props, State> {
       action.showTemporaryMessage('Making note private...', 500);
       api.makeNotePrivate(noteID, (err: Error, note: any) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> private.`);
+          action.showTemporaryMessage(
+            `Failed to make <a href="/n/${noteID}" target="_blank">note</a> private.`
+          );
           return;
         }
-        action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> private.`);
+        action.showTemporaryMessage(
+          `Made <a href="/n/${noteID}" target="_blank">note</a> private.`
+        );
         this.setNote(note);
       });
     } else {
       action.showTemporaryMessage('Making note public...', 500);
       api.makeNotePublic(noteID, (err: Error, note: any) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> public.`);
+          action.showTemporaryMessage(
+            `Failed to make <a href="/n/${noteID}" target="_blank">note</a> public.`
+          );
           return;
         }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> public.`);
@@ -220,7 +232,9 @@ export default class AppNote extends Component<Props, State> {
       action.showTemporaryMessage('Un-starring the note...', 500);
       api.unstarNote(noteID, (err: Error, note: any) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to unstar <a href="/n/${noteID}" target="_blank">note</a>.`);
+          action.showTemporaryMessage(
+            `Failed to unstar <a href="/n/${noteID}" target="_blank">note</a>.`
+          );
           return;
         }
         action.showTemporaryMessage(`Unstarred <a href="/n/${noteID}" target="_blank">note</a>.`);
@@ -230,7 +244,9 @@ export default class AppNote extends Component<Props, State> {
       action.showTemporaryMessage('Starring the note...', 500);
       api.starNote(noteID, (err: Error, note: any) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to star <a href="/n/${noteID}" target="_blank">note</a>.`);
+          action.showTemporaryMessage(
+            `Failed to star <a href="/n/${noteID}" target="_blank">note</a>.`
+          );
           return;
         }
         action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
@@ -248,7 +264,7 @@ export default class AppNote extends Component<Props, State> {
     if (note.IsDeleted()) {
       return;
     }
-    return <a href='#' onClick={this.handleEditNote}>Edit</a>;
+    return <a href="#" onClick={this.handleEditNote}>Edit</a>;
   }
 
   renderVersions(note: any) {
@@ -260,9 +276,11 @@ export default class AppNote extends Component<Props, State> {
       return;
     }
     const s = note.IsStarred() ? 'Unstar' : 'Star';
-    return <a href='#' onClick={this.handleStarUnstarNote}>
-      {s}
-    </a>;
+    return (
+      <a href="#" onClick={this.handleStarUnstarNote}>
+        {s}
+      </a>
+    );
   }
 
   renderMakePublicPrivate(note: any) {
@@ -270,21 +288,25 @@ export default class AppNote extends Component<Props, State> {
       return;
     }
     const s = note.IsPublic() ? 'Make private' : 'Make public';
-    return <a href='#' onClick={this.handleMakePublicPrivate}>
-      {s}
-    </a>;
+    return (
+      <a href="#" onClick={this.handleMakePublicPrivate}>
+        {s}
+      </a>
+    );
   }
 
   renderTrashUntrash(note: any) {
     const s = note.IsDeleted() ? 'Undelete' : 'Move to Trash';
-    return <a href='#' onClick={this.handleDelUndel}>
-      {s}
-    </a>;
+    return (
+      <a href="#" onClick={this.handleDelUndel}>
+        {s}
+      </a>
+    );
   }
 
   renderPermanentDelete(note: any) {
     if (note.IsDeleted()) {
-      return <a href='#' onClick={this.handlePermanentDelete}>Delete permanently</a>;
+      return <a href="#" onClick={this.handlePermanentDelete}>Delete permanently</a>;
     }
   }
 
@@ -294,43 +316,39 @@ export default class AppNote extends Component<Props, State> {
     const isTxt = fmtName == FormatText;
     if (isTxt) {
       const html = {
-        __html: linkify2(body)
+        __html: linkify2(body),
       };
-      return <pre onDoubleClick={this.handleDoubleClick} dangerouslySetInnerHTML={html}></pre>;
+      return <pre onDoubleClick={this.handleDoubleClick} dangerouslySetInnerHTML={html} />;
     }
     const html = {
-      __html: toHtml(body)
+      __html: toHtml(body),
     };
 
-    return <div onDoubleClick={this.handleDoubleClick} dangerouslySetInnerHTML={html}></div>;
+    return <div onDoubleClick={this.handleDoubleClick} dangerouslySetInnerHTML={html} />;
   }
 
   renderTags(tags: any) {
     const tagEls = tags.map((tag: any) => {
       tag = '#' + tag;
-      return (
-        <span className='note-tag' key={tag}>{tag}</span>
-      );
+      return <span className="note-tag" key={tag}>{tag}</span>;
     });
 
-    return (
-      <span className='note-tags'>{tagEls}</span>
-    );
+    return <span className="note-tags">{tagEls}</span>;
   }
 
   renderPublicPrivate(note: any) {
     const isPublic = note.IsPublic();
     if (isPublic) {
-      return <span className='is-public'>public </span>;
+      return <span className="is-public">public </span>;
     } else {
-      return <span className='is-private'>private </span>;
+      return <span className="is-private">private </span>;
     }
   }
 
   renderDeletedState(note: any) {
     const isDeleted = note.IsDeleted();
     if (isDeleted) {
-      return <span className='is-deleted'>deleted</span>;
+      return <span className="is-deleted">deleted</span>;
     }
   }
 
@@ -340,17 +358,17 @@ export default class AppNote extends Component<Props, State> {
 
     return (
       <div>
-        <div id='note-top'>
+        <div id="note-top">
           <Top />
         </div>
-        <div id='full-note'>
-          <div className='note-content-wrapper'>
-            <div className='note-deleted center'>
+        <div id="full-note">
+          <div className="note-content-wrapper">
+            <div className="note-deleted center">
               This note has been permanently deleted.
             </div>
           </div>
-          <hr className='light' />
-          <div className='note-footer center'>
+          <hr className="light" />
+          <div className="note-footer center">
             A note by <a href={url}>{nu.Handle}</a>.
           </div>
         </div>
@@ -378,33 +396,34 @@ export default class AppNote extends Component<Props, State> {
 
     return (
       <div>
-        <div id='note-top'>
+        <div id="note-top">
           <Top />
         </div>
-        <div id='full-note'>
-          <div className='note-content-wrapper'>
-            <div className='full-note-top'>
+        <div id="full-note">
+          <div className="note-content-wrapper">
+            <div className="full-note-top">
               <h1>{title}</h1>
               {this.renderTags(tags)}
               {this.renderPublicPrivate(note)}
               {this.renderDeletedState(note)}
-              <div className='flex-spacer'></div>
-              {this.isMyNote() ?
-                <div className='menu-trigger'>
-                  <i className='fa fa-ellipsis-v'></i>
-                  <div className='menu-content'>
-                    {this.renderEdit(note)}
-                    {this.renderStarUnstar(note)}
-                    {this.renderMakePublicPrivate(note)}
-                    {this.renderTrashUntrash(note)}
-                    {this.renderPermanentDelete(note)}
+              <div className="flex-spacer" />
+              {this.isMyNote()
+                ? <div className="menu-trigger">
+                    <i className="fa fa-ellipsis-v" />
+                    <div className="menu-content">
+                      {this.renderEdit(note)}
+                      {this.renderStarUnstar(note)}
+                      {this.renderMakePublicPrivate(note)}
+                      {this.renderTrashUntrash(note)}
+                      {this.renderPermanentDelete(note)}
+                    </div>
                   </div>
-                </div> : null}
+                : null}
             </div>
             {this.renderBody(note)}
           </div>
-          <hr className='light' />
-          <div className='note-footer center'>
+          <hr className="light" />
+          <div className="note-footer center">
             A note by <a href={url}>{nu.Handle}</a>.
           </div>
         </div>

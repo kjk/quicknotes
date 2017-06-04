@@ -29,7 +29,6 @@ interface State {
 }
 
 export default class Top extends Component<Props, State> {
-
   searchNotesUser: any;
 
   constructor(props?: Props, context?: any) {
@@ -43,7 +42,7 @@ export default class Top extends Component<Props, State> {
     this.searchNotesUser = null;
 
     this.state = {
-      searchTerm: ''
+      searchTerm: '',
     };
   }
 
@@ -52,10 +51,12 @@ export default class Top extends Component<Props, State> {
 
     keymaster.filter = keyFilter;
     keymaster('/', () => {
-      focusSearch(); return false;
+      focusSearch();
+      return false;
     });
     keymaster('n', () => {
-      action.editNewNote(); return false;
+      action.editNewNote();
+      return false;
     });
   }
 
@@ -69,7 +70,7 @@ export default class Top extends Component<Props, State> {
 
   handleClearSearchTerm() {
     this.setState({
-      searchTerm: ''
+      searchTerm: '',
     });
   }
 
@@ -86,7 +87,7 @@ export default class Top extends Component<Props, State> {
     const user = this.searchNotesUser;
     const searchTerm = e.target.value;
     this.setState({
-      searchTerm: searchTerm
+      searchTerm: searchTerm,
     });
     if (searchTerm === '') {
       action.clearSearchTerm();
@@ -111,7 +112,7 @@ export default class Top extends Component<Props, State> {
 
     let placeholder = 'Search your notes (Esc or /)';
     if (gNotesUser) {
-      if (!gLoggedUser || (gLoggedUser.HashID != gNotesUser.HashID)) {
+      if (!gLoggedUser || gLoggedUser.HashID != gNotesUser.HashID) {
         placeholder = `Search public notes by ${gNotesUser.Handle} (Esc or /)`;
         this.searchNotesUser = gNotesUser.HashID;
       }
@@ -121,25 +122,32 @@ export default class Top extends Component<Props, State> {
     }
 
     return (
-      <div id='header' className='flex-row'>
-        <a id='logo' className='logo colored' href='/welcome'>QuickNotes</a>
-        {userUrl ?
-          <button className='btn btn-new-note hint--bottom' data-hint='shortcut: n' onClick={this.handleEditNewNote}>
-            New note
-          </button> : null}
-        {withSearchInput ?
-          <input name='search'
-            id='search-input'
-            value={this.state.searchTerm}
-            onKeyDown={this.handleInputKeyDown}
-            onChange={this.handleInputChange}
-            type='text'
-            autoComplete='off'
-            autoCapitalize='off'
-            placeholder={placeholder} /> : null}
-        <div className='flex-push-right'></div>
-        {userUrl ?
-          <a href={userUrl} className='header-link'>My Notes</a> : null}
+      <div id="header" className="flex-row">
+        <a id="logo" className="logo colored" href="/welcome">QuickNotes</a>
+        {userUrl
+          ? <button
+              className="btn btn-new-note hint--bottom"
+              data-hint="shortcut: n"
+              onClick={this.handleEditNewNote}
+            >
+              New note
+            </button>
+          : null}
+        {withSearchInput
+          ? <input
+              name="search"
+              id="search-input"
+              value={this.state.searchTerm}
+              onKeyDown={this.handleInputKeyDown}
+              onChange={this.handleInputChange}
+              type="text"
+              autoComplete="off"
+              autoCapitalize="off"
+              placeholder={placeholder}
+            />
+          : null}
+        <div className="flex-push-right" />
+        {userUrl ? <a href={userUrl} className="header-link">My Notes</a> : null}
         {this.props.hideLogin ? null : <LogInLink />}
       </div>
     );

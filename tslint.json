@@ -9,12 +9,9 @@
       true,
       2
     ],
-    "no-conditional-assignment": true,
+    "no-conditional-assignment": false,
     "quotemark": [
-      true,
-      "single",
-      "jsx-single",
-      "avoid-escape"
+      false
     ],
     "semicolon": [
       true,

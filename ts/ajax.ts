@@ -10,7 +10,7 @@ export enum AjaxError {
   Failed = 0,
   Error = -1,
   Timeout = -2,
-  Abort = -3
+  Abort = -3,
 }
 
 export interface Params {

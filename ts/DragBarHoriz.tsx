@@ -49,8 +49,7 @@ export default class DragBarHoriz extends React.Component<Props, State> {
 
   handleMouseDown(e: React.MouseEvent<HTMLDivElement>): void {
     // only left mouse button
-    if (e.button !== 0)
-      return;
+    if (e.button !== 0) return;
     e.stopPropagation();
     e.preventDefault();
     this.setState({
@@ -69,7 +68,7 @@ export default class DragBarHoriz extends React.Component<Props, State> {
   isAllowed(y: number) {
     const min = this.props.min || 0;
     const max = this.props.max || 9999999;
-    return (y >= min) && (y <= max);
+    return y >= min && y <= max;
   }
 
   calcBottom() {
@@ -97,12 +96,9 @@ export default class DragBarHoriz extends React.Component<Props, State> {
   render() {
     const style = {
       height: this.props.dy,
-      bottom: this.calcBottom()
+      bottom: this.calcBottom(),
     };
 
-    return (
-      <div className='drag-bar-horiz' style={style} onMouseDown={this.handleMouseDown}>
-      </div>
-    );
+    return <div className="drag-bar-horiz" style={style} onMouseDown={this.handleMouseDown} />;
   }
 }

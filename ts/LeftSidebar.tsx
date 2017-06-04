@@ -18,20 +18,19 @@ export default class LeftSidebar extends Component<Props, any> {
     }
 
     return (
-      <TagsList sectionName={sectionName}
+      <TagsList
+        sectionName={sectionName}
         tagNames={tagNames}
         tags={tags}
-        selectedTags={this.props.selectedTags} />
+        selectedTags={this.props.selectedTags}
+      />
     );
   }
 
   render() {
     const tags = this.props.tags;
     if (!tags) {
-      return (
-        <div id='leftSidebar'>
-        </div>
-      );
+      return <div id="leftSidebar" />;
     }
     let tagNames: string[] = [];
     let specialTagNames: any = [];
@@ -59,7 +58,7 @@ export default class LeftSidebar extends Component<Props, any> {
     const specialTagsList = this.renderTagsList('SPECIAL', specialTagNames, tags);
     const tagsList = this.renderTagsList('TAGS', tagNames, tags);
     return (
-      <div id='left-sidebar'>
+      <div id="left-sidebar">
         {specialTagsList}
         {tagsList}
       </div>

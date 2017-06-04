@@ -36,7 +36,7 @@ export default class NoteView extends Component<Props, State> {
     this.editCurrentNote = this.editCurrentNote.bind(this);
 
     this.state = {
-      showActions: false
+      showActions: false,
     };
   }
 
@@ -54,14 +54,14 @@ export default class NoteView extends Component<Props, State> {
   handleMouseEnter(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     this.setState({
-      showActions: true
+      showActions: true,
     });
   }
 
   handleMouseLeave(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     this.setState({
-      showActions: false
+      showActions: false,
     });
   }
 
@@ -92,7 +92,9 @@ export default class NoteView extends Component<Props, State> {
       action.showTemporaryMessage('Undeleting note...', 500);
       api.undeleteNote(noteID, (err: Error) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to delete <a href="/n/${noteID}" target="_blank">note</a>.`);
+          action.showTemporaryMessage(
+            `Failed to delete <a href="/n/${noteID}" target="_blank">note</a>.`
+          );
           return;
         }
         action.showTemporaryMessage(`Undeleted <a href="/n/${noteID}" target="_blank">note</a>.`);
@@ -101,10 +103,14 @@ export default class NoteView extends Component<Props, State> {
       action.showTemporaryMessage('Moving note to trash...', 500);
       api.deleteNote(noteID, (err: Error) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to move <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
+          action.showTemporaryMessage(
+            `Failed to move <a href="/n/${noteID}" target="_blank">note</a> to trash.`
+          );
           return;
         }
-        action.showTemporaryMessage(`Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`);
+        action.showTemporaryMessage(
+          `Moved <a href="/n/${noteID}" target="_blank">note</a> to trash.`
+        );
       });
     }
   }
@@ -133,16 +139,22 @@ export default class NoteView extends Component<Props, State> {
       action.showTemporaryMessage('Making note private...', 500);
       api.makeNotePrivate(noteID, (err: Error) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> private.`);
+          action.showTemporaryMessage(
+            `Failed to make <a href="/n/${noteID}" target="_blank">note</a> private.`
+          );
           return;
         }
-        action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> private.`);
+        action.showTemporaryMessage(
+          `Made <a href="/n/${noteID}" target="_blank">note</a> private.`
+        );
       });
     } else {
       action.showTemporaryMessage('Making note public...', 500);
       api.makeNotePublic(noteID, (err: Error) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to make <a href="/n/${noteID}" target="_blank">note</a> public.`);
+          action.showTemporaryMessage(
+            `Failed to make <a href="/n/${noteID}" target="_blank">note</a> public.`
+          );
           return;
         }
         action.showTemporaryMessage(`Made <a href="/n/${noteID}" target="_blank">note</a> public.`);
@@ -159,7 +171,9 @@ export default class NoteView extends Component<Props, State> {
       action.showTemporaryMessage('Un-starring a note...', 500);
       api.unstarNote(noteID, (err: Error) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to unstar <a href="/n/${noteID}" target="_blank">note</a>.`);
+          action.showTemporaryMessage(
+            `Failed to unstar <a href="/n/${noteID}" target="_blank">note</a>.`
+          );
           return;
         }
         action.showTemporaryMessage(`Unstarred <a href="/n/${noteID}" target="_blank">note</a>.`);
@@ -168,7 +182,9 @@ export default class NoteView extends Component<Props, State> {
       action.showTemporaryMessage('Starring a note...', 500);
       api.starNote(noteID, (err: Error) => {
         if (err) {
-          action.showTemporaryMessage(`Failed to star <a href="/n/${noteID}" target="_blank">note</a>.`);
+          action.showTemporaryMessage(
+            `Failed to star <a href="/n/${noteID}" target="_blank">note</a>.`
+          );
           return;
         }
         action.showTemporaryMessage(`Starred <a href="/n/${noteID}" target="_blank">note</a>.`);
@@ -179,65 +195,71 @@ export default class NoteView extends Component<Props, State> {
   renderTitle(note: Note) {
     const title = note.Title();
     if (title !== '') {
-      return (
-        <span className='note-title'>{title}</span>
-      );
+      return <span className="note-title">{title}</span>;
     }
   }
 
   renderTags(tags: string[]) {
-    const tagEls = tags.map((tag) => {
+    const tagEls = tags.map(tag => {
       tag = '#' + tag;
       return (
-        <span className='note-tag' key={tag} onClick={this.handleTagClicked}>{tag}</span>
+        <span className="note-tag" key={tag} onClick={this.handleTagClicked}>
+          {tag}
+        </span>
       );
     });
 
-    return (
-      <span className='note-tags'>{tagEls}</span>
-    );
+    return <span className="note-tags">{tagEls}</span>;
   }
 
   renderPublicPrivate(note: Note) {
     const isPublic = note.IsPublic();
     if (isPublic) {
-      return <span className='is-public'>public </span>;
+      return <span className="is-public">public </span>;
     } else {
-      return <span className='is-private'>private </span>;
+      return <span className="is-private">private </span>;
     }
   }
 
   renderDeletedState(note: Note) {
     const isDeleted = note.IsDeleted();
     if (isDeleted) {
-      return <span className='is-deleted'>deleted</span>;
+      return <span className="is-deleted">deleted</span>;
     }
   }
 
   renderTrashUntrash(note: Note) {
     if (note.IsDeleted()) {
       return (
-        <a className='note-action'
-          href='#'
-          onClick={this.handleDelUndel}
-          title='Undelete'>undelete</a>
+        <a className="note-action" href="#" onClick={this.handleDelUndel} title="Undelete">
+          undelete
+        </a>
       );
     }
     return (
-      <a className='note-action delete'
-        href='#'
+      <a
+        className="note-action delete"
+        href="#"
         onClick={this.handleDelUndel}
-        title='Move to Trash'>delete </a>
+        title="Move to Trash"
+      >
+        delete
+        {' '}
+      </a>
     );
   }
 
   renderPermanentDelete(note: Note) {
     if (note.IsDeleted()) {
       return (
-        <a className='note-action delete'
-          href='#'
+        <a
+          className="note-action delete"
+          href="#"
           onClick={this.handlePermanentDelete}
-          title='Delete permanently'>delete permanently</a>
+          title="Delete permanently"
+        >
+          delete permanently
+        </a>
       );
     }
   }
@@ -250,10 +272,9 @@ export default class NoteView extends Component<Props, State> {
   renderEdit(note: Note) {
     if (!note.IsDeleted()) {
       return (
-        <a className='note-action'
-          href='#'
-          onClick={this.handleEdit}
-          title='Edit note'>edit</a>
+        <a className="note-action" href="#" onClick={this.handleEdit} title="Edit note">
+          edit
+        </a>
       );
     }
   }
@@ -265,18 +286,14 @@ export default class NoteView extends Component<Props, State> {
     }
     const url = '/n/' + note.HashID() + title;
     return (
-      <a className='note-action'
-        href={url}
-        target='_blank'
-        data-internal='yes'
-        title='View note'>view</a>
+      <a className="note-action" href={url} target="_blank" data-internal="yes" title="View note">
+        view
+      </a>
     );
   }
 
   renderSize(note: Note) {
-    return (
-      <span className='note-size'>{note.HumanSize()}</span>
-    );
+    return <span className="note-size">{note.HumanSize()}</span>;
   }
 
   renderMakePublicPrivate(note: Note) {
@@ -285,17 +302,27 @@ export default class NoteView extends Component<Props, State> {
     }
     if (note.IsPublic()) {
       return (
-        <a className='note-action'
-          href='#'
+        <a
+          className="note-action"
+          href="#"
           onClick={this.handleMakePublicPrivate}
-          title='Make private'>make private </a>
+          title="Make private"
+        >
+          make private
+          {' '}
+        </a>
       );
     } else {
       return (
-        <a className='note-action'
-          href='#'
+        <a
+          className="note-action"
+          href="#"
           onClick={this.handleMakePublicPrivate}
-          title='Make public'>make public </a>
+          title="Make public"
+        >
+          make public
+          {' '}
+        </a>
       );
     }
   }
@@ -308,17 +335,25 @@ export default class NoteView extends Component<Props, State> {
     const isStarred = note.IsStarred();
     if (isStarred) {
       return (
-        <a className='note-action note-star note-starred'
-          href='#'
+        <a
+          className="note-action note-star note-starred"
+          href="#"
           onClick={this.handleStarUnstarNote}
-          title='Unstar'><i className='fa fa-star'></i></a>
+          title="Unstar"
+        >
+          <i className="fa fa-star" />
+        </a>
       );
     } else {
       return (
-        <a className='note-action note-star'
-          href='#'
+        <a
+          className="note-action note-star"
+          href="#"
           onClick={this.handleStarUnstarNote}
-          title='Star'><i className='fa fa-star-o'></i></a>
+          title="Star"
+        >
+          <i className="fa fa-star-o" />
+        </a>
       );
     }
   }
@@ -326,7 +361,7 @@ export default class NoteView extends Component<Props, State> {
   renderActionsIfMyNotes(note: Note) {
     if (this.state.showActions) {
       return (
-        <div className='note-actions'>
+        <div className="note-actions">
           {this.renderTrashUntrash(note)}
           {this.renderPermanentDelete(note)}
           {this.renderMakePublicPrivate(note)}
@@ -340,14 +375,12 @@ export default class NoteView extends Component<Props, State> {
   renderActionsIfNotMyNotes(note: Note) {
     if (this.state.showActions) {
       return (
-        <div className='note-actions'>
+        <div className="note-actions">
           {this.renderViewLink(note)}
         </div>
       );
     }
-    return (
-      <div className='note-actions'></div>
-    );
+    return <div className="note-actions" />;
   }
 
   renderActions(note: Note) {
@@ -365,11 +398,13 @@ export default class NoteView extends Component<Props, State> {
       cls += ' note-private';
     }
     return (
-      <div className={cls}
+      <div
+        className={cls}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        onDoubleClick={this.handleDoubleClick}>
-        <div className='note-header'>
+        onDoubleClick={this.handleDoubleClick}
+      >
+        <div className="note-header">
           {this.renderStarUnstar(note)}
           {this.renderTitle(note)}
           {this.renderTags(note.Tags())}

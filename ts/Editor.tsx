@@ -8,12 +8,7 @@ import DragBarHoriz from './DragBarHoriz';
 import TextSelect from './TextSelect';
 
 import * as action from './action';
-import {
-  Note,
-  FormatText,
-  FormatMarkdown,
-  FetchLatestContent
-} from './Note';
+import { Note, FormatText, FormatMarkdown, FetchLatestContent } from './Note';
 import { debounce } from './utils';
 import { toHtml } from './md';
 import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils';
@@ -30,10 +25,10 @@ const isMac = /Mac/.test(navigator.platform);
 
 const cmOptions = {
   //'autofocus': true,
-  'lineWrapping': true,
-  'lineNumbers': false,
-  'tabSize': 2,
-  'tabindex': 3
+  lineWrapping: true,
+  lineNumbers: false,
+  tabSize: 2,
+  tabindex: 3,
 };
 
 function formatPrettyName(fmt: string): string {
@@ -102,7 +97,14 @@ class NoteInEditor {
   isPublic: boolean;
   formatName: string;
 
-  constructor(id: string, title: string, tags: string, body: string, isPublic: boolean, formatName: string) {
+  constructor(
+    id: string,
+    title: string,
+    tags: string,
+    body: string,
+    isPublic: boolean,
+    formatName: string
+  ) {
     this.id = id;
     this.title = title;
     this.tags = tags;
@@ -181,13 +183,16 @@ function didNoteChange(n1: NoteInEditor, n2: NoteInEditor): boolean {
 var insertTexts = {
   link: ['[', '](http://)'],
   image: ['![](http://', ')'],
-  table: ['', '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n'],
-  horizontalRule: ['', '\n\n-----\n\n']
+  table: [
+    '',
+    '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n',
+  ],
+  horizontalRule: ['', '\n\n-----\n\n'],
 };
 
 var blockStyles = {
-  'bold': '**',
-  'italic': '*'
+  bold: '**',
+  italic: '*',
 };
 
 interface CodeMirrorState {
@@ -248,7 +253,7 @@ function _replaceSelection(cm: any, active: any, startEnd: any) {
     end = text.slice(startPoint.ch);
     cm.replaceRange(start + end, {
       line: startPoint.line,
-      ch: 0
+      ch: 0,
     });
   } else {
     text = cm.getSelection();
@@ -317,13 +322,17 @@ function _toggleHeading(cm: any, direction: any, size?: any) {
         }
       }
 
-      cm.replaceRange(text, {
-        line: i,
-        ch: 0
-      }, {
+      cm.replaceRange(
+        text,
+        {
           line: i,
-          ch: 99999999999999
-        });
+          ch: 0,
+        },
+        {
+          line: i,
+          ch: 99999999999999,
+        }
+      );
     })(i);
   }
   cm.focus();
@@ -334,14 +343,14 @@ function _toggleLine(cm: any, name: any) {
   var startPoint = cm.getCursor('start');
   var endPoint = cm.getCursor('end');
   var repl: any = {
-    'quote': /^(\s*)\>\s+/,
+    quote: /^(\s*)\>\s+/,
     'unordered-list': /^(\s*)(\*|\-|\+)\s+/,
-    'ordered-list': /^(\s*)\d+\.\s+/
+    'ordered-list': /^(\s*)\d+\.\s+/,
   };
   var map: any = {
-    'quote': '> ',
+    quote: '> ',
     'unordered-list': '* ',
-    'ordered-list': '1. '
+    'ordered-list': '1. ',
   };
   for (var i = startPoint.line; i <= endPoint.line; i++) {
     (function(i: any) {
@@ -351,13 +360,17 @@ function _toggleLine(cm: any, name: any) {
       } else {
         text = map[name] + text;
       }
-      cm.replaceRange(text, {
-        line: i,
-        ch: 0
-      }, {
+      cm.replaceRange(
+        text,
+        {
           line: i,
-          ch: 99999999999999
-        });
+          ch: 0,
+        },
+        {
+          line: i,
+          ch: 99999999999999,
+        }
+      );
     })(i);
   }
   cm.focus();
@@ -388,13 +401,17 @@ function _toggleBlock(cm: any, type: any, start_chars: any, end_chars?: any) {
       start = start.replace(/(\*\*|~~)(?![\s\S]*(\*\*|~~))/, '');
       end = end.replace(/(\*\*|~~)/, '');
     }
-    cm.replaceRange(start + end, {
-      line: startPoint.line,
-      ch: 0
-    }, {
+    cm.replaceRange(
+      start + end,
+      {
         line: startPoint.line,
-        ch: 99999999999999
-      });
+        ch: 0,
+      },
+      {
+        line: startPoint.line,
+        ch: 99999999999999,
+      }
+    );
 
     if (type == 'bold' || type == 'strikethrough') {
       startPoint.ch -= 2;
@@ -487,7 +504,7 @@ function fixShortcut(name: string) {
 function getCodeMirrorState(cm: any) {
   return {
     cursor: cm.getCursor(),
-    selections: cm.listSelections()
+    selections: cm.listSelections(),
   };
 }
 
@@ -509,7 +526,7 @@ function wordCount(data: string): number {
   }
   let count = 0;
   for (let i = 0; i < m.length; i++) {
-    if (m[i].charCodeAt(0) >= 0x4E00) {
+    if (m[i].charCodeAt(0) >= 0x4e00) {
       count += m[i].length;
     } else {
       count += 1;
@@ -532,7 +549,6 @@ interface State {
 }
 
 export default class Editor extends Component<any, State> {
-
   initialNote: NoteInEditor;
   cm: any;
   top: number;
@@ -712,12 +728,12 @@ export default class Editor extends Component<any, State> {
       'Ctrl-I': (cm: any) => toggleItalic(cm),
       'Ctrl-K': (cm: any) => drawLink(cm),
       'Cmd-H': (cm: any) => toggleHeadingSmaller(cm),
-      'F9': (cm: any) => this.togglePreview(),
+      F9: (cm: any) => this.togglePreview(),
       "Cmd-'": (cm: any) => toggleBlockquote(cm),
       'Ctrl-L': (cm: any) => toggleUnorderedList(cm),
       'Cmd-Alt-L': (cm: any) => toggleOrderedList(cm),
       'Shift-Cmd-H': (cm: any) => toggleHeadingBigger(cm),
-      'Enter': 'newlineAndIndentContinueMarkdownList'
+      Enter: 'newlineAndIndentContinueMarkdownList',
     };
 
     let extraKeys: any = {};
@@ -754,7 +770,7 @@ export default class Editor extends Component<any, State> {
     if (!didNoteChange(this.initialNote, this.state.note)) {
       this.setState({
         isShowing: false,
-        note: newEmptyNote()
+        note: newEmptyNote(),
       });
     }
     return false;
@@ -776,7 +792,7 @@ export default class Editor extends Component<any, State> {
     let note = this.state.note;
     note.body = s;
     this.setState({
-      note: note
+      note: note,
     });
   }
 
@@ -785,7 +801,7 @@ export default class Editor extends Component<any, State> {
     let note = this.state.note;
     note.title = s;
     this.setState({
-      note: note
+      note: note,
     });
   }
 
@@ -794,7 +810,7 @@ export default class Editor extends Component<any, State> {
     let note = this.state.note;
     note.tags = s;
     this.setState({
-      note: note
+      note: note,
     });
   }
 
@@ -804,7 +820,7 @@ export default class Editor extends Component<any, State> {
     //console.log('handleSave, note=', note, 'noteJSON=', noteJSON);
     this.setState({
       isShowing: false,
-      note: newEmptyNote()
+      note: newEmptyNote(),
     });
     action.showTemporaryMessage('Saving note...', 500);
     const isNewNote = note.id;
@@ -814,7 +830,9 @@ export default class Editor extends Component<any, State> {
         return;
       }
       const hashID = note.HashID;
-      let msg = isNewNote ? `Updated <a href="/n/${hashID}" target="_blank">the note</a>.` : `Created <a href="/n/${hashID}" target="_blank">the note</a>.`;
+      let msg = isNewNote
+        ? `Updated <a href="/n/${hashID}" target="_blank">the note</a>.`
+        : `Created <a href="/n/${hashID}" target="_blank">the note</a>.`;
       action.showTemporaryMessage(msg);
     });
   }
@@ -822,7 +840,7 @@ export default class Editor extends Component<any, State> {
   handleCancel(e: any) {
     this.setState({
       isShowing: false,
-      note: newEmptyNote()
+      note: newEmptyNote(),
     });
   }
 
@@ -854,7 +872,7 @@ export default class Editor extends Component<any, State> {
     this.initialNote = deepCloneObject(note);
     this.setState({
       isShowing: true,
-      note: note
+      note: note,
     });
   }
 
@@ -953,7 +971,7 @@ export default class Editor extends Component<any, State> {
     note.formatName = formatShortName(val);
     this.setFocusInUpdate = true;
     this.setState({
-      note: note
+      note: note,
     });
   }
 
@@ -962,7 +980,7 @@ export default class Editor extends Component<any, State> {
     note.isPublic = valIdx == 0;
     this.setFocusInUpdate = true;
     this.setState({
-      note: note
+      note: note,
     });
   }
 
@@ -970,21 +988,25 @@ export default class Editor extends Component<any, State> {
     const values = ['public', 'private'];
     const selectedIdx = isPublic ? 0 : 1;
     return (
-      <TextSelect values={values} selectedIdx={selectedIdx} onChange={this.handlePublicOrPrivateChanged} />
+      <TextSelect
+        values={values}
+        selectedIdx={selectedIdx}
+        onChange={this.handlePublicOrPrivateChanged}
+      />
     );
   }
 
   handleHidePreview(e: any) {
     e.preventDefault();
     this.setState({
-      isShowingPreview: false
+      isShowingPreview: false,
     });
   }
 
   handleShowPreview(e: any) {
     e.preventDefault();
     this.setState({
-      isShowingPreview: true
+      isShowingPreview: true,
     });
   }
 
@@ -1000,7 +1022,7 @@ export default class Editor extends Component<any, State> {
     this.savedCodeMirrorState = getCodeMirrorState(this.cm);
     const isShowing = !this.state.isShowingPreview;
     this.setState({
-      isShowingPreview: isShowing
+      isShowingPreview: isShowing,
     });
   }
 
@@ -1028,39 +1050,75 @@ export default class Editor extends Component<any, State> {
     }
     // TODO: translate shortcuts for Windows
     return (
-      <div id='editor-buttons' className='flex-row'>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdBold} data-hint='Bold (⌘B)'>
-          <i className='fa fa-bold'></i>
+      <div id="editor-buttons" className="flex-row">
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdBold}
+          data-hint="Bold (⌘B)"
+        >
+          <i className="fa fa-bold" />
         </button>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdItalic} data-hint='Italic (⌘I)'>
-          <i className='fa fa-italic'></i>
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdItalic}
+          data-hint="Italic (⌘I)"
+        >
+          <i className="fa fa-italic" />
         </button>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdHeading} data-hint='Heading (⌘H)'>
-          <i className='fa fa-header'></i>
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdHeading}
+          data-hint="Heading (⌘H)"
+        >
+          <i className="fa fa-header" />
         </button>
-        <div className='editor-btn-spacer'></div>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdQuote} data-hint="Blockquote (⌘-')">
-          <i className='fa fa-quote-right'></i>
+        <div className="editor-btn-spacer" />
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdQuote}
+          data-hint="Blockquote (⌘-')"
+        >
+          <i className="fa fa-quote-right" />
         </button>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdCode} data-hint='Code block'>
-          <i className='fa fa-code'></i>
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdCode}
+          data-hint="Code block"
+        >
+          <i className="fa fa-code" />
         </button>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdListUnordered} data-hint='Bulleted List (Ctrl-L)'>
-          <i className='fa fa-list-ul'></i>
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdListUnordered}
+          data-hint="Bulleted List (Ctrl-L)"
+        >
+          <i className="fa fa-list-ul" />
         </button>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdListOrdered} data-hint='Numbered List (⌘-Alt-L'>
-          <i className='fa fa-list-ol'></i>
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdListOrdered}
+          data-hint="Numbered List (⌘-Alt-L"
+        >
+          <i className="fa fa-list-ol" />
         </button>
-        <div className='editor-btn-spacer'></div>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdLink} data-hint='Link (Ctrl-K)'>
-          <i className='fa fa-link'></i>
+        <div className="editor-btn-spacer" />
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleEditCmdLink}
+          data-hint="Link (Ctrl-K)"
+        >
+          <i className="fa fa-link" />
         </button>
-        <button className='ebtn hint--bottom' onClick={this.handleEditCmdImage} data-hint='Image'>
-          <i className='fa fa-picture-o'></i>
+        <button className="ebtn hint--bottom" onClick={this.handleEditCmdImage} data-hint="Image">
+          <i className="fa fa-picture-o" />
         </button>
-        <div className='editor-btn-spacer'></div>
-        <button className='ebtn hint--bottom' onClick={this.handleTogglePreview} data-hint='Toggle Preview (F9)'>
-          <i className='fa fa-columns'></i>
+        <div className="editor-btn-spacer" />
+        <button
+          className="ebtn hint--bottom"
+          onClick={this.handleTogglePreview}
+          data-hint="Toggle Preview (F9)"
+        >
+          <i className="fa fa-columns" />
         </button>
       </div>
     );
@@ -1070,7 +1128,7 @@ export default class Editor extends Component<any, State> {
     // console.log('Editor.render, isShowing:', this.state.isShowing, 'top:', this.top);
 
     if (!this.state.isShowing) {
-      return <div className='hidden'></div>;
+      return <div className="hidden" />;
     }
 
     const note = this.state.note;
@@ -1093,96 +1151,104 @@ export default class Editor extends Component<any, State> {
       const style = {
         width: '100%',
         flexGrow: 8,
-        borderTop: '1px solid lightgray'
+        borderTop: '1px solid lightgray',
       };
       editor = (
-        <div id='cm-wrapper' ref='editorTextAreaWrapper' style={style}>
-          <CodeMirrorEditor className='codemirror-div'
-            textAreaClassName='cm-textarea'
-            placeholder='Enter text here...'
+        <div id="cm-wrapper" ref="editorTextAreaWrapper" style={style}>
+          <CodeMirrorEditor
+            className="codemirror-div"
+            textAreaClassName="cm-textarea"
+            placeholder="Enter text here..."
             defaultValue={note.body}
             cmOptions={cmOptions}
             onChange={this.handleTextChanged}
-            onEditorCreated={this.handleEditorCreated} />
+            onEditorCreated={this.handleEditorCreated}
+          />
         </div>
       );
     } else {
       const html = {
-        __html: toHtml(note.body)
+        __html: toHtml(note.body),
       };
 
       editor = (
-        <div id='editor-text-with-preview' className='flex-row'>
-          <div id='cm-wrapper' ref='editorTextAreaWrapper'>
-            <CodeMirrorEditor className='codemirror-div'
-              textAreaClassName='cm-textarea'
-              placeholder='Enter text here...'
+        <div id="editor-text-with-preview" className="flex-row">
+          <div id="cm-wrapper" ref="editorTextAreaWrapper">
+            <CodeMirrorEditor
+              className="codemirror-div"
+              textAreaClassName="cm-textarea"
+              placeholder="Enter text here..."
               defaultValue={note.body}
               cmOptions={cmOptions}
               onChange={this.handleTextChanged}
-              onEditorCreated={this.handleEditorCreated} />
+              onEditorCreated={this.handleEditorCreated}
+            />
           </div>
-          <div id='editor-preview' ref='preview'>
-            <div id='editor-preview-inner' dangerouslySetInnerHTML={html}></div>
+          <div id="editor-preview" ref="preview">
+            <div id="editor-preview-inner" dangerouslySetInnerHTML={html} />
           </div>
         </div>
       );
     }
 
     const style = {
-      height: editorHeight(y)
+      height: editorHeight(y),
     };
 
     const dragBar = (
-      <DragBarHoriz initialY={y}
+      <DragBarHoriz
+        initialY={y}
         dy={kDragBarDy}
         min={kDragBarMin}
         max={dragBarMax}
-        onPosChanged={this.handleDragBarMoved} />
+        onPosChanged={this.handleDragBarMoved}
+      />
     );
 
     const input1 = (
-      <input id='editor-title'
-        className='editor-input'
-        placeholder='title here...'
+      <input
+        id="editor-title"
+        className="editor-input"
+        placeholder="title here..."
         value={note.title}
         onChange={this.handleTitleChanged}
-        ref='title'
+        ref="title"
         tabIndex={1}
       />
     );
 
     const input2 = (
-      <input id='editor-tags'
-        className='editor-input'
-        placeholder='#enter #tags'
+      <input
+        id="editor-tags"
+        className="editor-input"
+        placeholder="#enter #tags"
         value={note.tags}
         onChange={this.handleTagsChanged}
-        tabIndex={2} />
+        tabIndex={2}
+      />
     );
 
     return (
       <Overlay>
         {dragBar}
-        <div id='editor-wrapper'
-          className='flex-col'
-          style={style}
-          ref='editorWrapper'>
-          <div id='editor-top' className='flex-row'>
-            <button className='btn btn-primary hint--bottom'
+        <div id="editor-wrapper" className="flex-col" style={style} ref="editorWrapper">
+          <div id="editor-top" className="flex-row">
+            <button
+              className="btn btn-primary hint--bottom"
               disabled={saveDisabled}
               onClick={this.handleSave}
-              data-hint='Ctrl-Enter'>
+              data-hint="Ctrl-Enter"
+            >
               Save
             </button>
-            <button className='btn btn-cancel' onClick={this.handleCancel}>
+            <button className="btn btn-cancel" onClick={this.handleCancel}>
               Cancel
             </button>
             {publicSelect}
             {formatSelect}
             {input1}
             {input2}
-            <div className='editor-spacer2'></div>
+            <div className="editor-spacer2" />
           </div>
           {this.renderMarkdownButtons(isText)}
           {editor}
@@ -1190,5 +1256,4 @@ export default class Editor extends Component<any, State> {
       </Overlay>
     );
   }
-
 }

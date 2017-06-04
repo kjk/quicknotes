@@ -12,12 +12,7 @@ import TemporaryMessage from './TemporaryMessage';
 import Top from './Top';
 
 import * as u from './utils';
-import {
-  Note,
-  TagToCount,
-  sortNotesByUpdatedAt,
-  toNotes
-} from './Note';
+import { Note, TagToCount, sortNotesByUpdatedAt, toNotes } from './Note';
 import * as action from './action';
 import * as api from './api';
 
@@ -154,7 +149,7 @@ export default class AppUser extends Component<Props, State> {
     this.setState({
       selectedNotes: selectedNotes,
       selectedTags: tags,
-      resetScroll: true
+      resetScroll: true,
     });
   }
 
@@ -189,16 +184,23 @@ export default class AppUser extends Component<Props, State> {
   }
 
   render() {
-    const showingMyNotes = u.isLoggedIn() && (this.state.notesUserIDHash == this.state.loggedUserIDHash);
+    const showingMyNotes =
+      u.isLoggedIn() && this.state.notesUserIDHash == this.state.loggedUserIDHash;
 
     return (
       <div>
         <Top />
-        <LeftSidebar tags={this.state.tags} showingMyNotes={showingMyNotes} selectedTags={this.state.selectedTags} />
-        <NotesList notes={this.state.selectedNotes}
+        <LeftSidebar
+          tags={this.state.tags}
+          showingMyNotes={showingMyNotes}
+          selectedTags={this.state.selectedTags}
+        />
+        <NotesList
+          notes={this.state.selectedNotes}
           showingMyNotes={showingMyNotes}
           compact={false}
-          resetScroll={this.state.resetScroll} />
+          resetScroll={this.state.resetScroll}
+        />
         <Settings />
         <SearchResults onSearchResultSelected={this.handleSearchResultSelected} />
         <ImportSimpleNote />

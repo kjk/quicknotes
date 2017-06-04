@@ -55,10 +55,7 @@ function appUserStart(ctx: PageJS.Context) {
   function renderNotes(notes: Note[]) {
     console.log('appUserStart: got', notes.length, 'notes');
     const el = document.getElementById('root');
-    ReactDOM.render(
-      <AppUser initialNotes={notes} initialTag={initialTag} />,
-      el
-    );
+    ReactDOM.render(<AppUser initialNotes={notes} initialTag={initialTag} />, el);
   }
 }
 
@@ -118,6 +115,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   initElectron();
 
-  api.wsRegisterForBroadcastedMessage('broadcastUserNotes', gotBroadcastedNotes, api.getNotesConvertResult);
+  api.wsRegisterForBroadcastedMessage(
+    'broadcastUserNotes',
+    gotBroadcastedNotes,
+    api.getNotesConvertResult
+  );
   api.openWebSocket();
 });

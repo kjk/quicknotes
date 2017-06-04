@@ -6,7 +6,6 @@ interface Props {
 }
 
 export default class Overlay extends Component<Props, any> {
-
   constructor(props?: Props, context?: any) {
     super(props, context);
   }
@@ -19,7 +18,7 @@ export default class Overlay extends Component<Props, any> {
 
   render() {
     return (
-      <div className='modal-overlay' onClick={this.props.onClick}>
+      <div className="modal-overlay" onClick={this.props.onClick}>
         {this.props.children}
       </div>
     );

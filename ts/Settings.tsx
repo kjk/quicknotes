@@ -2,16 +2,9 @@ import React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as action from './action';
 
-const allThemes = [
-  'light',
-  'dark'
-];
+const allThemes = ['light', 'dark'];
 
-const allLayouts = [
-  'default',
-  'grid',
-  'compact'
-];
+const allLayouts = ['default', 'grid', 'compact'];
 
 interface State {
   isShowing?: boolean;
@@ -31,7 +24,7 @@ export default class Settings extends React.Component<any, State> {
     this.state = {
       isShowing: false,
       theme: 'light',
-      layout: 'default'
+      layout: 'default',
     };
   }
 
@@ -46,7 +39,7 @@ export default class Settings extends React.Component<any, State> {
   showHide(shouldShow: boolean) {
     console.log('Settings.showHide: shouldShow: ", shouldShow');
     this.setState({
-      isShowing: shouldShow
+      isShowing: shouldShow,
     });
   }
 
@@ -54,7 +47,7 @@ export default class Settings extends React.Component<any, State> {
     const theme = e.target.value;
     console.log('handleThemeChanged: ', theme);
     this.setState({
-      theme: theme
+      theme: theme,
     });
     document.body.className = 'theme-' + theme;
   }
@@ -63,16 +56,18 @@ export default class Settings extends React.Component<any, State> {
     const layout = e.target.value;
     console.log('handleLayoutChanged: ', layout);
     this.setState({
-      layout: layout
+      layout: layout,
     });
     document.body.setAttribute('data-spacing', layout);
   }
 
   renderThemesSelect(themes: any, selected: any) {
     const options = themes.map(function(theme: any) {
-      return <option key={theme}>
-        {theme}
-      </option>;
+      return (
+        <option key={theme}>
+          {theme}
+        </option>
+      );
     });
     return (
       <select value={selected} onChange={this.handleThemeChanged}>
@@ -83,9 +78,11 @@ export default class Settings extends React.Component<any, State> {
 
   renderLayoutsSelect(layouts: any, selected: any) {
     const options = layouts.map(function(layout: any) {
-      return <option key={layout}>
-        {layout}
-      </option>;
+      return (
+        <option key={layout}>
+          {layout}
+        </option>
+      );
     });
     return (
       <select value={selected} onChange={this.handleLayoutChanged}>
@@ -107,24 +104,21 @@ export default class Settings extends React.Component<any, State> {
   render() {
     //console.log('Settings.render');
     if (!this.state.isShowing) {
-      return (
-        <div id='settings' className='hidden'>
-        </div>
-      );
+      return <div id="settings" className="hidden" />;
     }
     const layouts = this.renderLayoutsSelect(allLayouts, this.state.layout);
     const themes = this.renderThemesSelect(allThemes, this.state.theme);
     return (
-      <div id='settings'>
-        <div className='settings-div'>
+      <div id="settings">
+        <div className="settings-div">
           Layout:
           {layouts}
         </div>
-        <div className='settings-div'>
+        <div className="settings-div">
           Theme:
           {themes}
         </div>
-        <div className='settings-buttons'>
+        <div className="settings-buttons">
           <button onClick={this.handleOk}>
             Ok
           </button>

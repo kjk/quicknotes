@@ -28,7 +28,6 @@ let expandedNotes: string[] = [];
 
 // a note
 export class Note extends Array {
-
   constructor() {
     super();
   }
@@ -66,7 +65,7 @@ export class Note extends Array {
   }
 
   Tags(): string[] {
-    return this[noteTagsIdx] as string[] || [];
+    return (this[noteTagsIdx] as string[]) || [];
   }
 
   Snippet(): string {
@@ -197,12 +196,21 @@ const FormatHTML = 'html';
 const FormatCodePrefix = 'code:';
 
 // note properties that can be compared for equality with ==
-const simpleProps = [noteIDVerIdx, noteTitleIdx, noteSizeIdx, noteFlagsIdx, noteCreatedAtIdx, noteFormatIdx, noteSnippetIdx, noteContentIdx];
+const simpleProps = [
+  noteIDVerIdx,
+  noteTitleIdx,
+  noteSizeIdx,
+  noteFlagsIdx,
+  noteCreatedAtIdx,
+  noteFormatIdx,
+  noteSnippetIdx,
+  noteContentIdx,
+];
 
 export type TagToCount = Dict<number>;
 
 function arrEmpty(a?: any[]): boolean {
-  return !a || (a.length === 0);
+  return !a || a.length === 0;
 }
 
 function strArrEq(a1?: string[], a2?: string[]): boolean {
