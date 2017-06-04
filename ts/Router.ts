@@ -13,7 +13,6 @@ var rootStripper = /^\/+|\/+$/g;
 var pathStripper = /#.*$/;
 
 class Router {
-
   location: any;
   history: any;
   root: any;
@@ -64,12 +63,9 @@ class Router {
 
   // Get the pathname and search params, without the root.
   getPath() {
-    var path = this.decodeFragment(
-      this.location.pathname + this.getSearch()
-    );
+    var path = this.decodeFragment(this.location.pathname + this.getSearch());
     var root = this.root.slice(0, -1);
-    if (!path.indexOf(root))
-      path = path.slice(root.length);
+    if (!path.indexOf(root)) path = path.slice(root.length);
     return path.charAt(0) === '/' ? path.slice(1) : path;
   }
 
@@ -88,7 +84,6 @@ class Router {
   // Start the hash change handling, returning `true` if the current URL matches
   // an existing route, and `false` otherwise.
   start(options?: any) {
-
     // Figure out the initial configuration. Do we need an iframe?
     // Is pushState desired ... is it available?
     // TODO: was _.extend(), hope this is equivalent
@@ -110,7 +105,6 @@ class Router {
     // Transition from hashChange to pushState or vice versa if both are
     // requested.
     if (this._wantsHashChange && this._wantsPushState) {
-
       // If we've started off with a route from a `pushState`-enabled
       // browser, but we're currently in a browser that doesn't support it...
       if (!this._hasPushState && !this.atRoot()) {
@@ -123,7 +117,7 @@ class Router {
         // in a browser where it could be `pushState`-based instead...
       } else if (this._hasPushState && this.atRoot()) {
         this.navigate(this.getHash(), {
-          replace: true
+          replace: true,
         });
       }
     }
@@ -155,7 +149,7 @@ class Router {
   navigate(fragment?: any, options?: any) {
     if (!options || options === true)
       options = {
-        trigger: !!options
+        trigger: !!options,
       };
 
     // Normalize the fragment.
@@ -182,7 +176,7 @@ class Router {
       // fragment to store history.
     } else if (this._wantsHashChange) {
       this._updateHash(this.location, fragment, options.replace);
-      if (this.iframe && (fragment !== this.getHash(this.iframe))) {
+      if (this.iframe && fragment !== this.getHash(this.iframe)) {
         // Opening and closing the iframe tricks IE7 and earlier to push a
         // history entry on hash-tag change.  When replace is true, we don't
         // want this.
@@ -208,7 +202,6 @@ class Router {
       location.hash = '#' + fragment;
     }
   }
-
 }
 
 let router = new Router();

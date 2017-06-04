@@ -25,9 +25,7 @@ function unescape(html: string) {
 renderer.link = function(href: string, title: string, text: string) {
   if (this.options.sanitize) {
     try {
-      var prot = decodeURIComponent(unescape(href))
-        .replace(/[^\w:]/g, '')
-        .toLowerCase();
+      var prot = decodeURIComponent(unescape(href)).replace(/[^\w:]/g, '').toLowerCase();
     } catch (e) {
       return '';
     }
@@ -47,7 +45,7 @@ const markedOpts = {
   pedantic: false,
   sanitize: true,
   smartLists: true,
-  smartypants: false
+  smartypants: false,
 };
 
 function toHtmlMarked(s: string) {
@@ -60,20 +58,20 @@ const markdownItOpts: MarkdownIt.Options = {
   html: false,
   linkify: true,
   breaks: false, // Convert '\n' in paragraphs into <br>
-  typographer: false
+  typographer: false,
 };
 
 markdownItOpts.highlight = function(str, lang) {
   // TODO: doesn't seem to work
   hljs.configure({
-    tabReplace: '  '
+    tabReplace: '  ',
   });
 
   const hasLang = lang && hljs.getLanguage(lang);
   if (hasLang) {
     try {
       return hljs.highlight(lang, str).value;
-    } catch (__) { }
+    } catch (__) {}
   }
   return ''; // use external default escaping
 };
@@ -83,13 +81,25 @@ const markdownIt = new MarkdownIt(preset, markdownItOpts);
 
 // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md
 // Remember old renderer, if already over-written, or proxy to default renderer
-function myRenderer(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, md: MarkdownIt.MarkdownIt): string {
+function myRenderer(
+  tokens: MarkdownIt.Token[],
+  idx: number,
+  options: any,
+  env: any,
+  md: MarkdownIt.MarkdownIt
+): string {
   return md.renderer.renderToken(tokens, idx, options);
 }
 
 const defaultRender = markdownIt.renderer.rules['link_open'] || myRenderer;
 
-markdownIt.renderer.rules['link_open'] = function(tokens: MarkdownIt.Token[], idx: number, options: any, env: any, self: any) {
+markdownIt.renderer.rules['link_open'] = function(
+  tokens: MarkdownIt.Token[],
+  idx: number,
+  options: any,
+  env: any,
+  self: any
+) {
   // If you are sure other plugins can't add `target` - drop check below
   const i = tokens[idx].attrIndex('target');
 
@@ -115,8 +125,10 @@ const showdownTargetBlank: showdown.RegexReplaceExtension = {
   type: 'output',
   regex: '<a(.*?)>',
   replace: function(match: any, content: string) {
-    return content.indexOf('mailto:') !== -1 ? '<a' + content + '>' : '<a target="_blank"' + content + '>';
-  }
+    return content.indexOf('mailto:') !== -1
+      ? '<a' + content + '>'
+      : '<a target="_blank"' + content + '>';
+  },
 };
 
 showdown.extension('targetblank', () => {

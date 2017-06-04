@@ -6,7 +6,6 @@ interface State {
 }
 
 export default class ConnectionStatus extends Component<any, State> {
-
   constructor(props?: any, context?: any) {
     super(props, context);
 
@@ -31,17 +30,17 @@ export default class ConnectionStatus extends Component<any, State> {
   showMessage(msg?: string) {
     // console.log('ConnectionStatus.showMessage:', msg);
     this.setState({
-      message: msg
+      message: msg,
     });
   }
 
   render() {
     if (!this.state.message) {
-      return <div className='hidden'></div>;
+      return <div className="hidden" />;
     }
     const html = {
-      __html: this.state.message
+      __html: this.state.message,
     };
-    return <div className='connection-status' dangerouslySetInnerHTML={html}></div>;
+    return <div className="connection-status" dangerouslySetInnerHTML={html} />;
   }
 }

@@ -29,7 +29,6 @@ interface State {
 }
 
 export default class NotesList extends Component<Props, State> {
-
   maxLoadedNotes: number;
 
   constructor(props?: Props, context?: any) {
@@ -39,7 +38,7 @@ export default class NotesList extends Component<Props, State> {
     this.maxLoadedNotes = maxInitialNotes;
 
     this.state = {
-      notes: truncateNotes(props.notes, this.maxLoadedNotes)
+      notes: truncateNotes(props.notes, this.maxLoadedNotes),
     };
   }
 
@@ -52,7 +51,7 @@ export default class NotesList extends Component<Props, State> {
       this.maxLoadedNotes = maxInitialNotes;
     }
     this.setState({
-      notes: truncateNotes(nextProps.notes, this.maxLoadedNotes)
+      notes: truncateNotes(nextProps.notes, this.maxLoadedNotes),
     });
   }
 
@@ -89,14 +88,18 @@ export default class NotesList extends Component<Props, State> {
 
   render() {
     return (
-      <div id='notes-list' onScroll={this.handleScroll}>
-        <div className='wrapper'>
+      <div id="notes-list" onScroll={this.handleScroll}>
+        <div className="wrapper">
           {this.state.notes.map((note: any) => {
             const key = `${note.HashID()}-${note.CurrentVersion()}`;
-            return <NoteView compact={this.props.compact}
-              note={note}
-              key={key}
-              showingMyNotes={this.props.showingMyNotes} />;
+            return (
+              <NoteView
+                compact={this.props.compact}
+                note={note}
+                key={key}
+                showingMyNotes={this.props.showingMyNotes}
+              />
+            );
           })}
         </div>
       </div>

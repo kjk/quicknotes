@@ -50,7 +50,7 @@ function getSpecialNotes(notes: Note[]): TagToNotes {
     __deleted: deletedNotes,
     __public: publicNotes,
     __private: privateNotes,
-    __starred: starredNotes
+    __starred: starredNotes,
   };
 }
 
@@ -59,7 +59,7 @@ const specialTagNames: Dict<string> = {
   __public: 'public',
   __private: 'private',
   __deleted: 'trash',
-  __starred: 'starred'
+  __starred: 'starred',
 };
 
 export function isSpecialTag(tag: string): boolean {

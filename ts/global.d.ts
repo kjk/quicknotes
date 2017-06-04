@@ -1,4 +1,3 @@
-
 interface UserInfo {
   HashID: string;
   Handle: string;

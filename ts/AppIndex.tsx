@@ -27,7 +27,6 @@ const stHeaderLinks: React.CSSProperties = {
 
 // like Top but only for index page
 export class TopIndex extends Component<any, any> {
-
   constructor(props?: any, context?: any) {
     super(props, context);
   }
@@ -39,16 +38,17 @@ export class TopIndex extends Component<any, any> {
     }
 
     return (
-      <div id='header' style={stHeader}>
-        <a id='logo' className='logo colored' href='/'>QuickNotes</a>
-        {userUrl ?
-          <a href={userUrl} className='header-link' style={stHeaderLinks}>Your Notes</a> : <LogInLink />
-        }
+      <div id="header" style={stHeader}>
+        <a id="logo" className="logo colored" href="/">QuickNotes</a>
+        {userUrl
+          ? <a href={userUrl} className="header-link" style={stHeaderLinks}>
+              Your Notes
+            </a>
+          : <LogInLink />}
       </div>
     );
   }
 }
-
 
 const stWrapper: React.CSSProperties = {
   position: 'absolute',
@@ -135,7 +135,6 @@ export default class AppIndex extends Component<any, State> {
     this.nextImage = this.nextImage.bind(this);
     this.prevImage = this.prevImage.bind(this);
 
-
     this.state = {
       imgNo: 0,
     };
@@ -175,17 +174,17 @@ export default class AppIndex extends Component<any, State> {
           <h1>QuickNotes is the fastest way to take notes</h1>
         </div>
         <div style={stContainer}>
-          <div style={stLeft}></div>
+          <div style={stLeft} />
           <div style={stScreenshotContainer}>
-            <a className='header-link' href='#' onClick={this.prevImage}>
-              <i className='fa fa-chevron-left'></i>
+            <a className="header-link" href="#" onClick={this.prevImage}>
+              <i className="fa fa-chevron-left" />
             </a>
             <img style={stScreenshot} src={imgURL} />
-            <a className='header-link' href='#' onClick={this.nextImage}>
-              <i className='fa fa-chevron-right'></i>
+            <a className="header-link" href="#" onClick={this.nextImage}>
+              <i className="fa fa-chevron-right" />
             </a>
           </div>
-          <div style={stRight}></div>
+          <div style={stRight} />
         </div>
       </div>
     );

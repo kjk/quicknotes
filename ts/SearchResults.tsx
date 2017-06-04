@@ -52,7 +52,7 @@ export default class SearchResults extends React.Component<Props, State> {
     this.currSearchTerm = null;
     this.searchDelayTimerID = null;
     this.state = {
-      searchResults: null
+      searchResults: null,
     };
   }
 
@@ -80,7 +80,7 @@ export default class SearchResults extends React.Component<Props, State> {
         return;
       }
       this.setState({
-        searchResults: json
+        searchResults: json,
       });
     });
   }
@@ -90,7 +90,7 @@ export default class SearchResults extends React.Component<Props, State> {
     this.currSearchTerm = '';
     clearTimeout(this.searchDelayTimerID);
     this.setState({
-      searchResults: null
+      searchResults: null,
     });
   }
 
@@ -109,14 +109,14 @@ export default class SearchResults extends React.Component<Props, State> {
   handleClick(noteHashID: any, e: any) {
     this.props.onSearchResultSelected(noteHashID);
     this.setState({
-      searchResults: null
+      searchResults: null,
     });
     action.clearSearchTerm();
   }
 
   handleOverlayClick(e: any) {
     this.setState({
-      searchResults: null
+      searchResults: null,
     });
     action.clearSearchTerm();
   }
@@ -135,8 +135,8 @@ export default class SearchResults extends React.Component<Props, State> {
     }
     return (
       <div key={k} className={cls}>
-        <span className='line-no'>{lineNo}</span>
-        <span dangerouslySetInnerHTML={{ __html: i.HTML }}></span>
+        <span className="line-no">{lineNo}</span>
+        <span dangerouslySetInnerHTML={{ __html: i.HTML }} />
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default class SearchResults extends React.Component<Props, State> {
       return this.renderResultItem(noteID, i, n);
     });
     return (
-      <div key={noteID} className='search-result-note' onClick={cb}>
+      <div key={noteID} className="search-result-note" onClick={cb}>
         {children}
       </div>
     );
@@ -158,7 +158,7 @@ export default class SearchResults extends React.Component<Props, State> {
 
   renderNoResults(term: string) {
     return (
-      <div className='box'>
+      <div className="box">
         <p>
           No results for: <b>{term}</b>
         </p>
@@ -175,7 +175,7 @@ export default class SearchResults extends React.Component<Props, State> {
     const term = searchResults.Term;
     const results = searchResults.Results;
     let inner: any;
-    if (!results || (results.length === 0)) {
+    if (!results || results.length === 0) {
       inner = this.renderNoResults(term);
     } else {
       inner = results.map((o: any) => {
@@ -185,9 +185,9 @@ export default class SearchResults extends React.Component<Props, State> {
 
     return (
       <Overlay onClick={this.handleOverlayClick}>
-        <div id='search-results-wrapper'>
-          <div id='search-results-triangle-wrapper'></div>
-          <div className='search-results-list'>
+        <div id="search-results-wrapper">
+          <div id="search-results-triangle-wrapper" />
+          <div className="search-results-list">
             {inner}
           </div>
         </div>

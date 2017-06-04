@@ -4,7 +4,6 @@ import * as ReactDOM from 'react-dom';
 import Top from './Top';
 
 class LogIn extends Component<any, any> {
-
   constructor(props?: any, context?: any) {
     super(props, context);
   }
@@ -19,15 +18,15 @@ class LogIn extends Component<any, any> {
     const githubUrl = '/logingithub?redir=' + redir;
     return (
       <div style={style}>
-        <ul className='log-in'>
+        <ul className="log-in">
           <li>
-            <a className='twitter' href={twitterUrl}>Sign in with Twitter</a>
+            <a className="twitter" href={twitterUrl}>Sign in with Twitter</a>
           </li>
           <li>
-            <a className='google' href={googleUrl}>Sign in with Google</a>
+            <a className="google" href={googleUrl}>Sign in with Google</a>
           </li>
           <li>
-            <a className='github' href={githubUrl}>Sign in with GitHub</a>
+            <a className="github" href={githubUrl}>Sign in with GitHub</a>
           </li>
         </ul>
       </div>
@@ -48,13 +47,13 @@ export default class AppDesktopIndex extends Component<any, any> {
     return (
       <div>
         <Top hideLogin={true} />
-        <div id='tagline'>
+        <div id="tagline">
           <h1>Plase Sign In</h1>
         </div>
-        <div className='flex-row' style={style}>
+        <div className="flex-row" style={style}>
           <LogIn />
         </div>
-      </div >
+      </div>
     );
   }
 }

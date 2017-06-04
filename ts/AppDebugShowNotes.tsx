@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import * as api from './api';
 import { Note } from './Note';
-import moment, * as  moments from 'moment';
+import moment, * as moments from 'moment';
 import filesize from 'filesize';
 
 function fmtDate(date: Date) {
@@ -66,16 +66,18 @@ export default class AppDebugShowNotes extends Component<any, any> {
     }
     const stateStr = state.join(', ');
     const flagsStr = dec2bin(note.getFlags());
-    return (<tr key={note.IDVer()}>
-      <td>{note.IDVer()}</td>
-      <td style={styleTitle}>{note.Title()}</td>
-      <td style={styleRightAlign}>{note.Size()}</td>
-      <td>{createdAt}</td>
-      <td>{updatedAt}</td>
-      <td>{tagsStr}</td>
-      <td>{stateStr}</td>
-      <td style={styleRightAlign}>{flagsStr}</td>
-    </tr>);
+    return (
+      <tr key={note.IDVer()}>
+        <td>{note.IDVer()}</td>
+        <td style={styleTitle}>{note.Title()}</td>
+        <td style={styleRightAlign}>{note.Size()}</td>
+        <td>{createdAt}</td>
+        <td>{updatedAt}</td>
+        <td>{tagsStr}</td>
+        <td>{stateStr}</td>
+        <td style={styleRightAlign}>{flagsStr}</td>
+      </tr>
+    );
   }
 
   render() {

@@ -128,7 +128,9 @@ function scheduleReconnect() {
   const timeoutMs = reconnectIntervalMs * Math.pow(reconnectDecay, reconnectAttempts);
 
   if (timeoutMs > maxReconnectIntervalMs) {
-    action.showConnectionStatus('Disconnected from server. <a href="#" onclick="tryWsReconnect()">Reconnect</a>.');
+    action.showConnectionStatus(
+      'Disconnected from server. <a href="#" onclick="tryWsReconnect()">Reconnect</a>.'
+    );
     reconnectAttempts = 0;
     return;
   }
@@ -136,7 +138,9 @@ function scheduleReconnect() {
   reconnectAttempts++;
   console.log(`Scheduling ${reconnectAttempts} reconnect in ${timeoutMs} ms`);
   const reconnectTimeSec = (timeoutMs / 1000).toFixed(0);
-  action.showConnectionStatus(`Disconnected from server. Reconnect attempt in ${reconnectTimeSec} sec.`);
+  action.showConnectionStatus(
+    `Disconnected from server. Reconnect attempt in ${reconnectTimeSec} sec.`
+  );
   window.setTimeout(() => {
     openWebSocket();
   }, timeoutMs);
@@ -158,7 +162,7 @@ export function openWebSocket() {
     }
   }, connectionTimeoutMs);
 
-  wsSock.onopen = (ev) => {
+  wsSock.onopen = ev => {
     console.log('ws opened');
     action.showConnectionStatus(null);
     clearTimeout(wsConnTimeout);
@@ -171,7 +175,7 @@ export function openWebSocket() {
     //action.showConnectionStatus('Connection status: connected.');
   };
 
-  wsSock.onmessage = (ev) => {
+  wsSock.onmessage = ev => {
     //console.log('ev:', ev, 'ev.data', ev.data);
     const rsp: wsResponse = JSON.parse(ev.data);
     if (rsp.id === -1) {
@@ -181,7 +185,7 @@ export function openWebSocket() {
     }
   };
 
-  wsSock.onclose = (ev) => {
+  wsSock.onclose = ev => {
     console.log('wsSock.onclose: ev', ev);
     wsSock = null;
     wsSockReady = false;
@@ -194,7 +198,7 @@ export function openWebSocket() {
   };
 
   // onerror will be followed by onclose
-  wsSock.onerror = (ev) => {
+  wsSock.onerror = ev => {
     console.log('wsSock.onerror: ev', ev);
   };
 
@@ -235,8 +239,11 @@ function wsSendReq(cmd: string, args: any, cb: WsCb, convertResult?: (result: an
   }
 }
 
-export function wsRegisterForBroadcastedMessage(cmd: string, cb: WsCb, convertResult?: (result: any) => any): any {
-
+export function wsRegisterForBroadcastedMessage(
+  cmd: string,
+  cb: WsCb,
+  convertResult?: (result: any) => any
+): any {
   const msg: WsReqMsg = {
     id: -1,
     cmd,
@@ -295,7 +302,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
     url += '?' + urlArgs;
   }
   const params = {
-    url: url
+    url: url,
   };
   ajax(params, function(code, respTxt) {
     handleResponse(code, respTxt, cb, cbErr);
@@ -305,7 +312,7 @@ function get(url: string, args: ArgsDict, cb: any, cbErr?: any) {
 function post(url: string, args: ArgsDict, cb: any, cbErr: any) {
   const params: any = {
     method: 'POST',
-    url: url
+    url: url,
   };
   const urlArgs = buildArgs(args);
   if (urlArgs) {
@@ -498,7 +505,7 @@ export function createOrUpdateNote(noteJSON: string, cb: WsCb) {
 export function searchUserNotes(userIDHash: string, searchTerm: string, cb: WsCb) {
   const args: any = {
     userIDHash,
-    searchTerm
+    searchTerm,
   };
   wsSendReq('searchUserNotes', args, cb, null);
 }
@@ -513,7 +520,7 @@ export function importSimpleNoteStart(email: string, password: string, cb: any, 
 
 export function importSimpleNoteStatus(importId: string, cb: any, cbErr?: any) {
   const args: ArgsDict = {
-    'id': importId
+    id: importId,
   };
   get('/api/import_simplenote_status', args, cb, cbErr);
 }

@@ -8,7 +8,6 @@ interface State {
 }
 
 export default class TemporaryMessage extends Component<any, State> {
-
   currTimerID: number;
 
   constructor(props?: any, context?: any) {
@@ -19,7 +18,7 @@ export default class TemporaryMessage extends Component<any, State> {
     this.currTimerID = null;
 
     this.state = {
-      message: null
+      message: null,
     };
   }
 
@@ -33,7 +32,7 @@ export default class TemporaryMessage extends Component<any, State> {
 
   showMessage(msg: string, delay?: number) {
     this.setState({
-      message: msg
+      message: msg,
     });
     clearTimeout(this.currTimerID);
     if (delay) {
@@ -42,18 +41,18 @@ export default class TemporaryMessage extends Component<any, State> {
     }
     this.currTimerID = window.setTimeout(() => {
       this.setState({
-        message: null
+        message: null,
       });
     }, hideTimeOut);
   }
 
   render() {
     if (!this.state.message) {
-      return <div className='hidden'></div>;
+      return <div className="hidden" />;
     }
     const html = {
-      __html: this.state.message
+      __html: this.state.message,
     };
-    return <div className='temporary-message' dangerouslySetInnerHTML={html}></div>;
+    return <div className="temporary-message" dangerouslySetInnerHTML={html} />;
   }
 }

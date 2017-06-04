@@ -24,8 +24,8 @@ export default class TagCount extends Component<Props, any> {
     const cls = this.props.isSelected ? 'tag selected' : 'tag';
     return (
       <div className={cls} onClick={this.onTagClicked}>
-        <span className='tag-name'>{this.props.displayName}</span>
-        <span className='tag-count'>{this.props.count}</span>
+        <span className="tag-name">{this.props.displayName}</span>
+        <span className="tag-count">{this.props.count}</span>
       </div>
     );
   }

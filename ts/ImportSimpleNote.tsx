@@ -3,21 +3,21 @@ import * as action from './action';
 import * as api from './api';
 
 const style100 = {
-  width: '100%'
+  width: '100%',
 };
 
 const styleTable = {
   minWidth: 480,
   marginLeft: 'auto',
-  marginRight: 'auto'
+  marginRight: 'auto',
 };
 
 const stylePadRight = {
-  paddingRight: 8
+  paddingRight: 8,
 };
 
 const styleMarginTop = {
-  marginTop: 8
+  marginTop: 8,
 };
 
 const styleSpinner = {
@@ -25,7 +25,7 @@ const styleSpinner = {
   fontSize: 19,
   paddingTop: 4,
   paddingBottom: 3,
-  marginRight: 8
+  marginRight: 8,
 };
 
 interface State {
@@ -38,7 +38,6 @@ interface State {
 }
 
 export default class ImportSimpleNote extends React.Component<any, State> {
-
   inputValues: any;
 
   constructor(props?: any, context?: any) {
@@ -60,7 +59,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
       importId: 0,
       finishedImporting: false,
       errorMessage: null,
-      statusMessage: null
+      statusMessage: null,
     };
   }
 
@@ -75,7 +74,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   showHide(shouldShow: boolean) {
     // console.log('ImportSimpleNote.showHide: shouldShow: ", shouldShow');
     this.setState({
-      isShowing: shouldShow
+      isShowing: shouldShow,
     });
   }
 
@@ -110,7 +109,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     if (res.Error) {
       this.setState({
         isImporting: false,
-        errorMessage: res.Error
+        errorMessage: res.Error,
       });
       // TODO: move into go
       //action.reloadNotes(false);
@@ -128,7 +127,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     this.setState({
       finishedImporting: res.IsFinished,
       isImporting: isImporting,
-      statusMessage: msg
+      statusMessage: msg,
     });
     if (res.IsFinished) {
       // TODO: move into go
@@ -147,20 +146,25 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     e.preventDefault();
     const email = this.inputValues['email'] || '';
     const pwd = this.inputValues['password'] || '';
-    api.importSimpleNoteStart(email, pwd, (res: any) => {
-      const importId = res.ImportID;
-      this.setState({
-        importId: importId,
-        statusMessage: 'Imported 0 notes from SimpleNote',
-        errorMessage: '',
-        isImporting: true
-      });
-      this.scheduleCheckStatus(importId);
-    }, (resErr: any) => {
-      this.setState({
-        errorMessage: resErr.Error
-      });
-    });
+    api.importSimpleNoteStart(
+      email,
+      pwd,
+      (res: any) => {
+        const importId = res.ImportID;
+        this.setState({
+          importId: importId,
+          statusMessage: 'Imported 0 notes from SimpleNote',
+          errorMessage: '',
+          isImporting: true,
+        });
+        this.scheduleCheckStatus(importId);
+      },
+      (resErr: any) => {
+        this.setState({
+          errorMessage: resErr.Error,
+        });
+      }
+    );
   }
 
   renderErrorMessage() {
@@ -170,7 +174,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     return (
       <tr>
         <td colSpan={2}>
-          <div className='error'>
+          <div className="error">
             {this.state.errorMessage}
           </div>
         </td>
@@ -182,7 +186,9 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     if (this.state.finishedImporting || !this.state.statusMessage) {
       return null;
     }
-    const spinner = this.state.isImporting ? <i className='fa fa-spinner fa-pulse right' style={styleSpinner}></i> : null;
+    const spinner = this.state.isImporting
+      ? <i className="fa fa-spinner fa-pulse right" style={styleSpinner} />
+      : null;
     return (
       <tr>
         <td colSpan={2}>
@@ -207,16 +213,18 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     return (
       <tr>
         <td>
-          <label style={stylePadRight} htmlFor='email'>
+          <label style={stylePadRight} htmlFor="email">
             Email
           </label>
         </td>
         <td>
-          <input style={style100}
-            type='text'
-            id='email'
-            name='email'
-            onChange={this.handleInputChanged} />
+          <input
+            style={style100}
+            type="text"
+            id="email"
+            name="email"
+            onChange={this.handleInputChanged}
+          />
         </td>
       </tr>
     );
@@ -230,16 +238,18 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     return (
       <tr style={styleMarginTop}>
         <td>
-          <label htmlFor='password'>
+          <label htmlFor="password">
             Password
           </label>
         </td>
         <td>
-          <input style={style100}
-            type='password'
-            id='password'
-            name='password'
-            onChange={this.handleInputChanged} />
+          <input
+            style={style100}
+            type="password"
+            id="password"
+            name="password"
+            onChange={this.handleInputChanged}
+          />
         </td>
       </tr>
     );
@@ -248,10 +258,10 @@ export default class ImportSimpleNote extends React.Component<any, State> {
   renderFormInner3() {
     let inner = (
       <td>
-        <button className='btn btn-primary right no-margin-x' onClick={this.handleImport}>
+        <button className="btn btn-primary right no-margin-x" onClick={this.handleImport}>
           Import
         </button>
-        <button className='btn btn-cancel right' onClick={this.handleClose}>
+        <button className="btn btn-cancel right" onClick={this.handleClose}>
           Cancel
         </button>
       </td>
@@ -260,22 +270,19 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     if (this.state.finishedImporting) {
       inner = (
         <td>
-          <button className='btn btn-primary right no-margin-x' onClick={this.handleCloseFinished}>
+          <button className="btn btn-primary right no-margin-x" onClick={this.handleCloseFinished}>
             Ok
-            </button>
+          </button>
         </td>
       );
     } else if (this.state.isImporting) {
       // TODO: could have "Cancel" button
-      inner = (
-        <td>
-        </td>
-      );
+      inner = <td />;
     }
 
     return (
       <tr>
-        <td></td>
+        <td />
         {inner}
       </tr>
     );
@@ -283,10 +290,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
 
   render() {
     if (!this.state.isShowing) {
-      return (
-        <div id='no-import-simple-note' className='hidden'>
-        </div>
-      );
+      return <div id="no-import-simple-note" className="hidden" />;
     }
 
     const statusMessage = this.renderStatusMessage();
@@ -298,20 +302,22 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     //const isFinished = !this.state.finishedImporting;
 
     return (
-      <div className='modal'>
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <button type='button'
-                className='close'
-                data-dismiss='modal'
-                onClick={this.handleClose}>
+      <div className="modal">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                onClick={this.handleClose}
+              >
                 <span>×</span>
               </button>
-              <h4 className='modal-title'>Import notes from SimpleNote.com</h4>
+              <h4 className="modal-title">Import notes from SimpleNote.com</h4>
             </div>
-            <div className='modal-body'>
-              <form id='import-simplenote' method='GET'>
+            <div className="modal-body">
+              <form id="import-simplenote" method="GET">
                 <table style={styleTable}>
                   <tbody>
                     {formInner1}
@@ -322,8 +328,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
                   </tbody>
                 </table>
               </form>
-              <div className='status'>
-              </div>
+              <div className="status" />
             </div>
           </div>
         </div>

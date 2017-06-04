@@ -26,7 +26,6 @@ interface Props {
 }
 
 export default class CodeMirrorEditor extends Component<Props, any> {
-
   cm: any;
 
   constructor(props?: Props, context?: any) {
@@ -67,10 +66,12 @@ export default class CodeMirrorEditor extends Component<Props, any> {
   render() {
     // console.log('CodeMirrorEditor.render');
     const editor = (
-      <textarea ref='editorNode'
+      <textarea
+        ref="editorNode"
         defaultValue={this.props.defaultValue}
         style={this.props.textAreaStyle}
-        className={this.props.textAreaClassName} />
+        className={this.props.textAreaClassName}
+      />
     );
 
     return (
