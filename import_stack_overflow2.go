@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/kjk/stackoverflow"
+	"github.com/kjk/u"
 )
 
 type PostCurrentState struct {
@@ -46,7 +47,7 @@ type PostHistoryIterator struct {
 }
 
 func init() {
-	importDataDir = ExpandTildeInPath("~/data/import_stack_overflow")
+	importDataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
 }
 
 func NewPostHistoryIterator(r *stackoverflow.Reader) (*PostHistoryIterator, error) {
@@ -241,7 +242,7 @@ func importStackOverflow2() {
 
 	hr := getHistoryReader(siteName)
 	i, err := NewPostHistoryIterator(hr)
-	fatalIfErr(err, "NewPostHistoryIterator()")
+	u.PanicIfErr(err, "NewPostHistoryIterator()")
 	nChanges := 0
 	toPrint := 100
 	for i.Next() {

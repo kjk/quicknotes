@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/kjk/u"
 )
 
 var (
@@ -39,7 +41,7 @@ func loadSimpleNotes() []*SimpleNoteTest {
 	}
 	path := filepath.Join("data", "notes.json.bz2")
 	f, err := os.Open(path)
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 	defer f.Close()
 	latestVersions := make(map[string]*SimpleNoteTest)
 	bzr := bzip2.NewReader(f)
@@ -50,7 +52,7 @@ func loadSimpleNotes() []*SimpleNoteTest {
 		if err == io.EOF {
 			break
 		}
-		PanicIfErr(err)
+		u.PanicIfErr(err)
 		currVal := latestVersions[v.ID]
 		if currVal == nil || v.Version > currVal.Version {
 			latestVersions[v.ID] = &v
@@ -117,7 +119,7 @@ func printSearchResults(term string, matches []*MatchWithSimpleNote) {
 func searchAllNotesTest(term string, maxResults int) {
 	timeStart := time.Now()
 	notes, err := dbGetAllNotes()
-	PanicIfErr(err)
+	u.PanicIfErr(err)
 	fmt.Printf("got %d notes in %s\n", len(notes), time.Since(timeStart))
 
 	timeStart = time.Now()

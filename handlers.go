@@ -16,6 +16,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 )
 
 var (
@@ -204,7 +205,7 @@ func sha1ifyZipResource(path string) (string, bool) {
 		log.Verbosef("no resource '%s'\n", path)
 		return path, false
 	}
-	sha1 := Sha1HexOfBytes(d)
+	sha1 := u.Sha1HexOfBytes(d)
 	newPath := sha1ifyPath(path, sha1)
 	log.Verbosef("%s => %s\n", path, newPath)
 	resourcesFromZip[newPath] = d
@@ -285,7 +286,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Path[len("/s/"):]
 	path := filepath.Join("s", fileName)
 
-	if PathExists(path) {
+	if u.FileExists(path) {
 		http.ServeFile(w, r, path)
 		return
 	}
@@ -530,16 +531,16 @@ func makeHTTPServer() *http.Server {
 	return srv
 }
 
-func hostPolicy(ctx context.Context, host string) error {
-	if strings.HasSuffix(host, "quicknotes.io") {
-		return nil
-	}
-	return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
-}
-
 func startWebServer() {
 	if flgProduction {
 		srv := makeHTTPServer()
+		hostPolicy := func(ctx context.Context, host string) error {
+			if strings.HasSuffix(host, "quicknotes.io") {
+				return nil
+			}
+			return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
+		}
+
 		m := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
 			HostPolicy: hostPolicy,

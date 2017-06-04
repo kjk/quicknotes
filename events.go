@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 )
 
 const (
@@ -45,7 +46,7 @@ func initEventsLogMust() {
 	var err error
 	pathFormat := filepath.Join(getLogDir(), "2006-01-02-events.json")
 	eventsLog, err = log.NewDailyRotateFile(pathFormat)
-	fatalIfErr(err, "initEventsLogMust")
+	u.PanicIfErr(err, "initEventsLogMust")
 	eventsLogEnc = json.NewEncoder(eventsLog)
 }
 

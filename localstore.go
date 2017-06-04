@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -88,7 +89,7 @@ func NewLocalStore(dir string) (*LocalStore, error) {
 }
 
 func saveToFile(path string, d []byte) error {
-	if PathExists(path) {
+	if u.PathExists(path) {
 		return nil
 	}
 	dir := filepath.Dir(path)
@@ -151,7 +152,7 @@ func (store *LocalStore) saveToSegmentFile(d []byte) ([]byte, error) {
 			return nil, err
 		}
 		path := filepath.Join(store.filesDir, segmentFileName)
-		if PathExists(path) {
+		if u.FileExists(path) {
 			log.Verbosef("opening existing segment file %s\n", path)
 			fi, err := os.Stat(path)
 			if err != nil {
@@ -218,7 +219,7 @@ func dbKeyForContentSha1(sha1 []byte) []byte {
 func (store *LocalStore) PutContent(d []byte) ([]byte, error) {
 	var err error
 	var val []byte
-	sha1 := Sha1OfBytes(d)
+	sha1 := u.Sha1OfBytes(d)
 
 	key := dbKeyForContentSha1(sha1)
 

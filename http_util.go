@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/kjk/quicknotes/pkg/log"
+	"github.com/kjk/u"
 )
 
 func httpErrorf(w http.ResponseWriter, format string, args ...interface{}) {
@@ -206,14 +207,14 @@ func serveData(w http.ResponseWriter, r *http.Request, code int, contentType str
 
 func serveMaybeGzippedFile(w http.ResponseWriter, r *http.Request, path string) {
 	log.Verbosef("path: '%s'\n", path)
-	if !PathExists(path) {
+	if !u.FileExists(path) {
 		http.NotFound(w, r)
 		return
 	}
 	contentType := MimeTypeByExtensionExt(path)
 	usesGzip := acceptsGzip(r)
 	if usesGzip {
-		if PathExists(path + ".gz") {
+		if u.FileExists(path + ".gz") {
 			path = path + ".gz"
 		} else {
 			usesGzip = false

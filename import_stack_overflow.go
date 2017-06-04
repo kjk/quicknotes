@@ -12,6 +12,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/kjk/lzmadec"
 	"github.com/kjk/stackoverflow"
+	"github.com/kjk/u"
 )
 
 var (
@@ -40,7 +41,7 @@ type PostChange struct {
 }
 
 func init() {
-	importDataDir = ExpandTildeInPath("~/data/import_stack_overflow")
+	importDataDir = u.ExpandTildeInPath("~/data/import_stack_overflow")
 	posts = make(map[int]*PostChange)
 	historyTypeCounts = make(map[int]int)
 	userIDToInfo = make(map[int]*UserInfo)
@@ -104,11 +105,11 @@ func getHistoryReader(site string) *stackoverflow.Reader {
 	archiveFileName := site + ".stackexchange.com.7z"
 	archiveFilePath := filepath.Join(importDataDir, archiveFileName)
 	archive, err := lzmadec.NewArchive(archiveFilePath)
-	fatalIfErr(err, "")
+	u.PanicIfErr(err, "")
 	r, err := archive.GetFileReader("PostHistory.xml")
-	fatalIfErr(err, "")
+	u.PanicIfErr(err, "")
 	hr, err := stackoverflow.NewPostHistoryReader(r)
-	fatalIfErr(err, "")
+	u.PanicIfErr(err, "")
 	return hr
 }
 
@@ -180,7 +181,7 @@ func loadHistory(siteName string) {
 			userIDToInfo[ph.UserID] = userInfo
 			login := "test:" + strconv.Itoa(ph.UserID)
 			user, err := dbGetOrCreateUser(login, userInfo.name)
-			fatalIfErr(err, "dbGetOrCreateUser()")
+			u.PanicIfErr(err, "dbGetOrCreateUser()")
 			userInfo.dbUserID = user.ID
 		}
 		historyTypeCounts[ph.PostHistoryTypeID]++
@@ -192,7 +193,7 @@ func loadHistory(siteName string) {
 		posts[pc.postID] = pc
 	}
 	err := hr.Err()
-	fatalIfErr(err, "")
+	u.PanicIfErr(err, "")
 	fmt.Printf("%d history entries, %d posts\n", n, len(posts))
 	fmt.Printf("%d users\n", len(userIDToInfo))
 }
@@ -341,14 +342,14 @@ func importPosts() (int, int) {
 		nVersions++
 		note.isPublic = rand.Intn(1000) > 100 // make 90% of notes public
 		_, err := dbCreateOrUpdateNote(userID, note)
-		fatalIfErr(err, "dbCreateOrUpdateNote()")
+		u.PanicIfErr(err, "dbCreateOrUpdateNote()")
 
 		for currPost != nil {
 			updateNoteValue(currPost, note)
 			detectFormat(note)
 			if len(note.content) > 0 {
 				_, err := dbCreateOrUpdateNote(userID, note)
-				fatalIfErr(err, "dbCreateOrUpdateNote()")
+				u.PanicIfErr(err, "dbCreateOrUpdateNote()")
 				nVersions++
 			}
 			currPost = currPost.next
