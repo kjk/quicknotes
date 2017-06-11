@@ -501,6 +501,44 @@ func handleIndexAllNotes(ctx *ReqContext, w http.ResponseWriter, r *http.Request
 	serveMaybeGzippedFile(w, r, path)
 }
 
+func handleRawNote(w http.ResponseWriter, r *http.Request) {
+	uri := r.RequestURI
+	s := strings.TrimPrefix(uri, "/raw/n/")
+	parts := strings.SplitN(s, "-", 2)
+	noteID, err := dehashInt(parts[0])
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	note, err := dbGetNoteByID(noteID)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	user := getUserSummaryFromCookie(w, r)
+	if !userCanAccessNote(user, note) {
+		http.NotFound(w, r)
+		return
+	}
+	var lines []string
+	if note.Title != "" {
+		s = "Title: " + note.Title
+		lines = append(lines, s)
+	}
+	if note.Format != "" {
+		s = "Format: " + note.Format
+		lines = append(lines, s)
+	}
+	createdAt := note.CreatedAt.Format("2006-01-02")
+	s = "CreatedAt: " + createdAt
+	lines = append(lines, s)
+
+	lines = append(lines, "---")
+	lines = append(lines, note.Content())
+	s = strings.Join(lines, "\n")
+	servePlainText(w, r, 200, "%s", s)
+}
+
 // https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
 func makeHTTPServer() *http.Server {
 	mux := &http.ServeMux{}
@@ -508,6 +546,7 @@ func makeHTTPServer() *http.Server {
 	mux.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	mux.HandleFunc("/favicon.ico", handleFavicon)
 	mux.HandleFunc("/s/", handleStatic)
+	mux.HandleFunc("/raw/n/", handleRawNote)
 	mux.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
 	mux.HandleFunc("/logintwitter", handleLoginTwitter)
 	mux.HandleFunc("/logintwittercb", handleOauthTwitterCallback)
