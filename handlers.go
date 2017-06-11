@@ -520,23 +520,31 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
 	var lines []string
+
+	idStr := user.HashID + "-" + note.HashID
+	s = "Id: " + idStr
+	lines = append(lines, s)
+
 	if note.Title != "" {
 		s = "Title: " + note.Title
 		lines = append(lines, s)
 	}
+
 	if note.Format != "" {
 		s = "Format: " + note.Format
 		lines = append(lines, s)
 	}
+
 	if len(note.Tags) > 0 {
 		s = "Tags: " + strings.Join(note.Tags, ", ")
 		lines = append(lines, s)
 	}
+
 	createdAt := note.CreatedAt.Format("2006-01-02")
 	s = "CreatedAt: " + createdAt
 	lines = append(lines, s)
-
 	lines = append(lines, "---")
 	lines = append(lines, note.Content())
 	s = strings.Join(lines, "\n")
