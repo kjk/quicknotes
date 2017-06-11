@@ -20,7 +20,7 @@ export interface Params {
   body?: string | FormData;
 
   // passed to XMLHttpRequest
-  responseType?: string;
+  responseType?: XMLHttpRequestResponseType;
   withCredentials?: boolean;
   timeout?: number;
   onprogress?: (ev: ProgressEvent) => any;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 interface Props {
-  children?: any[];
+  children?: any;
   onClick?: (e: any) => void;
 }
 

@@ -132,7 +132,7 @@ class Router {
       iframe.tabIndex = -1;
       var body = document.body;
       // Using `appendChild` will throw on IE < 9 if the document is not ready.
-      this.iframe = body.insertBefore(iframe, body.firstChild) as HTMLFrameElement;
+      this.iframe = body.insertBefore(iframe, body.firstChild) as HTMLIFrameElement;
       this.iframe.contentWindow;
       this.iframe.document.open().close();
       this.iframe.location.hash = '#' + this.fragment;
