@@ -4,7 +4,9 @@ set -u -e -o pipefail
 rm -rf vendor
 dep ensure
 
-rm -rf node_modules
+# TODO: ideally we should delete to be extra sure it's clean
+# but sass compiler takes forever to install (builds C++)
+#rm -rf node_modules
 rm -rf typings
 
 yarn
