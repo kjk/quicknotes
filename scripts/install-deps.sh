@@ -1,6 +1,9 @@
 #!/bin/bash
 set -u -e -o pipefail
 
+rm -rf vendor
+dep ensure
+
 rm -rf node_modules
 rm -rf typings
 
