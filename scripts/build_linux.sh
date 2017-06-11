@@ -3,7 +3,7 @@ set -u -e -o pipefail -o verbose
 
 . scripts/lint.sh
 
-. scripts/update-deps.sh
+. scripts/install-deps.sh
 
 rm -rf s/dist/*.map s/dist/*.js s/dist/*.css quicknotes_resources.zip
 
