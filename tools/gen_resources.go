@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/kjk/u"
 )
 
 func printStack() {
@@ -38,11 +40,6 @@ func fatalif(cond bool, format string, args ...interface{}) {
 		fmt.Printf(format, args...)
 		printStack()
 		os.Exit(1)
-	}
-}
-func u.PanicIfErr(err error) {
-	if err != nil {
-		fatalf("%s\n", err.Error())
 	}
 }
 
