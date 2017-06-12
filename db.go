@@ -75,6 +75,12 @@ func getSQLConnection() string {
 	return conn + "/quicknotes?parseTime=true"
 }
 
+// like getSQLConnection() but without the password
+func getSQLConnectionSanitized() string {
+	s := getSQLConnection()
+	return strings.Replace(s, "R4ISoyZ2Vj8i", "*", -1)
+}
+
 func isValidFormat(s string) bool {
 	if strings.HasPrefix(s, formatCodePrefix) {
 		return true
