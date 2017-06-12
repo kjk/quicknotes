@@ -532,7 +532,13 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 		lines = append(lines, s)
 	}
 
-	if note.Format != "" {
+	// convert to what blog import understands
+	format := note.Format
+	if format != "" {
+		switch format {
+		case "md":
+			format = "Markdown"
+		}
 		s = "Format: " + note.Format
 		lines = append(lines, s)
 	}
@@ -542,10 +548,10 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 		lines = append(lines, s)
 	}
 
-	createdAt := note.CreatedAt.Format("2006-01-02")
-	s = "CreatedAt: " + createdAt
+	createdAt := note.CreatedAt.Format(time.RFC3339)
+	s = "Date: " + createdAt
 	lines = append(lines, s)
-	lines = append(lines, "---")
+	lines = append(lines, "--------------")
 	lines = append(lines, note.Content())
 	s = strings.Join(lines, "\n")
 	servePlainText(w, r, 200, "%s", s)
