@@ -523,8 +523,7 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 
 	var lines []string
 
-	idStr := user.HashID + "-" + note.HashID
-	s = "Id: " + idStr
+	s = "Id: " + note.HashID
 	lines = append(lines, s)
 
 	if note.Title != "" {
