@@ -7,7 +7,7 @@ import * as api from './api';
 
 function urlifyTitle(s: string) {
   s = s.toLowerCase();
-  s = s.replace(/[^\w]+/g, '');
+  s = s.replace(/[^\w ]+/g, '');
   s = s.replace(/ +/g, '-');
   s = s.replace(/\+:&#_^\$\*#/g, '');
   return s.slice(0, 128);
