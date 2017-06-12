@@ -43,6 +43,8 @@ var (
 	httpLogsCsv     *csv.Writer
 	httpLogCsvMutex sync.Mutex
 
+	redirectHTTPS = true
+
 	oauthClient = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
 		ResourceOwnerAuthorizationURI: "https://api.twitter.com/oauth/authenticate",
@@ -123,6 +125,7 @@ func parseFlags() {
 	flag.Parse()
 	if !flgProduction {
 		onlyLocalStorage = true
+		redirectHTTPS = false
 	}
 }
 
@@ -257,7 +260,7 @@ func main() {
 		flgHTTPAddr = ":80"
 	}
 
-	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnection(), getDataDir(), flgHTTPAddr, flgVerbose)
+	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionSanitized(), getDataDir(), flgHTTPAddr, flgVerbose)
 
 	if flgSearchLocalTerm != "" {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)

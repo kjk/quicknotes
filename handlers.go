@@ -609,10 +609,22 @@ func startWebServer() {
 		}()
 	}
 
-	srv := makeHTTPServer()
-	srv.Addr = flgHTTPAddr
-	log.Infof("Started runing on %s\n", flgHTTPAddr)
-	if err := srv.ListenAndServe(); err != nil {
+	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPS)
+	var err error
+	if redirectHTTPS {
+		redirect := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			http.Redirect(w, req,
+				"https://"+req.Host+req.URL.String(),
+				http.StatusMovedPermanently)
+		})
+		err = http.ListenAndServe(flgHTTPAddr, redirect)
+	} else {
+		srv := makeHTTPServer()
+		srv.Addr = flgHTTPAddr
+		err = srv.ListenAndServe()
+	}
+
+	if err != nil {
 		log.Errorf("srv.ListendAndServer() failed with %s\n", err)
 	}
 }
