@@ -538,7 +538,7 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 		case "md":
 			format = "Markdown"
 		}
-		s = "Format: " + note.Format
+		s = "Format: " + format
 		lines = append(lines, s)
 	}
 
