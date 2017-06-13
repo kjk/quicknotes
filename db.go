@@ -673,12 +673,14 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 		if existingNote.userID != userID {
 			return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
 		}
+
 		// when editing a note, we don't change starred status
 		note.isStarred = existingNote.IsStarred
 		// don't create new versions if not necessary
 		if !needsNewNoteVersion(note, existingNote) {
 			return noteID, nil
 		}
+		note.createdAt = existingNote.CreatedAt
 		noteID, err = dbUpdateNote2(noteID, note, true)
 	}
 
