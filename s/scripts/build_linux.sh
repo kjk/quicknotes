@@ -1,9 +1,9 @@
 #!/bin/bash
 set -u -e -o pipefail -o verbose
 
-. scripts/lint.sh
+. s/lint.sh
 
-. scripts/install-deps.sh
+. s/install-deps.sh
 
 rm -rf s/dist/*.map s/dist/*.js s/dist/*.css quicknotes_resources.zip
 

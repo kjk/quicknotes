@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u -e -o pipefail
 
-. scripts/lint.sh
+. s/lint.sh
 
 rm -rf s/dist/*.map s/dist/*.js s/dist/*.css tsbuild/ quicknotes_resources.zip
 
@@ -11,7 +11,7 @@ go run tools/gen_resources.go
 
 go build -race -o quicknotes_prod
 
-IFS=\; read -a ip_port <<<"`./scripts/start_docker.py`"
+IFS=\; read -a ip_port <<<"`./s/start_docker.py`"
 ip="${ip_port[0]}"
 port="${ip_port[1]}"
 

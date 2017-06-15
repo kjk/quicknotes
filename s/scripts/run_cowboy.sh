@@ -1,8 +1,8 @@
 #!/bin/bash
 set -u -e -o pipefail
 
-. scripts/fmt.sh
-. scripts/lint.sh
+. s/fmt.sh
+. s/lint.sh
 
 echo "running gulp default"
 ./node_modules/.bin/gulp default

@@ -1,9 +1,9 @@
 #!/bin/bash
 set -u -e -o pipefail
 
-# . ./scripts/docker_build.sh
+# . ./s/docker_build.sh
 
-IFS=\; read -a ip_port <<<"`./scripts/start_docker.py`"
+IFS=\; read -a ip_port <<<"`./s/start_docker.py`"
 ip="${ip_port[0]}"
 port="${ip_port[1]}"
 

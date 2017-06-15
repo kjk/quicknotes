@@ -12,7 +12,7 @@ install_sme() {
 analyze_prod()
 {
 	rm -rf s/dist/*.map s/dist/*.js s/dist/*.css
-	. scripts/update-deps.sh
+	. s/update-deps.sh
 	install_sme
 
 	./node_modules/.bin/gulp jsprod
