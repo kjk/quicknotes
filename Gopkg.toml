@@ -143,5 +143,5 @@
   name = "golang.org/x/oauth2"
 
 [[constraint]]
-  branch = "master"
   name = "google.golang.org/api"
+  revision = "8e09a3d939255ba9bfb76049b7cc413740986c03"

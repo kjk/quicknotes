@@ -158,10 +158,9 @@
   revision = "9e2f80a6ba7ed4ba13e0cd4b1f094bf916875735"
 
 [[projects]]
-  branch = "master"
   name = "google.golang.org/api"
   packages = ["gensupport","googleapi","googleapi/internal/uritemplates","googleapi/transport","internal","iterator","oauth2/v2","option","storage/v1","transport"]
-  revision = "324744a33f1f37e63dd1695cfb3ec9a3e4a1cb05"
+  revision = "8e09a3d939255ba9bfb76049b7cc413740986c03"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -184,6 +183,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c06b4d5632449eb37148826ba511d8535cff90737b574e10925c452b1ddf4c71"
+  inputs-digest = "a8a0c037c2d5f8fcf2ca2d72b9ae1fd272cde036b1432c83c2405c61495e1d95"
   solver-name = "gps-cdcl"
   solver-version = 1
