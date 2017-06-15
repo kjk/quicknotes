@@ -11,13 +11,13 @@
   branch = "master"
   name = "github.com/SparkPost/gosparkpost"
   packages = [".","events"]
-  revision = "c041325a607bb2faf3a138e48a17074172ac4da7"
+  revision = "7e8565c83ee09336624604fba3cf6e9853926c2c"
 
 [[projects]]
   branch = "master"
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restxml","private/protocol/xml/xmlutil","service/s3","service/sts"]
-  revision = "4d7eba91c40f1bd38d04fd80131e475c654e8de5"
+  revision = "8a972b4459c2f2582b06f3e2d74448987cc6e19f"
 
 [[projects]]
   branch = "master"
@@ -41,13 +41,13 @@
   branch = "master"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
-  revision = "e3f0fdcf52770a162d5a4540ddb8d9957ff456d1"
+  revision = "a825be04c652d01442384e9dcdf2cdc3f1eda67f"
 
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes/any"]
-  revision = "5a0f697c9ed9d68fef0116532c6e05cfeae00e55"
+  revision = "e325f446bebc2998605911c0a2650d9920361d4a"
 
 [[projects]]
   branch = "master"
@@ -71,7 +71,7 @@
   branch = "master"
   name = "github.com/googleapis/gax-go"
   packages = ["."]
-  revision = "9af46dd5a1713e8b5cd71106287eba3cefdde50b"
+  revision = "84ed26760e7f6f80887a2fbfb50db3cc415d2cea"
 
 [[projects]]
   branch = "master"
@@ -113,7 +113,7 @@
   branch = "master"
   name = "github.com/kjk/u"
   packages = ["."]
-  revision = "f4485540eb9a4b68a40252b20194a8fa580776c9"
+  revision = "cf067a14a6284457c0dde1d819195da6b4d3224f"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -137,13 +137,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "e1a4589e7d3ea14a3352255d04b6f1a418845e5e"
+  revision = "850760c427c516be930bc91280636328f1a62286"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
-  revision = "e4fa1c5465ad6111f206fc92186b8c83d64adbe1"
+  revision = "ddf80d0970594e2e4cccf5a98861cad3d9eaa4cd"
 
 [[projects]]
   branch = "master"
@@ -155,13 +155,13 @@
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "ccbd3f7822129ff389f8ca4858a9b9d4d910531c"
+  revision = "9e2f80a6ba7ed4ba13e0cd4b1f094bf916875735"
 
 [[projects]]
   branch = "master"
   name = "google.golang.org/api"
   packages = ["gensupport","googleapi","googleapi/internal/uritemplates","googleapi/transport","internal","iterator","oauth2/v2","option","storage/v1","transport"]
-  revision = "8e09a3d939255ba9bfb76049b7cc413740986c03"
+  revision = "324744a33f1f37e63dd1695cfb3ec9a3e4a1cb05"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -178,8 +178,8 @@
 [[projects]]
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","credentials/oauth","grpclb/grpc_lb_v1","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "d2e1b51f33ff8c5e4a15560ff049d200e83726c5"
-  version = "v1.3.0"
+  revision = "42c095b6c9bdd80d4435b064508c398afdb0ec99"
+  version = "v1.4.1"
 
 [solve-meta]
   analyzer-name = "dep"
