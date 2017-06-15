@@ -70,7 +70,7 @@ func shouldAddCompressed(path string) bool {
 }
 
 func zipNameConvert(s string) string {
-	conversions := []string{"s/dist/bundle.min.js", "s/dist/bundle.js"}
+	conversions := []string{"static/dist/bundle.min.js", "static/dist/bundle.js"}
 	n := len(conversions) / 2
 	for i := 0; i < n; i++ {
 		if conversions[i*2] == s {
@@ -236,7 +236,7 @@ func createResourcesZip(path string) {
 	zw := zip.NewWriter(f)
 	currDir, err := os.Getwd()
 	u.PanicIfErr(err)
-	dir := filepath.Join(currDir, "s")
+	dir := filepath.Join(currDir, "static")
 	addZipDirMust(zw, dir, currDir)
 	addZipFileMust(zw, "createdb.sql", "createdb.sql")
 	path = filepath.Join("data", "welcome.md")

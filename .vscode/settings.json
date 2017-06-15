@@ -2,8 +2,8 @@
 {
   "search.exclude": {
     "**/node_modules": true,
-    "**/s/dist": true,
-    "**/s/js/lib": true,
+    "**/static/dist": true,
+    "**/static/js/lib": true,
     "**/vendor": true,
     "**/tsbuild": true,
     "**/typings": true

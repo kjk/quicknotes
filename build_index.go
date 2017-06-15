@@ -74,12 +74,12 @@ func buildNotesIndexPage(nNotes, nPages, pageNo int, notes []NoteIndex) error {
 		v.NextPageNo = pageNo + 1
 	}
 	path := notesIndexPagePath(pageNo)
-	err := execTemplateFile(path, tmplNotesIndex, v)
+	err := serveTemplateFile(path, tmplNotesIndex, v)
 	if err != nil {
 		return err
 	}
 	path = path + ".gz"
-	return execTemplateFile(path, tmplNotesIndex, v)
+	return serveTemplateFile(path, tmplNotesIndex, v)
 }
 
 // unconditionally generate index page for public notes
