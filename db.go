@@ -668,67 +668,6 @@ func timeBetween(t, start, end time.Time) bool {
 	return true
 }
 
-func dbGetLastDayNotes() ([]*Note, error) {
-	prevDayStart := getPrevDayStart()
-	currDayStart := getCurrDayStart()
-	var notes []*Note
-	db := getDbMust()
-	q := `
-SELECT
-	id,
-  user_id,
-	curr_version_id,
-	is_deleted,
-	is_public,
-	is_starred,
-	created_at,
-	updated_at,
-	size,
-	format,
-	title,
-	content_sha1,
-	tags
-FROM notes
-WHERE created_at > ? or updated_at > ?`
-	rows, err := db.Query(q, prevDayStart, prevDayStart)
-	if err != nil {
-		log.Errorf("db.Query('%s') failed with %s\n", q, err)
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var n Note
-		var tagsSerialized string
-		err = rows.Scan(
-			&n.id,
-			&n.userID,
-			&n.CurrVersionID,
-			&n.IsDeleted,
-			&n.IsPublic,
-			&n.IsStarred,
-			&n.CreatedAt,
-			&n.UpdatedAt,
-			&n.Size,
-			&n.Format,
-			&n.Title,
-			&n.ContentSha1,
-			&tagsSerialized)
-		if err != nil {
-			return nil, err
-		}
-		n.Tags = deserializeTags(tagsSerialized)
-		if timeBetween(n.CreatedAt, prevDayStart, currDayStart) || timeBetween(n.UpdatedAt, prevDayStart, currDayStart) {
-			notes = append(notes, &n)
-		}
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Errorf("rows.Err() for '%s' failed with %s\n", q, err)
-		return nil, err
-	}
-	return notes, nil
-}
-
 // create a new note. if note.createdAt is non-zero value, this is an import
 // of note from somewhere else, so we want to preserve createdAt value
 func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
