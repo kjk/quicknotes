@@ -1,12 +1,12 @@
 #!/bin/bash
 set -u -e -o pipefail -o verbose
 
-IFS=\; read -a ip_port <<<"`./scripts/start_docker.py`"
+IFS=\; read -a ip_port <<<"`./s/start_docker.py`"
 ip="${ip_port[0]}"
 port="${ip_port[1]}"
 
-# . scripts/fmt.sh
-# . scripts/lint.sh
+# . s/fmt.sh
+# . s/lint.sh
 
 #echo "running gulp default"
 #./node_modules/.bin/gulp default
