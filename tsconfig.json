@@ -21,9 +21,9 @@
       "cmd",
       "data",
       "node_modules",
-      "s",
+      "static",
       "sass",
-      "scripts",
+      "s",
       "tools",
       "tsbuild"
     ]

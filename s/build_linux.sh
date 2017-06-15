@@ -5,7 +5,7 @@ set -u -e -o pipefail -o verbose
 
 . s/install-deps.sh
 
-rm -rf s/dist/*.map s/dist/*.js s/dist/*.css quicknotes_resources.zip
+rm -rf static/dist/*.map static/dist/*.js static/dist/*.css quicknotes_resources.zip
 
 ./node_modules/.bin/gulp prod
 

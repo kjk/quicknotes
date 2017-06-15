@@ -29,7 +29,7 @@ func getTemplates() *template.Template {
 	if reloadTemplates || (nil == templates) {
 		var t *template.Template
 		for _, name := range templateNames {
-			filename := filepath.Join("s", name)
+			filename := filepath.Join("static", name)
 			b, err := loadResourceFile(filename)
 			u.PanicIfErr(err, "loadResourceFile() failed")
 			s := string(b)
@@ -51,7 +51,7 @@ func getTemplates() *template.Template {
 	return templates
 }
 
-func execTemplate(w http.ResponseWriter, templateName string, model interface{}) bool {
+func serveTemplate(w http.ResponseWriter, templateName string, model interface{}) bool {
 	var buf bytes.Buffer
 	if err := getTemplates().ExecuteTemplate(&buf, templateName, model); err != nil {
 		log.Errorf("Failed to execute template %q, error: %s", templateName, err)
@@ -65,7 +65,7 @@ func execTemplate(w http.ResponseWriter, templateName string, model interface{})
 	return true
 }
 
-func execTemplateFile(path string, templateName string, model interface{}) error {
+func serveTemplateFile(path string, templateName string, model interface{}) error {
 	var buf bytes.Buffer
 	if err := getTemplates().ExecuteTemplate(&buf, templateName, model); err != nil {
 		log.Errorf("Failed to execute template %q, error: %s", templateName, err)

@@ -1,17 +1,24 @@
 package main
 
 import (
+	"context"
+	"crypto/tls"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
+
+	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/kjk/quicknotes/pkg/log"
@@ -123,7 +130,10 @@ func parseFlags() {
 	flag.StringVar(&flgHTTPAddr, "http-addr", "127.0.0.1:5111", "address on which to listen")
 
 	flag.Parse()
-	if !flgProduction {
+
+	if flgProduction {
+		flgHTTPAddr = ":80"
+	} else {
 		onlyLocalStorage = true
 		redirectHTTPS = false
 	}
@@ -256,10 +266,6 @@ func main() {
 	verifyDirs()
 	openLogFilesMust()
 
-	if flgProduction {
-		flgHTTPAddr = ":80"
-	}
-
 	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionSanitized(), getDataDir(), flgHTTPAddr, flgVerbose)
 
 	if flgSearchLocalTerm != "" {
@@ -328,8 +334,74 @@ func main() {
 
 	go dailyTasksLoop()
 
-	startWebServer()
+	var wg sync.WaitGroup
+	var httpsSrv, httpSrv *http.Server
 
-	// TODO: this isn't actually called
+	if flgProduction {
+		httpSrv = makeHTTPServer()
+		hostPolicy := func(ctx context.Context, host string) error {
+			if strings.HasSuffix(host, "quicknotes.io") {
+				return nil
+			}
+			return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
+		}
+
+		m := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: hostPolicy,
+		}
+		httpSrv.Addr = ":443"
+		httpSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
+		log.Infof("Started runing HTTPS on %s\n", httpSrv.Addr)
+
+		go func() {
+			wg.Add(1)
+			err := httpSrv.ListenAndServeTLS("", "")
+			// mute error caused by Shutdown()
+			if err == http.ErrServerClosed {
+				err = nil
+			}
+			u.PanicIfErr(err)
+			fmt.Printf("HTTPS server shutdown gracefully\n")
+			wg.Done()
+		}()
+	}
+
+	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPS)
+	if redirectHTTPS {
+		httpSrv = makeHTTPSRedirectServer()
+	} else {
+		httpSrv = makeHTTPServer()
+	}
+	httpSrv.Addr = flgHTTPAddr
+
+	go func() {
+		wg.Add(1)
+		err := httpSrv.ListenAndServe()
+		// mute error caused by Shutdown()
+		if err == http.ErrServerClosed {
+			err = nil
+		}
+		u.PanicIfErr(err)
+		fmt.Printf("HTTP server shutdown gracefully\n")
+		wg.Done()
+	}()
+
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt /* SIGINT */, syscall.SIGTERM)
+	sig := <-c
+	fmt.Printf("Got signal %s\n", sig)
+
+	ctx := context.Background()
+	if httpsSrv != nil {
+		httpsSrv.Shutdown(ctx)
+	}
+	if httpSrv != nil {
+		// Shutdown() needs a non-nil context
+		httpSrv.Shutdown(ctx)
+	}
+	wg.Wait()
+
 	localStore.Close()
+	fmt.Printf("Exited\n")
 }

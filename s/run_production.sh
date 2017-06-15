@@ -3,7 +3,7 @@ set -u -e -o pipefail
 
 . s/lint.sh
 
-rm -rf s/dist/*.map s/dist/*.js s/dist/*.css tsbuild/ quicknotes_resources.zip
+rm -rf static/dist/*.map static/dist/*.js static/dist/*.css tsbuild/ quicknotes_resources.zip
 
 ./node_modules/.bin/gulp prod
 

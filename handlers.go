@@ -2,9 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"context"
-	"crypto/tls"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/kjk/quicknotes/pkg/log"
 	"github.com/kjk/u"
@@ -284,7 +279,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fileName := r.URL.Path[len("/s/"):]
-	path := filepath.Join("s", fileName)
+	path := filepath.Join("static", fileName)
 
 	if u.FileExists(path) {
 		http.ServeFile(w, r, path)
@@ -407,7 +402,7 @@ func handleIndex(ctx *ReqContext, w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	execTemplate(w, tmplIndex, v)
+	serveTemplate(w, tmplIndex, v)
 }
 
 // must match Note.js
@@ -561,6 +556,24 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 	servePlainText(w, r, 200, "%s", s)
 }
 
+func makeHTTPSRedirectServer() *http.Server {
+	mux := &http.ServeMux{}
+
+	handleRedirect := func(w http.ResponseWriter, req *http.Request) {
+		newURI := "https://" + req.Host + req.URL.String()
+		http.Redirect(w, req, newURI, http.StatusMovedPermanently)
+	}
+
+	mux.HandleFunc("/", handleRedirect)
+	srv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second, // introduced in Go 1.8
+		Handler:      mux,
+	}
+	return srv
+}
+
 // https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
 func makeHTTPServer() *http.Server {
 	mux := &http.ServeMux{}
@@ -588,48 +601,5 @@ func makeHTTPServer() *http.Server {
 		IdleTimeout:  120 * time.Second, // introduced in Go 1.8
 		Handler:      mux,
 	}
-	// TODO: track connections and their state
 	return srv
-}
-
-func startWebServer() {
-	if flgProduction {
-		srv := makeHTTPServer()
-		hostPolicy := func(ctx context.Context, host string) error {
-			if strings.HasSuffix(host, "quicknotes.io") {
-				return nil
-			}
-			return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
-		}
-
-		m := autocert.Manager{
-			Prompt:     autocert.AcceptTOS,
-			HostPolicy: hostPolicy,
-		}
-		srv.Addr = ":443"
-		srv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-		log.Infof("Started runing HTTPS on %s\n", srv.Addr)
-		go func() {
-			srv.ListenAndServeTLS("", "")
-		}()
-	}
-
-	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPS)
-	var err error
-	if redirectHTTPS {
-		redirect := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			http.Redirect(w, req,
-				"https://"+req.Host+req.URL.String(),
-				http.StatusMovedPermanently)
-		})
-		err = http.ListenAndServe(flgHTTPAddr, redirect)
-	} else {
-		srv := makeHTTPServer()
-		srv.Addr = flgHTTPAddr
-		err = srv.ListenAndServe()
-	}
-
-	if err != nil {
-		log.Errorf("srv.ListendAndServer() failed with %s\n", err)
-	}
 }

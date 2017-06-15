@@ -61,9 +61,9 @@ function js() {
   b.plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
-    .pipe(exorcist('s/dist/bundle.js.map'))
+    .pipe(exorcist('static/dist/bundle.js.map'))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('s/dist'));
+    .pipe(gulp.dest('static/dist'));
   printDeps(b);
 }
 gulp.task('js', js);
@@ -76,11 +76,11 @@ function jsprod() {
   b.plugin(tsify, tsifyOpts)
     .transform(babelify, babelifyOpts)
     .bundle()
-    .pipe(exorcist('s/dist/bundle.min.js.map'))
+    .pipe(exorcist('static/dist/bundle.min.js.map'))
     .pipe(source('bundle.min.js'))
     .pipe(buffer())
     .pipe(uglify())
-    .pipe(gulp.dest('s/dist'));
+    .pipe(gulp.dest('static/dist'));
 }
 
 /*
@@ -95,7 +95,7 @@ gulp.task('jsprod', jsprod);
 
 // TODO: could save 122.452 bytes from the bundle if minifying
 // via closure-sompiler instead of uglifyjs, like:
-// closure-compiler --js s/dist/bundle.js --js_output_file s/dist/bundle.min.js --compilation_level ADVANCED
+// closure-compiler --js static/dist/bundle.js --js_output_file static/dist/bundle.min.js --compilation_level ADVANCED
 // but need to figure out how to run closure directly, in order to preserve
 // source maps
 function jsprod2() {
@@ -108,7 +108,7 @@ function jsprod2() {
     .bundle()
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('s/dist'));
+    .pipe(gulp.dest('static/dist'));
 }
 gulp.task('jsprod2', jsprod2);
 
@@ -118,7 +118,7 @@ function css() {
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
     .pipe(sourcemaps.write('.')) // this is relative to gulp.dest()
-    .pipe(gulp.dest('./s/dist/'));
+    .pipe(gulp.dest('./static/dist/'));
 }
 gulp.task('css', css);
 
@@ -127,7 +127,7 @@ function cssprod() {
     .pipe(sass().on('error', sass.logError))
     .pipe(prefix('last 2 versions'))
     .pipe(cssnano())
-    .pipe(gulp.dest('./s/dist/'));
+    .pipe(gulp.dest('./static/dist/'));
 }
 gulp.task('cssprod', cssprod);
 

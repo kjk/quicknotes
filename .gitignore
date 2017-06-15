@@ -2,7 +2,7 @@
 node_modules/
 electron/node_modules/
 electron/dist/
-s/dist
+static/dist
 quicknotes_resources.zip
 quicknotes
 quicknotes_prod
