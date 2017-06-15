@@ -49,11 +49,23 @@ func getStatsEmailBody() string {
 	nUsers, _ := dbGetUsersCount()
 	nNotes, _ := dbGetNotesCount()
 	nVersions, _ := dbGetVersionsCount()
+	recentNotes, _ := dbGetLastDayNotes()
 	a := []string{
 		"QuickNotes stats:",
 		fmt.Sprintf("users: %d", nUsers),
 		fmt.Sprintf("notes: %d", nNotes),
 		fmt.Sprintf("versions: %d", nVersions),
+		fmt.Sprintf("notes updated or modified yesterday: %d", len(recentNotes)),
+	}
+	for _, n := range recentNotes {
+		userInfo, err := getCachedUserInfo(n.userID)
+		if err != nil {
+			log.Errorf("getCachedUserInfo(%d) failed with %s\n", n.userID, err)
+			continue
+		}
+		uri := "https://quicknotes.io/n/" + hashInt(n.id)
+		s := fmt.Sprintf("Title: %s, user: %s, url: %s", n.Title, userInfo.user.GetHandle(), uri)
+		a = append(a, s)
 	}
 	return strings.Join(a, "\n")
 }
