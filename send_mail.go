@@ -49,24 +49,31 @@ func getStatsEmailBody() string {
 	nUsers, _ := dbGetUsersCount()
 	nNotes, _ := dbGetNotesCount()
 	nVersions, _ := dbGetVersionsCount()
-	recentNotes, _ := dbGetLastDayNotes()
+	recentNotes, _ := getRecentPublicNotesCached(64)
 	a := []string{
 		"QuickNotes stats:",
-		fmt.Sprintf("users: %d", nUsers),
-		fmt.Sprintf("notes: %d", nNotes),
-		fmt.Sprintf("versions: %d", nVersions),
-		fmt.Sprintf("notes updated or modified yesterday: %d", len(recentNotes)),
+		fmt.Sprintf("Users: %d, notes: %d, versions: %d", nUsers, nNotes, nVersions),
+		fmt.Sprintf("Most recently updated notes: %d", len(recentNotes)),
 	}
+	var myNotes []string
 	for _, n := range recentNotes {
 		userInfo, err := getCachedUserInfo(n.userID)
 		if err != nil {
 			log.Errorf("getCachedUserInfo(%d) failed with %s\n", n.userID, err)
 			continue
 		}
-		uri := "https://quicknotes.io/n/" + hashInt(n.id)
-		s := fmt.Sprintf("Title: %s, user: %s, url: %s", n.Title, userInfo.user.GetHandle(), uri)
-		a = append(a, s)
+		uri := "/n/" + hashInt(n.id)
+		date := n.UpdatedAt.Format("2006-01-02 15:04")
+		user := userInfo.user.GetHandle()
+		s := fmt.Sprintf("Title: '%s', user: %s, url: %s, updated at: %s", n.Title, user, uri, date)
+		if user == "kjk" {
+			myNotes = append(myNotes, s)
+		} else {
+			a = append(a, s)
+		}
 	}
+	a = append(a, "")
+	a = append(a, myNotes...)
 	return strings.Join(a, "\n")
 }
 

@@ -387,6 +387,10 @@ func main() {
 		wg.Done()
 	}()
 
+	go func() {
+		sendStatsMail()
+	}()
+
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt /* SIGINT */, syscall.SIGTERM)
 	sig := <-c
