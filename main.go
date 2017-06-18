@@ -363,8 +363,11 @@ func main() {
 			if err == http.ErrServerClosed {
 				err = nil
 			}
-			u.PanicIfErr(err)
-			fmt.Printf("HTTPS server shutdown gracefully\n")
+			if err != nil {
+				log.Errorf("Failed to start https, error: %s\n", err)
+			} else {
+				fmt.Printf("HTTPS server shutdown gracefully\n")
+			}
 			wg.Done()
 		}()
 	}
