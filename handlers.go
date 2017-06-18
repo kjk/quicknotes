@@ -607,7 +607,7 @@ func makeHTTPSRedirectServer() *http.Server {
 
 	handleRedirect := func(w http.ResponseWriter, req *http.Request) {
 		newURI := "https://" + req.Host + req.URL.String()
-		http.Redirect(w, req, newURI, http.StatusMovedPermanently)
+		http.Redirect(w, req, newURI, http.StatusFound)
 	}
 
 	mux.HandleFunc("/", handleRedirect)
