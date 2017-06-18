@@ -51,7 +51,7 @@ var (
 	httpLogCsvMutex sync.Mutex
 	sha1ver         string
 
-	redirectHTTPS = true
+	redirectHTTPToHTTPS = false
 
 	oauthClient = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
@@ -134,9 +134,10 @@ func parseFlags() {
 
 	if flgProduction {
 		flgHTTPAddr = ":80"
+		// TODO: temporary, I've hit Let's Encrypt limits, somehow (20 per week)
+		// redirectHTTPToHTTPS = true
 	} else {
 		onlyLocalStorage = true
-		redirectHTTPS = false
 	}
 }
 
@@ -368,8 +369,8 @@ func main() {
 		}()
 	}
 
-	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPS)
-	if redirectHTTPS {
+	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPToHTTPS)
+	if redirectHTTPToHTTPS {
 		httpSrv = makeHTTPSRedirectServer()
 	} else {
 		httpSrv = makeHTTPServer()
