@@ -167,14 +167,14 @@ func writeHeader(w http.ResponseWriter, code int, contentType string) {
 	w.WriteHeader(code)
 }
 
-func servePlainText(w http.ResponseWriter, r *http.Request, code int, format string, args ...interface{}) {
+func servePlainText(w http.ResponseWriter, code int, format string, args ...interface{}) {
 	writeHeader(w, code, "text/plain")
 	var err error
+	s := format
 	if len(args) > 0 {
-		_, err = w.Write([]byte(fmt.Sprintf(format, args...)))
-	} else {
-		_, err = w.Write([]byte(format))
+		s = fmt.Sprintf(format, args...)
 	}
+	_, err = io.WriteString(w, s)
 	if err != nil {
 		log.Errorf("err: '%s'\n", err)
 	}

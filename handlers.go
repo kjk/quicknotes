@@ -253,12 +253,12 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 
 	if data == nil {
 		log.Errorf("no data for file '%s'\n", path)
-		servePlainText(w, r, 404, fmt.Sprintf("file '%s' not found", path))
+		servePlainText(w, 404, fmt.Sprintf("file '%s' not found", path))
 		return
 	}
 
 	if len(data) == 0 {
-		servePlainText(w, r, 404, "Asset is empty")
+		servePlainText(w, 404, "Asset is empty")
 		return
 	}
 
@@ -553,7 +553,43 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 	lines = append(lines, "--------------")
 	lines = append(lines, note.Content())
 	s = strings.Join(lines, "\n")
-	servePlainText(w, r, 200, "%s", s)
+	servePlainText(w, 200, "%s", s)
+}
+
+// /app/debug
+func handleDebug(w http.ResponseWriter, r *http.Request) {
+	s := fmt.Sprintf("url: %s %s", r.Method, r.RequestURI)
+	a := []string{s}
+
+	s = "https: no"
+	if r.TLS != nil {
+		s = "https: yes"
+	}
+	a = append(a, s)
+
+	s = fmt.Sprintf("RemoteAddr: %s", r.RemoteAddr)
+	a = append(a, s)
+
+	a = append(a, "Headers:")
+	for k, v := range r.Header {
+		if len(v) == 0 {
+			a = append(a, k)
+		} else if len(v) == 1 {
+			s = fmt.Sprintf("  %s: %v", k, v[0])
+			a = append(a, s)
+		} else {
+			a = append(a, "  "+k+":")
+			for _, v2 := range v {
+				a = append(a, "    "+v2)
+			}
+		}
+	}
+
+	a = append(a, "")
+	a = append(a, fmt.Sprintf("ver: https://github.com/kjk/quicknotes/commit/%s", sha1ver))
+
+	s = strings.Join(a, "\n")
+	servePlainText(w, 200, s)
 }
 
 func makeHTTPSRedirectServer() *http.Server {
@@ -580,6 +616,7 @@ func makeHTTPServer() *http.Server {
 
 	mux.HandleFunc("/", withCtx(handleIndex, OnlyGet))
 	mux.HandleFunc("/favicon.ico", handleFavicon)
+	mux.HandleFunc("/app/debug", handleDebug)
 	mux.HandleFunc("/s/", handleStatic)
 	mux.HandleFunc("/raw/n/", handleRawNote)
 	mux.HandleFunc("/idx/allnotes", withCtx(handleIndexAllNotes, OnlyGet))
