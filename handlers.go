@@ -246,6 +246,17 @@ func serveResourceFromZip(w http.ResponseWriter, r *http.Request, path string) {
 	path = normalizePath(path)
 
 	data := resourcesFromZip[path]
+
+	/*
+		if data == nil {
+			s := strings.TrimPrefix(path, "s/")
+			if s != path {
+				path = "static/" + s
+				data = resourcesFromZip[path]
+			}
+		}
+	*/
+
 	gzippedData := resourcesFromZip[path+".gz"]
 	brotliData := resourcesFromZip[path+".br"]
 
