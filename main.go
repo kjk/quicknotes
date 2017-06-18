@@ -49,6 +49,7 @@ var (
 	httpLogs        *log.DailyRotateFile
 	httpLogsCsv     *csv.Writer
 	httpLogCsvMutex sync.Mutex
+	sha1ver         string
 
 	redirectHTTPS = true
 

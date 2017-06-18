@@ -11,4 +11,4 @@ rm -rf static/dist/*.map static/dist/*.js static/dist/*.css quicknotes_resources
 
 go run tools/gen_resources.go
 
-GOOS=linux GOARCH=amd64 go build -o quicknotes_linux
+GOOS=linux GOARCH=amd64 go build -o quicknotes_linux -ldflags "-X main.sha1ver=`git rev-parse HEAD`"
