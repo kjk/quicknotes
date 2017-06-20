@@ -349,7 +349,9 @@ func main() {
 		m := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
 			HostPolicy: hostPolicy,
+			Cache:      autocert.DirCache(getDataDir()),
 		}
+
 		httpSrv.Addr = ":443"
 		httpSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
 		log.Infof("Started runing HTTPS on %s\n", httpSrv.Addr)
