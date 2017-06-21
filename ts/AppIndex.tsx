@@ -118,10 +118,10 @@ const stLinkContainer: React.CSSProperties = {
 };
 
 const images: string[] = [
-  '/static/img/shot-index.png',
-  '/static/img/shot-edit.png',
-  '/static/img/shot-search.png',
-  '/static/img/shot-note-view.png',
+  '/s/img/shot-index.png',
+  '/s/img/shot-edit.png',
+  '/s/img/shot-search.png',
+  '/s/img/shot-note-view.png',
 ];
 
 interface State {
