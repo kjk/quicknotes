@@ -602,7 +602,7 @@ func handleDebug(w http.ResponseWriter, r *http.Request) {
 	servePlainText(w, 200, s)
 }
 
-func makeHTTPSRedirectServer() *http.Server {
+func makeHTTPToHTTPSRedirectServer() *http.Server {
 	mux := &http.ServeMux{}
 
 	handleRedirect := func(w http.ResponseWriter, req *http.Request) {
