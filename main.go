@@ -336,7 +336,7 @@ func main() {
 	go dailyTasksLoop()
 
 	var wg sync.WaitGroup
-	var httpsSrv, httpSrv *http.Server
+	var httpsSrv *http.Server
 
 	if flgProduction {
 		hostPolicy := func(ctx context.Context, host string) error {
@@ -353,14 +353,14 @@ func main() {
 			Cache:      autocert.DirCache(getDataDir()),
 		}
 
-		httpSrv = makeHTTPServer()
-		httpSrv.Addr = ":443"
-		httpSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-		log.Infof("Starting HTTPS on %s\n", httpSrv.Addr)
+		httpsSrv = makeHTTPServer()
+		httpsSrv.Addr = ":443"
+		httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
+		log.Infof("Starting HTTPS on %s\n", httpsSrv.Addr)
 
 		go func() {
 			wg.Add(1)
-			err := httpSrv.ListenAndServeTLS("", "")
+			err := httpsSrv.ListenAndServeTLS("", "")
 			// mute error caused by Shutdown()
 			if err == http.ErrServerClosed {
 				err = nil
@@ -374,9 +374,10 @@ func main() {
 		}()
 	}
 
+	var httpSrv *http.Server
 	log.Infof("Starting HTTP on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPToHTTPS)
 	if redirectHTTPToHTTPS {
-		httpSrv = makeHTTPSRedirectServer()
+		httpSrv = makeHTTPToHTTPSRedirectServer()
 	} else {
 		httpSrv = makeHTTPServer()
 	}
