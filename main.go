@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/csv"
-	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -49,8 +48,9 @@ var (
 	httpLogs        *log.DailyRotateFile
 	httpLogsCsv     *csv.Writer
 	httpLogCsvMutex sync.Mutex
+	sha1ver         string
 
-	redirectHTTPS = true
+	redirectHTTPToHTTPS = false
 
 	oauthClient = oauth.Client{
 		TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
@@ -133,9 +133,10 @@ func parseFlags() {
 
 	if flgProduction {
 		flgHTTPAddr = ":80"
+		// TODO: temporary, I've hit Let's Encrypt limits, somehow (20 per week)
+		// redirectHTTPToHTTPS = true
 	} else {
 		onlyLocalStorage = true
-		redirectHTTPS = false
 	}
 }
 
@@ -335,15 +336,15 @@ func main() {
 	go dailyTasksLoop()
 
 	var wg sync.WaitGroup
-	var httpsSrv, httpSrv *http.Server
+	var httpsSrv *http.Server
 
 	if flgProduction {
-		httpSrv = makeHTTPServer()
 		hostPolicy := func(ctx context.Context, host string) error {
-			if strings.HasSuffix(host, "quicknotes.io") {
+			allowedDomain := "quicknotes.io"
+			if strings.HasSuffix(host, allowedDomain) {
 				return nil
 			}
-			return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
+			return fmt.Errorf("acme/autocert: only *.%s hosts are allowed", allowedDomain)
 		}
 
 		m := autocert.Manager{
@@ -352,26 +353,31 @@ func main() {
 			Cache:      autocert.DirCache(getDataDir()),
 		}
 
-		httpSrv.Addr = ":443"
-		httpSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-		log.Infof("Started runing HTTPS on %s\n", httpSrv.Addr)
+		httpsSrv := makeHTTPServer()
+		httpsSrv.Addr = ":443"
+		httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
+		log.Infof("Starting HTTPS on %s\n", httpsSrv.Addr)
 
 		go func() {
 			wg.Add(1)
-			err := httpSrv.ListenAndServeTLS("", "")
+			err := httpsSrv.ListenAndServeTLS("", "")
 			// mute error caused by Shutdown()
 			if err == http.ErrServerClosed {
 				err = nil
 			}
-			u.PanicIfErr(err)
-			fmt.Printf("HTTPS server shutdown gracefully\n")
+			if err != nil {
+				log.Errorf("Failed to start https, error: %s\n", err)
+			} else {
+				fmt.Printf("HTTPS server shutdown gracefully\n")
+			}
 			wg.Done()
 		}()
 	}
 
-	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPS)
-	if redirectHTTPS {
-		httpSrv = makeHTTPSRedirectServer()
+	var httpSrv *http.Server
+	log.Infof("Starting HTTP on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPToHTTPS)
+	if redirectHTTPToHTTPS {
+		httpSrv = makeHTTPToHTTPSRedirectServer()
 	} else {
 		httpSrv = makeHTTPServer()
 	}
@@ -396,7 +402,7 @@ func main() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt /* SIGINT */, syscall.SIGTERM)
 	sig := <-c
-	fmt.Printf("Got signal %s\n", sig)
+	log.Infof("Got signal %s\n", sig)
 
 	ctx := context.Background()
 	if httpsSrv != nil {

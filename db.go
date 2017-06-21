@@ -313,9 +313,9 @@ func getCachedUserInfo(userID int) (*CachedUserInfo, error) {
 }
 
 func execMust(db *sql.DB, q string, args ...interface{}) {
-	log.Verbosef("db.Exec(): %s\n", q)
+	//og.Verbosef("db.Exec(): %s\n", q)
 	_, err := db.Exec(q, args...)
-	u.PanicIfErr(err, fmt.Sprintf("db.Exec('%s')", q))
+	u.PanicIfErr(err, "db.Exec('%s')", q)
 }
 
 func getCreateDbSQLMust() []byte {
