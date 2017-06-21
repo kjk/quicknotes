@@ -339,7 +339,6 @@ func main() {
 	var httpsSrv, httpSrv *http.Server
 
 	if flgProduction {
-		httpSrv = makeHTTPServer()
 		hostPolicy := func(ctx context.Context, host string) error {
 			allowedDomain := "quicknotes.io"
 			if strings.HasSuffix(host, allowedDomain) {
@@ -351,10 +350,13 @@ func main() {
 		m := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
 			HostPolicy: hostPolicy,
+			Cache:      autocert.DirCache(getDataDir()),
 		}
+
+		httpSrv = makeHTTPServer()
 		httpSrv.Addr = ":443"
 		httpSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-		log.Infof("Started runing HTTPS on %s\n", httpSrv.Addr)
+		log.Infof("Starting HTTPS on %s\n", httpSrv.Addr)
 
 		go func() {
 			wg.Add(1)
@@ -372,7 +374,7 @@ func main() {
 		}()
 	}
 
-	log.Infof("Started runing on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPToHTTPS)
+	log.Infof("Starting HTTP on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPToHTTPS)
 	if redirectHTTPToHTTPS {
 		httpSrv = makeHTTPSRedirectServer()
 	} else {
@@ -399,7 +401,7 @@ func main() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt /* SIGINT */, syscall.SIGTERM)
 	sig := <-c
-	fmt.Printf("Got signal %s\n", sig)
+	log.Infof("Got signal %s\n", sig)
 
 	ctx := context.Background()
 	if httpsSrv != nil {
