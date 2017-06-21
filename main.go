@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/csv"
-	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -342,10 +341,11 @@ func main() {
 	if flgProduction {
 		httpSrv = makeHTTPServer()
 		hostPolicy := func(ctx context.Context, host string) error {
-			if strings.HasSuffix(host, "quicknotes.io") {
+			allowedDomain := "quicknotes.io"
+			if strings.HasSuffix(host, allowedDomain) {
 				return nil
 			}
-			return errors.New("acme/autocert: only *.quicknotes.io hosts are allowed")
+			return fmt.Errorf("acme/autocert: only *.%s hosts are allowed", allowedDomain)
 		}
 
 		m := autocert.Manager{
