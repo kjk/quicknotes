@@ -1,5 +1,3 @@
-'use strict';
-
 /* reusable part */
 
 // Loosely inspired by flux ideas.
