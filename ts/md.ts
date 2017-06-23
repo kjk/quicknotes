@@ -144,7 +144,7 @@ function toHtmlShowdown(s: string): string {
     smoothLivePreview: true,
     extensions: ['targetblank'],
   };
-  const converter = new showdown.Converter();
+  const converter = new showdown.Converter(opts);
   converter.setFlavor('github');
   const html = converter.makeHtml(s);
   return html;
