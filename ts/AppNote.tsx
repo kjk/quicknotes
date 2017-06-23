@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import keymaster from 'keymaster';
 
-import { toHtml } from './md';
+import { toHtml } from './markdown';
 import { linkify } from './linkify';
 
 import ConnectionStatus from './ConnectionStatus';
