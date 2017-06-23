@@ -325,7 +325,6 @@ func wsPermanentDeleteNote(ctx *ReqContext, args map[string]interface{}) (interf
 
 func newNoteFromBrowserNote(note *NewNoteFromBrowser) (*NewNote, error) {
 	var newNote NewNote
-	//log.Verbosef("note: %s\n", noteJSON)
 	if !isValidFormat(note.Format) {
 		return nil, fmt.Errorf("invalid format %s", note.Format)
 	}
@@ -353,6 +352,7 @@ func wsCreateOrUpdateNote(ctx *ReqContext, args map[string]interface{}) (interfa
 		return nil, fmt.Errorf("wsCreateOrUpdateNote: failed to decode '%s'", noteJSONStr)
 	}
 
+	//log.Verbosef("wsCreateOrUpdateNote: noteJSONStr: %s\n", noteJSONStr)
 	note, err := newNoteFromBrowserNote(&noteFromBrowser)
 	if err != nil {
 		return nil, err
