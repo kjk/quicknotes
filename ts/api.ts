@@ -437,65 +437,61 @@ export function getRecentNotes(cb: WsCb) {
   wsSendReq('getRecentNotes', {}, cb, getNotesConvertResult);
 }
 
-function getNoteConvertResult(note: any) {
-  return toNote(note);
-}
-
 // calls cb with Note
 export function getNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('getNote', args, cb, getNoteConvertResult);
+  wsSendReq('getNote', args, cb, toNote);
 }
 
 export function undeleteNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('undeleteNote', args, cb, null);
+  wsSendReq('undeleteNote', args, cb, toNote);
 }
 
 export function deleteNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('deleteNote', args, cb, null);
+  wsSendReq('deleteNote', args, cb, toNote);
 }
 
 export function permanentDeleteNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('permanentDeleteNote', args, cb, null);
+  wsSendReq('permanentDeleteNote', args, cb, toNote);
 }
 
 export function makeNotePrivate(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('makeNotePrivate', args, cb);
+  wsSendReq('makeNotePrivate', args, cb, toNote);
 }
 
 export function makeNotePublic(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('makeNotePublic', args, cb, null);
+  wsSendReq('makeNotePublic', args, cb, toNote);
 }
 
 export function starNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('starNote', args, cb, null);
+  wsSendReq('starNote', args, cb, toNote);
 }
 
 export function unstarNote(noteHashID: string, cb: WsCb) {
   const args: any = {
     noteHashID,
   };
-  wsSendReq('unstarNote', args, cb, null);
+  wsSendReq('unstarNote', args, cb, toNote);
 }
 
 export function createOrUpdateNote(noteJSON: string, cb: WsCb) {
