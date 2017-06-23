@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restxml","private/protocol/xml/xmlutil","service/s3","service/sts"]
-  revision = "8a972b4459c2f2582b06f3e2d74448987cc6e19f"
+  revision = "5525dcfc0f1a4183fcf97a4278e010b4a67c864e"
 
 [[projects]]
   branch = "master"
@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/garyburd/go-oauth"
   packages = ["oauth"]
-  revision = "d9dbc37b1a7acf4923050e614fc7861e3fbf42f9"
+  revision = "c20bd6231dc6c8d00f72a79fb679e8caa1316212"
 
 [[projects]]
   name = "github.com/go-ini/ini"
@@ -41,13 +41,13 @@
   branch = "master"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
-  revision = "a825be04c652d01442384e9dcdf2cdc3f1eda67f"
+  revision = "8fefef06da7707b5a3cda42195a6b409c9c9ab5c"
 
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes/any"]
-  revision = "e325f446bebc2998605911c0a2650d9920361d4a"
+  revision = "6a1fa9404c0aebf36c879bc50152edcc953910d2"
 
 [[projects]]
   branch = "master"
@@ -83,7 +83,7 @@
   branch = "master"
   name = "github.com/gorilla/websocket"
   packages = ["."]
-  revision = "a91eba7f97777409bc2c443f5534d41dd20c5720"
+  revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
 
 [[projects]]
   name = "github.com/jmespath/go-jmespath"
@@ -137,13 +137,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "850760c427c516be930bc91280636328f1a62286"
+  revision = "adbae1b6b6fb4b02448a0fc0dbbc9ba2b95b294d"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
-  revision = "ddf80d0970594e2e4cccf5a98861cad3d9eaa4cd"
+  revision = "057a25b06247e0c51ba15d8ae475feb2fcb72164"
 
 [[projects]]
   branch = "master"
@@ -155,7 +155,7 @@
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "9e2f80a6ba7ed4ba13e0cd4b1f094bf916875735"
+  revision = "4e9ab9ee170f2a39bd66c92b3e0a47ff47a4bc77"
 
 [[projects]]
   name = "google.golang.org/api"
@@ -177,8 +177,8 @@
 [[projects]]
   name = "google.golang.org/grpc"
   packages = [".","codes","credentials","credentials/oauth","grpclb/grpc_lb_v1","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "42c095b6c9bdd80d4435b064508c398afdb0ec99"
-  version = "v1.4.1"
+  revision = "b15215fb911b24a5d61d57feec4233d610530464"
+  version = "v1.4.2"
 
 [solve-meta]
   analyzer-name = "dep"
