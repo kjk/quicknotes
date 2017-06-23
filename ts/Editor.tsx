@@ -10,7 +10,7 @@ import TextSelect from './TextSelect';
 import * as action from './action';
 import { Note, FormatText, FormatMarkdown, FetchLatestContent } from './Note';
 import { debounce } from './utils';
-import { toHtml } from './md';
+import { toHtml } from './markdown';
 import { focusSearch, isUndefined, deepCloneObject, strArrRemoveDups } from './utils';
 import * as api from './api';
 
