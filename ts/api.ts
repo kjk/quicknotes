@@ -366,12 +366,13 @@ function keyUserNotes(userIDHash: string) {
   return `notes:${userIDHash}`;
 }
 
-// calls cb with Note[]
+// calls cb with Note[] and broadcasts action.updateNotes
 function getNotes(userIDHash: string, myLatestVersion: number, cb: WsCb) {
   const args: any = {
     userIDHash,
     latestVersion: myLatestVersion,
   };
+
   function getNotesConvertResult(result: GetNotesResp): Note[] {
     if (!result || !result.Notes) {
       return [];
@@ -395,6 +396,8 @@ function getNotes(userIDHash: string, myLatestVersion: number, cb: WsCb) {
     return toNotes(result.Notes);
   }
 
+  wsSendReq('getNotes', args, getNotesCb);
+
   function getNotesCb(err: Error, result: GetNotesResp) {
     if (err) {
       cb(err, result);
@@ -405,17 +408,17 @@ function getNotes(userIDHash: string, myLatestVersion: number, cb: WsCb) {
     if (result.LatestVersion == myLatestVersion) {
       return;
     }
-    cb(null, getNotesConvertResult(result));
+    const notes = getNotesConvertResult(result);
+    cb(null, notes);
+    action.updateNotes(notes);
   }
-
-  wsSendReq('getNotes', args, getNotesCb);
 }
 
 // calls cb with Note[]
 export function getNotesCached(userIDHash: string, cb: WsCb) {
   const key = keyUserNotes(userIDHash);
-  localforage.getItem(key, gotItem);
-  function gotItem(err: any, cachedNotes: GetNotesResp) {
+  localforage.getItem(key, gotCachedNotes);
+  function gotCachedNotes(err: any, cachedNotes: GetNotesResp) {
     if (err || !cachedNotes) {
       console.log(`no cached notes for key '${key}'`);
       getNotes(userIDHash, 0, cb);
