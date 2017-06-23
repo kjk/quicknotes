@@ -133,11 +133,12 @@ func parseFlags() {
 
 	if flgProduction {
 		flgHTTPAddr = ":80"
-		// TODO: temporary, I've hit Let's Encrypt limits, somehow (20 per week)
-		// redirectHTTPToHTTPS = true
-	} else {
-		onlyLocalStorage = true
+		redirectHTTPToHTTPS = true
 	}
+
+	// in production or in cowboy mode we save notes to google storage as well
+	// TODO: maybe to it always?
+	onlyLocalStorage = !(flgProduction || flgProdDb)
 }
 
 func runGulpAndWaitExit() {
@@ -375,7 +376,7 @@ func main() {
 	}
 
 	var httpSrv *http.Server
-	log.Infof("Starting HTTP on %s. Redirect to https: %v\n", flgHTTPAddr, redirectHTTPToHTTPS)
+	log.Infof("Starting HTTP on %s. Redirect to https: %v, saving to Google Storage: %v\n", flgHTTPAddr, redirectHTTPToHTTPS, !onlyLocalStorage)
 	if redirectHTTPToHTTPS {
 		httpSrv = makeHTTPToHTTPSRedirectServer()
 	} else {
