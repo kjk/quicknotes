@@ -208,11 +208,12 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 }
 
 func dailyTasksLoop() {
+	buildPublicNotesIndex()
+
 	// things we do at application start
 	if flgProduction {
 		sendBootMail()
 	}
-	buildPublicNotesIndex()
 
 	// tasks we run once a day at 1 am
 	for {
@@ -394,10 +395,6 @@ func main() {
 		u.PanicIfErr(err)
 		fmt.Printf("HTTP server shutdown gracefully\n")
 		wg.Done()
-	}()
-
-	go func() {
-		sendStatsMail()
 	}()
 
 	c := make(chan os.Signal, 2)
