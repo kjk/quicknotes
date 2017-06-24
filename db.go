@@ -522,6 +522,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	q := `
 UPDATE notes SET
   updated_at=?,
+  created_at=?.
   content_sha1=?,
   size=?,
   format=?,
@@ -535,6 +536,7 @@ UPDATE notes SET
 WHERE id=?`
 	_, err = tx.Exec(q,
 		noteUpdatedAt,
+		note.createdAt,
 		note.contentSha1,
 		noteSize,
 		note.format,
@@ -550,7 +552,7 @@ WHERE id=?`
 		return 0, err
 	}
 
-	log.Verbosef("updated note with id %d, query: %s\n", noteID, q)
+	log.Verbosef("updated note with id %d, updated_at: %s, created_at: %s\n", noteID, noteUpdatedAt, note.createdAt)
 
 	err = tx.Commit()
 	tx = nil
