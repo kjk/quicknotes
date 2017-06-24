@@ -488,7 +488,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	vals := NewDbVals("versions", 11)
 	vals.Add("note_id", noteID)
 	vals.Add("size", noteSize)
-	vals.Add("created_at", note.createdAt)
+	vals.Add("created_at", now)
 	vals.Add("content_sha1", note.contentSha1)
 	vals.Add("format", note.format)
 	vals.Add("title", note.title)
