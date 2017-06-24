@@ -552,12 +552,10 @@ func handleRawNote(w http.ResponseWriter, r *http.Request) {
 		lines = append(lines, s)
 	}
 
-	createdAt := note.CreatedAt.Format(time.RFC3339)
-	s = "CreatedAt: " + createdAt
+	s = "CreatedAt: " + note.CreatedAt.Format(time.RFC3339)
 	lines = append(lines, s)
 
-	updatedAt := note.UpdatedAt.Format(time.RFC3339)
-	s = "UpdatedAt: " + updatedAt
+	s = "UpdatedAt: " + note.UpdatedAt.Format(time.RFC3339)
 	lines = append(lines, s)
 
 	lines = append(lines, "--------------")
