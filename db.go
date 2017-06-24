@@ -522,7 +522,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	q := `
 UPDATE notes SET
   updated_at=?,
-  created_at=?.
+  created_at=?,
   content_sha1=?,
   size=?,
   format=?,
