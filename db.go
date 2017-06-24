@@ -465,7 +465,7 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 // most operations mark a note as updated except for starring, which is why
 // we need markUpdated
 func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
-	log.Verbosef("dbUpdateNote2: noteID: %d, markUpdated: %v\n", noteID, markUpdated)
+	log.Verbosef("noteID: %d, markUpdated: %v\n", noteID, markUpdated)
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -473,7 +473,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	}
 	defer func() {
 		if tx != nil {
-			log.Verbosef("dbUpdateNote2: noteID: %d, rolled back\n", noteID)
+			log.Verbosef("noteID: %d, rolled back\n", noteID)
 			tx.Rollback()
 		}
 	}()
@@ -481,6 +481,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	now := time.Now()
 	if note.createdAt.IsZero() {
 		note.createdAt = now
+		log.Verbosef("note.createdAt is zero, setting to %s\n", note.createdAt)
 	}
 
 	noteSize := len(note.content)
@@ -547,6 +548,8 @@ WHERE id=?`
 		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
+
+	log.Verbosef("updated note with id %d\n", noteID)
 
 	err = tx.Commit()
 	tx = nil
@@ -672,7 +675,7 @@ func timeBetween(t, start, end time.Time) bool {
 // create a new note. if note.createdAt is non-zero value, this is an import
 // of note from somewhere else, so we want to preserve createdAt value
 func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
-	log.Verbosef("dbCreateOrUpdateNote\n")
+	log.Verbosef("userID: %d\n", userID)
 	var err error
 	if len(note.content) == 0 {
 		return 0, errors.New("empty note content")
@@ -693,7 +696,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	var noteID int
 	var existingNote *Note
 	if note.hashID == "" {
-		log.Verbosef("dbCreateOrUpdateNote: creating a new note %d. exi\n")
+		log.Verbosef("creating a new note %s\n", note.title)
 		noteID, err = dbCreateNewNote(userID, note)
 		note.hashID = hashInt(noteID)
 		return noteID, err
@@ -711,16 +714,14 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
 	}
 
-	log.Verbosef("dbCreateOrUpdateNote: updating existing note %d.\n", existingNote.HashID)
-
 	// when editing a note, we don't change starred status
 	note.isStarred = existingNote.IsStarred
 	// don't create new versions if not necessary
 	if !needsNewNoteVersion(note, existingNote) {
 		return noteID, nil
 	}
-	log.Verbosef("dbCreateOrUpdateNote: updating existing note %d.\n", existingNote.HashID)
-	log.Verbosef("dbCreateOrUpdateNote: existingNote createdAt: %s, updatedAt: %s.\n", existingNote.HashID, existingNote.CreatedAt.Format(time.RFC3339), existingNote.UpdatedAt.Format(time.RFC3339))
+	log.Verbosef("updating existing note %d (%s). CreatedAt: %s, UpdatedAt: %s\n", existingNote.id, existingNote.HashID, existingNote.CreatedAt.Format(time.RFC3339), existingNote.UpdatedAt.Format(time.RFC3339))
+
 	note.createdAt = existingNote.CreatedAt
 	noteID, err = dbUpdateNote2(noteID, note, true)
 
