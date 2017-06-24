@@ -148,12 +148,12 @@ type DbNote struct {
 	ContentSha1   []byte
 	Tags          []string `json:",omitempty"`
 	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 // Note describes note in memory
 type Note struct {
 	DbNote
-	UpdatedAt   time.Time
 	Snippet     string
 	IsPartial   bool
 	IsTruncated bool
@@ -516,6 +516,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	}
 	log.Verbosef("inserted new version of note %d, new version id: %d\n", noteID, versionID)
 
+	dbGetNoteByID(noteID)
 	//Maybe: could get versions_count as:
 	//q := `SELECT count(*) FROM versions WHERE note_id=?`
 	q := `
@@ -549,11 +550,14 @@ WHERE id=?`
 		return 0, err
 	}
 
-	log.Verbosef("updated note with id %d\n", noteID)
+	log.Verbosef("updated note with id %d, query: %s\n", noteID, q)
 
 	err = tx.Commit()
 	tx = nil
-	return int(noteID), err
+
+	dbGetNoteByID(noteID)
+
+	return noteID, err
 }
 
 func dbUpdateNoteWith(userID, noteID int, markUpdated bool, updateFn func(*NewNote) bool) error {
