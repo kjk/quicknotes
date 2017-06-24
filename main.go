@@ -260,9 +260,6 @@ func main() {
 	parseFlags()
 	log.LogToStdout = true
 
-	// TODO: temporary, to figure out the created_at issue
-	flgVerbose = true
-
 	if flgVerbose {
 		log.IncVerbosity()
 	}

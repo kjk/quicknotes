@@ -162,12 +162,14 @@ type Note struct {
 
 // NewNote describes a new note to be inserted into a database
 type NewNote struct {
+	id          int
 	hashID      string
 	title       string
 	format      string
 	content     []byte
 	tags        []string
 	createdAt   time.Time
+	updatedAt   time.Time
 	isDeleted   bool
 	isPublic    bool
 	isStarred   bool
@@ -177,10 +179,12 @@ type NewNote struct {
 func newNoteFromNote(n *Note) (*NewNote, error) {
 	var err error
 	nn := &NewNote{
+		id:          n.id,
 		title:       n.Title,
 		format:      n.Format,
 		tags:        n.Tags,
 		createdAt:   n.CreatedAt,
+		updatedAt:   n.UpdatedAt,
 		isDeleted:   n.IsDeleted,
 		isPublic:    n.IsPublic,
 		isStarred:   n.IsStarred,
@@ -464,8 +468,8 @@ func dbCreateNewNote(userID int, note *NewNote) (int, error) {
 
 // most operations mark a note as updated except for starring, which is why
 // we need markUpdated
-func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
-	log.Verbosef("noteID: %d, markUpdated: %v\n", noteID, markUpdated)
+func dbUpdateNote2(note *NewNote, markUpdated bool) (int, error) {
+	log.Verbosef("noteID: %d, markUpdated: %v\n", note.id, markUpdated)
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -473,7 +477,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	}
 	defer func() {
 		if tx != nil {
-			log.Verbosef("noteID: %d, rolled back\n", noteID)
+			log.Verbosef("noteID: %d, rolled back\n", note.id)
 			tx.Rollback()
 		}
 	}()
@@ -488,7 +492,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 
 	serializedTags := serializeTags(note.tags)
 	vals := NewDbVals("versions", 11)
-	vals.Add("note_id", noteID)
+	vals.Add("note_id", note.id)
 	vals.Add("size", noteSize)
 	vals.Add("created_at", now)
 	vals.Add("content_sha1", note.contentSha1)
@@ -500,7 +504,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 	vals.Add("is_starred", note.isStarred)
 	vals.Add("is_encrypted", false)
 
-	noteUpdatedAt := note.createdAt
+	noteUpdatedAt := note.updatedAt
 	if markUpdated {
 		noteUpdatedAt = now
 	}
@@ -514,11 +518,13 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 		log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
 		return 0, err
 	}
-	log.Verbosef("inserted new version of note %d, new version id: %d\n", noteID, versionID)
+	log.Verbosef("inserted new version of note %d, new version id: %d\n", note.id, versionID)
 
-	dbGetNoteByID(noteID)
 	//Maybe: could get versions_count as:
 	//q := `SELECT count(*) FROM versions WHERE note_id=?`
+
+	// Note: I don't know why I need to explicitly set created_at, but it does get changed
+	// to the same value as updated_at when I don't set it here
 	q := `
 UPDATE notes SET
   updated_at=?,
@@ -546,20 +552,18 @@ WHERE id=?`
 		note.isDeleted,
 		note.isStarred,
 		versionID,
-		noteID)
+		note.id)
 	if err != nil {
 		log.Errorf("tx.Exec('%s') failed with %s\n", q, err)
 		return 0, err
 	}
 
-	log.Verbosef("updated note with id %d, updated_at: %s, created_at: %s\n", noteID, noteUpdatedAt, note.createdAt)
+	log.Verbosef("updated note with id %d, updated_at: %s, created_at: %s\n", note.id, noteUpdatedAt, note.createdAt)
 
 	err = tx.Commit()
 	tx = nil
 
-	dbGetNoteByID(noteID)
-
-	return noteID, err
+	return note.id, err
 }
 
 func dbUpdateNoteWith(userID, noteID int, markUpdated bool, updateFn func(*NewNote) bool) error {
@@ -584,7 +588,7 @@ func dbUpdateNoteWith(userID, noteID int, markUpdated bool, updateFn func(*NewNo
 		log.Verbosef("dbUpdateNoteWith: skipping update of noteID=%s because shouldUpdate=%v\n", hashInt(noteID), shouldUpdate)
 		return nil
 	}
-	_, err = dbUpdateNote2(noteID, newNote, markUpdated)
+	_, err = dbUpdateNote2(newNote, markUpdated)
 	return err
 }
 
@@ -716,9 +720,12 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	u.PanicIf(noteID != existingNote.id)
 	if existingNote.userID != userID {
 		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
 	}
+
+	note.id = noteID
 
 	// when editing a note, we don't change starred status
 	note.isStarred = existingNote.IsStarred
@@ -729,7 +736,7 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 	log.Verbosef("updating existing note %d (%s). CreatedAt: %s, UpdatedAt: %s\n", existingNote.id, existingNote.HashID, existingNote.CreatedAt.Format(time.RFC3339), existingNote.UpdatedAt.Format(time.RFC3339))
 
 	note.createdAt = existingNote.CreatedAt
-	noteID, err = dbUpdateNote2(noteID, note, true)
+	noteID, err = dbUpdateNote2(note, true)
 
 	return noteID, err
 }
