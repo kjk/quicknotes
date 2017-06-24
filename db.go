@@ -384,6 +384,7 @@ func saveContent(d []byte) ([]byte, error) {
 }
 
 func dbCreateNewNote(userID int, note *NewNote) (int, error) {
+	log.Verbosef("creating a new note '%s' for user %d\n", note.title, userID)
 	db := getDbMust()
 	tx, err := db.Begin()
 	if err != nil {
@@ -512,7 +513,7 @@ func dbUpdateNote2(noteID int, note *NewNote, markUpdated bool) (int, error) {
 		log.Errorf("res.LastInsertId() of versionId failed with %s\n", err)
 		return 0, err
 	}
-	log.Verbosef("inserting new version of note %d, new version id: %d\n", noteID, versionID)
+	log.Verbosef("inserted new version of note %d, new version id: %d\n", noteID, versionID)
 
 	//Maybe: could get versions_count as:
 	//q := `SELECT count(*) FROM versions WHERE note_id=?`
@@ -671,7 +672,7 @@ func timeBetween(t, start, end time.Time) bool {
 // create a new note. if note.createdAt is non-zero value, this is an import
 // of note from somewhere else, so we want to preserve createdAt value
 func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
-	//log.Verbosef("dbCreateOrUpdateNote\n")
+	log.Verbosef("dbCreateOrUpdateNote\n")
 	var err error
 	if len(note.content) == 0 {
 		return 0, errors.New("empty note content")
@@ -687,40 +688,42 @@ func dbCreateOrUpdateNote(userID int, note *NewNote) (int, error) {
 		return 0, err
 	}
 
+	defer clearCachedUserInfo(userID)
+
 	var noteID int
 	var existingNote *Note
 	if note.hashID == "" {
-		//log.Verbosef("dbCreateOrUpdateNote: creating a new note %d. exi\n")
+		log.Verbosef("dbCreateOrUpdateNote: creating a new note %d. exi\n")
 		noteID, err = dbCreateNewNote(userID, note)
 		note.hashID = hashInt(noteID)
-	} else {
-		noteID, err = dehashInt(note.hashID)
-		if err != nil {
-			return 0, err
-		}
-		existingNote, err = dbGetNoteByID(noteID)
-		if err != nil {
-			return 0, err
-		}
-		if existingNote.userID != userID {
-			return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
-		}
-
-		//log.Verbosef("dbCreateOrUpdateNote: updating existing note %d.\n", existingNote.HashID)
-
-		// when editing a note, we don't change starred status
-		note.isStarred = existingNote.IsStarred
-		// don't create new versions if not necessary
-		if !needsNewNoteVersion(note, existingNote) {
-			return noteID, nil
-		}
-		//log.Verbosef("dbCreateOrUpdateNote: updating existing note %d.\n", existingNote.HashID)
-		//log.Verbosef("dbCreateOrUpdateNote: existingNote createdAt: %s, updatedAt: %s.\n", existingNote.HashID, existingNote.CreatedAt.Format(time.RFC3339), existingNote.UpdatedAt.Format(time.RFC3339))
-		note.createdAt = existingNote.CreatedAt
-		noteID, err = dbUpdateNote2(noteID, note, true)
+		return noteID, err
 	}
 
-	clearCachedUserInfo(userID)
+	noteID, err = dehashInt(note.hashID)
+	if err != nil {
+		return 0, err
+	}
+	existingNote, err = dbGetNoteByID(noteID)
+	if err != nil {
+		return 0, err
+	}
+	if existingNote.userID != userID {
+		return 0, fmt.Errorf("user %d is trying to update note that belongs to user %d", userID, existingNote.userID)
+	}
+
+	log.Verbosef("dbCreateOrUpdateNote: updating existing note %d.\n", existingNote.HashID)
+
+	// when editing a note, we don't change starred status
+	note.isStarred = existingNote.IsStarred
+	// don't create new versions if not necessary
+	if !needsNewNoteVersion(note, existingNote) {
+		return noteID, nil
+	}
+	log.Verbosef("dbCreateOrUpdateNote: updating existing note %d.\n", existingNote.HashID)
+	log.Verbosef("dbCreateOrUpdateNote: existingNote createdAt: %s, updatedAt: %s.\n", existingNote.HashID, existingNote.CreatedAt.Format(time.RFC3339), existingNote.UpdatedAt.Format(time.RFC3339))
+	note.createdAt = existingNote.CreatedAt
+	noteID, err = dbUpdateNote2(noteID, note, true)
+
 	return noteID, err
 }
 
@@ -1134,6 +1137,7 @@ WHERE id=?`
 	}
 	n.Tags = deserializeTags(tagsSerialized)
 	n.SetCalculatedProperties()
+	log.Verbosef("note id: %d, CreatedAt: %s, UpdatedAt: %s\n", n.id, n.CreatedAt, n.UpdatedAt)
 	return &n, nil
 }
 
