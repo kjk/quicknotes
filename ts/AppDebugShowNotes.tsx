@@ -8,6 +8,7 @@ function repeatString(s: string, n: number) : string {
   let res = s;
   while (n > 1) {
     res = res + s;
+    n -= 1;
   }
   return res;
 }
