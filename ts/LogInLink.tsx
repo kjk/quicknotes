@@ -34,8 +34,16 @@ export class LogOut extends Component<any, any> {
         </a>
         <div className="dropdown-content">
           <a href={userUrl}>My notes</a>
-          {isDebug ? <a href="/dbg/shownotes" target="_blank"> Show Notes</a> : null}
-          {false ? <a href="#" onClick={showSettings}>Settings</a> : null}
+          {isDebug
+            ? <a href="/dbg/shownotes" target="_blank">
+                {' '}Show Notes
+              </a>
+            : null}
+          {false
+            ? <a href="#" onClick={showSettings}>
+                Settings
+              </a>
+            : null}
           {false ? <span className="divider" /> : null}
           <a href="/import" onClick={showImportSimpleNote}>
             Import from Simplenote
@@ -66,13 +74,19 @@ export class LogIn extends Component<any, any> {
         <div className="log-in-dropdown-content">
           <ul className="log-in">
             <li>
-              <a className="twitter" href={twitterUrl}>Sign in with Twitter</a>
+              <a className="twitter" href={twitterUrl}>
+                Sign in with Twitter
+              </a>
             </li>
             <li>
-              <a className="google" href={googleUrl}>Sign in with Google</a>
+              <a className="google" href={googleUrl}>
+                Sign in with Google
+              </a>
             </li>
             <li>
-              <a className="github" href={githubUrl}>Sign in with GitHub</a>
+              <a className="github" href={githubUrl}>
+                Sign in with GitHub
+              </a>
             </li>
           </ul>
         </div>

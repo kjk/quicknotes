@@ -198,7 +198,11 @@ export default class NoteView extends Component<Props, State> {
   renderTitle(note: Note) {
     const title = note.Title();
     if (title !== '') {
-      return <span className="note-title">{title}</span>;
+      return (
+        <span className="note-title">
+          {title}
+        </span>
+      );
     }
   }
 
@@ -212,7 +216,11 @@ export default class NoteView extends Component<Props, State> {
       );
     });
 
-    return <span className="note-tags">{tagEls}</span>;
+    return (
+      <span className="note-tags">
+        {tagEls}
+      </span>
+    );
   }
 
   renderPublicPrivate(note: Note) {
@@ -246,8 +254,7 @@ export default class NoteView extends Component<Props, State> {
         onClick={this.handleDelUndel}
         title="Move to Trash"
       >
-        delete
-        {' '}
+        delete{' '}
       </a>
     );
   }
@@ -296,7 +303,11 @@ export default class NoteView extends Component<Props, State> {
   }
 
   renderSize(note: Note) {
-    return <span className="note-size">{note.HumanSize()}</span>;
+    return (
+      <span className="note-size">
+        {note.HumanSize()}
+      </span>
+    );
   }
 
   renderMakePublicPrivate(note: Note) {
@@ -311,8 +322,7 @@ export default class NoteView extends Component<Props, State> {
           onClick={this.handleMakePublicPrivate}
           title="Make private"
         >
-          make private
-          {' '}
+          make private{' '}
         </a>
       );
     } else {
@@ -323,8 +333,7 @@ export default class NoteView extends Component<Props, State> {
           onClick={this.handleMakePublicPrivate}
           title="Make public"
         >
-          make public
-          {' '}
+          make public{' '}
         </a>
       );
     }

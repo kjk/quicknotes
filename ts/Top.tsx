@@ -123,7 +123,9 @@ export default class Top extends Component<Props, State> {
 
     return (
       <div id="header" className="flex-row">
-        <a id="logo" className="logo colored" href="/welcome">QuickNotes</a>
+        <a id="logo" className="logo colored" href="/welcome">
+          QuickNotes
+        </a>
         {userUrl
           ? <button
               className="btn btn-new-note hint--bottom"
@@ -147,7 +149,11 @@ export default class Top extends Component<Props, State> {
             />
           : null}
         <div className="flex-push-right" />
-        {userUrl ? <a href={userUrl} className="header-link">My Notes</a> : null}
+        {userUrl
+          ? <a href={userUrl} className="header-link">
+              My Notes
+            </a>
+          : null}
         {this.props.hideLogin ? null : <LogInLink />}
       </div>
     );

@@ -135,7 +135,9 @@ export default class SearchResults extends React.Component<Props, State> {
     }
     return (
       <div key={k} className={cls}>
-        <span className="line-no">{lineNo}</span>
+        <span className="line-no">
+          {lineNo}
+        </span>
         <span dangerouslySetInnerHTML={{ __html: i.HTML }} />
       </div>
     );

@@ -4,7 +4,7 @@ import * as api from './api';
 import { Note } from './Note';
 import filesize from 'filesize';
 
-function repeatString(s: string, n: number) : string {
+function repeatString(s: string, n: number): string {
   let res = s;
   while (n > 1) {
     res = res + s;
@@ -104,14 +104,30 @@ export default class AppDebugShowNotes extends Component<any, any> {
     const flagsStr = dec2bin(note.getFlags());
     return (
       <tr key={note.IDVer()}>
-        <td>{note.IDVer()}</td>
-        <td style={styleTitle}>{note.Title()}</td>
-        <td style={styleRightAlign}>{note.Size()}</td>
-        <td>{createdAt}</td>
-        <td>{updatedAt}</td>
-        <td>{tagsStr}</td>
-        <td>{stateStr}</td>
-        <td style={styleRightAlign}>{flagsStr}</td>
+        <td>
+          {note.IDVer()}
+        </td>
+        <td style={styleTitle}>
+          {note.Title()}
+        </td>
+        <td style={styleRightAlign}>
+          {note.Size()}
+        </td>
+        <td>
+          {createdAt}
+        </td>
+        <td>
+          {updatedAt}
+        </td>
+        <td>
+          {tagsStr}
+        </td>
+        <td>
+          {stateStr}
+        </td>
+        <td style={styleRightAlign}>
+          {flagsStr}
+        </td>
       </tr>
     );
   }
