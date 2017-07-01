@@ -33,7 +33,7 @@ body {
 
 body {
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, 'Segoe UI', Tahoma, Arial, sans-serif;
-  font-size: $font-size-main;
+  font-size: 14px;
 }
 
 th, td {
@@ -557,7 +557,7 @@ ul.log-in {
   left: 0; top: 46px; bottom: 0;
   overflow-y: auto;
   width: $sidebar-width;
-  font-size: $font-size-sidebar;
+  font-size: 12px;
   user-select: none;
 
   .tags-list + .tags-list {
