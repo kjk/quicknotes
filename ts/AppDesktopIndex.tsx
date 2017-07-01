@@ -20,13 +20,19 @@ class LogIn extends Component<any, any> {
       <div style={style}>
         <ul className="log-in">
           <li>
-            <a className="twitter" href={twitterUrl}>Sign in with Twitter</a>
+            <a className="twitter" href={twitterUrl}>
+              Sign in with Twitter
+            </a>
           </li>
           <li>
-            <a className="google" href={googleUrl}>Sign in with Google</a>
+            <a className="google" href={googleUrl}>
+              Sign in with Google
+            </a>
           </li>
           <li>
-            <a className="github" href={githubUrl}>Sign in with GitHub</a>
+            <a className="github" href={githubUrl}>
+              Sign in with GitHub
+            </a>
           </li>
         </ul>
       </div>

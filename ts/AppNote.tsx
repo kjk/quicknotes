@@ -264,7 +264,11 @@ export default class AppNote extends Component<Props, State> {
     if (note.IsDeleted()) {
       return;
     }
-    return <a href="#" onClick={this.handleEditNote}>Edit</a>;
+    return (
+      <a href="#" onClick={this.handleEditNote}>
+        Edit
+      </a>
+    );
   }
 
   renderVersions(note: any) {
@@ -306,7 +310,11 @@ export default class AppNote extends Component<Props, State> {
 
   renderPermanentDelete(note: any) {
     if (note.IsDeleted()) {
-      return <a href="#" onClick={this.handlePermanentDelete}>Delete permanently</a>;
+      return (
+        <a href="#" onClick={this.handlePermanentDelete}>
+          Delete permanently
+        </a>
+      );
     }
   }
 
@@ -330,10 +338,18 @@ export default class AppNote extends Component<Props, State> {
   renderTags(tags: any) {
     const tagEls = tags.map((tag: any) => {
       tag = '#' + tag;
-      return <span className="note-tag" key={tag}>{tag}</span>;
+      return (
+        <span className="note-tag" key={tag}>
+          {tag}
+        </span>
+      );
     });
 
-    return <span className="note-tags">{tagEls}</span>;
+    return (
+      <span className="note-tags">
+        {tagEls}
+      </span>
+    );
   }
 
   renderPublicPrivate(note: any) {
@@ -363,9 +379,7 @@ export default class AppNote extends Component<Props, State> {
         </div>
         <div id="full-note">
           <div className="note-content-wrapper">
-            <div className="note-deleted center">
-              This note has been permanently deleted.
-            </div>
+            <div className="note-deleted center">This note has been permanently deleted.</div>
           </div>
           <hr className="light" />
           <div className="note-footer center">
@@ -402,7 +416,9 @@ export default class AppNote extends Component<Props, State> {
         <div id="full-note">
           <div className="note-content-wrapper">
             <div className="full-note-top">
-              <h1>{title}</h1>
+              <h1>
+                {title}
+              </h1>
               {this.renderTags(tags)}
               {this.renderPublicPrivate(note)}
               {this.renderDeletedState(note)}

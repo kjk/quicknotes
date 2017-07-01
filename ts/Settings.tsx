@@ -119,12 +119,8 @@ export default class Settings extends React.Component<any, State> {
           {themes}
         </div>
         <div className="settings-buttons">
-          <button onClick={this.handleOk}>
-            Ok
-          </button>
-          <button onClick={this.handleCancel}>
-            Cancel
-          </button>
+          <button onClick={this.handleOk}>Ok</button>
+          <button onClick={this.handleCancel}>Cancel</button>
         </div>
       </div>
     );

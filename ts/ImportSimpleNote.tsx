@@ -238,9 +238,7 @@ export default class ImportSimpleNote extends React.Component<any, State> {
     return (
       <tr style={styleMarginTop}>
         <td>
-          <label htmlFor="password">
-            Password
-          </label>
+          <label htmlFor="password">Password</label>
         </td>
         <td>
           <input

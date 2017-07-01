@@ -39,7 +39,9 @@ export class TopIndex extends Component<any, any> {
 
     return (
       <div id="header" style={stHeader}>
-        <a id="logo" className="logo colored" href="/">QuickNotes</a>
+        <a id="logo" className="logo colored" href="/">
+          QuickNotes
+        </a>
         {userUrl
           ? <a href={userUrl} className="header-link" style={stHeaderLinks}>
               Your Notes
