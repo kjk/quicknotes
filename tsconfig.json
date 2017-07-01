@@ -13,17 +13,17 @@
         "target": "es6"
     },
     "include": [
-      "ts/**/*",
-      "typings/index.d.ts"
+      "ts/**/*"
     ],
     "exclude": [
-      "ansible",
+      ".vscode",
       "cmd",
       "data",
       "node_modules",
-      "static",
-      "sass",
+      "pkg",
       "s",
+      "sass",
+      "static",
       "tools",
       "tsbuild"
     ]
