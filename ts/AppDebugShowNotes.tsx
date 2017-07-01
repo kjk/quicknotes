@@ -2,12 +2,47 @@ import React, { Component } from 'react';
 import * as ReactDOM from 'react-dom';
 import * as api from './api';
 import { Note } from './Note';
-import moment, * as moments from 'moment';
 import filesize from 'filesize';
 
-function fmtDate(date: Date) {
-  const m = moment(date);
-  return m.format('YY-MM-DD hh:mm:ss');
+function repeatString(s: string, n: number) : string {
+  let res = s;
+  while (n > 1) {
+    res = res + s;
+  }
+  return res;
+}
+
+function pad(str: string | number, num: number, ch: number | string) {
+  str = str.toString();
+
+  if (typeof num === 'undefined') {
+    return str;
+  }
+
+  if (ch === 0) {
+    ch = '0';
+  } else if (ch) {
+    ch = ch.toString();
+  } else {
+    ch = ' ';
+  }
+
+  return repeatString(ch, num - str.length) + str;
+}
+
+// based on https://github.com/hellopao/mini-moment/blob/master/src/index.ts#L121
+function fmtDate(date: Date, formats?: string): string {
+  formats = formats || 'YY-MM-DD hh:mm:ss';
+
+  return formats
+    .replace(/[yY]{4}/, date.getFullYear().toString())
+    .replace(/[yY]{2}/, date.getFullYear().toString().substr(2, 2))
+    .replace(/M{2}/, pad(date.getMonth() + 1, 2, '0'))
+    .replace(/d{2}/, pad(date.getDate(), 2, '0'))
+    .replace(/h{2}/, pad(date.getHours(), 2, '0'))
+    .replace(/m{2}/, pad(date.getMinutes(), 2, '0'))
+    .replace(/s{2}/, pad(date.getSeconds(), 2, '0'))
+    .replace(/S{3}/, pad(date.getMilliseconds(), 3, '0'));
 }
 
 function dec2bin(n: number): string {
