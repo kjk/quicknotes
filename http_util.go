@@ -129,7 +129,6 @@ func ipAddrFromRemoteAddr(s string) string {
 	return s[:idx]
 }
 
-// TODO: also handle Forwarded (https://en.wikipedia.org/wiki/X-Forwarded-For)
 func getIPAddress(r *http.Request) string {
 	hdr := r.Header
 	hdrRealIP := hdr.Get("X-Real-Ip")
