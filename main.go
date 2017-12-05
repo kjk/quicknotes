@@ -189,7 +189,7 @@ func openLogFilesMust() {
 func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration) {
 	t := time.Now().Unix()
 	uri := r.URL.String()
-	ip := getIPAddress(r)
+	ip := u.RequestGetIPAddress(r)
 	referer := getReferer(r)
 	rec := []string{
 		strconv.FormatInt(t, 10), // 0
@@ -259,7 +259,6 @@ func main() {
 	var err error
 	parseFlags()
 	log.LogToStdout = true
-
 	if flgVerbose {
 		log.IncVerbosity()
 	}
