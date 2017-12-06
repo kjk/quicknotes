@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	simplenoteAPIKey = "b6550d1ac75048988d9007aeae5dda6b"
+	simplenoteAPIKey = ""
 )
 
 var (
