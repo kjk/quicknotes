@@ -210,11 +210,6 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 func dailyTasksLoop() {
 	buildPublicNotesIndex()
 
-	// things we do at application start
-	if flgProduction {
-		sendBootMail()
-	}
-
 	// tasks we run once a day at 1 am
 	for {
 		nowUTC := time.Now().UTC()
@@ -231,7 +226,6 @@ func dailyTasksLoop() {
 		timeStr := time.Now().Format("2006-01-02 15:04:05")
 		log.Infof("executing daily tasks at %s\n", timeStr)
 		buildPublicNotesIndex()
-		sendStatsMail()
 	}
 }
 
