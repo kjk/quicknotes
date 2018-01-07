@@ -11,3 +11,4 @@ typings/
 tsbuild/
 .vscode/
 vendor/
+credentials.json
