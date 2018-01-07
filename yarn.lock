@@ -33,7 +33,7 @@
   version "3.2.15"
   resolved "https://registry.yarnpkg.com/@types/filesize/-/filesize-3.2.15.tgz#a97325f27a5ff7974c7cbd7afa244b8a7affe668"
 
-"@types/highlight.js@^9.12.2":
+"@types/highlight.js@9.12.2":
   version "9.12.2"
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.2.tgz#6ee7cd395effe5ec80b515d3ff1699068cd0cd1d"
 
@@ -61,7 +61,7 @@
   version "15.0.26"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.26.tgz#19d8969edcabb2aa6d10ccfba807e67a93a0a8f4"
 
-"@types/showdown@^1.7.2":
+"@types/showdown@1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@types/showdown/-/showdown-1.7.2.tgz#6b320610c772ce6f053b6deeccd1b0af8366d19f"
 
@@ -5083,7 +5083,7 @@ shell-quote@^1.6.1:
     array-reduce "~0.0.0"
     jsonify "~0.0.0"
 
-showdown@^1.8.6:
+showdown@1.8.6:
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/showdown/-/showdown-1.8.6.tgz#91ea4ee3b7a5448aaca6820a4e27e690c6ad771c"
   dependencies:
@@ -5591,7 +5591,7 @@ tslib@^1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.8.1.tgz#6946af2d1d651a7b1863b531d6e5afa41aa44eac"
 
-tslint@^5.8.0:
+tslint@5.8.0:
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.8.0.tgz#1f49ad5b2e77c76c3af4ddcae552ae4e3612eb13"
   dependencies:
@@ -5635,9 +5635,9 @@ typedarray@^0.0.6, typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
+typescript@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
 
 ua-parser-js@^0.7.9:
   version "0.7.12"

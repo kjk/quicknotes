@@ -49,7 +49,7 @@
         "through2": "2.0.3",
         "tsify": "3.0.4",
         "tslint": "5.8.0",
-        "typescript": "2.4.1",
+        "typescript": "2.6.2",
         "vinyl-buffer": "1.0.1",
         "vinyl-source-stream": "2.0.0",
         "webpack": "3.10.0",
