@@ -6,7 +6,7 @@
     },
     "dependencies": {
         "babel-polyfill": "6.26.0",
-        "codemirror": "5.27.4",
+        "codemirror": "5.33.0",
         "filesize": "3.5.11",
         "highlight.js": "9.12.0",
         "keymaster": "1.6.2",
@@ -17,7 +17,7 @@
         "showdown": "1.7.1"
     },
     "devDependencies": {
-        "@types/codemirror": "0.0.41",
+        "@types/codemirror": "0.0.55",
         "@types/filesize": "3.2.15",
         "@types/highlight.js": "9.1.9",
         "@types/keymaster": "1.6.28",

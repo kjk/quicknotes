@@ -19,9 +19,9 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
-"@types/codemirror@0.0.41":
-  version "0.0.41"
-  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.41.tgz#249937651ccb8a0292186546f23df507749d59ce"
+"@types/codemirror@^0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.55.tgz#f4292b7a5f33b2aab509501c3db7e45d19a7c057"
 
 "@types/filesize@3.2.15":
   version "3.2.15"
@@ -41,7 +41,7 @@
   dependencies:
     localforage "*"
 
-"@types/page@^1.5.32":
+"@types/page@1.5.32":
   version "1.5.32"
   resolved "https://registry.yarnpkg.com/@types/page/-/page-1.5.32.tgz#31b3796a2e279b1cad7a1fd99b7361692a1a0307"
 
@@ -1340,9 +1340,9 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-codemirror@5.27.4:
-  version "5.27.4"
-  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.27.4.tgz#0e817c839bfea9959dd16cd48ae14acc0e43c3b6"
+codemirror@^5.33.0:
+  version "5.33.0"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.33.0.tgz#462ad9a6fe8d38b541a9536a3997e1ef93b40c6a"
 
 collection-visit@^0.2.1:
   version "0.2.3"
@@ -2006,7 +2006,7 @@ execa@^0.8.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
-exorcist@^1.0.0:
+exorcist@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/exorcist/-/exorcist-1.0.0.tgz#ac16ca162a0c55adee24b601f8b0e6e77bf34e8b"
   dependencies:
@@ -2535,7 +2535,7 @@ gulp-debug@3.2.0:
     through2 "^2.0.0"
     tildify "^1.1.2"
 
-gulp-mocha@^5.0.0:
+gulp-mocha@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/gulp-mocha/-/gulp-mocha-5.0.0.tgz#ed70ebd5fadae6c98d87af13dbbad5a602e217b2"
   dependencies:
@@ -3319,7 +3319,7 @@ localforage@*:
   dependencies:
     lie "3.0.2"
 
-localforage@^1.5.5:
+localforage@1.5.5:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.5.5.tgz#55fc1c3a88a47f67f5fac6f1231b25ff13556423"
   dependencies:
@@ -3692,7 +3692,7 @@ mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-mocha@^4.1.0:
+mocha@4.1.0, mocha@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-4.1.0.tgz#7d86cfbcf35cb829e2754c32e17355ec05338794"
   dependencies:
@@ -4459,7 +4459,7 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-prettier@^1.9.2:
+prettier@1.9.2:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.9.2.tgz#96bc2132f7a32338e6078aeb29727178c6335827"
 
@@ -5458,7 +5458,7 @@ tsconfig@^5.0.3:
     strip-bom "^2.0.0"
     strip-json-comments "^2.0.0"
 
-tsify@^3.0.4:
+tsify@3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/tsify/-/tsify-3.0.4.tgz#3c862c934aeeff705290de9ad2af8d197ac5bb03"
   dependencies:
