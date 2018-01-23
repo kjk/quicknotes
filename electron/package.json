@@ -28,9 +28,9 @@
     }
   },
   "devDependencies": {
-    "aws-sdk": "2.76.0",
-    "electron": "1.6.11",
-    "electron-builder": "19.7.1"
+    "aws-sdk": "2.186.0",
+    "electron": "1.7.11",
+    "electron-builder": "19.54.0"
   },
   "dependencies": {
     "electron-positioner": "3.0.0",
