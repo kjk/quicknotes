@@ -575,7 +575,7 @@ func handleDebug(w http.ResponseWriter, r *http.Request) {
 	}
 	a = append(a, s)
 
-	s = fmt.Sprintf("RemoteAddr: %s", u.RequestGetIPAddress(r))
+	s = fmt.Sprintf("RemoteAddr: %s", u.RequestGetRemoteAddress(r))
 	a = append(a, s)
 
 	a = append(a, "Headers:")

@@ -104,9 +104,7 @@ func initHashID() {
 	hd := hashids.NewData()
 	hd.Salt = "bo-&)()(*&tamalola"
 	hd.MinLength = 4
-	var err error
-	hashID, err = hashids.NewWithData(hd)
-	u.PanicIfErr(err)
+	hashID = hashids.NewWithData(hd)
 }
 
 func hashInt(n int) string {
