@@ -1,82 +1,37 @@
-
-## Gopkg.toml example (these lines may be deleted)
-
-## "metadata" defines metadata about the project that could be used by other independent
-## systems. The metadata defined here will be ignored by dep.
-# [metadata]
-# key1 = "value that convey data to other systems"
-# system1-data = "value that is used by a system"
-# system2-data = "value that is used by another system"
-
-## "required" lists a set of packages (not projects) that must be included in
-## Gopkg.lock. This list is merged with the set of packages imported by the current
-## project. Use it when your project needs a package it doesn't explicitly import -
-## including "main" packages.
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
 # required = ["github.com/user/thing/cmd/thing"]
-
-## "ignored" lists a set of packages (not projects) that are ignored when
-## dep statically analyzes source code. Ignored packages can be in this project,
-## or in a dependency.
-# ignored = ["github.com/user/project/badpkg"]
-
-## Constraints are rules for how directly imported projects
-## may be incorporated into the depgraph. They are respected by
-## dep whether coming from the Gopkg.toml of the current project or a dependency.
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
 # [[constraint]]
-## Required: the root import path of the project being constrained.
-# name = "github.com/user/project"
+#   name = "github.com/user/project"
+#   version = "1.0.0"
 #
-## Recommended: the version constraint to enforce for the project.
-## Only one of "branch", "version" or "revision" can be specified.
-# version = "1.0.0"
-# branch = "master"
-# revision = "abc123"
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
 #
-## Optional: an alternate location (URL or import path) for the project's source.
-# source = "https://github.com/myfork/package.git"
-#
-## "metadata" defines metadata about the dependency or override that could be used
-## by other independent systems. The metadata defined here will be ignored by dep.
-# [metadata]
-# key1 = "value that convey data to other systems"
-# system1-data = "value that is used by a system"
-# system2-data = "value that is used by another system"
-
-## Overrides have the same structure as [[constraint]], but supersede all
-## [[constraint]] declarations from all projects. Only [[override]] from
-## the current project's are applied.
-##
-## Overrides are a sledgehammer. Use them only as a last resort.
 # [[override]]
-## Required: the root import path of the project being constrained.
-# name = "github.com/user/project"
+#   name = "github.com/x/y"
+#   version = "2.4.0"
 #
-## Optional: specifying a version constraint override will cause all other
-## constraints on this project to be ignored; only the overridden constraint
-## need be satisfied.
-## Again, only one of "branch", "version" or "revision" can be specified.
-# version = "1.0.0"
-# branch = "master"
-# revision = "abc123"
-#
-## Optional: specifying an alternate source location as an override will
-## enforce that the alternate location is used for that project, regardless of
-## what source location any dependent projects specify.
-# source = "https://github.com/myfork/package.git"
-
+# [prune]
+#   non-go = false
+#   go-tests = true
+#   unused-packages = true
 
 
 [[constraint]]
   name = "cloud.google.com/go"
-  version = "0.7.0"
+  version = "0.18.0"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/SparkPost/gosparkpost"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/aws/aws-sdk-go"
+  version = "1.12.70"
 
 [[constraint]]
   branch = "master"
@@ -87,28 +42,20 @@
   name = "github.com/garyburd/go-oauth"
 
 [[constraint]]
-  name = "github.com/go-ini/ini"
-  version = "1.28.0"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/go-sql-driver/mysql"
+  version = "1.3.0"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/google/go-github"
+  version = "15.0.0"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/gorilla/securecookie"
+  version = "1.1.0"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/gorilla/websocket"
-
-[[constraint]]
-  name = "github.com/jmespath/go-jmespath"
-  version = "0.2.2"
+  version = "1.2.0"
 
 [[constraint]]
   branch = "master"
@@ -127,8 +74,8 @@
   name = "github.com/kjk/u"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/speps/go-hashids"
+  version = "1.0.0"
 
 [[constraint]]
   branch = "master"
@@ -143,5 +90,9 @@
   name = "golang.org/x/oauth2"
 
 [[constraint]]
+  branch = "master"
   name = "google.golang.org/api"
-  revision = "8e09a3d939255ba9bfb76049b7cc413740986c03"
+
+[prune]
+  go-tests = true
+  unused-packages = true
