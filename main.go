@@ -333,6 +333,7 @@ func main() {
 
 	var wg sync.WaitGroup
 	var httpsSrv *http.Server
+	var m *autocert.Manager
 
 	if flgProduction {
 		hostPolicy := func(ctx context.Context, host string) error {
@@ -343,7 +344,7 @@ func main() {
 			return fmt.Errorf("acme/autocert: only *.%s hosts are allowed", allowedDomain)
 		}
 
-		m := autocert.Manager{
+		m = &autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
 			HostPolicy: hostPolicy,
 			Cache:      autocert.DirCache(getDataDir()),
@@ -376,6 +377,9 @@ func main() {
 		httpSrv = makeHTTPToHTTPSRedirectServer()
 	} else {
 		httpSrv = makeHTTPServer()
+	}
+	if m != nil {
+		httpSrv.Handler = m.HTTPHandler(httpSrv.Handler)
 	}
 	httpSrv.Addr = flgHTTPAddr
 
