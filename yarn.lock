@@ -2648,13 +2648,14 @@ gulp-cssnano@2.1.2:
     object-assign "^4.0.1"
     vinyl-sourcemaps-apply "^0.2.1"
 
-gulp-debug@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/gulp-debug/-/gulp-debug-3.2.0.tgz#45aba4439fa79fe0788f6a411ee0778f4492dfa5"
+gulp-debug@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-debug/-/gulp-debug-4.0.0.tgz#036f9539c3fb6af720e01a9ea5c195fc73f29d5b"
+  integrity sha512-cn/GhMD2nVZCVxAl5vWao4/dcoZ8wUJ8w3oqTvQaGDmC1vT7swNOEbhQTWJp+/otKePT64aENcqAQXDcdj5H1g==
   dependencies:
     chalk "^2.3.0"
     fancy-log "^1.3.2"
-    plur "^2.0.0"
+    plur "^3.0.0"
     stringify-object "^3.0.0"
     through2 "^2.0.0"
     tildify "^1.1.2"
@@ -2997,9 +2998,10 @@ invert-kv@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
 
-irregular-plurals@^1.0.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/irregular-plurals/-/irregular-plurals-1.2.0.tgz#38f299834ba8c00c30be9c554e137269752ff3ac"
+irregular-plurals@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/irregular-plurals/-/irregular-plurals-2.0.0.tgz#39d40f05b00f656d0b7fa471230dd3b714af2872"
+  integrity sha512-Y75zBYLkh0lJ9qxeHlMjQ7bSbyiSqNW/UOPWDmzC7cXskL1hekSITh1Oc6JV0XCWWZ9DE8VYSB71xocLk3gmGw==
 
 is-absolute-url@^2.0.0:
   version "2.0.0"
@@ -4405,11 +4407,12 @@ plugin-error@^1.0.1:
     arr-union "^3.1.0"
     extend-shallow "^3.0.2"
 
-plur@^2.0.0:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/plur/-/plur-2.1.2.tgz#7482452c1a0f508e3e344eaec312c91c29dc655a"
+plur@^3.0.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/plur/-/plur-3.1.1.tgz#60267967866a8d811504fe58f2faaba237546a5b"
+  integrity sha512-t1Ax8KUvV3FFII8ltczPn2tJdjqbd1sIzu6t4JL7nQ3EyeL/lTrj5PWKb06ic5/6XYDr65rQ4uzQEGN70/6X5w==
   dependencies:
-    irregular-plurals "^1.0.0"
+    irregular-plurals "^2.0.0"
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
