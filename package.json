@@ -10,11 +10,11 @@
         "filesize": "4.2.0",
         "highlight.js": "9.15.10",
         "keymaster": "1.6.2",
-        "localforage": "1.5.6",
+        "localforage": "1.7.3",
         "page": "1.11.4",
         "react": "16.2.0",
         "react-dom": "16.2.0",
-        "showdown": "1.8.6"
+        "showdown": "1.9.0"
     },
     "devDependencies": {
         "@types/codemirror": "0.0.55",
