@@ -21,7 +21,8 @@ const styleMarginTop = {
 };
 
 const styleSpinner = {
-  textAlign: 'center',
+  // TODO: fix this
+  // textAlign: 'center',
   fontSize: 19,
   paddingTop: 4,
   paddingBottom: 3,

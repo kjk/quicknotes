@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import * as api from './api';
 import { Note } from './Note';
 import filesize from 'filesize';
+import * as CSS from 'csstype'
 
 function repeatString(s: string, n: number): string {
   let res = s;
@@ -50,8 +51,10 @@ function dec2bin(n: number): string {
   return n.toString(2);
 }
 
+let right: CSS.TextAlignProperty = 'right';
+
 const styleRightAlign = {
-  textAlign: 'right',
+  textAlign: right,
 };
 
 export default class AppDebugShowNotes extends Component<any, any> {

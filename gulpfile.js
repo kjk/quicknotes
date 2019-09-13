@@ -2,7 +2,6 @@ var argv = require("yargs").argv;
 var babelify = require("babelify");
 var browserify = require("browserify");
 var buffer = require("vinyl-buffer");
-var cssnano = require("gulp-cssnano");
 var exorcist = require("exorcist");
 var gulp = require("gulp");
 var prefix = require("gulp-autoprefixer");
@@ -18,7 +17,6 @@ var showDeps = (argv.show_deps || argv["show-deps"]) !== undefined;
 require("babel-register");
 
 var babelifyOpts = {
-  presets: ["es2015", "react"],
   extensions: [".tsx", ".ts", ".js", ".jsx"]
 };
 
@@ -128,7 +126,6 @@ function cssprod(cb) {
     .src("./sass/main.scss")
     .pipe(sass().on("error", sass.logError))
     .pipe(prefix("last 2 versions"))
-    .pipe(cssnano())
     .pipe(gulp.dest("./static/dist/"));
   cb();
 }

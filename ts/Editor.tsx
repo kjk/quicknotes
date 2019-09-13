@@ -951,7 +951,8 @@ export default class Editor extends Component<any, State> {
       return;
     }
 
-    const h = node.clientHeight;
+    const typedNode = node as HTMLTextAreaElement;
+    const h = typedNode.clientHeight;
     //console.log('h=', h);
 
     const els = document.getElementsByClassName('codemirror-div');
