@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import * as ReactDOM from 'react-dom';
 import * as api from './api';
 import { Note } from './Note';
 import filesize from 'filesize';
-import * as CSS from 'csstype'
 
 function repeatString(s: string, n: number): string {
   let res = s;

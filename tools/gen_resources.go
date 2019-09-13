@@ -139,9 +139,9 @@ func gzipFileMust(path string) []byte {
 }
 
 func brotliFileMust(path string) []byte {
-	cmd := exec.Command("bro", "--quality", "11", "--input", path)
+	cmd := exec.Command("brotli", "-q", "11", "-c", path)
 	d := getCmdOut(cmd)
-	fatalif(len(d) == 0, "bro returned 0 bytes")
+	fatalif(len(d) == 0, "brotli returned 0 bytes")
 	return d
 }
 
@@ -153,9 +153,9 @@ func checkZopfliInstalled() {
 }
 
 func checkBrotliInstalled() {
-	_, err := exec.LookPath("bro")
+	_, err := exec.LookPath("brotli")
 	if err != nil {
-		fmt.Printf("'bro' doesn't seem to be installed. Use 'brew install brotli' on mac\n")
+		fmt.Printf("'brotli' doesn't seem to be installed. Use 'brew install brotli' on mac\n")
 	}
 }
 
