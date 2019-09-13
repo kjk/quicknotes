@@ -28,12 +28,12 @@
     }
   },
   "devDependencies": {
-    "aws-sdk": "2.186.0",
-    "electron": "1.7.11",
-    "electron-builder": "19.54.0"
+    "aws-sdk": "2.528.0",
+    "electron": "6.0.9",
+    "electron-builder": "21.2.0"
   },
   "dependencies": {
-    "electron-positioner": "3.0.0",
-    "electron-window-state": "4.1.1"
+    "electron-positioner": "4.1.0",
+    "electron-window-state": "5.0.3"
   }
 }
