@@ -51,10 +51,8 @@ function dec2bin(n: number): string {
   return n.toString(2);
 }
 
-let right: CSS.TextAlignProperty = 'right';
-
-const styleRightAlign = {
-  textAlign: right,
+const styleRightAlign: React.CSSProperties = {
+  textAlign: 'right',
 };
 
 export default class AppDebugShowNotes extends Component<any, any> {

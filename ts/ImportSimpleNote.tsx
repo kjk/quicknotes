@@ -2,27 +2,26 @@ import React from 'react';
 import * as action from './action';
 import * as api from './api';
 
-const style100 = {
+const style100: React.CSSProperties = {
   width: '100%',
 };
 
-const styleTable = {
+const styleTable: React.CSSProperties = {
   minWidth: 480,
   marginLeft: 'auto',
   marginRight: 'auto',
 };
 
-const stylePadRight = {
+const stylePadRight: React.CSSProperties = {
   paddingRight: 8,
 };
 
-const styleMarginTop = {
+const styleMarginTop: React.CSSProperties = {
   marginTop: 8,
 };
 
-const styleSpinner = {
-  // TODO: fix this
-  // textAlign: 'center',
+const styleSpinner: React.CSSProperties = {
+  textAlign: 'center',
   fontSize: 19,
   paddingTop: 4,
   paddingBottom: 3,
