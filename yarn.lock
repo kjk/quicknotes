@@ -70,9 +70,10 @@
   version "16.0.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.34.tgz#7a8f795afd8a404a9c4af9539b24c75d3996914e"
 
-"@types/showdown@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@types/showdown/-/showdown-1.7.2.tgz#6b320610c772ce6f053b6deeccd1b0af8366d19f"
+"@types/showdown@1.9.3":
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/@types/showdown/-/showdown-1.9.3.tgz#eaa881b03a32d3720184731754d3025fc450b970"
+  integrity sha512-akvzSmrvY4J5d3tHzUUiQr0xpjd4Nb3uzWW6dtwzYJ+qW/KdWw5F8NLatnor5q/1LURHnzDA1ReEwCVqcatRnw==
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
