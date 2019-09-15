@@ -11,10 +11,6 @@ go run tools/gen_resources.go
 
 go build -race -o quicknotes_prod -ldflags "-X main.sha1ver=`git rev-parse HEAD`"
 
-IFS=\; read -a ip_port <<<"`./s/start_docker.py`"
-ip="${ip_port[0]}"
-port="${ip_port[1]}"
-
-echo "starting quicknotes, using mysql from docker"
-./quicknotes_prod -verbose -use-resources-zip -db-host ${ip} -db-port ${port} $@ || true
+echo "starting quicknotes"
+./quicknotes_prod -verbose -use-resources-zip $@ || true
 rm ./quicknotes_prod

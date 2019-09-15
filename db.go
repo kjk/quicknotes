@@ -60,25 +60,8 @@ func init() {
 }
 
 func getSQLConnection() string {
-	host := flgDbHost
-	port := flgDbPort
-	if flgProduction {
-		// private ip address
-		host = "10.138.224.27"
-		port = "3306"
-	} else if flgProdDb {
-		// public ip address
-		host = "138.68.237.61"
-		port = "3306"
-	}
-	conn := fmt.Sprintf("quicknotes:R4ISoyZ2Vj8i@tcp(%s:%s)", host, port)
-	return conn + "/quicknotes?parseTime=true"
-}
-
-// like getSQLConnection() but without the password
-func getSQLConnectionSanitized() string {
-	s := getSQLConnection()
-	return strings.Replace(s, "R4ISoyZ2Vj8i", "*", -1)
+	panic("TOREMOVE")
+	return ""
 }
 
 func isValidFormat(s string) bool {

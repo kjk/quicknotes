@@ -33,9 +33,6 @@ var (
 	flgProduction          bool
 	flgUseResourcesZip     bool
 	flgVerbose             bool
-	flgProdDb              bool // if true, use gce db when running localy
-	flgDbHost              string
-	flgDbPort              string
 	flgImportJSONUserLogin string
 	flgImportJSONFile      string
 	flgSearchTerm          string
@@ -114,15 +111,12 @@ func pathForFileInCache(path string) string {
 }
 
 func parseFlags() {
-	flag.BoolVar(&flgProdDb, "proddb", false, "use production database when running locally")
 	flag.BoolVar(&flgImportStackOverflow, "import-stack-overflow", false, "import stack overflow data")
 	flag.StringVar(&flgImportJSONFile, "import-json", "", "name of .json or .json.bz2 files from which to import notes; also must spcecify -import-user")
 	flag.StringVar(&flgImportJSONUserLogin, "import-user", "", "handle of the user (users.login) for which to import notes e.g. twitter:kjk")
 	flag.BoolVar(&flgListUsers, "list-users", false, "list handles of users in the db")
 	flag.StringVar(&flgSearchTerm, "search", "", "search notes for a given term")
 	flag.StringVar(&flgSearchLocalTerm, "search-local", "", "search local notes for a given term")
-	flag.StringVar(&flgDbHost, "db-host", "127.0.0.1", "database host")
-	flag.StringVar(&flgDbPort, "db-port", "3306", "database port")
 	flag.BoolVar(&flgVerbose, "verbose", false, "enable verbose logging")
 	flag.StringVar(&flgShowNote, "show-note", "", "show a note with a given hashed id")
 	flag.BoolVar(&flgProduction, "production", false, "running in production")
@@ -138,7 +132,7 @@ func parseFlags() {
 
 	// in production or in cowboy mode we save notes to google storage as well
 	// TODO: maybe to it always?
-	onlyLocalStorage = !(flgProduction || flgProdDb)
+	onlyLocalStorage = !flgProduction
 }
 
 func runGulpAndWaitExit() {
@@ -192,7 +186,7 @@ func logHTTP(r *http.Request, code, nBytesWritten, userID int, dur time.Duration
 	ip := u.RequestGetRemoteAddress(r)
 	referer := getReferer(r)
 	rec := []string{
-		strconv.FormatInt(t, 10), // 0
+		strconv.FormatInt(t, 10),          // 0
 		uri,                               // 1
 		ip,                                // 2
 		referer,                           // 3
@@ -263,7 +257,7 @@ func main() {
 	verifyDirs()
 	openLogFilesMust()
 
-	log.Infof("production: %v, proddb: %v, sql connection: %s, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, flgProdDb, getSQLConnectionSanitized(), getDataDir(), flgHTTPAddr, flgVerbose)
+	log.Infof("production: %v, data dir: %s, httpAddr: %s, verbose: %v\n", flgProduction, getDataDir(), flgHTTPAddr, flgVerbose)
 
 	if flgSearchLocalTerm != "" {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)
