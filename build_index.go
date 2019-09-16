@@ -86,95 +86,97 @@ func buildNotesIndexPage(nNotes, nPages, pageNo int, notes []NoteIndex) error {
 func buildPublicNotesIndex() error {
 	log.Verbosef("buildPublicNotesIndex\n")
 
-	buildIndexMu.Lock()
-	defer buildIndexMu.Unlock()
+	/*
+	   	buildIndexMu.Lock()
+	   	defer buildIndexMu.Unlock()
 
-	timeStart := time.Now()
-	deleteIndexPages()
-	pageNo := 1
-	nNotes := 0
-	db := getDbMust()
+	   	timeStart := time.Now()
+	   	deleteIndexPages()
+	   	pageNo := 1
+	   	nNotes := 0
+	   	db := getDbMust()
 
-	q := `
-SELECT count(*)
-FROM notes
-WHERE is_public = true AND is_deleted = false AND is_encrypted = false`
+	   	q := `
+	   SELECT count(*)
+	   FROM notes
+	   WHERE is_public = true AND is_deleted = false AND is_encrypted = false`
 
-	err := db.QueryRow(q).Scan(&nNotes)
-	if err != nil {
-		log.Errorf("row.Scan() for '%s' failed with '%s'\n", q, err)
-		return err
-	}
+	   	err := db.QueryRow(q).Scan(&nNotes)
+	   	if err != nil {
+	   		log.Errorf("row.Scan() for '%s' failed with '%s'\n", q, err)
+	   		return err
+	   	}
 
-	nPages := nNotes / nNotesPerPage
-	if nNotes%nNotesPerPage != 0 {
-		nPages++
-	}
+	   	nPages := nNotes / nNotesPerPage
+	   	if nNotes%nNotesPerPage != 0 {
+	   		nPages++
+	   	}
 
-	q = `
-SELECT
-  id,
-  user_id,
-  created_at,
-  title
-FROM notes
-WHERE is_public = true AND is_deleted = false AND is_encrypted = false
-ORDER BY created_at DESC`
-	rows, err := db.Query(q)
-	if err != nil {
-		log.Errorf("db.Query('%s') failed with '%s'\n", q, err)
-		return err
-	}
-	defer rows.Close()
-	var notes []NoteIndex
-	for rows.Next() {
-		var noteID int
-		var userID int
-		var createdAt time.Time
-		var title string
-		err = rows.Scan(
-			&noteID,
-			&userID,
-			&createdAt,
-			&title)
-		if err != nil {
-			return err
-		}
-		url := "/n/" + hashInt(noteID)
-		if title == "" {
-			title = hashInt(noteID)
-		} else {
-			url = url + "-" + title
-		}
-		userInfo, err := getCachedUserInfo(userID)
-		creator := "unknown"
-		if userInfo != nil {
-			creator = userInfo.user.GetHandle()
-		}
-		notes = append(notes, NoteIndex{
-			URL:             url,
-			Title:           title,
-			Creator:         creator,
-			CreatedAt:       createdAt,
-			CreatedAtString: createdAt.Format("2006-01-02"),
-		})
-		if len(notes) == nNotesPerPage {
-			err = buildNotesIndexPage(nNotes, nPages, pageNo, notes)
-			if err != nil {
-				log.Errorf("buildNotesIndexPage() failed with '%s'\n", err)
-				return err
-			}
-			pageNo++
-			notes = nil
-		}
-		nNotes++
-	}
-	err = buildNotesIndexPage(nNotes, nPages, pageNo, notes)
-	if err != nil {
-		log.Errorf("buildNotesIndexPage() failed with '%s'\n", err)
-		return err
-	}
-	dur := time.Since(timeStart)
-	log.Verbosef("buildPublicNotesIndex, %d notes, %d pages, took %s\n", nNotes, pageNo, dur)
+	   	q = `
+	   SELECT
+	     id,
+	     user_id,
+	     created_at,
+	     title
+	   FROM notes
+	   WHERE is_public = true AND is_deleted = false AND is_encrypted = false
+	   ORDER BY created_at DESC`
+	   	rows, err := db.Query(q)
+	   	if err != nil {
+	   		log.Errorf("db.Query('%s') failed with '%s'\n", q, err)
+	   		return err
+	   	}
+	   	defer rows.Close()
+	   	var notes []NoteIndex
+	   	for rows.Next() {
+	   		var noteID int
+	   		var userID int
+	   		var createdAt time.Time
+	   		var title string
+	   		err = rows.Scan(
+	   			&noteID,
+	   			&userID,
+	   			&createdAt,
+	   			&title)
+	   		if err != nil {
+	   			return err
+	   		}
+	   		url := "/n/" + hashInt(noteID)
+	   		if title == "" {
+	   			title = hashInt(noteID)
+	   		} else {
+	   			url = url + "-" + title
+	   		}
+	   		userInfo, err := getCachedUserInfo(userID)
+	   		creator := "unknown"
+	   		if userInfo != nil {
+	   			creator = userInfo.user.GetHandle()
+	   		}
+	   		notes = append(notes, NoteIndex{
+	   			URL:             url,
+	   			Title:           title,
+	   			Creator:         creator,
+	   			CreatedAt:       createdAt,
+	   			CreatedAtString: createdAt.Format("2006-01-02"),
+	   		})
+	   		if len(notes) == nNotesPerPage {
+	   			err = buildNotesIndexPage(nNotes, nPages, pageNo, notes)
+	   			if err != nil {
+	   				log.Errorf("buildNotesIndexPage() failed with '%s'\n", err)
+	   				return err
+	   			}
+	   			pageNo++
+	   			notes = nil
+	   		}
+	   		nNotes++
+	   	}
+	   	err = buildNotesIndexPage(nNotes, nPages, pageNo, notes)
+	   	if err != nil {
+	   		log.Errorf("buildNotesIndexPage() failed with '%s'\n", err)
+	   		return err
+	   	}
+	   	dur := time.Since(timeStart)
+	   	log.Verbosef("buildPublicNotesIndex, %d notes, %d pages, took %s\n", nNotes, pageNo, dur)
+	*/
 	return nil
 }

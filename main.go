@@ -252,7 +252,6 @@ func main() {
 	}
 
 	initCookieMust()
-	initHashID()
 
 	verifyDirs()
 	openLogFilesMust()
@@ -263,6 +262,8 @@ func main() {
 		searchLocalNotes(flgSearchLocalTerm, defaultMaxResults)
 		return
 	}
+
+	getFirestoreClientMust()
 
 	if flgImportStackOverflow {
 		localStore, err = NewLocalStore(getLocalStoreDir())

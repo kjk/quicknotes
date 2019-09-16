@@ -3,23 +3,15 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"fmt"
+	"math/rand"
 	"mime"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 	"unicode"
 
-	"github.com/kjk/u"
-	"github.com/speps/go-hashids"
-)
-
-var (
-	// TODO: not sure if I need hashIDMu
-	hashIDMu sync.Mutex
-	hashID   *hashids.HashID
+	"github.com/oklog/ulid"
 )
 
 func isWin() bool {
@@ -98,32 +90,6 @@ func trimSpaceLineRight(s string) string {
 func nameFromEmail(email string) string {
 	parts := strings.Split(email, "@")
 	return parts[0]
-}
-
-func initHashID() {
-	hd := hashids.NewData()
-	hd.Salt = "bo-&)()(*&tamalola"
-	hd.MinLength = 4
-	hashID = hashids.NewWithData(hd)
-}
-
-func hashInt(n int) string {
-	nums := []int{n}
-	hashIDMu.Lock()
-	res, err := hashID.Encode(nums)
-	hashIDMu.Unlock()
-	u.PanicIfErr(err)
-	return res
-}
-
-func dehashInt(s string) (int, error) {
-	hashIDMu.Lock()
-	defer hashIDMu.Unlock()
-	nums, err := hashID.DecodeWithError(s)
-	if err != nil || len(nums) != 1 {
-		return -1, fmt.Errorf("dehashInt: invalid valude '%s', err: '%s'", s, err)
-	}
-	return nums[0], nil
 }
 
 func strArrEqual(a1, a2 []string) bool {
@@ -260,4 +226,14 @@ func getFirstLine(d []byte) []byte {
 		}
 		d = d[advance:]
 	}
+}
+
+// generates unique id with ulid library
+// the id has nice properties like: has timestamp in it
+// and is lexicographically sortable by time
+func genUniqueID() string {
+	t := time.Now().UTC()
+	entropy := rand.New(rand.NewSource(t.UnixNano()))
+	id := ulid.MustNew(ulid.Timestamp(t), entropy)
+	return id.String()
 }

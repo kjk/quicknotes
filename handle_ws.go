@@ -120,19 +120,15 @@ func getNoteCompact(ctx *ReqContext, noteID int) ([]interface{}, error) {
 	return noteToCompact(note, true)
 }
 
-func getUserNoteByHashID(ctx *ReqContext, noteHashIDStr string) (int, error) {
-	noteID, err := dehashInt(noteHashIDStr)
-	if err != nil {
-		return -1, err
-	}
-	log.Verbosef("note id hash: '%s', id: %d\n", noteHashIDStr, noteID)
+func getUserNoteByHashID(ctx *ReqContext, noteID string) (string, error) {
+	log.Verbosef("note id: %d\n", noteID)
 	note, err := dbGetNoteByID(noteID)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 	if note.userID != ctx.User.id {
-		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')", noteHashIDStr, ctx.User.id, ctx.User.Handle)
-		return -1, err
+		err = fmt.Errorf("note '%s' doesn't belong to user %d ('%s')", noteID, ctx.User.id, ctx.User.Handle)
+		return "", err
 	}
 	return noteID, nil
 }
@@ -142,15 +138,11 @@ type getUserInfoRsp struct {
 }
 
 func wsGetUserInfo(args map[string]interface{}) (*getUserInfoRsp, error) {
-	userIDHash, err := jsonMapGetString(args, "userIDHash")
+	userID, err := jsonMapGetString(args, "userIDHash")
 	if err != nil {
 		return nil, fmt.Errorf("'userIDHash' argument missing in '%v'", args)
 	}
 
-	userID, err := dehashInt(userIDHash)
-	if err != nil {
-		return nil, fmt.Errorf("invalid userID: '%s'", userIDHash)
-	}
 	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
 		return nil, fmt.Errorf("no user '%d', err: '%s'", userID, err)
@@ -180,7 +172,7 @@ func wsGetRecentNotes(limit int) (interface{}, error) {
 	return &res, nil
 }
 
-func getNotesForUser(ctx *ReqContext, userID int, latestVersion int) (interface{}, error) {
+func getNotesForUser(ctx *ReqContext, userID string, latestVersion int) (interface{}, error) {
 	i, err := getCachedUserInfo(userID)
 	if err != nil || i == nil {
 		return nil, fmt.Errorf("getCachedUserInfo('%d') failed with '%s'", userID, err)
@@ -195,7 +187,7 @@ func getNotesForUser(ctx *ReqContext, userID int, latestVersion int) (interface{
 		}
 	}
 
-	loggedUserID := -1
+	loggedUserID := ""
 	loggedUserHandle := ""
 	if ctx.User != nil {
 		loggedUserHandle = ctx.User.Handle

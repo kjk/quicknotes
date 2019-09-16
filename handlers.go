@@ -43,8 +43,7 @@ const (
 
 // UserSummary describes logged-in user
 type UserSummary struct {
-	id     int
-	HashID string
+	id     string
 	Handle string
 	login  string
 }

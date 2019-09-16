@@ -12,3 +12,4 @@ tsbuild/
 .vscode/
 vendor/
 credentials.json
+service-account.json

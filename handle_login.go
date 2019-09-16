@@ -77,7 +77,7 @@ var (
 
 // SecureCookieValue is value of the cookie
 type SecureCookieValue struct {
-	UserID int
+	UserID string
 }
 
 func initCookieMust() {
@@ -228,7 +228,7 @@ func getTwitter(cred *oauth.Credentials, urlStr string, params url.Values, data 
 // if loggin from main page, go to user's notes
 func fixLoginRedir(redir string, u *DbUser) string {
 	if u != nil && (redir == "/" || redir == "") {
-		redir = "/u/" + hashInt(u.ID)
+		redir = "/u/" + u.ID
 		h := url.QueryEscape(u.GetHandle())
 		if h != "" {
 			redir += "/" + u.GetHandle()

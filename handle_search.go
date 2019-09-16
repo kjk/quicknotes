@@ -25,22 +25,18 @@ type SearchResultItem struct {
 
 // SearchResult has search results sent to client
 type SearchResult struct {
-	NoteHashID string
-	Items      []SearchResultItem
+	NoteID string
+	Items  []SearchResultItem
 }
 
-func searchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (interface{}, error) {
-	if userIDHash == "" {
+func searchUserNotes(ctx *ReqContext, userID string, searchTerm string) (interface{}, error) {
+	if userID == "" {
 		return nil, fmt.Errorf("missing 'userIDHash' arg")
 	}
 	if searchTerm == "" {
 		return nil, fmt.Errorf("missing search term")
 	}
 
-	userID, err := dehashInt(userIDHash)
-	if err != nil {
-		return nil, fmt.Errorf("invalid 'user' arg '%s', err='%s'", userIDHash, err)
-	}
 	searchPrivate := ctx.User != nil && userID == ctx.User.id
 
 	log.Verbosef("userID: '%d', term: '%s', private: %v\n", userID, searchTerm, searchPrivate)
@@ -50,7 +46,7 @@ func searchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (int
 		return nil, err
 	}
 	if i == nil {
-		return nil, fmt.Errorf("No user with userIDHash '%s'", userIDHash)
+		return nil, fmt.Errorf("No user with userID '%s'", userID)
 	}
 	var notes []*Note
 	for _, note := range i.notes {
@@ -71,8 +67,8 @@ func searchUserNotes(ctx *ReqContext, userIDHash string, searchTerm string) (int
 			items = items[:maxHitsPerNote]
 		}
 		sr := SearchResult{
-			NoteHashID: match.note.HashID,
-			Items:      items,
+			NoteID: match.note.id,
+			Items:  items,
 		}
 		res = append(res, sr)
 		if len(res) >= maxSearchResults {
